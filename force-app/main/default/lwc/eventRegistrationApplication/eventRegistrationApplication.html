@@ -1,0 +1,74 @@
+<!-- Event Registration Application -->
+<template>
+  <template if:false={isError}>
+    <div class="slds-card">
+      <div id="header" class="slds-card_header">
+        <div
+          class="slds-text-align_center slds-p-around_small slds-text-heading_medium"
+        >
+          <slot name="header">{ean_event.Name}</slot>
+        </div>
+
+        <lightning-progress-indicator
+          type="base"
+          variant="base"
+          current-step={currentStep}
+        >
+          <template for:each={progressIndicatorSteps} for:item="step">
+            <lightning-progress-step
+              key={step.value}
+              label={step.label}
+              value={step.value}
+            >
+            </lightning-progress-step>
+          </template>
+        </lightning-progress-indicator>
+      </div>
+
+      <template if:true={steps.step1.isActive}>
+        <c-select-registration-type
+          oncontinue={onNextRegType}
+          onprevious={onPrevious}
+          onerror={onError}
+          hide-previous-button="true"
+          registration-type={registrationType}
+          group-name={groupName}
+        >
+        </c-select-registration-type>
+      </template>
+
+      <template if:true={steps.step2.isActive}>
+        <c-select-tickets
+          oncontinue={onSelectTicket}
+          onprevious={onPrevious}
+          onerror={onError}
+          user-info={userInfo}
+          ean-event={ean_event}
+          registration-type={registrationType}
+          selected-ticket={selectedTicket}
+          tickets-amount={ticketsAmount}
+        >
+        </c-select-tickets>
+      </template>
+    </div>
+  </template>
+
+  <template if:true={isError}>
+    <div
+      class="slds-text-heading_large slds-align_absolute-center slds-text-color_error"
+    >
+      {errorMessage}
+    </div>
+  </template>
+
+  <template if:true={isSpinner}>
+    <div class="slds-spinner_container" style="position: fixed">
+      <lightning-spinner
+        alternative-text="Loading"
+        variant="brand"
+        size="large"
+      >
+      </lightning-spinner>
+    </div>
+  </template>
+</template>

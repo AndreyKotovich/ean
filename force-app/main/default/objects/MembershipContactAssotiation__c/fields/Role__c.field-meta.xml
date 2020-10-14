@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Role__c</fullName>
+    <externalId>false</externalId>
+    <label>Role</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Administrative Officer</fullName>
+                <default>false</default>
+                <label>Administrative Officer</label>
+            </value>
+            <value>
+                <fullName>Carer</fullName>
+                <default>false</default>
+                <label>Carer</label>
+            </value>
+            <value>
+                <fullName>Chair</fullName>
+                <default>false</default>
+                <label>Chair</label>
+            </value>
+            <value>
+                <fullName>Corresponding member</fullName>
+                <default>false</default>
+                <label>Corresponding member</label>
+            </value>
+            <value>
+                <fullName>GroupAdmin</fullName>
+                <default>false</default>
+                <label>GroupAdmin</label>
+            </value>
+            <value>
+                <fullName>Guest</fullName>
+                <default>false</default>
+                <label>Guest</label>
+            </value>
+            <value>
+                <fullName>Individual Delegate</fullName>
+                <default>false</default>
+                <label>Individual Delegate</label>
+            </value>
+            <value>
+                <fullName>Managing Editor</fullName>
+                <default>false</default>
+                <label>Managing Editor</label>
+            </value>
+            <value>
+                <fullName>Member</fullName>
+                <default>false</default>
+                <label>Member</label>
+            </value>
+            <value>
+                <fullName>New Member</fullName>
+                <default>false</default>
+                <label>New Member</label>
+            </value>
+            <value>
+                <fullName>Past president</fullName>
+                <default>false</default>
+                <label>Past president</label>
+            </value>
+            <value>
+                <fullName>RRFS Member</fullName>
+                <default>false</default>
+                <label>RRFS Member</label>
+            </value>
+            <value>
+                <fullName>Secretary</fullName>
+                <default>false</default>
+                <label>Secretary</label>
+            </value>
+            <value>
+                <fullName>Treasurer</fullName>
+                <default>false</default>
+                <label>Treasurer</label>
+            </value>
+            <value>
+                <fullName>Panel Member (Institution)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Panel Member (Institution)</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

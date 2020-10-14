@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ConnectedApp xmlns="http://soap.sforce.com/2006/04/metadata">
+    <contactEmail>stefan.boigner@towa.at</contactEmail>
+    <label>M_Events_SSO</label>
+    <oauthConfig>
+        <callbackUrl>https://localhost:44381/signin-salesforce
+https://qaid.m-anage.com/signin-salesforce
+https://devid.m-anage.com/signin-salesforce
+https://stagingid.m-anage.com/signin-salesforce
+https://ean-id.m-anage.com/signin-salesforce</callbackUrl>
+        <consumerKey>3MVG9sSN_PMn8tjSodyD28jSJp2K3oTIHibeeKwIwUrtlEyumnb05rE764a0.YCSb2suCK42elPmsjgZ3B_yP</consumerKey>
+        <isAdminApproved>true</isAdminApproved>
+        <isConsumerSecretOptional>false</isConsumerSecretOptional>
+        <isIntrospectAllTokens>false</isIntrospectAllTokens>
+        <scopes>Basic</scopes>
+        <scopes>Api</scopes>
+        <scopes>RefreshToken</scopes>
+        <scopes>OpenID</scopes>
+    </oauthConfig>
+    <oauthPolicy>
+        <ipRelaxation>ENFORCE</ipRelaxation>
+        <refreshTokenPolicy>infinite</refreshTokenPolicy>
+    </oauthPolicy>
+    <profileName>Education Admin</profileName>
+    <profileName>Member Community User Profile</profileName>
+    <profileName>ean Profile</profileName>
+    <profileName>Standard User</profileName>
+    <profileName>System Administrator</profileName>
+    <profileName>Executive Management</profileName>
+    <profileName>Fundraising and Development</profileName>
+    <profileName>Office Staff</profileName>
+    <profileName>Program Staff</profileName>
+    <profileName>Volunteer</profileName>
+    <profileName>Membership Admin</profileName>
+    <profileName>Integration User</profileName>
+    <profileName>Customer Community Login User</profileName>
+    <profileName>Non-Member Community User Profile</profileName>
+    <profileName>RRFS Reviewer</profileName>
+    <profileName>Secretary General</profileName>
+    <profileName>EAN Staff Community Profile</profileName>
+</ConnectedApp>

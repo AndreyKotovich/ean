@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Account__c</fullName>
+    <externalId>false</externalId>
+    <label>Department</label>
+    <lookupFilter>
+        <active>true</active>
+        <booleanFilter>(1 AND 2) AND 3</booleanFilter>
+        <errorMessage>Please select either a Hospital or a Department.</errorMessage>
+        <filterItems>
+            <field>$Source.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Department</value>
+        </filterItems>
+        <filterItems>
+            <field>Account.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Department</value>
+        </filterItems>
+        <filterItems>
+            <field>Account.ParentId</field>
+            <operation>equals</operation>
+            <valueField>$Source.Hospital__c</valueField>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Department Positions</relationshipLabel>
+    <relationshipName>Contact_Roles</relationshipName>
+    <relationshipOrder>1</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>true</writeRequiresMasterRead>
+</CustomField>

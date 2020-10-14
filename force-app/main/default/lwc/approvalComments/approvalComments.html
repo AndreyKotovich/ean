@@ -1,0 +1,41 @@
+<template>
+    <template if:true={componentFlag}>
+        <div class="slds-box">
+            <div class="slds-text-heading_medium">Approval Comment</div>
+            <div class="slds-feed slds-text-align_left" if:true={postScreen}>
+                <ul class="slds-feed__list">
+                    <li class="slds-feed__item">
+                        <article class="slds-post">
+                            <header class="slds-post__header slds-media">
+                                <div class="slds-media__figure slds-avatar slds-avatar slds-avatar_large">
+                                    <img alt={post.approver.Name} src={post.approver.SmallPhotoUrl}/>
+                                </div>
+                                <div class="slds-media__body">
+                                    <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+                                        <p>
+                                            <a href="javascript:void(0);" title={post.approver.Name}>{post.approver.Name}</a>
+                                        </p>
+                                    </div>
+                                    <p class="slds-text-body_small">
+                                        <span>{post.date}</span>
+                                    </p>
+                                </div>
+                            </header>
+                            <div>
+                                <div style="max-height: 100px; overflow-wrap: break-word; overflow-y: auto">
+                                    {post.comment}
+                                </div>
+                            </div>
+                        </article>
+                    </li>
+                </ul>
+            </div>
+            <div if:false={postScreen}>
+                <div class="slds-text-heading_small slds-text-align_center">No Comments</div>
+            </div>
+            <div class="slds-text-align_center">
+                <lightning-button variant="brand" label="Re-Submit & Attach Files" title="Primary action" onclick={handleClickReSubmit}></lightning-button>
+            </div>
+        </div>
+    </template>
+</template>

@@ -1,0 +1,291 @@
+<template>
+    <div if:true={displayGTM} style="max-width: 1000px">
+        <lightning-card title="">
+
+            <div class="slds-box--border slds-grid slds-gutters slds-m-around--small">
+                <div class="slds-col slds-size_8-of-12 slds-p-around--small" style="color: #007DC6;">
+                <span style="font-size: 18px;">
+                    <strong>Individual</strong> meetings
+                </span> <br/>
+                    <span style="font-size: 14px;">
+                    Overview of all individual GoToMeetings.
+                </span>
+                </div>
+                <div class="slds-col slds-size_4-of-12 slds-text-align--right slds-p-around--small">
+                    <button class="slds-button new-mit" aria-haspopup="true" title="Show More" style="width: 100px;"
+                            onclick={openmodal}>
+                        <lightning-icon icon-name="action:new" alternative-text="Create Meeting"
+                                        size="x-small"></lightning-icon>
+                        <span style="font-size: 16px;">Create</span>
+                    </button>
+                </div>
+            </div>
+
+            <lightning-card icon-name="standard:event">
+                <h1 slot="title">Meetings</h1>
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_8-of-12">
+                        <template if:true={hasNoMeetings}>
+                            <div class="slds-m-around--small slds-p-around--small slds-text-align--center"
+                                 style="background: #f7fbf4; border: 1px solid #97d271; color: #84be5e; border-radius: 4px; font-size: 13px;">
+                                <span>
+                                    No meetings found!<br/>
+                                    There were no meeting found matching the current active filter(s).
+                                </span>
+                            </div>
+                        </template>
+                        <template if:true={showMeetings} for:each={meetingsHistoryList} for:item="meetingHistoryItem">
+                            <div key={meetingHistoryItem.Id}
+                                 class="slds-box--border slds-p-around--small slds-m-around--x-small slds-grid slds-gutters">
+                                <div class="slds-col slds-text-align--center"
+                                     style="background: #dadada; color: #ffffff; padding: 10px 0 0 0; width: 65px;">
+                                    <lightning-icon icon-name="standard:call" al
+                                                    ternative-text="Meeting"
+                                                    size="medium"></lightning-icon>
+                                </div>
+                                <div class="slds-col slds-p-top--medium slds-grid slds-wrap">
+                                    <div class="slds-col slds-size_6-of-12">
+                                        <small style="font-size: 14px; line-height: 16px; color: #007DC6">
+                                            {meetingHistoryItem.startDateTime}
+                                        </small>
+                                    </div>
+                                    <div class="slds-col slds-size_6-of-12 slds-text-align--right">
+                                        <span style="background: #f5f5f5; color: #7a7a7a; border-radius: 2px; font-size: 10px"
+                                              class="slds-p-around--xx-small">
+                                     STATUS:{meetingHistoryItem.status}
+                                 </span>
+                                        <span style="background: #007DC6; color: #ffffff; border-radius: 2px; font-size: 10px"
+                                              class="slds-p-around--xx-small slds-m-left--xx-small">
+                                     GOTOMEETING
+                                 </span>
+                                        <lightning-button-menu alternative-text="Meeting Actions"
+                                                               onselect={handlerEditDeleteMeeting}
+                                                               data-meetingid={meetingHistoryItem.index}
+                                                               icon-size="x-small"
+                                                               class="slds-m-left--xx-small">
+                                            <lightning-menu-item label="Cancel and Delete" value="delete"
+                                                                 prefix-icon-name="action:delete"
+                                                                 disabled={meetingHistoryItem.isNotEditable}>
+                                            </lightning-menu-item>
+                                            <lightning-menu-item label="Edit" value="edit"
+                                                                 prefix-icon-name="action:edit"
+                                                                 disabled={meetingHistoryItem.isNotEditable}>
+                                            </lightning-menu-item>
+                                        </lightning-button-menu>
+                                    </div>
+                                    <div class="slds-col slds-size_12-of-12">
+                                        <strong style="font-weight: bold; font-size: 18px; color: #007dc6;">
+                                            {meetingHistoryItem.subject}
+                                        </strong>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-p-top--medium">
+                                        <span> Organiser: {meetingHistoryItem.organizerName}</span>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <span>Date: {meetingHistoryItem.startDateTime} - {meetingHistoryItem.endTime} (UTC+01:00)</span>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-p-bottom--medium">
+                                        <span>Participants: {meetingHistoryItem.participants}</span>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-p-bottom--medium">
+                                        <span>Join URL:     </span>
+                                        <lightning-formatted-url
+                                                value={meetingHistoryItem.JoinURL}>
+                                        </lightning-formatted-url>
+                                    </div>
+                                    <div if:true={displayStartMeeting} class="slds-col slds-size_1-of-1 slds-p-bottom--medium">
+                                        <span>Start the meeting if you are owner:     </span>
+                                        <button class="slds-button new-mit" aria-haspopup="true" title="Start meeting" style="width: 100px; padding: auto;"
+                                                onclick={startMeeting}
+                                                data-meetingid={meetingHistoryItem.index}>
+<!--                                            <lightning-icon icon-name="action:new" alternative-text="Start Meeting"-->
+<!--                                                            size="x-small"></lightning-icon>-->
+                                            <span style="font-size: 16px; margin: auto;">Start</span>
+                                        </button>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-p-bottom--medium">
+                                        <lightning-formatted-rich-text
+                                                value={meetingHistoryItem.description}
+                                        ></lightning-formatted-rich-text>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12">
+                        <div class="slds-box--border slds-m-around--x-small">
+                            <div class="slds-p-around--small" style="font-size: 18px; color: #007dc6;">
+                                <strong>
+                                    Filter&ensp;
+                                </strong>
+                                <span>
+                                displayed meetings
+                            </span>
+                            </div>
+                            <div class="slds-p-around--small">
+                                <lightning-input type="date" name="filter" label="Show only meetings since:"
+                                                 value={filterDate} onchange={handleInputFilterDate}>
+                                </lightning-input>
+                            </div>
+                            <div class="slds-p-around--small">
+                                <lightning-input type="checkbox" label="Show finished meetings" name="input1"
+                                                 checked={showFinished}
+                                                 onchange={handleInputFilterCheck}>
+                                </lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </lightning-card>
+        </lightning-card>
+    </div>
+
+    <template if:true={openmodel}>
+        <div class="demo-only" style="max-height: 300px;">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                     aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header slds-modal__header_empty">
+                        <div class="slds-clearfix">
+                            <button class="slds-button slds-button_icon slds-button_icon-inverse slds-float_right slds-m-top--large slds-m-right--large"
+                                    title="Close"
+                                    onclick={closeModal}>
+                                <lightning-icon icon-name="utility:close" size="x-small">
+                                </lightning-icon>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                        </div>
+                        <h2 id="modal-heading-01"
+                            class="slds-text-heading_medium slds-hyphenate slds-text-align--center slds-m-bottom--large">
+                            <b>Create</b> GoToMeeting</h2>
+
+                    </header>
+
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1"
+                         style="overflow: visible;">
+                        <lightning-tabset variant="scoped">
+                            <lightning-tab label="Basic">
+                                <div class="slds-grid slds-wrap">
+                                    <div class="slds-size_1-of-1">
+                                        <lightning-input type="text"
+                                                         name="input1"
+                                                         label="Subject" required
+                                                         value={newMeeting.subject}
+                                                         class="slds-grid--align-center slds-p-right--small"
+                                                         onchange={handleInputMeetingSub}>
+
+                                        </lightning-input>
+                                    </div>
+                                    <div class="slds-size_1-of-1 slds-medium-size_5-of-12 slds-p-right--small slds-p-top--small">
+                                        <lightning-input type="date"
+                                                         name="input2"
+                                                         label="Date" required
+                                                         min={newMeeting.todaysDate}
+                                                         value={newMeeting.startDate}
+                                                         class="slds-grid--align-center slds-col "
+                                                         onchange={handleInputMeetingDate}>
+
+                                        </lightning-input>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-p-right--small slds-p-top--small">
+                                        <lightning-input type="time"
+                                                         name="input2"
+                                                         label="Time" required
+                                                         value={newMeeting.startTime}
+                                                         class="slds-grid--align-center "
+                                                         onchange={handleInputMeetingTime}>
+                                        </lightning-input>
+                                        <span style="color: #787882; font-size: 12px;">Time zone: Europe/Berlin</span>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-p-right--small slds-p-top--small">
+                                        <!--<label for="selectDuration" class="slds-form-element__label slds-no-flex">-->
+                                            <!--<abbr title="required" class="slds-required">*</abbr>-->
+                                            <!--Duration-->
+                                        <!--</label>-->
+                                        <!--<select id="select" name="selectDuration" label="Duration"-->
+                                                <!--class="slds-select"-->
+                                                <!--onchange={handleInputMeetingDuration}>-->
+
+                                            <!--<option value="15">15 min</option>-->
+                                            <!--<option value="30">30 min</option>-->
+                                            <!--<option value="45">45 min</option>-->
+                                            <!--<option value="60">60 min</option>-->
+                                            <!--<option value="90">1.5 h</option>-->
+                                            <!--<option value="120">2 h</option>-->
+                                            <!--<option value="150">2.5 h</option>-->
+                                            <!--<option value="180">3 h</option>-->
+                                            <!--<option value="240">4 h</option>-->
+                                            <!--<option value="300">5 h</option>-->
+                                            <!--<option value="360">6 h</option>-->
+                                            <!--<option value="420">7 h</option>-->
+                                            <!--<option value="480">8 h</option>-->
+                                        <!--</select>-->
+                                        <lightning-combobox
+                                                name="progress" label="Duration" value={newMeeting.duration}
+                                                placeholder="Duration"
+                                                options={durationOptions} required onchange={handleInputMeetingDuration}>
+
+                                        </lightning-combobox>
+                                    </div>
+                                    <div class="slds-form-element slds-col slds-size_1-of-1 slds-p-right--small slds-p-top--small">
+                                        <label class="slds-form-element__label">
+                                            Description
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-rich-text label="Description"
+                                                                       value={newMeeting.description}
+                                                                       onchange={handlerInputMeetingDesc} >
+                                            </lightning-input-rich-text>
+                                        </div>
+                                    </div>
+                                </div>
+                            </lightning-tab>
+
+                            <!-- Participants tab -->
+                            <lightning-tab label="Participants">
+                                <div class="slds-grid slds-grid_align-spread">
+                                    <div class="slds-col slds-size_3-of-4">
+                                        <label class="slds-form-element__label">
+                                            Add contacts to the meeting
+                                        </label>
+                                    </div>
+                                    <div if:true={isMeetNow} class="slds-col slds-size_1-of-4">
+                                        <lightning-button label="Meet Now" variant="neutral" onclick={addMeetNow}></lightning-button>
+                                    </div>
+                                    <div if:false= {isMeetNow} class="slds-col slds-size_1-of-4">
+                                        <lightning-button label="Meet Now" variant="neutral" onclick={addMeetNow} disabled></lightning-button>
+                                    </div>
+                                </div>
+
+                                <c-lwcMultiLookup objectname="Contact" fieldname="Name"
+                                                  defaultrecords={defaultParticipants}
+                                                  iconname="standard:contact"
+                                                  onselected={handlerLookupChange}>
+                                </c-lwcMultiLookup>
+
+                                <div class="slds-form-element__control">
+                                    <lightning-textarea label="Add External Participants to the meeting"
+                                                               placeholder="Please enter email here and separate them with commas."
+                                                               value={newMeeting.externalParticipants}
+                                                               onchange={handlerInputMeetingExternalParticipants} >
+                                    </lightning-textarea>
+                                </div>
+
+                            </lightning-tab>
+
+                        </lightning-tabset>
+                    </div>
+
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Cancel" variant="neutral" onclick={closeModal}></lightning-button>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <lightning-button label="Save" variant="brand" onclick={createNewMeeting}
+                                          type="submit"></lightning-button>
+                    </footer>
+
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </template>
+
+</template>

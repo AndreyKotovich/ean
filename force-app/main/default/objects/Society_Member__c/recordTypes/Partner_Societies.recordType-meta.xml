@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Partner_Societies</fullName>
+    <active>true</active>
+    <label>Partner Societies</label>
+    <picklistValues>
+        <picklist>Role__c</picklist>
+        <values>
+            <fullName>Chair EQTF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chief Executive Director %3D Ex%2E Director</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Director</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Executive Director</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>General Manager</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Member at large</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Panel Member %28Institution%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Past president</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>President</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>President Elect</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>RRFS National Society Delegate</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Secretary general</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Treasurer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Trustee</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Vice president</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

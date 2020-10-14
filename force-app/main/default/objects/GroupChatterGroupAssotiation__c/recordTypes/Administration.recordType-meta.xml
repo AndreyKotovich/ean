@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Administration</fullName>
+    <active>true</active>
+    <label>Administration</label>
+    <picklistValues>
+        <picklist>Role__c</picklist>
+        <values>
+            <fullName>Administrative Officer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Assistant - Industry Liaison</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Assistant - Membership</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Association Manager</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Congress Assistant Scientific</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Congress Manager Operation</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Executive Director</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Industry Liaison Manager</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Intern</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Liaison Officer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>On Educational Leave</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Press Officer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Project Manager</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Project Manager - European Affairs</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Quality Manager</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

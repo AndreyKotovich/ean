@@ -1,0 +1,80 @@
+<apex:component id="DocumentsMissingEmail" access="global" controller="DocumentsMissingEmailController">
+    <apex:attribute name="applicationForm" type="Application_form__c" assignTo="{!appForm}" description="Application Form id" access="global" />
+    <div>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                Dear {!appForm.Contact__r.Salutation} {!appForm.Contact__r.FirstName} {!appForm.Contact__r.LastName}
+<!--                {!IF(appForm.Contact__r.Title==null,'', ', '+ appForm.Contact__r.Title)}-->
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                Thank you for your EAN {!appForm.Membership__r.Name} application.
+            </span>
+            <br/>
+            <span>
+                Your application number: {!appForm.Name}.
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+                <span>
+                   Please revise <a href="{!communityUrl}" target="_blank">your application</a> according to the following instructions.
+                </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px; {!IF(approvalComment!=null, 'display: block;', 'display: none;')}">
+            <span>
+                {!approvalComment}
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                If you are unsure about the eligibility criteria, please check our website: <a href="https://www.ean.org/join/membership-packages" target="_blank">https://www.ean.org/join/membership-packages</a>.
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                Kindly note, that if we do not receive the missing information within 2 months after applying, your application will be discarded.
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                Thank you very much!
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                With kind regards,
+            </span>
+            <br/>
+            <span>
+                EAN Membership Department
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                European Academy of Neurology
+            </span>
+            <br/>
+            <span>
+                Breite Gasse 4/7
+            </span>
+            <br/>
+            <span>
+                1070 Vienna
+            </span>
+            <br/>
+            <span>
+                Austria
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                <a href="mailto:membership@ean.org">membership@ean.org</a>
+            </span>
+            <br/>
+            <span>
+                <a href="www.ean.org" target="_blank">www.ean.org</a>
+            </span>
+        </p>
+    </div>
+</apex:component>

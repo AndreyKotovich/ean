@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Transfer_Request__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <label>Transfer Request</label>
+    <referenceTo>Transfer_Request__c</referenceTo>
+    <relationshipLabel>Payments &amp; Invoices</relationshipLabel>
+    <relationshipName>Payments_Invoices</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

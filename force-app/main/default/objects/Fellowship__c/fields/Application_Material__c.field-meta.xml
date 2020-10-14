@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Application_Material__c</fullName>
+    <defaultValue>&quot;Application form (detailed guidance can be downloaded from the website or requested by email)&quot; + BR() + BR() + &quot;Proof of 2 years of clinical experience (from supervisor or head of department)&quot; + BR() + BR() + &quot;Structured curriculum vitae including list of publications (10 max, doi-links)&quot; + BR() + BR() + &quot;A copy of passport / national ID card&quot; + BR() + BR() + &quot;2 letters of recommendation from neurologists&quot; + BR() + BR() + &quot;Acceptance form or letter of acceptance from the approved hosting department&quot;</defaultValue>
+    <externalId>false</externalId>
+    <label>Application Material</label>
+    <length>32768</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

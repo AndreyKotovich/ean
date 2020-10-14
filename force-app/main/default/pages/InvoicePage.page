@@ -1,0 +1,126 @@
+<apex:page id="InvoicePage" title="New Invoice" showHeader="false" sideBar="false" controller="InvoicePageController"
+           applyHtmlTag="false" renderAs="pdf">
+    <html>
+    <head>
+        <title>New Invoice</title>
+        <style type="text/css">
+            table {
+                border-collapse: collapse;
+                width: 90%;
+                margin-top: 20px;
+                border: 1px solid black;
+            }
+
+            tr, td {
+                border: 1px solid black;
+            }
+
+            td:first-child {
+                width: 70%;
+            }
+
+            td {
+                padding: 10px;
+            }
+        </style>
+    </head>
+    <body>
+    <div style="width: 675px; margin: 40px; font-size: 18px;">
+        <div style="margin-top: 90px; float: left; width: 425px;">
+            <div style="text-align: left;">
+                <div>
+                    {!name}
+                </div>
+                <div>
+                    <apex:repeat value="{!address}" var="thing">
+                        <apex:outputText value="{!thing}"></apex:outputText> <br style="{!IF(thing!='', '', 'display: none;')}"/>
+                    </apex:repeat>
+                </div>
+            </div>
+            <div style="margin: 200px 0 0 0px">
+                <span style="font-size: 20px; font-weight: bold;">INVOICE / CONFIRMATION OF PAYMENT</span>
+                <div style="margin-top: 50px">
+                    <apex:outputText value=" {!invoiceDate}"/>
+                </div>
+                <div>
+                    Nb.: <apex:outputText value="{!invoiceNumber}"/>
+                </div>
+                <div style="margin-top: 100px">
+                    <h3>EAN Individual Membership  <apex:outputText value=" {!YEAR(TODAY())}"/></h3>
+                </div>
+            </div>
+            <div>
+                <table style="width: 100%; margin-top: 20px;">
+                    <tbody>
+                    <apex:repeat value="{!memberships}" var="membership">
+                        <tr>
+                            <td style="border-bottom: none;">
+                                <div>
+                                    <apex:outputText value=" {!membership.Membership__r.Name}"/>
+                                    <apex:outputText value=" ({!membership.Quantity__c})" rendered="{!membership.Quantity__c > 1}"/>
+                                </div>
+                            </td>
+                            <td style="border-bottom: none;">
+                                <div>
+                                    &#8364;  <apex:outputText value=" {!membership.Total_amount__c}"/>
+                                </div>
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                    <apex:repeat value="{!products}" var="product">
+                        <tr>
+                            <td style="border-bottom: none;">
+                                <div>
+                                    <apex:outputText value=" {!product.Product__r.Name}"/>
+                                    <apex:outputText value=" ({!product.Quantity__c})" rendered="{!product.Quantity__c > 1}"/>
+                                </div>
+                            </td>
+                            <td style="border-bottom: none;">
+                                <div>
+                                    &#8364;  <apex:outputText value=" {!product.Total_amount__c}"/>
+                                </div>
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                    <tr>
+                        <td>
+                            <div>
+                                Total
+                            </div>
+                            <div>
+                                Payment received
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                &#8364;  <apex:outputText value=" {!totalAmount}"/>
+                            </div>
+                            <div>
+                                &#8364;  <apex:outputText value=" {!paymentReceived}"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div>
+                                Balance
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                &#8364;  <apex:outputText value=" {!totalAmount - paymentReceived}"/>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div style="width: 250px; float: right;">
+            <apex:image id="theImage" value="{!$Resource.EAN_LetterHead}" width="250"/>
+        </div>
+    </div>
+    </body>
+    </html>
+
+</apex:page>

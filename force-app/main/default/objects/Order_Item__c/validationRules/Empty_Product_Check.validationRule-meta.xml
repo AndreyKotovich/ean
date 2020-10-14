@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Empty_Product_Check</fullName>
+    <active>false</active>
+    <errorConditionFormula>Membership__c  = null  &amp;&amp;  Product__c  = null</errorConditionFormula>
+    <errorMessage>Select at least one Product/Membership.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>National_Society</fullName>
+    <active>true</active>
+    <label>National Society</label>
+    <picklistValues>
+        <picklist>Role__c</picklist>
+        <values>
+            <fullName>GroupAdmin</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

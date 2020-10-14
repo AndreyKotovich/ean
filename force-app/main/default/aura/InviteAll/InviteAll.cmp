@@ -1,0 +1,125 @@
+<aura:component description="InviteAll" controller="InviteAllController" implements="force:hasRecordId,force:lightningQuickActionWithoutHeader">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <lightning:navigation aura:id="navService"/>
+
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="groupMembers" type="List" />
+    <aura:attribute name="showErrors" type="Boolean" />
+    <aura:attribute name="errorMessage" type="String" />
+    <aura:attribute name="selectedAmount" type="Integer" default="0" />
+    <aura:attribute name="participantsAmount" type="Integer" default="0"/>
+    <aura:attribute name="loaded" type="Boolean" default="false" />
+
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_1-of-3" style="margin: auto;">
+                <aura:if isTrue="{!and(not(v.showErrors), v.loaded)}">
+                    <div class="slds-form-element" style="float: left; ">
+                        <div class="slds-form-element__control">
+                            <div class="slds-checkbox">
+                                <div class="slds-grid slds-grid_vertical">
+                                    <div class="slds-col">
+                                        <input type="checkbox" id="checkbox-invite-all" value="checkbox-invite-all" checked="checked" onclick="{!c.inviteAll}" />
+                                        <label class="slds-checkbox__label" for="checkbox-invite-all">
+                                            <span class="slds-checkbox_faux slds-m-right_none"></span>
+                                        </label>
+                                    </div>
+                                    <div class="slds-col">
+                                        <div class="slds-text-color_weak slds-text-font_monospace slds-text-title " style="font-size: x-small;">{!v.selectedAmount}/{!v.participantsAmount}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aura:if>
+            </div>
+            <div class="slds-col slds-size_1-of-3">
+                <h4 class="title slds-text-heading--medium" >Invite All</h4>
+            </div>
+            <div class="slds-col slds-size_1-of-3">
+            </div>
+        </div>
+
+    </div>
+
+
+
+        <div class="slds-modal__content slds-p-around--x-small slds-size_1-of-1 slds-is-relative">
+
+            <aura:if isTrue="{! v.loaded }">
+
+                <aura:if isTrue="{!v.showErrors}">
+                    <div class="slds-m-around_medium">
+                        <p class="slds-align_absolute-center slds-text-color_error">{!v.errorMessage}</p>
+                    </div>
+                </aura:if>
+
+                <div class="slds-scrollable" style="max-height: 15rem;">
+                    <ul class="slds-has-dividers_bottom-space">
+                        <aura:iteration items="{!v.groupMembers}" var="groupMember" indexVar="indx">
+                            <li class="slds-item">
+                                <div class="slds-checkbox">
+                                    <aura:if isTrue="{!groupMember.isChecked}">
+                                        <input type="checkbox" name="options" id="{!'checkbox-unique-id-+'+indx}" data-id="{!groupMember.Id}" checked="checked" onchange="{!c.optionClick}" />
+                                        <aura:set attribute="else">
+                                            <input type="checkbox" name="options" id="{!'checkbox-unique-id-+'+indx}" data-id="{!groupMember.Id}" checked="" onchange="{!c.optionClick}" />
+                                        </aura:set>
+                                    </aura:if>
+                                    <label class="slds-checkbox__label" for="{!'checkbox-unique-id-+'+indx}">
+                                        <div class="slds-grid slds-gutters">
+                                            <div class="slds-col">
+                                                <span class="slds-checkbox_faux slds-m-top_x-small"></span>
+                                            </div>
+                                            <div class="slds-col">
+                                                <lightning:tile label="{!groupMember.Name}">
+                                                    <aura:set attribute="media">
+                                                        <lightning:avatar src="{!groupMember.SmallPhotoUrl}" alternativeText="{!groupMember.Name}"/>
+                                                    </aura:set>
+                                                    <ul class="slds-list_horizontal slds-has-dividers_right">
+                                                        <li class="slds-item">{!groupMember.Email}</li>
+                                                    </ul>
+                                                </lightning:tile>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </li>
+                        </aura:iteration>
+                    </ul>
+                </div>
+
+                <aura:set attribute="else">
+                    <div style="height:6rem">
+                        <lightning:spinner alternativeText="Loading" variant="brand"/>
+                    </div>
+                </aura:set>
+
+            </aura:if>
+
+        </div>
+
+
+
+
+    <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+        <ui:button class="slds-button slds-button_neutral" label="Cancel" press="{! c.cancel}" />
+        <ui:button class="slds-button slds-button--brand" label="Next" press="{!c.next}"/>
+    </div>
+
+    <aura:html tag="style">
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+    </aura:html>
+
+</aura:component>

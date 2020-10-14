@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type_of_partnership__c</fullName>
+    <externalId>false</externalId>
+    <label>Type of partnership</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Memoranda of understanding</fullName>
+                <default>false</default>
+                <label>Memoranda of understanding</label>
+            </value>
+            <value>
+                <fullName>Agreements</fullName>
+                <default>false</default>
+                <label>Agreements</label>
+            </value>
+            <value>
+                <fullName>Memoranda of Understanding under preparation</fullName>
+                <default>false</default>
+                <label>Memoranda of Understanding under preparation</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Role_Limit</fullName>
+    <active>true</active>
+    <errorConditionFormula>Count_Co_Chair__c &gt; 2  ||  
+Count_Co_Editor_in_Chief__c &gt; 2 || 
+Count_Communication_Committee_Chair__c &gt;1 ||
+Count_Editor_in_Chief__c &gt; 1 ||
+Count_Education_Committee_Chair__c &gt; 1 || 
+Count_EQTF_Chairs__c &gt; 1 ||
+Count_Past_President__c &gt; 1 || 
+Count_Programme_Committee__c &gt; 1 ||
+Count_Scientific_Committee_Chair__c &gt; 1 ||
+Count_Secretary_General__c &gt; 1 ||
+Count_Teaching_Course_sub_Committee__c &gt; 1</errorConditionFormula>
+    <errorMessage>This role already exists.</errorMessage>
+</ValidationRule>

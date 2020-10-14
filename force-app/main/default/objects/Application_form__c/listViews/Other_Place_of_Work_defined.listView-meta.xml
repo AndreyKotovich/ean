@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Other_Place_of_Work_defined</fullName>
+    <columns>NAME</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Other_Place_of_Work__c</field>
+        <operation>notContain</operation>
+    </filters>
+    <label>Other Place of Work defined</label>
+    <sharedTo>
+        <allInternalUsers/>
+    </sharedTo>
+</ListView>

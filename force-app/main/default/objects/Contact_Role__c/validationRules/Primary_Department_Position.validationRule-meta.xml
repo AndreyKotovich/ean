@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Primary_Department_Position</fullName>
+    <active>false</active>
+    <errorConditionFormula>Contact__r.Count_Primary_Department_Position__c &gt;1</errorConditionFormula>
+    <errorDisplayField>is_primary_workplace__c</errorDisplayField>
+    <errorMessage>This contact already has a Department Position, which is marked as primary workplace. 
+Please review the existing Department Positions, before entering a new one here.</errorMessage>
+</ValidationRule>

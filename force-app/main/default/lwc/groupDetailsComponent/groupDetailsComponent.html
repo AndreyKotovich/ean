@@ -1,0 +1,160 @@
+<template>
+
+
+	<div class="slds-card" style="padding: 15px;">
+		<template if:true={_isSpinner}>
+			<div class="slds-spinner_container" style="position: fixed">
+				<lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
+			</div>
+		</template>
+
+		<template if:false={_isSpinner}>
+			<template if:true={_isError}>
+				<div class="slds-text-heading_large slds-align_absolute-center slds-text-color_error">{_errorMessage}</div>
+			</template>
+
+			<template if:false={_isError}>
+				<div>
+					<div style="width: 70%; display: inline-block;">
+						<!-- <template if:true={_disableDisplayGroupDetails}>
+
+						</template> -->
+
+						<template if:false={_disableDisplayGroupDetails}>
+							<div>
+								<div class="detail-section">
+									<p style="font-size: 12px;">Group Name</p>
+									<p>{_groupName}</p>
+								</div>
+								<div class="detail-section">
+									<p>Registration Status</p>
+									<p>{_registrationStatus}</p>
+								</div>
+							</div>
+							<div>
+								<div class="detail-section">
+									<p style="font-size: 12px;">Event Name</p>
+									<p>{_eventName}</p>
+								</div>
+								<div class="detail-section">
+									<p>Selected Participants</p>
+									<p>{_totalGroupExistingParticipants}</p>
+								</div>
+							</div>
+							<div>
+								<div class="detail-section">
+									<p style="font-size: 12px;">Event Start Time</p>
+									<p>{_eventStartDateString} {_eventStartTimeString}</p>
+								</div>
+								<div class="detail-section">
+									<p>Requested Participants</p>
+									<p>{_totalGroupMaxParticipants}</p>
+								</div>
+							</div>
+							<div>
+								<div class="detail-section">
+									<p style="font-size: 12px;">Event End Time</p>
+									<p>{_eventEndDateString} {_eventEndTimeString}</p>
+								</div>
+								<!-- <div class="detail-section">
+									<p>Requested Participants</p>
+									<p>{_totalGroupMaxParticipants}</p>
+								</div> -->
+							</div>
+						</template>
+					</div>
+
+					<div style="width: 30%; display: inline-block; vertical-align: top; padding-right: 10px;">
+						<div class="slds-text-align--right">
+							<template if:false={_disalbeDisplayButton1}>
+								<button class="slds-button slds-button_neutral" onclick={handleClickButton1}><div style=" margin-top: 2px; margin-bottom: -2px;">{_button1Label}</div></button>
+							</template>
+							<template if:false={_disalbeDisplayButton2}>
+								<button class="slds-button slds-button_brand" onclick={handleClickButton2}><div style=" margin-top: 2px; margin-bottom: -2px;">{_button2Label}</div></button>
+							</template>
+						</div>
+					</div>
+
+					<!-- group definition -->
+					<template if:false={_disableDisplayGroupDefinition}>
+						<template for:each={_subGroupList} for:item="subGroup">
+							<div key={subGroup.subGroupId}>
+								<p style="text-align: center; font-size: 18px; font-weight: bold; color: #007DC6;">{subGroup.accordionTitle}</p>
+								<template for:each={subGroup.subGroupParticipantList} for:item="participant">
+									<div key={participant.participantId} style="margin-top: 2px; margin-bottom: 2px;">
+										<div style="display: inline-block; width: 250px;">
+											<c-record-search
+												listfields = "Id,Name,Email"
+												objectname = "Contact"
+												searchfield = "Email"
+												whereclause = {_whereclause}
+												limitrecords = 4
+												lookupicon = "standard:contact"
+												enteredtext = {participant.newContactEmail}
+												existingrecordid = {participant.newContactId}
+												placeholder = "Enter email to search Contacts"
+												inputtype = "email"
+												uniquekey1 = {participant.uniquekey1}
+												uniquekey2 = {participant.uniquekey2}
+												disabledtoedit = {participant.disabledToEdit}
+												ongroupchangecontactemail = {handleOngroupchangecontactemail}>
+											</c-record-search>
+										</div>
+										<div style="display: inline-block; width: 300px; margin-left: 20px; vertical-align: bottom;">
+											{participant.newContactName}
+										</div>
+									</div>
+								</template>
+							</div>
+						</template>
+
+					</template>
+
+
+					<template if:false={_disalbeDisplayAccordions}>
+						<lightning-accordion
+										onsectiontoggle={handleToggleSection}
+										allow-multiple-sections-open>
+							<template for:each={_subGroupList} for:item="subGroup">
+								<div key={subGroup.subGroupId}>
+
+									<lightning-accordion-section name={subGroup.subGroupId} label={subGroup.accordionTitle}>
+										<!-- <p>Sub Group Details: {subGroup}</p> -->
+										<template for:each={subGroup.subGroupParticipantList} for:item="participant">
+											<div key={participant.participantId} style="margin-top: 2px; margin-bottom: 2px;">
+												<div style="display: inline-block; width: 250px;">
+													<c-record-search
+														listfields = "Id,Name,Email"
+														objectname = "Contact"
+														searchfield = "Email"
+														whereclause = {_whereclause}
+														limitrecords = 4
+														lookupicon = "standard:contact"
+														enteredtext = {participant.newContactEmail}
+														existingrecordid = {participant.newContactId}
+														placeholder = "Enter email to search Contacts"
+														inputtype = "email"
+														uniquekey1 = {participant.uniquekey1}
+														uniquekey2 = {participant.uniquekey2}
+														disabledtoedit = {participant.disabledToEdit}
+														ongroupchangecontactemail = {handleOngroupchangecontactemail}>
+													</c-record-search>
+												</div>
+												<div style="display: inline-block; width: 300px; margin-left: 20px; vertical-align: bottom;">
+													{participant.newContactName}
+												</div>
+											</div>
+										</template>
+
+									</lightning-accordion-section>
+								</div>
+							</template>
+						</lightning-accordion>
+					</template>
+				</div>
+			</template>
+		</template>
+
+	</div>
+
+</template>

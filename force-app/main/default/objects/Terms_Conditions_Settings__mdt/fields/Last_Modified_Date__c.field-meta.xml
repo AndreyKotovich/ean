@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Last_Modified_Date__c</fullName>
+    <description>The field means the date of the last change Terms &amp; Conditions.</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Last Modified Date</label>
+    <required>true</required>
+    <type>DateTime</type>
+</CustomField>

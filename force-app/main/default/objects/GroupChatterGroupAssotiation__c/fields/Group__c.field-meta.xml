@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Group__c</fullName>
+    <externalId>false</externalId>
+    <label>Group</label>
+    <lookupFilter>
+        <active>false</active>
+        <booleanFilter>(1 AND 2) OR (3 AND 4) OR (5 AND 6) OR (7 AND 8) OR (9 AND 10)</booleanFilter>
+        <filterItems>
+            <field>$Source.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Level 2 Working Group (Committee)</value>
+        </filterItems>
+        <filterItems>
+            <field>Group__c.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Level 2 Working Group (Committee)</value>
+        </filterItems>
+        <filterItems>
+            <field>$Source.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Level 3 Working Group</value>
+        </filterItems>
+        <filterItems>
+            <field>Group__c.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Level 3 Working Group</value>
+        </filterItems>
+        <filterItems>
+            <field>$Source.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Level 4 Working Group (Taskforce)</value>
+        </filterItems>
+        <filterItems>
+            <field>Group__c.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Level 4 Working Group (Taskforce)</value>
+        </filterItems>
+        <filterItems>
+            <field>$Source.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Level 1 Board (EAN Board)</value>
+        </filterItems>
+        <filterItems>
+            <field>Group__c.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Level 1 Board (EAN Board)</value>
+        </filterItems>
+        <filterItems>
+            <field>$Source.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Administration</value>
+        </filterItems>
+        <filterItems>
+            <field>Group__c.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Administration</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Group__c</referenceTo>
+    <relationshipLabel>Working Group Memberships</relationshipLabel>
+    <relationshipName>GroupChatterGroupAssotiations</relationshipName>
+    <relationshipOrder>1</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

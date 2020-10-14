@@ -1,0 +1,79 @@
+<template>
+    <div if:true={isSpinner}>
+        <div class="slds-spinner_container spinner-center" >
+            <lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
+        </div>
+    </div>
+    <div class="slds-grid slds-align_absolute-center">
+        <div class="slds-col slds-size_2-of-3">
+            <div if:true={showInputForm}>
+                <lightning-card class="slds-m-around_small">
+                    <div slot="title">
+                        Please review/ enter your data
+                    </div>
+                    <div class="slds-p-left_xx-large slds-p-right_xx-large">
+                        <lightning-record-edit-form object-api-name="Fellowship_Applications_Form__c" record-type-id={recordTypeId}>
+                            <lightning-messages>
+                            </lightning-messages>
+                            <lightning-input-field field-name="Fellowship__c" name="Fellowship__c" onchange={handleInputChange} value={fellowshipApplication.Fellowship__c}>
+                            </lightning-input-field>
+                        </lightning-record-edit-form>
+                        <div class="slds-text-title_caps form-header">I have already contacted the following department and attach the acceptance form:</div>
+                        <div style="margin-left: 0.6%; margin-right: 0.6%">
+                        </div>
+                        <lightning-record-edit-form object-api-name="Fellowship_Applications_Form__c" record-type-id={recordTypeId}>
+                            <lightning-messages>
+                            </lightning-messages>
+                            <lightning-input-field field-name="Mentor__c" name="Mentor__c" onchange={handleInputChange}>
+                            </lightning-input-field>
+                            <lightning-input-field field-name="Email_address__c" name="Email_address__c" onchange={handleInputChange}>
+                            </lightning-input-field>
+                            <lightning-input-field field-name="Justification__c" name="Justification__c" onchange={handleInputChange}>
+                            </lightning-input-field>
+                            <span class="slds-text-title_caps form-header">I certify that, at the time of this application:</span>
+                            <lightning-input-field field-name="Neurology_resident__c" name="Neurology_resident__c" onchange={handleInputChange}>
+                            </lightning-input-field>
+                            <lightning-input-field field-name="Completed_training_board_certification__c" name="Completed_training_board_certification__c" onchange={handleInputChange}>
+                            </lightning-input-field>
+                            <div class="slds-text-title_caps form-header" style="margin-bottom: 0.6%">IMPORTANT:</div>
+                            <div style="margin-left: 0.6%; margin-bottom: 0.6%" class="community-text-gray">
+                                <ul>
+                                    <li>The application form must be accompanied by:</li>
+                                    <li>
+                                        <ul class="slds-is-nested slds-list_dotted">
+                                            <li>Letter of Acceptance from the approved host department</li>
+                                            <li>A structured CV, including a list of publications in peer review journals (including doi-links)</li>
+                                            <li>Evidence of training/experience; EAN membership certificate</li>
+                                            <li>2 letters of recommendation (in addition to the host acceptance letter)</li>
+                                            <li>Copy of passport/Identification card</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </lightning-record-edit-form>
+                        <div class="slds-text-title_caps form-header" style="margin-bottom: -0.875rem">Attachments:</div>
+                        <div class="slds-align_absolute-center">
+                            <div class="slds-grid slds-grid_vertical">
+                                <div class="slds-col slds-align_absolute-center">
+                                    <lightning-file-upload class="file-upload" label=""
+                                                           name="fileUploader"
+                                                           accept={acceptedFormats}
+                                                           record-id={contact.Id}
+                                                           onuploadfinished={handleUploadFinished} multiple>
+                                    </lightning-file-upload>
+                                </div>
+                                <div class="slds-col slds-align_absolute-center">
+                                    <div title="pill-container" style="display: none" >
+                                        <lightning-pill-container items={uploadedFilesPills} onitemremove={handleRemoveFilePill} ></lightning-pill-container>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+        </div>
+    </div>
+    <button class="slds-button slds-button_brand slds-align_absolute-center"
+            onclick={handleClickSubmit}>Submit</button>
+</template>

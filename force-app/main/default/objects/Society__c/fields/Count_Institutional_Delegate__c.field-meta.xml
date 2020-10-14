@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Count_Institutional_Delegate__c</fullName>
+    <externalId>false</externalId>
+    <label>Count Institutional Delegate</label>
+    <summaryFilterItems>
+        <field>Society_Member__c.Role__c</field>
+        <operation>equals</operation>
+        <value>Institutional Delegate</value>
+    </summaryFilterItems>
+    <summaryForeignKey>Society_Member__c.Society__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

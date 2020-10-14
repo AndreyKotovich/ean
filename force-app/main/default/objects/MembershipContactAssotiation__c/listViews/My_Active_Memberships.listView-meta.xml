@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>My_Active_Memberships</fullName>
+    <columns>Membership__c</columns>
+    <columns>Assignment_date__c</columns>
+    <columns>Expiration_date__c</columns>
+    <columns>Hierarchy__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>IsActive__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <label>My Active Memberships</label>
+</ListView>

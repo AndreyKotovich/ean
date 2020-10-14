@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>National_Neurological_Society</fullName>
+    <active>true</active>
+    <label>National Neurological Society</label>
+    <picklistValues>
+        <picklist>Role__c</picklist>
+        <values>
+            <fullName>Administrative Officer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Assistant Editor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Associate member society - Delegate</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Collaborating Society</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Congress Manager</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Delegate</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Individual Delegate</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Institutional Delegate</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Managing Editor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Member</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Member at large</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Member no Benefit</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Panel Member %28Institution%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Past president</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>President</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>President Elect</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>RRFS National Society Delegate</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Secretary</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Secretary general</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Treasurer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Vice president</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

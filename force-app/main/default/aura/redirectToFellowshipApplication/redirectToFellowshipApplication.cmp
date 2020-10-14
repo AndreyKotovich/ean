@@ -1,0 +1,19 @@
+<aura:component description="redirectToFellowshipApplication" implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,forceCommunity:availableForAllPageTypes">
+    <aura:attribute name="fellowshipRecord" type="Object"/>
+    <aura:attribute name="recordLoadError" type="String"/>
+    <lightning:navigation aura:id="navService"/>
+    <force:recordData aura:id="recordLoader"
+                      recordId="{!v.recordId}"
+                      fields="RecordType.DeveloperName"
+                      targetFields="{!v.fellowshipRecord}"
+                      targetError="{!v.recordLoadError}"
+                      recordUpdated="{!c.recordUpdate}"
+    />
+    <div class="spinner">
+            <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+    </div>
+</aura:component>

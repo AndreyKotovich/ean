@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Society__c</fullName>
+    <externalId>false</externalId>
+    <label>Society</label>
+    <lookupFilter>
+        <active>true</active>
+        <booleanFilter>(1 AND 2) OR (3 AND 4)</booleanFilter>
+        <filterItems>
+            <field>$Source.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>National Neurological Society</value>
+        </filterItems>
+        <filterItems>
+            <field>Society__c.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>National Neurological Society</value>
+        </filterItems>
+        <filterItems>
+            <field>$Source.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Partner Societies</value>
+        </filterItems>
+        <filterItems>
+            <field>Society__c.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Partner Society</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Society__c</referenceTo>
+    <relationshipName>Society_Members</relationshipName>
+    <relationshipOrder>1</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

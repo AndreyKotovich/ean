@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Level_4_Working_Groups</fullName>
+    <columns>NAME</columns>
+    <columns>Type_of_Group__c</columns>
+    <columns>RECORDTYPE</columns>
+    <columns>Enable_synchronization__c</columns>
+    <columns>Chatter_Group_Accessibility__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Group__c.Level_4_Working_Group_Taskforce</value>
+    </filters>
+    <label>Level 4 Working Groups</label>
+</ListView>

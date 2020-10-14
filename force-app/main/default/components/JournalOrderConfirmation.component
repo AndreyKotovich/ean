@@ -1,0 +1,81 @@
+<apex:component id="JournalOrderConfirmation" access="global" controller="JournalOrderConfirmationController">
+    <apex:attribute name="recipientId" type="Id" assignTo="{!contactId}" description="contact id" access="global"/>
+    <apex:attribute name="related" type="Order__c" assignTo="{!order}" description="order id" access="global" />
+    <div>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                Dear {!order.Contact__r.Salutation} {!order.Contact__r.FirstName} {!order.Contact__r.LastName}
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                Thank you for ordering the {!YEAR(TODAY())} print version of the <i>European Journal of Neurology</i>.
+            </span> <br/>
+            <span>
+                The journal will be sent to your mailing address:
+            </span>
+            <br/>
+            <span>
+                <apex:repeat value="{!mailingAddress}" var="thing">
+                    <apex:outputText value="{!thing}"></apex:outputText> <br style="{!IF(thing!='', 'display: block;', 'display: none;')}"/>
+                </apex:repeat>
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+                <span>
+                    If this mailing address is incorrect, please contact the EAN Headoffice headoffice@ean.org immediately and update the address in your <a
+                            href="{!myEANProfileUrl}">MyEAN profile</a>.
+                </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                Your order number: {!order.Name}
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                You will also find the invoice for your order attached to this email.
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                If you have any queries, do not hesitate to contact us.
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                With kind regards,
+            </span>
+            <br/>
+            <span>
+                EAN Membership Department
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                European Academy of Neurology
+            </span>
+            <br/>
+            <span>
+                Breite Gasse 4/7
+            </span>
+            <br/>
+            <span>
+                1070 Vienna
+            </span>
+            <br/>
+            <span>
+                Austria
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                <a href="mailto:membership@ean.org">membership@ean.org</a>
+            </span>
+            <br/>
+            <span>
+                <a href="www.ean.org" target="_blank">www.ean.org</a>
+            </span>
+        </p>
+    </div>
+</apex:component>

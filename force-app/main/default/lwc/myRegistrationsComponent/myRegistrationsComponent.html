@@ -1,0 +1,85 @@
+<template>
+
+	<!-- <p>List Of My Registrations Component</p>
+	</br>
+	<p>{_contactId}</p>
+	</br>
+	<p>{_accountId}</p>
+	</br> -->
+
+	<template if:false={_isError}>
+
+		<div class="slds-card">
+			<template if:true={_displayRegistrationsSolo}>
+				<p style="text-align: center; font-size: 18px; font-weight: bold; color: #007DC6; margin-top: 25px; margin-bottom: 10px; cursor: default;">My Registrations</p>
+				<table class="slds-table slds-table_bordered slds-table_cell-buffer" style="overflow: hidden; table-layout: fixed;">
+					<thead>
+						<tr class="slds-text-title_caps" style="cursor: default;">
+							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Event Name</div></th>
+							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Type</div></th>
+							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Start Time</div></th>
+							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">End Time</div></th>
+							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Status</div></th>
+						</tr>
+					</thead>
+					<tbody>
+						<template for:each={_registrationsSolo} for:item="participant">
+							<tr key={participant.participantId} data-id={participant.participantId} onclick={handleClickOnMyRegistration} style="cursor: pointer;">
+								<td><div class="slds-truncate">{participant.eventName}</div></td>
+								<td><div class="slds-truncate">{participant.registrationType}</div></td>
+								<td><div class="slds-truncate">{participant.eventStartDateString} {participant.eventStartTimeString}</div></td>
+								<td><div class="slds-truncate">{participant.eventEndDateString} {participant.eventEndTimeString}</div></td>
+								<td><div class="slds-truncate">{participant.registrationStatus}</div></td>
+							</tr>
+						</template>
+					</tbody>
+				</table>
+				</br>
+			</template>
+			<template if:true={_displayRegistrationsGroup}>
+				<p style="text-align: center; font-size: 18px; font-weight: bold; color: #007DC6; margin-top: 20px; margin-bottom: 10px; cursor: default;">My Registered Groups</p>
+				<table class="slds-table slds-table_bordered slds-table_cell-buffer" style="overflow: hidden; table-layout: fixed;">
+					<thead>
+						<tr class="slds-text-title_caps" style="cursor: default;">
+							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Event Name</div></th>
+							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Group Name</div></th>
+							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Start Time</div></th>
+							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">End Time</div></th>
+							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Status</div></th>
+						</tr>
+					</thead>
+					<tbody>
+						<template for:each={_registrationsGroup} for:item="participant">
+							<tr key={participant.registrationGroupId} data-id={participant.registrationGroupId} onclick={handleClickOnGroupRegistration} style="cursor: pointer;">
+								<td><div class="slds-truncate">{participant.eventName}</div></td>
+								<td><div class="slds-truncate">{participant.registrationGroupName}</div></td>
+								<td><div class="slds-truncate">{participant.eventStartDateString} {participant.eventStartTimeString}</div></td>
+								<td><div class="slds-truncate">{participant.eventEndDateString} {participant.eventEndTimeString}</div></td>
+								<td><div class="slds-truncate">{participant.registrationStatus} (TBD {participant.groupExistingParticipants} of {participant.groupMaxParticipants})</div></td>
+							</tr>
+						</template>
+					</tbody>
+				</table>
+				</br>
+			</template>
+
+			<template if:true={_displayNoRegistrationMessage}>
+				<p style="text-align: center; font-size: 18px; font-weight: bold; color: #007DC6; margin-top: 25px; margin-bottom: 25px;">{_noRegistrationMessage}</p>
+			</template>
+
+		</div>
+
+	</template>
+
+
+    <template if:true={_isError}>
+        <div class="slds-text-heading_large slds-align_absolute-center slds-text-color_error">{_errorMessage}</div>
+    </template>
+
+    <template if:true={_isSpinner}>
+        <div class="slds-spinner_container" style="position: fixed">
+            <lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
+        </div>
+    </template>
+
+</template>

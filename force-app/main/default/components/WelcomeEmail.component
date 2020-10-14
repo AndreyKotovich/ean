@@ -1,0 +1,121 @@
+<apex:component id="WelcomeEmail" access="global" controller="WelcomeEmailController">
+    <apex:attribute name="param" description="Status Membership Id" access="global" type="String"
+                    assignTo="{!membershipId}"/>
+    <apex:attribute name="param2" description="Membership Contact Id" access="global" type="String"
+                    assignTo="{!mStatusContactId}"/>
+    <apex:attribute name="param3" description="Membership Status Name" access="global" type="String"
+                    assignTo="{!membershipName}"/>
+    <apex:attribute name="membershipStatus" description="Membership Status record" access="global" type="MembershipContactAssotiation__c"
+                    assignTo="{!memStatus}"/>
+
+    <div>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                Dear {!memStatus.Contact__r.Salutation} {!memStatus.Contact__r.FirstName} {!memStatus.Contact__r.LastName}
+            </span>
+        </p>
+<!--IF NOT FEAN-->
+        <div>
+            <p style="margin-top: 10px; margin-bottom: 10px;">
+                <span>
+                    We are very pleased to inform you with this email that you have been accepted as a Member of the European Academy of Neurology in the {!memStatus.Membership__r.Name} category. Welcome!
+                </span>
+            </p>
+            <p style="margin-top: 10px; margin-bottom: 10px;">
+                <span>
+                    We included your certificate in this email, please let us know in case you prefer rather having this shipped per post.
+                </span>
+            </p>
+        </div>
+
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+                <span>
+                    To keep you informed, as EAN individual member, you have the following privileges:
+                </span>
+                <apex:outputField value="{!memStatus.Membership__r.Membership_Benefits__c}"/>
+        </p>
+
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                If you wish to access the EJoN, eBrain or guidelines, <a href="https://www.ean.org" target="_blank" >please log in to your EAN account and browse the website</a>.
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                Username: {!userName}
+            </span>
+            <br/>
+            <span>
+                Confirmation of Order Number: {!memStatus.Application_form__r.Order__r.Name}
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                Should you have any questions, please do let us know.
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                We look forward to a durable and fruitful cooperation.
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                Yours sincerely,
+            </span>
+        </p>
+
+        <div style="overflow:hidden;">
+            <div>
+                <div style="float:left">
+                    <p style="margin-top: auto; margin-bottom: auto; {!IF(memStatus.Membership__r.Reviewer__c==null, 'display: none;', 'display: block;')}">
+                        <span>
+                            {!memStatus.Membership__r.Reviewer__r.Salutation} {!memStatus.Membership__r.Reviewer__r.Name}
+                        </span>
+                        <span style="{!IF(memStatus.Membership__r.Reviewer__r.Reviewer_Title__c==null, 'display: none;', 'display: block;')}">
+                            {!memStatus.Membership__r.Reviewer__r.Reviewer_Title__c}
+                        </span>
+                    </p>
+
+                    <p style="margin-top: 10px; margin-bottom: 10px; {!IF(memStatus.Membership__r.Reviewer__c==null, 'display: block;', 'display: none;')}">
+                        <span>
+                            {!defaultSecretaryGeneral.Salutation} {!defaultSecretaryGeneral.Name}
+                        </span>
+                        <span style="{!IF(defaultSecretaryGeneral.Reviewer_Title__c==null, 'display: none;', 'display: block;')}">
+                            {!defaultSecretaryGeneral.Reviewer_Title__c}
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <p style="margin-top: 10px; margin-bottom: 10px;">
+                <span>
+                    European Academy of Neurology
+                </span>
+                <br/>
+                <span>
+                    Breite Gasse 4/7
+                </span>
+                <br/>
+                <span>
+                    1070 Vienna
+                </span>
+                <br/>
+                <span>
+                    Austria
+                </span>
+            </p>
+            <p style="margin-top: 10px; margin-bottom: 10px;">
+                <span>
+                    <a href="mailto:membership@ean.org">membership@ean.org</a>
+                </span>
+                <br/>
+                <span>
+                    <a href="www.ean.org" target="_blank">www.ean.org</a>
+                </span>
+            </p>
+        </div>
+    </div>
+</apex:component>

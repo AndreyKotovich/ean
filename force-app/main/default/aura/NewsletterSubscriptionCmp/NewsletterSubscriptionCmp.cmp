@@ -1,0 +1,42 @@
+<aura:component controller="NewsletterSubscriptionController" 
+implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,forceCommunity:availableForAllPageTypes" 
+access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+
+    <aura:attribute name="campaigns" type="List"/>
+    <aura:attribute name="buttonLabel" type="String" default="test"/>
+    <aura:attribute name="isSubscribed" type="Boolean" default="true"/>
+    <aura:attribute name="isMcFail" type="Boolean" default="true"/>
+    <aura:attribute name="mcInfo" type="String"/>
+
+    <aura:attribute name="selectedCampaigns" type="List" />
+
+    <div class="slds-hide" aura:id="mySpinner">
+        <lightning:spinner alternativeText="Loading" size="small" />
+    </div>
+
+    <div class="slds-card" style="padding: 5px;">
+        <blockquote class="card">
+            <p style="color: rgb(62, 62, 60);">My subscriptions</p>
+        </blockquote>
+
+        <aura:if isTrue="{!(v.campaigns.length > 0)}">
+            <lightning:checkboxGroup name="Checkbox Group"
+                class="custom_chkbx-grp"
+                options="{! v.campaigns }"
+                value="{! v.selectedCampaigns }"
+                disabled="{!!v.isSubscribed}"/>
+            <div style="text-align: right">
+                <lightning:button variant="{!v.isSubscribed ? 'neutral' : 'brand'}" label="{!v.isSubscribed ? 'Unsubscribe' : 'Resubscribe'}" onclick="{!c.updateStatus}" disabled="{!v.isMcFail}"/>
+                <lightning:button variant="brand" label="Update subscription" onclick="{!c.update}" disabled="{!!v.isSubscribed}"/>
+            </div>
+            <aura:set attribute="else">
+                <div style="text-align: center">
+                    No newsletters available or the data is not synchronized.
+                    Please, wait a moment and refresh the page.
+                </div>
+            </aura:set>
+        </aura:if>
+    </div>
+</aura:component>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Count_Past_President__c</fullName>
+    <externalId>false</externalId>
+    <label>Count Past President</label>
+    <summaryFilterItems>
+        <field>Society_Member__c.Role__c</field>
+        <operation>equals</operation>
+        <value>Past president</value>
+    </summaryFilterItems>
+    <summaryForeignKey>Society_Member__c.Society__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

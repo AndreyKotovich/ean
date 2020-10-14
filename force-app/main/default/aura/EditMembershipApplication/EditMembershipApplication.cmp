@@ -1,0 +1,5 @@
+<aura:component description="EditMembershipApplication" controller="membershipApplicationController" implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,forceCommunity:availableForAllPageTypes">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <lightning:navigation aura:id="navService"/>
+    <lightning:spinner alternativeText="Loading" size="medium" />
+</aura:component>

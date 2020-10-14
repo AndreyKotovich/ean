@@ -1,0 +1,41 @@
+<!-- Congress Evaluation Certificates -->
+<template>
+    <lightning-card>
+        <h3 slot="title">
+            Congress Certificates
+        </h3>
+        <div if:true={spinner}>
+            <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+        </div>
+
+        <div if:true={isError}>
+            <div class="slds-text-color_error slds-text-align_center">{errorMessage}</div>
+        </div>
+
+        <lightning-accordion if:false= {isError} allow-multiple-sections-open
+                             onsectiontoggle={handleSectionToggle}
+                             active-section-name={activeSections}>
+            <div for:each={certificateLinks} for:item="congress" key={key}>
+                <lightning-accordion-section name={congress.congressName} label={congress.congressName}>
+                    <div if:true={congress.isParticipantFound} class="slds-grid slds-gutters slds-align_absolute-center" style="display: flex; flex-wrap: wrap;">
+                        <div for:each={congress.congressCertificateLinks} for:item="certificate" key={subKey} >
+                            <div class="slds-col">
+                                <a href={certificate.Url} target="_blank" class="slds-text-align_center">
+                                    <div>
+                                        <lightning-icon icon-name="doctype:pdf" alternative-text={certificate.FileName} title={certificate.FileName}></lightning-icon>
+                                    </div>
+                                    <div class="slds-m-around_x-small">
+                                        {certificate.FileName}
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div if:true={congress.isError}>
+                        <div class="slds-text-color_error">{congress.errorMessage}</div>
+                    </div>
+                </lightning-accordion-section>
+            </div>
+        </lightning-accordion>
+    </lightning-card>
+</template>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>G2M</fullName>
+    <active>true</active>
+    <label>G2M</label>
+    <picklistValues>
+        <picklist>Role__c</picklist>
+        <values>
+            <fullName>FW Convenor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FW speaker</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Group Participant</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Guest</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Head</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Investigator Award Winner</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MT convenor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MT speaker</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Member</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Panel Member %28Individual%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Panel Member %28Institution%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Participant</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Poster session %2Fsc chair</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Special session speaker</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sponsor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sps convenor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sps speaker</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Stellar Lecture Speaker</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Tc convenor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Tc speaker</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Tournament Participant</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Tournament Runner-up - Basic</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Tournament Runner-up - Clinical</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Tournament Winner</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Tournament Winner - Basic</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Tournament Winner - Clinical</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Status__c</picklist>
+        <values>
+            <fullName>Participated</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Registered</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

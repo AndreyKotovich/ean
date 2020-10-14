@@ -1,0 +1,16 @@
+<template>
+    <div class="success-screen" hidden="hidden">
+    </div>
+    <template if:true={showErrorMessage}>
+        <div class="slds-text-heading_large slds-align_absolute-center slds-text-color_destructive">{errorMessage}</div>
+    </template>
+    <div class="spinner" style="height: 813px">
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+</template>

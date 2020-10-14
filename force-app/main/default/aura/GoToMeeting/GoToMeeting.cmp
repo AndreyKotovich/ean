@@ -1,0 +1,13 @@
+<!--This component is used only to redirect to the GoToMeeting Lightning page-->
+<aura:component description="GoToMeeting" implements="force:lightningQuickAction">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:html tag="style">
+        .uiModal.forceModal.open {
+            display: none !important;
+        }
+        .cViewPanel.siteforceServiceBody {
+            overflow: auto;
+            height: 100vh;
+        }
+    </aura:html>
+</aura:component>

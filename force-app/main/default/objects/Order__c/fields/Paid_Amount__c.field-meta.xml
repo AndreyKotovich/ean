@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Paid_Amount__c</fullName>
+    <externalId>false</externalId>
+    <label>Paid Amount</label>
+    <summarizedField>Transaction__c.Amount__c</summarizedField>
+    <summaryFilterItems>
+        <field>Transaction__c.Status__c</field>
+        <operation>equals</operation>
+        <value>Success</value>
+    </summaryFilterItems>
+    <summaryForeignKey>Transaction__c.Order_Custom__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

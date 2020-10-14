@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Product_Membership_Check</fullName>
+    <active>false</active>
+    <errorConditionFormula>Membership__c &lt;&gt; null  &amp;&amp;  Product__c  &lt;&gt; null</errorConditionFormula>
+    <errorMessage>Item can&apos;t be membership and product at the same time.</errorMessage>
+</ValidationRule>

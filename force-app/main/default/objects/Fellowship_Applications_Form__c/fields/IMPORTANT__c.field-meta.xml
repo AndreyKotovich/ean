@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IMPORTANT__c</fullName>
+    <defaultValue>&quot;The application form must be accompanied by:&quot;+ BR() +BR()+
+&quot;• Letter of Acceptance from the approved host department&quot;+
+&quot;• A structured CV, including a list of publications in peer review journals (including doi-links)&quot;+ BR() +&quot;• Evidence of training/experience; EAN membership certificate&quot;+BR()+&quot;• 2 letters of recommendation (in addition to the host acceptance letter)&quot;+BR()+&quot;• Copy of passport/Identification card&quot;</defaultValue>
+    <externalId>false</externalId>
+    <label>IMPORTANT</label>
+    <length>32768</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>8</visibleLines>
+</CustomField>

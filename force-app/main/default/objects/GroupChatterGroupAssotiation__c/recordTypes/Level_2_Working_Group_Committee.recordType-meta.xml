@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Level_2_Working_Group_Committee</fullName>
+    <active>true</active>
+    <label>Level 2 Working Group (Committee)</label>
+    <picklistValues>
+        <picklist>Role__c</picklist>
+        <values>
+            <fullName>CME Editor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chair Communication Committee</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chair EQTF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chair Education Committee</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chair Programme Committee</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chair Scientific Committee</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chair Teaching Course sub-Committee</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Co-Chair</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EANO representative</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EAPC representative</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EC-IFCN representative</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ECTRIMS representative</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EFAS representative</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EFIC representative</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EFNA%2F Patient Representative</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EFNR representative</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EHF representative</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ethics Advisor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Individual Delegate</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LOC Chair</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Observer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Officer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>RRFS Representative</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

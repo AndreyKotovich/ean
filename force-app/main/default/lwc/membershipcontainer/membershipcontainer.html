@@ -1,0 +1,14 @@
+<template>
+    <template if:true={container}>
+        <div class="slds-align_absolute-center">
+            <button name="new-membership-button" class="slds-button slds-button_outline-brand" disabled="disabled" onclick={openNewMembershipApp}>New Membership Application</button>
+            <button name="update-membership-button" class="slds-button slds-button_outline-brand" disabled="disabled" onclick={openUpdateMembershipApp}>Upgrade Membership</button>
+        </div>
+    </template>
+    <template if:true={newMembershipApp}>
+        <c-membership-application></c-membership-application>
+    </template>
+    <template if:true={upgradeMembershipApp}>
+        <c-update-membership-application contact-memberships={currentContactMemberships}></c-update-membership-application>
+    </template>
+</template>

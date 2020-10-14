@@ -1,0 +1,8 @@
+.detail-section{
+	display: inline-block;
+	width: 45%;
+	border-bottom: 1px solid #D4D4D4;
+	margin-right: 30px;
+	margin-top: 5px;
+    padding-bottom: 5px;
+}

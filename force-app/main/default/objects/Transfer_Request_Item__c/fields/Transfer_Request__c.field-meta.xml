@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Transfer_Request__c</fullName>
+    <externalId>false</externalId>
+    <label>Transfer Request</label>
+    <referenceTo>Transfer_Request__c</referenceTo>
+    <relationshipLabel>Transfer Request Items</relationshipLabel>
+    <relationshipName>Transfer_Request_Items</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Profession__c</fullName>
+    <description>If student, attach student ID card</description>
+    <externalId>false</externalId>
+    <label>Profession</label>
+    <required>true</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Neurologist</fullName>
+                <default>false</default>
+                <label>Neurologist</label>
+            </value>
+            <value>
+                <fullName>Residents/Physician in training</fullName>
+                <default>false</default>
+                <label>Resident/physician in training</label>
+            </value>
+            <value>
+                <fullName>Research Fellows in Neurology</fullName>
+                <default>false</default>
+                <label>Research fellow in neurology</label>
+            </value>
+            <value>
+                <fullName>PhD student in neurology</fullName>
+                <default>false</default>
+                <label>PhD student in neurology</label>
+            </value>
+            <value>
+                <fullName>Undergraduate Medical Student</fullName>
+                <default>false</default>
+                <label>Undergraduate medical student</label>
+            </value>
+            <value>
+                <fullName>Other</fullName>
+                <default>false</default>
+                <label>Other</label>
+            </value>
+            <value>
+                <fullName>Neurologist working in Pharma</fullName>
+                <default>false</default>
+                <label>Neurologist working in pharma</label>
+            </value>
+            <value>
+                <fullName>PhD students in neurology</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>PhD students in neurology</label>
+            </value>
+            <value>
+                <fullName>Student</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Student</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

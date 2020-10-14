@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Role__c</fullName>
+    <externalId>false</externalId>
+    <label>Role</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Administrative Officer</fullName>
+                <default>false</default>
+                <label>Administrative Officer</label>
+            </value>
+            <value>
+                <fullName>Alzheimer Europe representative</fullName>
+                <default>false</default>
+                <label>Alzheimer Europe representative</label>
+            </value>
+            <value>
+                <fullName>Assistant Editor</fullName>
+                <default>false</default>
+                <label>Assistant Editor</label>
+            </value>
+            <value>
+                <fullName>Associate Editor</fullName>
+                <default>false</default>
+                <label>Associate Editor</label>
+            </value>
+            <value>
+                <fullName>Book Review Editor</fullName>
+                <default>false</default>
+                <label>Book Review Editor</label>
+            </value>
+            <value>
+                <fullName>Representative</fullName>
+                <default>false</default>
+                <label>Representative</label>
+            </value>
+            <value>
+                <fullName>CME Editor</fullName>
+                <default>false</default>
+                <label>CME Editor</label>
+            </value>
+            <value>
+                <fullName>Chair</fullName>
+                <default>false</default>
+                <label>Chair</label>
+            </value>
+            <value>
+                <fullName>Chair Communication Committee</fullName>
+                <default>false</default>
+                <label>Chair Communication Committee</label>
+            </value>
+            <value>
+                <fullName>Chair Education Committee</fullName>
+                <default>false</default>
+                <label>Chair Education Committee</label>
+            </value>
+            <value>
+                <fullName>Chair Programme Committee</fullName>
+                <default>false</default>
+                <label>Chair Programme Committee</label>
+            </value>
+            <value>
+                <fullName>Chair Scientific Committee</fullName>
+                <default>false</default>
+                <label>Chair Scientific Committee</label>
+            </value>
+            <value>
+                <fullName>Chair Teaching Course sub-Committee</fullName>
+                <default>false</default>
+                <label>Chair Teaching Course sub-Committee</label>
+            </value>
+            <value>
+                <fullName>Co-Chair</fullName>
+                <default>false</default>
+                <label>Co-Chair</label>
+            </value>
+            <value>
+                <fullName>EANO representative</fullName>
+                <default>false</default>
+                <label>EANO representative</label>
+            </value>
+            <value>
+                <fullName>EAPC representative</fullName>
+                <default>false</default>
+                <label>EAPC representative</label>
+            </value>
+            <value>
+                <fullName>EC-IFCN representative</fullName>
+                <default>false</default>
+                <label>EC-IFCN representative</label>
+            </value>
+            <value>
+                <fullName>ECTRIMS representative</fullName>
+                <default>false</default>
+                <label>ECTRIMS representative</label>
+            </value>
+            <value>
+                <fullName>EFAS representative</fullName>
+                <default>false</default>
+                <label>EFAS representative</label>
+            </value>
+            <value>
+                <fullName>EFIC representative</fullName>
+                <default>false</default>
+                <label>EFIC representative</label>
+            </value>
+            <value>
+                <fullName>EFNR representative</fullName>
+                <default>false</default>
+                <label>EFNR representative</label>
+            </value>
+            <value>
+                <fullName>EHF representative</fullName>
+                <default>false</default>
+                <label>EHF representative</label>
+            </value>
+            <value>
+                <fullName>EQTF Representative</fullName>
+                <default>false</default>
+                <label>EQTF Representative</label>
+            </value>
+            <value>
+                <fullName>ESO representative</fullName>
+                <default>false</default>
+                <label>ESO representative</label>
+            </value>
+            <value>
+                <fullName>Editor-in-Chief</fullName>
+                <default>false</default>
+                <label>Editor-in-Chief</label>
+            </value>
+            <value>
+                <fullName>Ethics Advisor</fullName>
+                <default>false</default>
+                <label>Ethics Advisor</label>
+            </value>
+            <value>
+                <fullName>EuGMS representative</fullName>
+                <default>false</default>
+                <label>EuGMS representative</label>
+            </value>
+            <value>
+                <fullName>Ex-officio member</fullName>
+                <default>false</default>
+                <label>Ex-officio member</label>
+            </value>
+            <value>
+                <fullName>Executive Director</fullName>
+                <default>false</default>
+                <label>Executive Director</label>
+            </value>
+            <value>
+                <fullName>GroupAdmin</fullName>
+                <default>false</default>
+                <label>GroupAdmin</label>
+            </value>
+            <value>
+                <fullName>Guest</fullName>
+                <default>false</default>
+                <label>Guest</label>
+            </value>
+            <value>
+                <fullName>Head</fullName>
+                <default>false</default>
+                <label>Head</label>
+            </value>
+            <value>
+                <fullName>IFCN-EMEAC Representative</fullName>
+                <default>false</default>
+                <label>IFCN-EMEAC Representative</label>
+            </value>
+            <value>
+                <fullName>ILAE representative</fullName>
+                <default>false</default>
+                <label>ILAE representative</label>
+            </value>
+            <value>
+                <fullName>INUS represenative</fullName>
+                <default>false</default>
+                <label>INUS represenative</label>
+            </value>
+            <value>
+                <fullName>JEB Representative</fullName>
+                <default>false</default>
+                <label>JEB Representative</label>
+            </value>
+            <value>
+                <fullName>LOC Chair</fullName>
+                <default>false</default>
+                <label>LOC Chair</label>
+            </value>
+            <value>
+                <fullName>MDS-ES Representative</fullName>
+                <default>false</default>
+                <label>MDS-ES Representative</label>
+            </value>
+            <value>
+                <fullName>Management Group Member</fullName>
+                <default>false</default>
+                <label>Management Group Member</label>
+            </value>
+            <value>
+                <fullName>Managing Editor</fullName>
+                <default>false</default>
+                <label>Managing Editor</label>
+            </value>
+            <value>
+                <fullName>Member</fullName>
+                <default>false</default>
+                <label>Member</label>
+            </value>
+            <value>
+                <fullName>Observer</fullName>
+                <default>false</default>
+                <label>Observer</label>
+            </value>
+            <value>
+                <fullName>Panel Member (Individual)</fullName>
+                <default>false</default>
+                <label>Panel Member (Individual)</label>
+            </value>
+            <value>
+                <fullName>Panel Member (Institution)</fullName>
+                <default>false</default>
+                <label>Panel Member (Institution)</label>
+            </value>
+            <value>
+                <fullName>Participant</fullName>
+                <default>false</default>
+                <label>Participant</label>
+            </value>
+            <value>
+                <fullName>Past president</fullName>
+                <default>false</default>
+                <label>Past president</label>
+            </value>
+            <value>
+                <fullName>President</fullName>
+                <default>false</default>
+                <label>President</label>
+            </value>
+            <value>
+                <fullName>President Elect</fullName>
+                <default>false</default>
+                <label>President Elect</label>
+            </value>
+            <value>
+                <fullName>Production Editor</fullName>
+                <default>false</default>
+                <label>Production Editor</label>
+            </value>
+            <value>
+                <fullName>RRFS Member</fullName>
+                <default>false</default>
+                <label>RRFS Member</label>
+            </value>
+            <value>
+                <fullName>RRFS Representative</fullName>
+                <default>false</default>
+                <label>RRFS Representative</label>
+            </value>
+            <value>
+                <fullName>Secretary general</fullName>
+                <default>false</default>
+                <label>Secretary general</label>
+            </value>
+            <value>
+                <fullName>Treasurer</fullName>
+                <default>false</default>
+                <label>Treasurer</label>
+            </value>
+            <value>
+                <fullName>UEMSSN/EBN Co-Chair</fullName>
+                <default>false</default>
+                <label>UEMSSN/EBN Co-Chair</label>
+            </value>
+            <value>
+                <fullName>UEMSSN/EBN Member</fullName>
+                <default>false</default>
+                <label>UEMSSN/EBN Member</label>
+            </value>
+            <value>
+                <fullName>WMS representative</fullName>
+                <default>false</default>
+                <label>WMS representative</label>
+            </value>
+            <value>
+                <fullName>Individual Delegate</fullName>
+                <default>false</default>
+                <label>Individual Delegate</label>
+            </value>
+            <value>
+                <fullName>Institutional Delegate</fullName>
+                <default>false</default>
+                <label>Institutional Delegate</label>
+            </value>
+            <value>
+                <fullName>Officer</fullName>
+                <default>false</default>
+                <label>Officer</label>
+            </value>
+            <value>
+                <fullName>Chair EQTF</fullName>
+                <default>false</default>
+                <label>Chair EQTF</label>
+            </value>
+            <value>
+                <fullName>Co-editor-in-chief</fullName>
+                <default>false</default>
+                <label>Co-editor-in-chief</label>
+            </value>
+            <value>
+                <fullName>Member at Large</fullName>
+                <default>false</default>
+                <label>Member at Large</label>
+            </value>
+            <value>
+                <fullName>EFNA/ Patient Representative</fullName>
+                <default>false</default>
+                <label>EFNA/ Patient Representative</label>
+            </value>
+            <value>
+                <fullName>Tournament Participant</fullName>
+                <default>false</default>
+                <label>Tournament Participant</label>
+            </value>
+            <value>
+                <fullName>Tournament Runner-up - Basic</fullName>
+                <default>false</default>
+                <label>Tournament Runner-up - Basic</label>
+            </value>
+            <value>
+                <fullName>Tournament Runner-up - Clinical</fullName>
+                <default>false</default>
+                <label>Tournament Runner-up - Clinical</label>
+            </value>
+            <value>
+                <fullName>Tournament Winner</fullName>
+                <default>false</default>
+                <label>Tournament Winner</label>
+            </value>
+            <value>
+                <fullName>Tournament Winner - Basic</fullName>
+                <default>false</default>
+                <label>Tournament Winner - Basic</label>
+            </value>
+            <value>
+                <fullName>Tournament Winner - Clinical</fullName>
+                <default>false</default>
+                <label>Tournament Winner - Clinical</label>
+            </value>
+            <value>
+                <fullName>Bursary Winner</fullName>
+                <default>false</default>
+                <label>Bursary Winner</label>
+            </value>
+            <value>
+                <fullName>Association Manager</fullName>
+                <default>false</default>
+                <label>Association Manager</label>
+            </value>
+            <value>
+                <fullName>Project Manager</fullName>
+                <default>false</default>
+                <label>Project Manager</label>
+            </value>
+            <value>
+                <fullName>Press Officer</fullName>
+                <default>false</default>
+                <label>Press Officer</label>
+            </value>
+            <value>
+                <fullName>Quality Manager</fullName>
+                <default>false</default>
+                <label>Quality Manager</label>
+            </value>
+            <value>
+                <fullName>Liaison Officer</fullName>
+                <default>false</default>
+                <label>Liaison Officer</label>
+            </value>
+            <value>
+                <fullName>Industry Liaison Manager</fullName>
+                <default>false</default>
+                <label>Industry Liaison Manager</label>
+            </value>
+            <value>
+                <fullName>Congress Assistant Scientific</fullName>
+                <default>false</default>
+                <label>Congress Assistant Scientific</label>
+            </value>
+            <value>
+                <fullName>Project Manager - European Affairs</fullName>
+                <default>false</default>
+                <label>Project Manager - European Affairs</label>
+            </value>
+            <value>
+                <fullName>Congress Manager Operation</fullName>
+                <default>false</default>
+                <label>Congress Manager Operation</label>
+            </value>
+            <value>
+                <fullName>Assistant - Industry Liaison</fullName>
+                <default>false</default>
+                <label>Assistant - Industry Liaison</label>
+            </value>
+            <value>
+                <fullName>On Educational Leave</fullName>
+                <default>false</default>
+                <label>On Educational Leave</label>
+            </value>
+            <value>
+                <fullName>Assistant - Membership</fullName>
+                <default>false</default>
+                <label>Assistant - Membership</label>
+            </value>
+            <value>
+                <fullName>Intern</fullName>
+                <default>false</default>
+                <label>Intern</label>
+            </value>
+            <value>
+                <fullName>test</fullName>
+                <default>false</default>
+                <label>test</label>
+            </value>
+            <value>
+                <fullName>ISNI Representative</fullName>
+                <default>false</default>
+                <label>ISNI representative</label>
+            </value>
+            <value>
+                <fullName>EPNS representative - proxy</fullName>
+                <default>false</default>
+                <label>EPNS representative - proxy</label>
+            </value>
+            <value>
+                <fullName>EPNS representative</fullName>
+                <default>false</default>
+                <label>EPNS representative</label>
+            </value>
+            <value>
+                <fullName>CC Representative</fullName>
+                <default>false</default>
+                <label>CC Representative</label>
+            </value>
+            <value>
+                <fullName>EFNA Representative</fullName>
+                <default>false</default>
+                <label>EFNA Representative</label>
+            </value>
+            <value>
+                <fullName>Patient representative</fullName>
+                <default>false</default>
+                <label>Patient representative</label>
+            </value>
+            <value>
+                <fullName>Secretary</fullName>
+                <default>false</default>
+                <label>Secretary</label>
+            </value>
+            <value>
+                <fullName>Advocate</fullName>
+                <default>false</default>
+                <label>Advocate</label>
+            </value>
+            <value>
+                <fullName>ESNCH representative</fullName>
+                <default>false</default>
+                <label>ESNCH representative</label>
+            </value>
+            <value>
+                <fullName>Acting President</fullName>
+                <default>false</default>
+                <label>Acting President</label>
+            </value>
+            <value>
+                <fullName>Co-opted Member</fullName>
+                <default>false</default>
+                <label>Co-opted Member</label>
+            </value>
+            <value>
+                <fullName>Core Group Member</fullName>
+                <default>false</default>
+                <label>Core Group Member</label>
+            </value>
+            <value>
+                <fullName>Past Chair</fullName>
+                <default>false</default>
+                <label>Past Chair</label>
+            </value>
+            <value>
+                <fullName>ERN representative</fullName>
+                <default>false</default>
+                <label>ERN representative</label>
+            </value>
+            <value>
+                <fullName>EANM representative</fullName>
+                <default>false</default>
+                <label>EANM representative</label>
+            </value>
+            <value>
+                <fullName>EAN Staff</fullName>
+                <default>false</default>
+                <label>EAN Staff</label>
+            </value>
+            <value>
+                <fullName>Representative CC</fullName>
+                <default>false</default>
+                <label>Representative CC</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

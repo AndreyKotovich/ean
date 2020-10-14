@@ -1,0 +1,79 @@
+<apex:component id="ReceiptOfMembershipApplicationAndInvoice" controller="ReceiptOfMembershipApplicationController" access="global">
+    <apex:attribute name="applicationForm" type="Application_form__c" assignTo="{!appForm}" description="Application Form id" access="global" />
+    <div>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                Dear {!appForm.Contact__r.Salutation} {!appForm.Contact__r.FirstName} {!appForm.Contact__r.LastName}
+<!--                {!IF(appForm.Contact__r.Title==null,'', ', '+ appForm.Contact__r.Title)}-->
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                Thank you for your EAN membership application and payment of your membership fee.
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+                <span>
+                    Your application number: {!appForm.Name}
+                </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                Please note that your application and related documents will be reviewed and the final confirmation of your membership might take up to 10 working days following your payment.
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                You will also find the invoice for your membership fee attached to this email.
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                If you have any queries, do not hesitate to contact us.
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                With kind regards,
+            </span>
+            <br/>
+            <span>
+                EAN Membership Department
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                European Academy of Neurology
+            </span>
+            <br/>
+            <span>
+                Breite Gasse 4/7
+            </span>
+            <br/>
+            <span>
+                1070 Vienna
+            </span>
+            <br/>
+            <span>
+                Austria
+            </span>
+        </p>
+        <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                email: <a href="mailto:membership@ean.org">membership@ean.org</a>
+            </span>
+            <br/>
+            <span>
+                website: <a href="www.ean.org" target="_blank">www.ean.org</a>
+            </span>
+            <br/>
+            <span>
+                UID: ATU64517909
+            </span>
+            <br/>
+            <span>
+                ZVR: 120490024
+            </span>
+        </p>
+    </div>
+</apex:component>

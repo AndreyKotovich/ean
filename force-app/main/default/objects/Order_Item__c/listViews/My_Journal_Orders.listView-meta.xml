@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>My_Journal_Orders</fullName>
+    <columns>NAME</columns>
+    <columns>Product__c</columns>
+    <columns>Total_amount__c</columns>
+    <columns>Quantity__c</columns>
+    <columns>Created_Date__c</columns>
+    <columns>Paid__c</columns>
+    <filterScope>Mine</filterScope>
+    <filters>
+        <field>Product__c</field>
+        <operation>notEqual</operation>
+    </filters>
+    <filters>
+        <field>Paid__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <label>My Journal Orders</label>
+</ListView>

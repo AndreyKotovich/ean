@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Societies_with_Supergroup_filled</fullName>
+    <columns>NAME</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>tx_efnsusr_supergroup_id_group__c</field>
+        <operation>notEqual</operation>
+        <value>0</value>
+    </filters>
+    <label>Societies with Supergroup filled</label>
+</ListView>

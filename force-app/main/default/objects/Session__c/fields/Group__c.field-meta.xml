@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Group__c</fullName>
+    <externalId>false</externalId>
+    <label>Group</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value>
+                <fullName>Ageing and dementia</fullName>
+                <default>false</default>
+                <label>Ageing and dementia</label>
+            </value>
+            <value>
+                <fullName>Autonomic nervous system disorders</fullName>
+                <default>false</default>
+                <label>Autonomic nervous system disorders</label>
+            </value>
+            <value>
+                <fullName>Career development</fullName>
+                <default>false</default>
+                <label>Career development</label>
+            </value>
+            <value>
+                <fullName>Cerebrovascular diseases</fullName>
+                <default>false</default>
+                <label>Cerebrovascular diseases</label>
+            </value>
+            <value>
+                <fullName>Child and developmental neurology</fullName>
+                <default>false</default>
+                <label>Child and developmental neurology</label>
+            </value>
+            <value>
+                <fullName>Clinical Neurophysiology</fullName>
+                <default>false</default>
+                <label>Clinical Neurophysiology</label>
+            </value>
+            <value>
+                <fullName>Cognitive neurology/neuropsychology</fullName>
+                <default>false</default>
+                <label>Cognitive neurology/neuropsychology</label>
+            </value>
+            <value>
+                <fullName>Coma and chronic disorders of consciousness</fullName>
+                <default>false</default>
+                <label>Coma and chronic disorders of consciousness</label>
+            </value>
+            <value>
+                <fullName>Critical care</fullName>
+                <default>false</default>
+                <label>Critical care</label>
+            </value>
+            <value>
+                <fullName>Education in Neurology</fullName>
+                <default>false</default>
+                <label>Education in Neurology</label>
+            </value>
+            <value>
+                <fullName>Epilepsy</fullName>
+                <default>false</default>
+                <label>Epilepsy</label>
+            </value>
+            <value>
+                <fullName>Ethics in neurology</fullName>
+                <default>false</default>
+                <label>Ethics in neurology</label>
+            </value>
+            <value>
+                <fullName>Gender issues</fullName>
+                <default>false</default>
+                <label>Gender issues</label>
+            </value>
+            <value>
+                <fullName>Headache and pain</fullName>
+                <default>false</default>
+                <label>Headache and pain</label>
+            </value>
+            <value>
+                <fullName>Higher cortical functions</fullName>
+                <default>false</default>
+                <label>Higher cortical functions</label>
+            </value>
+            <value>
+                <fullName>Highlight</fullName>
+                <default>false</default>
+                <label>Highlight</label>
+            </value>
+            <value>
+                <fullName>History of neurology</fullName>
+                <default>false</default>
+                <label>History of neurology</label>
+            </value>
+            <value>
+                <fullName>Infectious diseases</fullName>
+                <default>false</default>
+                <label>Infectious diseases</label>
+            </value>
+            <value>
+                <fullName>Motor neurone diseases</fullName>
+                <default>false</default>
+                <label>Motor neurone diseases</label>
+            </value>
+            <value>
+                <fullName>Movement disorders</fullName>
+                <default>false</default>
+                <label>Movement disorders</label>
+            </value>
+            <value>
+                <fullName>MS and related disorders</fullName>
+                <default>false</default>
+                <label>MS and related disorders</label>
+            </value>
+            <value>
+                <fullName>Muscle and neuromuscular junction diseases</fullName>
+                <default>false</default>
+                <label>Muscle and neuromuscular junction diseases</label>
+            </value>
+            <value>
+                <fullName>Muscle disorders</fullName>
+                <default>false</default>
+                <label>Muscle disorders</label>
+            </value>
+            <value>
+                <fullName>Neurocritical care</fullName>
+                <default>false</default>
+                <label>Neurocritical care</label>
+            </value>
+            <value>
+                <fullName>Neuroepidemiology</fullName>
+                <default>false</default>
+                <label>Neuroepidemiology</label>
+            </value>
+            <value>
+                <fullName>Neurogenetics</fullName>
+                <default>false</default>
+                <label>Neurogenetics</label>
+            </value>
+            <value>
+                <fullName>Neuroimaging</fullName>
+                <default>false</default>
+                <label>Neuroimaging</label>
+            </value>
+            <value>
+                <fullName>Neuroimmunology</fullName>
+                <default>false</default>
+                <label>Neuroimmunology</label>
+            </value>
+            <value>
+                <fullName>Neurological manifestation of systemic disease</fullName>
+                <default>false</default>
+                <label>Neurological manifestation of systemic disease</label>
+            </value>
+            <value>
+                <fullName>Neuro-oncology</fullName>
+                <default>false</default>
+                <label>Neuro-oncology</label>
+            </value>
+            <value>
+                <fullName>Neuro-ophthalmology/ neuro-otology</fullName>
+                <default>false</default>
+                <label>Neuro-ophthalmology/ neuro-otology</label>
+            </value>
+            <value>
+                <fullName>Neuropathies</fullName>
+                <default>false</default>
+                <label>Neuropathies</label>
+            </value>
+            <value>
+                <fullName>Neurorehabilitation</fullName>
+                <default>false</default>
+                <label>Neurorehabilitation</label>
+            </value>
+            <value>
+                <fullName>Neurosonology</fullName>
+                <default>false</default>
+                <label>Neurosonology</label>
+            </value>
+            <value>
+                <fullName>Neurotoxicology</fullName>
+                <default>false</default>
+                <label>Neurotoxicology</label>
+            </value>
+            <value>
+                <fullName>Neurotraumatology</fullName>
+                <default>false</default>
+                <label>Neurotraumatology</label>
+            </value>
+            <value>
+                <fullName>no session group</fullName>
+                <default>false</default>
+                <label>no session group</label>
+            </value>
+            <value>
+                <fullName>Overarching theme</fullName>
+                <default>false</default>
+                <label>Overarching theme</label>
+            </value>
+            <value>
+                <fullName>Pain</fullName>
+                <default>false</default>
+                <label>Pain</label>
+            </value>
+            <value>
+                <fullName>Palliative care</fullName>
+                <default>false</default>
+                <label>Palliative care</label>
+            </value>
+            <value>
+                <fullName>Patient recommended</fullName>
+                <default>false</default>
+                <label>Patient recommended</label>
+            </value>
+            <value>
+                <fullName>Peripheral nerve disorders</fullName>
+                <default>false</default>
+                <label>Peripheral nerve disorders</label>
+            </value>
+            <value>
+                <fullName>Rare disease</fullName>
+                <default>false</default>
+                <label>Rare disease</label>
+            </value>
+            <value>
+                <fullName>Sleep-wake disorders</fullName>
+                <default>false</default>
+                <label>Sleep-wake disorders</label>
+            </value>
+            <value>
+                <fullName>Spinal cord and root disorders</fullName>
+                <default>false</default>
+                <label>Spinal cord and root disorders</label>
+            </value>
+            <value>
+                <fullName>Student recommended</fullName>
+                <default>false</default>
+                <label>Student recommended</label>
+            </value>
+            <value>
+                <fullName>Translational neurology</fullName>
+                <default>false</default>
+                <label>Translational neurology</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>4</visibleLines>
+</CustomField>

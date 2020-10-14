@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Title_s__c</fullName>
+    <externalId>false</externalId>
+    <label>Title(s)</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>MD</fullName>
+                <default>false</default>
+                <label>MD</label>
+            </value>
+            <value>
+                <fullName>MD, PhD</fullName>
+                <default>false</default>
+                <label>MD, PhD</label>
+            </value>
+            <value>
+                <fullName>MD, Prof</fullName>
+                <default>false</default>
+                <label>MD, Prof</label>
+            </value>
+            <value>
+                <fullName>MD, Prof, PhD</fullName>
+                <default>false</default>
+                <label>MD, Prof, PhD</label>
+            </value>
+            <value>
+                <fullName>MD, Assoc. Prof</fullName>
+                <default>false</default>
+                <label>MD, Assoc. Prof</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

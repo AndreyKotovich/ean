@@ -1,0 +1,17 @@
+.THIS .card{
+    background-color: #fafaf9;
+    font-size: 1.125rem;
+    font-weight: 300;
+    padding: 1rem;
+    margin: 5px 0 5px 0;
+    border: 1px solid #f2f2f2;
+    border-left-width: 0.125rem;
+    border-left-color: #0070d2;
+}
+.THIS lightning-checkbox-group.custom_chkbx-grp .slds-form-element__control {
+    padding-left: 1rem !important;
+    padding-bottom: 1rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    word-break: break-word !important;
+}

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Panel_Management_Group</fullName>
+    <active>true</active>
+    <label>Panel Management Group</label>
+    <picklistValues>
+        <picklist>Role__c</picklist>
+        <values>
+            <fullName>Alzheimer Europe representative</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Bursary Winner</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chair Communication Committee</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chair EQTF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chair Education Committee</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chair Programme Committee</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chair Scientific Committee</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chair Teaching Course sub-Committee</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Co-Chair</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EANO representative</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EFNA%2F Patient Representative</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Observer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Officer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Panel Member %28Individual%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Panel Member %28Institution%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>RRFS Representative</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Representative</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Tournament Participant</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Tournament Runner-up - Basic</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Tournament Runner-up - Clinical</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Tournament Winner</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Tournament Winner - Basic</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Tournament Winner - Clinical</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

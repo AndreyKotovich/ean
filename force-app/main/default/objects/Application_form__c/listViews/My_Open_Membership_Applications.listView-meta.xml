@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>My_Open_Membership_Applications</fullName>
+    <columns>NAME</columns>
+    <columns>Membership__c</columns>
+    <columns>Form_Status__c</columns>
+    <columns>Sub_specialty__c</columns>
+    <columns>CREATED_DATE</columns>
+    <filterScope>Mine</filterScope>
+    <filters>
+        <field>Form_Status__c</field>
+        <operation>notEqual</operation>
+        <value>Approved,Declined</value>
+    </filters>
+    <label>My Open Membership Applications</label>
+</ListView>

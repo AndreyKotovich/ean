@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Card</fullName>
+    <columns>NAME</columns>
+    <columns>Payment_Method__c</columns>
+    <columns>Status__c</columns>
+    <columns>Order_Custom__c</columns>
+    <columns>CREATED_DATE</columns>
+    <columns>Amount__c</columns>
+    <columns>CREATEDBY_USER</columns>
+    <columns>OBJECT_ID</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>CREATED_DATE</field>
+        <operation>equals</operation>
+        <value>8/7/2020 12:00 AM</value>
+    </filters>
+    <label>Card</label>
+</ListView>

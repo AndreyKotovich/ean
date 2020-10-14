@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Role__c</fullName>
+    <externalId>false</externalId>
+    <label>Position/Role</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Administrative Officer</fullName>
+                <default>false</default>
+                <label>Administrative Officer</label>
+            </value>
+            <value>
+                <fullName>Assistant Editor</fullName>
+                <default>false</default>
+                <label>Assistant Editor</label>
+            </value>
+            <value>
+                <fullName>Associate member society - Delegate</fullName>
+                <default>false</default>
+                <label>Associate member society - Delegate</label>
+            </value>
+            <value>
+                <fullName>Chair</fullName>
+                <default>false</default>
+                <label>Chair</label>
+            </value>
+            <value>
+                <fullName>GroupAdmin</fullName>
+                <default>false</default>
+                <label>GroupAdmin</label>
+            </value>
+            <value>
+                <fullName>Head</fullName>
+                <default>false</default>
+                <label>Head</label>
+            </value>
+            <value>
+                <fullName>Member</fullName>
+                <default>false</default>
+                <label>Member</label>
+            </value>
+            <value>
+                <fullName>Acting President</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Acting President</label>
+            </value>
+            <value>
+                <fullName>Advocate</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Advocate</label>
+            </value>
+            <value>
+                <fullName>Basic</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Basic</label>
+            </value>
+            <value>
+                <fullName>Co-Chair</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Co-Chair</label>
+            </value>
+            <value>
+                <fullName>Collaborator</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Collaborator</label>
+            </value>
+            <value>
+                <fullName>Coordinator</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Coordinator</label>
+            </value>
+            <value>
+                <fullName>Delegate</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Delegate</label>
+            </value>
+            <value>
+                <fullName>Director</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Director</label>
+            </value>
+            <value>
+                <fullName>Exectuive Director</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Exectuive Director</label>
+            </value>
+            <value>
+                <fullName>Executive</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Executive</label>
+            </value>
+            <value>
+                <fullName>Fellow</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Fellow</label>
+            </value>
+            <value>
+                <fullName>Industry - Main Contact</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Industry - Main Contact</label>
+            </value>
+            <value>
+                <fullName>Industry - NPO Contact</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Industry - NPO Contact</label>
+            </value>
+            <value>
+                <fullName>Industry - contact</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Industry - contact</label>
+            </value>
+            <value>
+                <fullName>Initiator</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Initiator</label>
+            </value>
+            <value>
+                <fullName>Institution Role1</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Institution Role1</label>
+            </value>
+            <value>
+                <fullName>Institution Role2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Institution Role2</label>
+            </value>
+            <value>
+                <fullName>Institution Role3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Institution Role3</label>
+            </value>
+            <value>
+                <fullName>Institutional Delegate</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Institutional Delegate</label>
+            </value>
+            <value>
+                <fullName>Observer</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Observer</label>
+            </value>
+            <value>
+                <fullName>Patient</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Patient</label>
+            </value>
+            <value>
+                <fullName>President</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>President</label>
+            </value>
+            <value>
+                <fullName>Representative</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Representative</label>
+            </value>
+            <value>
+                <fullName>Secretary</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Secretary</label>
+            </value>
+            <value>
+                <fullName>Society Role1</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Society Role1</label>
+            </value>
+            <value>
+                <fullName>Society Role2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Society Role2</label>
+            </value>
+            <value>
+                <fullName>Society Role3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Society Role3</label>
+            </value>
+            <value>
+                <fullName>Sponsor</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Sponsor</label>
+            </value>
+            <value>
+                <fullName>Treasurer</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Treasurer</label>
+            </value>
+            <value>
+                <fullName>Vice President</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Vice President</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

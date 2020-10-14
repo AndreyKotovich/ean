@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Society_Role_Limit</fullName>
+    <active>true</active>
+    <errorConditionFormula>Count_Past_President__c &gt; 1 ||
+Count_EQTF_Chairs__c &gt; 1 ||
+Count_Secretary_General__c &gt; 1  || 
+ Count_Institutional_Delegate__c &gt; 1</errorConditionFormula>
+    <errorMessage>This role already exists.</errorMessage>
+</ValidationRule>

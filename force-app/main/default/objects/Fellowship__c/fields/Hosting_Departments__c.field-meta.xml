@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Hosting_Departments__c</fullName>
+    <defaultValue>IF( $RecordType.DeveloperName = &quot;Clinical_Fellowship&quot;, &quot;https://www.ean.org/Clinical-Fellowship.2842.0.html&quot;, IF($RecordType.DeveloperName = &quot;Research_Fellowship&quot;,&quot;https://www.ean.org/Research-Fellowship.2839.0.html&quot;,&quot;&quot;))</defaultValue>
+    <externalId>false</externalId>
+    <label>Hosting Departments</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Url</type>
+</CustomField>

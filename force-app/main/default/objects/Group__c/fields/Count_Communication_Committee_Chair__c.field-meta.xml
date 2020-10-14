@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Count_Communication_Committee_Chair__c</fullName>
+    <externalId>false</externalId>
+    <label>Count Communication Committee Chair</label>
+    <summaryFilterItems>
+        <field>GroupChatterGroupAssotiation__c.Role__c</field>
+        <operation>equals</operation>
+        <value>Chair Communication Committee</value>
+    </summaryFilterItems>
+    <summaryForeignKey>GroupChatterGroupAssotiation__c.Group__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

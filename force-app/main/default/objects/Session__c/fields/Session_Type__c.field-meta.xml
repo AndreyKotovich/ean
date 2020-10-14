@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Session_Type__c</fullName>
+    <externalId>false</externalId>
+    <label>Session Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>3-Days Satellite Session</fullName>
+                <default>false</default>
+                <label>3-Days Satellite Session</label>
+            </value>
+            <value>
+                <fullName>Brain Challenge</fullName>
+                <default>false</default>
+                <label>Brain Challenge</label>
+            </value>
+            <value>
+                <fullName>Career development session</fullName>
+                <default>false</default>
+                <label>Career development session</label>
+            </value>
+            <value>
+                <fullName>Case-based workshop</fullName>
+                <default>false</default>
+                <label>Case-based workshop</label>
+            </value>
+            <value>
+                <fullName>Controversy</fullName>
+                <default>false</default>
+                <label>Controversy</label>
+            </value>
+            <value>
+                <fullName>Early bird satellite session</fullName>
+                <default>false</default>
+                <label>Early bird satellite session</label>
+            </value>
+            <value>
+                <fullName>Focused Workshop</fullName>
+                <default>false</default>
+                <label>Focused Workshop</label>
+            </value>
+            <value>
+                <fullName>Grand Round session</fullName>
+                <default>false</default>
+                <label>Grand Round session</label>
+            </value>
+            <value>
+                <fullName>Hands-on Course</fullName>
+                <default>false</default>
+                <label>Hands-on Course</label>
+            </value>
+            <value>
+                <fullName>Interactive Session</fullName>
+                <default>false</default>
+                <label>Interactive Session</label>
+            </value>
+            <value>
+                <fullName>Plenary Sysmposium</fullName>
+                <default>false</default>
+                <label>Plenary Sysmposium</label>
+            </value>
+            <value>
+                <fullName>Poster Session</fullName>
+                <default>false</default>
+                <label>Poster Session</label>
+            </value>
+            <value>
+                <fullName>Satellite Symposium</fullName>
+                <default>false</default>
+                <label>Satellite Symposium</label>
+            </value>
+            <value>
+                <fullName>Special Session</fullName>
+                <default>false</default>
+                <label>Special Session</label>
+            </value>
+            <value>
+                <fullName>Topical Symposium</fullName>
+                <default>false</default>
+                <label>Topical Symposium</label>
+            </value>
+            <value>
+                <fullName>ePoster</fullName>
+                <default>false</default>
+                <label>ePoster</label>
+            </value>
+            <value>
+                <fullName>Oral Session</fullName>
+                <default>false</default>
+                <label>Oral Session</label>
+            </value>
+            <value>
+                <fullName>Symposium</fullName>
+                <default>false</default>
+                <label>Symposium</label>
+            </value>
+            <value>
+                <fullName>Teaching Course</fullName>
+                <default>false</default>
+                <label>Teaching Course</label>
+            </value>
+            <value>
+                <fullName>Scientific theatre</fullName>
+                <default>false</default>
+                <label>Scientific theatre</label>
+            </value>
+            <value>
+                <fullName>ePresentation</fullName>
+                <default>false</default>
+                <label>ePresentation</label>
+            </value>
+            <value>
+                <fullName>Forum Programmes</fullName>
+                <default>false</default>
+                <label>Forum Programmes</label>
+            </value>
+            <value>
+                <fullName>Networking</fullName>
+                <default>false</default>
+                <label>Networking</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

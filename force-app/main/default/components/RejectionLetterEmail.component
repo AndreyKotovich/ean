@@ -1,0 +1,97 @@
+<apex:component id="RejectionLetterEmail" controller="RejectionLetterEmailController" access="global">
+        <apex:attribute name="applicationForm" type="Application_form__c" assignTo="{!appForm}" description="Application Form id" access="global" />
+        <div>
+            <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                Dear {!appForm.Contact__r.Salutation} {!appForm.Contact__r.FirstName} {!appForm.Contact__r.LastName}
+            </span>
+            </p>
+            <div>
+                <p style="margin-top: 10px; margin-bottom: 10px;">
+                    <span>
+                        Thank you for your interest in becoming a member of EAN.
+                    </span>
+                </p>
+                <p style="margin-top: 10px; margin-bottom: 10px;">
+                    <span>
+                        We have carefully considered your application to become {!appForm.Membership__r.Name}. The EAN Board has come to the conclusion that you do not meet the criteria for becoming a {!appForm.Membership__r.Name}.
+                    </span>
+                </p>
+                <p style="margin-top: 10px; margin-bottom: 10px;">
+                    <span>
+                        Please consider applying for another type of membership.
+                    </span>
+                </p>
+            </div>
+
+<!--            IF NOT STUDENT MEMBERSHIP -->
+            <div style="{!IF(appForm.Membership__r.API__c!='student_membership', 'display: block;', 'display: none;')}">
+                <p style="margin-top: 10px; margin-bottom: 10px;">
+                    <span>
+                        The fee will be reimbursed back to your account.
+                    </span>
+                </p>
+            </div>
+            <p style="margin-top: 10px; margin-bottom: 10px;">
+                <span>
+                    Order Number: {!appForm.Order__r.Name}
+                </span>
+            </p>
+
+            <p style="margin-top: 10px; margin-bottom: 10px;">
+                <span>
+                    Yours sincerely,
+                </span>
+            </p>
+
+            <div style="overflow:hidden;">
+                <div>
+                    <div style="float:left">
+                        <p style="margin-top: auto; margin-bottom: auto;">
+            <!--MEMBERSHIP REVIEWER-->
+                            <span style="{!IF(appForm.Membership__r.Reviewer__c==null, 'display: none;', 'display: block;')}">
+                                {!appForm.Membership__r.Reviewer__r.Salutation} {!appForm.Membership__r.Reviewer__r.Name}
+                            </span>
+                            <span style="{!IF(appForm.Membership__r.Reviewer__r.Reviewer_Title__c==null, 'display: none;', 'display: block;')}">
+                                {!appForm.Membership__r.Reviewer__r.Reviewer_Title__c}
+                            </span>
+            <!--IF THERE ARE NO REVIEWER-->
+                            <span style="{!IF(appForm.Membership__r.Reviewer__c!=null, 'display: none;', 'display: block;')}">
+                                {!defaultSecretaryGeneral.Salutation} {!defaultSecretaryGeneral.Name}
+                            </span>
+                            <span style="{!IF(appForm.Membership__r.Reviewer__c!=null, 'display: none;', 'display: block;')}">
+                                {!defaultSecretaryGeneral.Reviewer_Title__c}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                European Academy of Neurology
+            </span>
+                <br/>
+                <span>
+                Breite Gasse 4/7
+            </span>
+                <br/>
+                <span>
+                1070 Vienna
+            </span>
+                <br/>
+                <span>
+                Austria
+            </span>
+            </p>
+            <p style="margin-top: 10px; margin-bottom: 10px;">
+            <span>
+                <a href="mailto:membership@ean.org">membership@ean.org</a>
+            </span>
+                <br/>
+                <span>
+                <a href="www.ean.org" target="_blank">www.ean.org</a>
+            </span>
+            </p>
+        </div>
+</apex:component>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Office_in_the_EAN__c</fullName>
+    <externalId>false</externalId>
+    <label>Office in the EAN</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Board Member</fullName>
+                <default>false</default>
+                <label>Board Member</label>
+            </value>
+            <value>
+                <fullName>Committee chair</fullName>
+                <default>false</default>
+                <label>Committee chair</label>
+            </value>
+            <value>
+                <fullName>Committee member</fullName>
+                <default>false</default>
+                <label>Committee member</label>
+            </value>
+            <value>
+                <fullName>Scientific Panel chair</fullName>
+                <default>false</default>
+                <label>Scientific Panel chair</label>
+            </value>
+            <value>
+                <fullName>RRFS officer</fullName>
+                <default>false</default>
+                <label>RRFS officer</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

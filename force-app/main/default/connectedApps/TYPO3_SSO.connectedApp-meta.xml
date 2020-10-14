@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ConnectedApp xmlns="http://soap.sforce.com/2006/04/metadata">
+    <contactEmail>josip.juric@cloudreactor.hr</contactEmail>
+    <label>TYPO3 SSO</label>
+    <oauthConfig>
+        <callbackUrl>https://ean.local/auth/
+https://kf.www-ean-org.vm-kf-72.limesoda.com/auth/
+https://na.www-ean-org.junge.vm-na.limesoda.com/auth/
+https://www-ean-org.limesoda.com/auth/
+https://stage.ean.toscom.at/auth/
+https://www-ean-org.ddev.site/auth
+https://www-ean-org.limesoda.com/auth
+https://www-ean-org.ddev.site/auth/
+https://kh.www-ean-org.vm72-kh.limesoda.com/auth
+https://kh.www-ean-org.vm72-kh.limesoda.com/auth/
+https://www.ean.org/auth
+https://www.ean.org/auth/
+https://ah.www-ean-org.vm-ah.limesoda.com
+https://ah.www-ean-org.vm-ah.limesoda.com/</callbackUrl>
+        <consumerKey>3MVG9sSN_PMn8tjSodyD28jSJp6dxmyQLlhIkbrlFVYgMRGi5er04rbmu_fq1DBpNlSV1k8sielZXEixNx6Hx</consumerKey>
+        <isAdminApproved>true</isAdminApproved>
+        <isConsumerSecretOptional>false</isConsumerSecretOptional>
+        <isIntrospectAllTokens>false</isIntrospectAllTokens>
+        <scopes>Api</scopes>
+        <scopes>OpenID</scopes>
+    </oauthConfig>
+    <oauthPolicy>
+        <ipRelaxation>ENFORCE</ipRelaxation>
+        <refreshTokenPolicy>zero</refreshTokenPolicy>
+    </oauthPolicy>
+    <profileName>Integration User</profileName>
+    <profileName>EAN Staff Community Profile</profileName>
+    <profileName>Guest License User</profileName>
+    <profileName>Standard Guest</profileName>
+    <profileName>Education Admin</profileName>
+    <profileName>Chatter Moderator User</profileName>
+    <profileName>Member Community User Profile</profileName>
+    <profileName>Chatter External User</profileName>
+    <profileName>ean Profile</profileName>
+    <profileName>Standard User</profileName>
+    <profileName>System Administrator</profileName>
+    <profileName>Read Only</profileName>
+    <profileName>Chatter Free User</profileName>
+    <profileName>Standard Platform User</profileName>
+    <profileName>Executive Management</profileName>
+    <profileName>Fundraising and Development</profileName>
+    <profileName>Office Staff</profileName>
+    <profileName>Program Staff</profileName>
+    <profileName>Volunteer</profileName>
+    <profileName>Contract Manager</profileName>
+    <profileName>Marketing User</profileName>
+    <profileName>Solution Manager</profileName>
+    <profileName>Membership Admin</profileName>
+    <profileName>Customer Community Login User</profileName>
+    <profileName>Non-Member Community User Profile</profileName>
+    <profileName>RRFS Reviewer</profileName>
+    <profileName>Secretary General</profileName>
+</ConnectedApp>

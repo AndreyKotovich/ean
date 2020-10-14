@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Enable_management_group__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Checkbox fire trigger which create chatter group for management group members.</description>
+    <externalId>false</externalId>
+    <label>Enable management group</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>
