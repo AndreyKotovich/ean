@@ -11,7 +11,7 @@
                 <field>Name</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Required</behavior>
+                <behavior>Edit</behavior>
                 <field>Event_custom__c</field>
             </layoutItems>
             <layoutItems>
@@ -25,6 +25,10 @@
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>Early_bird_price__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Session__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns/>
@@ -58,6 +62,10 @@
         <layoutColumns/>
         <style>CustomLinks</style>
     </layoutSections>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>Participant__c.Event_Ticket__c</relatedList>
+    </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>
     <showInteractionLogPanel>false</showInteractionLogPanel>

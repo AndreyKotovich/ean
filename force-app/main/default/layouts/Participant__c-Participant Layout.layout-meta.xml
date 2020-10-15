@@ -42,6 +42,10 @@
                 <behavior>Edit</behavior>
                 <field>Event_Registration_Sub_Group__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Event_Ticket__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
@@ -112,6 +116,10 @@
         <fields>NAME</fields>
         <fields>Session__c</fields>
         <relatedList>Session_Participation__c.Event_Participation__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>Change_Request__c.Event_Participation__c</relatedList>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>

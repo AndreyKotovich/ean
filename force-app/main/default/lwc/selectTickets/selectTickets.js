@@ -2,29 +2,42 @@ import { api, LightningElement, track } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { Utils } from "c/utils";
 import getEventTickets from "@salesforce/apex/EventRegistrationController.getEventTickets";
-import getCountries from "@salesforce/apex/membershipApplicationController.getCountries";
 
 export default class SelectTickets extends LightningElement {
   @api eanEvent = {};
   @api userInfo = {};
   @api registrationType = "";
+
   @api
   get selectedTicket() {
     return this._selectedTicket;
   }
+
   set selectedTicket(value) {
     this._selectedTicket = value;
   }
+
+  @api
+  get priceTicket() {
+    return this._priceTicket;
+  }
+
+  set priceTicket(value) {
+    this._priceTicket = value;
+  }
+
   @api
   get ticketsAmount() {
-    return this._selectedTicket;
+    return this._ticketsAmount;
   }
+
   set ticketsAmount(value) {
     this._ticketsAmount = value;
   }
 
   @track isSpinner = true;
   @track ticketsRadio = [];
+  @track _priceTicket = 0;
   @track _ticketsAmount = 0;
 
   hideNextButton = false;
@@ -34,16 +47,14 @@ export default class SelectTickets extends LightningElement {
   groupTickets = [];
   iprTickets = [];
   _selectedTicket = "";
-  userRegion = "";
 
   connectedCallback() {
     let promises = [
-      this.detectUserRegion(),
       getEventTickets({ eventId: this.eanEvent.Id })
     ];
     Promise.all(promises)
       .then((results) => {
-        this.allEventTickets = [...results[1]];
+        this.allEventTickets = [...results[0]];
 
         //ticket visibility rules
         for (let ticket of this.allEventTickets) {
@@ -59,7 +70,7 @@ export default class SelectTickets extends LightningElement {
 
             if (
               !Available_for_Countries__c ||
-              !Available_for_Countries__c.includes(this.userRegion)
+              !Available_for_Countries__c.includes(this.userInfo.countyRegion)
             )
               continue;
 
@@ -106,15 +117,19 @@ export default class SelectTickets extends LightningElement {
 
           ticketsRadio.push({
             elementId: "individual-ticket-radio-" + i,
-            id: tickets[i].Ticket__c,
+            id: tickets[i].Id,
             name: tickets[i].Ticket__r.Name,
             price: price,
-            checked: this._selectedTicket === tickets[i].Ticket__c
+            checked: this._selectedTicket === tickets[i].Id
           });
 
-          if (this._selectedTicket === tickets[i].Ticket__c) {
+          if (this._selectedTicket === tickets[i].Id) {
             foundSelected = true;
           }
+        }
+
+        if (ticketsRadio.length > 0) {
+          ticketsRadio[0].checked = true;
         }
 
         if (!foundSelected) this._selectedTicket = "";
@@ -133,28 +148,6 @@ export default class SelectTickets extends LightningElement {
         }
         this.throwError({ message: message });
       });
-  }
-
-  detectUserRegion() {
-    return new Promise((resolve, reject) => {
-      getCountries()
-        .then((result) => {
-          if (!this.userInfo.contact.Residency__c)
-            reject({ body: { message: "Can't detect user residency" } });
-
-          for (let country of result) {
-            if (country.Country__c === this.userInfo.contact.Residency__c) {
-              this.userRegion = country.Region__c;
-              break;
-            }
-          }
-
-          resolve();
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
   }
 
   earlyBirdCheck() {
@@ -178,6 +171,7 @@ export default class SelectTickets extends LightningElement {
 
   getSelectedTickets() {
     let selectedTicket = "";
+    let priceTicket = 0;
     let checkedValues = this.template.querySelectorAll(
       ".input-ticket-radio:checked"
     );
@@ -186,6 +180,9 @@ export default class SelectTickets extends LightningElement {
         selectedTicket = item.value;
       }
     });
+    this._priceTicket = this.ticketsRadio.find(e => {
+      return e.id === selectedTicket;
+    }).price;
     this._selectedTicket = selectedTicket;
   }
 
@@ -198,13 +195,14 @@ export default class SelectTickets extends LightningElement {
 
   handleNextClick() {
     this.getSelectedTickets();
-    let errorMessage = '';
-    if (this._selectedTicket === "" && (errorMessage = 'Select a ticket please') || this._ticketsAmount <= 0 && this.registrationType !== 'solo' && (errorMessage = 'Amount of ticket must more than 0')) {
+    let errorMessage = "";
+    if (this._selectedTicket === "" && (errorMessage = "Select a ticket please") || this._ticketsAmount <= 0 && this.registrationType !== "solo" && (errorMessage = "Amount of ticket must more than 0")) {
       this.dispatchToast("Error", errorMessage, "error");
     } else {
       const selectEvent = new CustomEvent("continue", {
         detail: {
           selectedTicket: this._selectedTicket,
+          priceTicket: this._priceTicket,
           ticketsAmount: this._ticketsAmount
         }
       });
@@ -229,12 +227,12 @@ export default class SelectTickets extends LightningElement {
     );
   }
 
-  get isGroupRegistration(){
-    return this.registrationType !== 'solo';
+  get isGroupRegistration() {
+    return this.registrationType !== "solo";
   }
 
   handleSelectTicketsAmount(event) {
-    this._ticketsAmount = event.detail.value
+    this._ticketsAmount = event.detail.value;
   }
 
 }

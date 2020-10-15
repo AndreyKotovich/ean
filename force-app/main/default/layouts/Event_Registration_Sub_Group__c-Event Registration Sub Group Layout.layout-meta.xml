@@ -16,7 +16,7 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Max_Participants__c</field>
+                <field>Is_Locked__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns/>

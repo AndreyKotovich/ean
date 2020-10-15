@@ -15,14 +15,26 @@
     <tabs>standard-home</tabs>
     <tabs>Event_Registration_Group__c</tabs>
     <tabs>Event_Registration_Sub_Group__c</tabs>
+    <tabs>Presenter__c</tabs>
+    <tabs>Author__c</tabs>
+    <tabs>Abstract__c</tabs>
     <uiType>Lightning</uiType>
     <utilityBar>LightningService_UtilityBar</utilityBar>
     <workspaceConfig>
+        <mappings>
+            <tab>Abstract__c</tab>
+        </mappings>
+        <mappings>
+            <tab>Author__c</tab>
+        </mappings>
         <mappings>
             <tab>Event_Registration_Group__c</tab>
         </mappings>
         <mappings>
             <tab>Event_Registration_Sub_Group__c</tab>
+        </mappings>
+        <mappings>
+            <tab>Presenter__c</tab>
         </mappings>
         <mappings>
             <tab>standard-Account</tab>

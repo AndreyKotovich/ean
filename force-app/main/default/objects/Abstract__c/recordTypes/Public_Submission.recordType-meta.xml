@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Public_Submission</fullName>
+    <active>true</active>
+    <label>Public Submission</label>
+    <picklistValues>
+        <picklist>Stage__c</picklist>
+        <values>
+            <fullName>Close</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Draft</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>In Review</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Submitted</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Withdrawn</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Status__c</picklist>
+        <values>
+            <fullName>Accepted</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Pending</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Rejected</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Topics__c</picklist>
+        <values>
+            <fullName>ALS and frontotemporal dementia</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Aging and dementia</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Autonomic nervous system diseases</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Cerebrovascular diseases</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Child neurology%2Fdevelopmental neurology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Clinical neurophysiology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Cognitive neurology%2Fneuropsychology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Coma and chronic disorders of consciousness</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Critical care</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Education in neurology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Epilepsy</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ethics in neurology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>General neurology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Headache</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Higher cortical functions</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>History of neurology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Motor neurone diseases</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Movement disorders</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Multiple Sclerosis and related disorders</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Muscle and neuromuscular junction diseaese</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Neuro Infectious diseases</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Neuro-oncology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Neuro-ophthalmology%2F neuro-otology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Neuroepidemiology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Neurogenetics</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Neuroimaging</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Neuroimmunology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Neurological manifestation of systemic diseases</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Neurology %26 arts</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Neuropathies</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Neurorehabilitation</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Neuroscience%2Ftranslational neurology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Neurosonology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Neurotoxicology%2Foccupational neurology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Neurotraumatology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Pain</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Palliative care</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Peripheral nerve disorders</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Rare diseases</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sleep disorders</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Spinal cord and root disorders</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Stroke</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Type__c</picklist>
+        <values>
+            <fullName>Oral</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Poster</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

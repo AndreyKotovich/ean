@@ -502,9 +502,7 @@
         <relatedList>Session_Participation__c.Contact__c</relatedList>
     </relatedLists>
     <relatedLists>
-        <fields>Lecture__c.Event_custom__c</fields>
-        <fields>Lecture__c.Session__c</fields>
-        <fields>Lecture__c.NAME</fields>
+        <fields>Lecture__c</fields>
         <relatedList>Speaker__c.Contact__c</relatedList>
     </relatedLists>
     <relatedLists>
@@ -542,6 +540,26 @@
     <relatedLists>
         <fields>NAME</fields>
         <relatedList>Event_Registration_Group__c.Contact__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>Change_Request__c.TransferFromContact__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>Change_Request__c.TransferToContact__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>Change_Request__c.Contact__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>Presenter__c.Contact__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>Author__c.Contact__c</relatedList>
     </relatedLists>
     <relatedObjects>AccountId</relatedObjects>
     <showEmailCheckbox>false</showEmailCheckbox>

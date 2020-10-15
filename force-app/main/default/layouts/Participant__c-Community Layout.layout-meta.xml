@@ -34,6 +34,10 @@
                 <behavior>Readonly</behavior>
                 <field>Participant_Email__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Event_Ticket__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>

@@ -8,7 +8,7 @@ public without sharing class MyRegistrationsController {
 	public static final String SYSTEM_GROUP_CONTACT_NAME = 'Undefined Participant';
 
 
-	//	COMMUNITY PAGE: MY REGISTRAIONS
+	//	COMMUNITY COMPONENT: MY REGISTRAIONS
 	@AuraEnabled
 	public static Map<String, Object> connectedCallbackApex() {
 		return connectedCallbackApex2(UserInfo.getUserId());
@@ -27,9 +27,9 @@ public without sharing class MyRegistrationsController {
 			Id g2mRT = Schema.SObjectType.Participant__c.getRecordTypeInfosByDeveloperName().get('G2M').getRecordTypeId();
 
 			List<Participant__c> allMyParticipations = [
-				SELECT Id, Name, Contact__c,
+				SELECT Id, Name, Contact__c, Contact__r.Name,
 					Event_custom__c, Event_custom__r.Name, Event_custom__r.End_Time__c, Event_custom__r.Start_Time__c,
-					Event_Registration_Sub_Group__c, Event_Registration_Sub_Group__r.Max_Participants__c,
+					Event_Registration_Sub_Group__c,
 					Event_Registration_Sub_Group__r.Event_Registration_Group__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name,
 					Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__r.Name
 				FROM Participant__c
@@ -89,21 +89,14 @@ public without sharing class MyRegistrationsController {
 				//	event participations where the user is group leader
 				if (participation.Event_custom__c != null && participation.Event_Registration_Sub_Group__c != null && participation.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c == contactId) {
 
-					// system.debug('AAA myRegistration.eventId= ' + myRegistration.eventId);
-					// system.debug('AAA myRegistration.participantId= ' + myRegistration.participantId);
-
 					myRegistration.registrationType = 'Group';
 
 					List<String> processedSubGroups = groupIdToProcessedSubGroups.containsKey(myRegistration.registrationGroupId) ? groupIdToProcessedSubGroups.get(myRegistration.registrationGroupId) : new List<String>();
 					Integer groupMaxParticipants = groupIdToMaxParticipants.containsKey(myRegistration.registrationGroupId) ? groupIdToMaxParticipants.get(myRegistration.registrationGroupId) : 0;
-					Integer subGroupMaxParticipants = participation.Event_Registration_Sub_Group__r.Max_Participants__c != null ? Integer.valueOf(participation.Event_Registration_Sub_Group__r.Max_Participants__c) : 0;
 					Integer groupExistingParticipants = groupIdToExistingParticipants.containsKey(myRegistration.registrationGroupId) ? groupIdToExistingParticipants.get(myRegistration.registrationGroupId) : 0;
 
-					groupMaxParticipants += !processedSubGroups.contains(myRegistration.registrationSubGroupId) ? subGroupMaxParticipants : 0;
-
-
-					//	TODO: ADD LOGIC FOR SKIP EMPTY PARTICIPANTS (check name, or temp_contact_name)
-					groupExistingParticipants++;
+					groupMaxParticipants++;
+					if (participation.Contact__r.Name != SYSTEM_GROUP_CONTACT_NAME) groupExistingParticipants++;
 
 					processedSubGroups.add(myRegistration.registrationSubGroupId);
 
@@ -113,15 +106,11 @@ public without sharing class MyRegistrationsController {
 
 					myRegistration.groupMaxParticipants = groupMaxParticipants;
 					myRegistration.groupExistingParticipants = groupExistingParticipants;
-					// groupIdToRegistrationDetails.put(myRegistration.registrationGroupId, myRegistration);
 
 					EventRegistrationWrap cloned = myRegistration.clone();
 					groupIdToRegistrationDetails.put(myRegistration.registrationGroupId, cloned);
 				}
 			}
-
-			system.debug('1 registrationsMapSolo= ' + JSON.serialize(registrationsMapSolo));
-			system.debug('1 groupIdToRegistrationDetails= ' + JSON.serialize(groupIdToRegistrationDetails));
 
 			//	For SOLO STATUS and GROUP STATUS
 			// List<Order__c> groupOrders = !subGroupsIds.isEmpty() ? [
@@ -132,6 +121,7 @@ public without sharing class MyRegistrationsController {
 				WHERE Event_Registration_Sub_Group__c IN :subGroupIdToParticipantId.keySet()
 				AND Status__c != 'Closed'
 			] : new List<Order__c>();
+
 
 			//	SOLO STATUS
 			List<Order_Item__c> soloOrderItems = !registrationsMapSolo.isEmpty() ? [
@@ -152,13 +142,10 @@ public without sharing class MyRegistrationsController {
 				if (subGroupIdToParticipantId.containsKey('' + groupOrder.Event_Registration_Sub_Group__c)) {
 					String participantId = subGroupIdToParticipantId.get('' + groupOrder.Event_Registration_Sub_Group__c);
 					String registrationStatus = groupOrder.Status__c == 'Opened' ? STATUS_NOT_PAID : groupOrder.Status__c;
-					registrationsMapSolo.get(participantId).registrationStatus = registrationStatus;
+					if (registrationsMapSolo.containsKey(participantId)) registrationsMapSolo.get(participantId).registrationStatus = registrationStatus;
 				}
-				
 			}
 
-			system.debug('2 registrationsMapSolo= ' + JSON.serialize(registrationsMapSolo));
-			system.debug('2 groupIdToRegistrationDetails= ' + JSON.serialize(groupIdToRegistrationDetails));
 
 			//	GROUP STATUS
 			for (Order__c groupOrder : groupOrders) {
@@ -176,8 +163,6 @@ public without sharing class MyRegistrationsController {
 
 			List<EventRegistrationWrap> registrationsSolo = sortEventRegistrationsMap(registrationsMapSolo);
 			List<EventRegistrationWrap> registrationsGroup = sortEventRegistrationsMap(groupIdToRegistrationDetails);
-			system.debug('3 registrationsMapSolo= ' + JSON.serialize(registrationsMapSolo));
-			system.debug('3 groupIdToRegistrationDetails= ' + JSON.serialize(groupIdToRegistrationDetails));
 
 			return new Map<String, Object>{
 				'result' => true,
@@ -192,7 +177,7 @@ public without sharing class MyRegistrationsController {
 				'logList' => logList
 			};
 
-		} catch (Exception e) { return new Map<String, Object>{'result' => false, 'message' => e.getMessage()}; }
+		} catch (Exception e) { return new Map<String, Object>{'result' => false, 'message' => e.getStackTraceString()}; }
 	}
 
 	public static List<EventRegistrationWrap> sortEventRegistrationsMap(Map<String, EventRegistrationWrap> eventRegistrationsMap) {
@@ -243,7 +228,6 @@ public without sharing class MyRegistrationsController {
 		return result;
 	}
 
-
 	public class EventRegistrationWrap {
 		@AuraEnabled public String participantId { get; set; }					// SOLO
 		@AuraEnabled public String eventId { get; set; }						// SOLO		// GROUP
@@ -278,8 +262,10 @@ public without sharing class MyRegistrationsController {
 		//	TEST GROUP DEFINITION
 		// maxParticipants = 10;
 
-		if (maxParticipants == null) return getExistingGroupDetails(userId, groupId);
+		if (maxParticipants == null && !String.isBlank(groupId)) return getExistingGroupDetails(userId, groupId);
 
+		// for community builder
+		maxParticipants = maxParticipants == null ? 10 : maxParticipants;
 
 		// LOGIC TO PREPARE DATA FOR NEW GROUP
 		String uniqueKey1 = 'createNewGroupMode';
@@ -361,10 +347,11 @@ public without sharing class MyRegistrationsController {
 			List<Participant__c> groupParticipations = [
 				SELECT Id, Name, Contact__c, Contact__r.Name, Contact__r.Email,
 					Event_custom__c, Event_custom__r.Name, Event_custom__r.End_Time__c, Event_custom__r.Start_Time__c,
-					Event_Registration_Sub_Group__c, Event_Registration_Sub_Group__r.Max_Participants__c, Event_Registration_Sub_Group__r.CreatedDate,
+					Event_Registration_Sub_Group__c,
+					Event_Registration_Sub_Group__r.CreatedDate,
 					Event_Registration_Sub_Group__r.Event_Registration_Group__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name,
-					Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__r.Name,
-					(SELECT Id FROM Order_Items__r LIMIT 1)	// to lock record if we have order item for participant
+					Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__r.Name
+					// (SELECT Id FROM Order_Items__r LIMIT 1)	// to lock record if we have order item for participant (OLD LOGIC)
 				FROM Participant__c
 				WHERE Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c =:contactId
 				AND RecordTypeId !=:g2mRT
@@ -392,7 +379,11 @@ public without sharing class MyRegistrationsController {
 		Integer totalGroupMaxParticipants = 0;
 		// String undefinedParticipantContactId = '';
 
-		List<String> subGroupsOrder = new List<String>();
+		
+		Set<String> disabledEmails = new Set<String>();	// do not allow dublicate emails
+		Set<String> participantIds = new Set<String>();
+		List<String> subGroupIds = new List<String>();
+
 		Map<String, SubGroupDetailsWrap> subGroupIdToDetailsWrap = new Map<String, SubGroupDetailsWrap>();
 		for (Participant__c participant : groupParticipations) {
 			SubGroupParticipantWrap subGroupParticipant = new SubGroupParticipantWrap();
@@ -404,7 +395,9 @@ public without sharing class MyRegistrationsController {
 			subGroupParticipant.newContactName = '' + subGroupParticipant.oldContactName;
 			subGroupParticipant.newContactEmail = '' + subGroupParticipant.oldContactEmail;
 
-			subGroupParticipant.disabledToEdit = !(participant.Order_Items__r).isEmpty();
+
+
+			// subGroupParticipant.disabledToEdit = !(participant.Order_Items__r).isEmpty();
 
 			SubGroupDetailsWrap subGroupDetails = subGroupIdToDetailsWrap.containsKey('' + participant.Event_Registration_Sub_Group__c)
 				? subGroupIdToDetailsWrap.get('' + participant.Event_Registration_Sub_Group__c) : new SubGroupDetailsWrap();
@@ -420,8 +413,9 @@ public without sharing class MyRegistrationsController {
 			subGroupDetails.createdDateString = (participant.Event_Registration_Sub_Group__r.CreatedDate).format('dd.MM.yyyy');
 			subGroupDetails.createdTimeString = (participant.Event_Registration_Sub_Group__r.CreatedDate).format('HH:mm');
 
-			// subGroupParticipant.uniquekey1 = subGroupDetails.subGroupId + '_' + subGroupParticipant.participantId + '_key1';
-			// subGroupParticipant.uniquekey2 = subGroupDetails.subGroupId + '_' + subGroupParticipant.participantId + '_key2';
+			// collect data for transfer requestes and do not allow enter duplicate email
+			disabledEmails.add(subGroupParticipant.oldContactEmail);
+			participantIds.add(subGroupParticipant.participantId);
 
 			List<SubGroupParticipantWrap> subGroupParticipantList = subGroupDetails.subGroupParticipantList == null ? new List<SubGroupParticipantWrap>() : subGroupDetails.subGroupParticipantList;
 
@@ -432,12 +426,38 @@ public without sharing class MyRegistrationsController {
 			subGroupDetails.subGroupParticipantList = subGroupParticipantList;
 			
 			subGroupIdToDetailsWrap.put('' + participant.Event_Registration_Sub_Group__c, subGroupDetails);
-			if (!subGroupsOrder.contains('' + participant.Event_Registration_Sub_Group__c)) subGroupsOrder.add('' + participant.Event_Registration_Sub_Group__c);
+			if (!subGroupIds.contains('' + participant.Event_Registration_Sub_Group__c)) subGroupIds.add('' + participant.Event_Registration_Sub_Group__c);
 		}
 
-		system.debug('subGroupIdToDetailsWrap= ' + JSON.serialize(subGroupIdToDetailsWrap));
-		system.debug('222 SIZE= ' + subGroupIdToDetailsWrap.size());
 
+		//	disable edit participants if 'subgroup' is locked OR 'subgroup order status' == 'Open'
+		List<Order__c> orders = !subGroupIds.isEmpty() ? 
+			[SELECT Id, Status__c, Event_Registration_Sub_Group__c, Event_Registration_Sub_Group__r.Is_Locked__c FROM Order__c WHERE Event_Registration_Sub_Group__c IN :subGroupIds]
+			: new List<Order__c>();
+		for (Order__c order : orders) {
+			if (!subGroupIdToDetailsWrap.containsKey('' + order.Event_Registration_Sub_Group__c)) continue;
+
+			Boolean disabledToEdit = !(order.Status__c == 'Paid' && !order.Event_Registration_Sub_Group__r.Is_Locked__c);
+			SubGroupDetailsWrap subGroupDetails = subGroupIdToDetailsWrap.get('' + order.Event_Registration_Sub_Group__c);
+			for (SubGroupParticipantWrap subGroupParticipant : subGroupDetails.subGroupParticipantList) {
+				subGroupParticipant.disabledToEdit = disabledToEdit;
+			}
+			subGroupIdToDetailsWrap.put('' + order.Event_Registration_Sub_Group__c, subGroupDetails);
+		}
+
+
+		//	define titles on Accordions
+		List<SubGroupDetailsWrap> subGroupList = new List<SubGroupDetailsWrap>();
+		for (String subGroupId : subGroupIds) {
+			SubGroupDetailsWrap subGroupDetails = subGroupIdToDetailsWrap.get(subGroupId);
+			subGroupDetails.accordionTitle = 'Created: ' + subGroupDetails.createdDateString + ' ' + subGroupDetails.createdTimeString +
+			' (Selected ' + subGroupDetails.subGroupExistingParticipants + ' of ' + subGroupDetails.subGroupMaxParticipants + ' Participants)';
+
+			subGroupList.add(subGroupDetails);
+			// subGroupList.add(subGroupIdToDetailsWrap.get(subGroupId));
+		}
+
+		//	define the main details of Group (to display at the community page)
 		GroupDetailsWrap groupDetails = new GroupDetailsWrap();
 		groupDetails.groupId = groupParticipations[0].Event_Registration_Sub_Group__r.Event_Registration_Group__c;
 		groupDetails.groupName = groupParticipations[0].Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name;
@@ -454,20 +474,13 @@ public without sharing class MyRegistrationsController {
 		groupDetails.totalGroupExistingParticipants = totalGroupExistingParticipants;
 		groupDetails.totalGroupMaxParticipants = totalGroupMaxParticipants;
 
-		List<SubGroupDetailsWrap> subGroupList = new List<SubGroupDetailsWrap>();
-		for (String subGroupId : subGroupsOrder) {
-			SubGroupDetailsWrap subGroupDetails = subGroupIdToDetailsWrap.get(subGroupId);
-			subGroupDetails.accordionTitle = 'Created: ' + subGroupDetails.createdDateString + ' ' + subGroupDetails.createdTimeString +
-			' (Selected ' + subGroupDetails.subGroupExistingParticipants + ' of ' + subGroupDetails.subGroupMaxParticipants + ' Participants)';
-
-			subGroupList.add(subGroupDetails);
-			// subGroupList.add(subGroupIdToDetailsWrap.get(subGroupId));
-		}
-
 		return new Map<String, Object>{
 			'result' => true,
 			'groupDetails' => groupDetails,
 			'subGroupList' => subGroupList,
+
+			'disabledEmails' => new List<String>(disabledEmails),	// TBD
+
 			'logList' => logList,				// delete
 			'disableDisplayGroupDetails' => false,
 			'disableDisplayGroupDefinition' => true,
@@ -482,11 +495,9 @@ public without sharing class MyRegistrationsController {
 	//	CLICK SUBMIT
 	@AuraEnabled
 	public static Map<String, Object> clickButton1Apex(Map<String, Object> params) {
-		// String groupDetailsString = params.containsKey('groupDetails') ? String.valueOf(params.get('groupDetails')) : '';
 		String subGroupListString = params.containsKey('subGroupList') ? String.valueOf(params.get('subGroupList')) : '';
 		String isGroupDefinitionModeString = params.containsKey('isGroupDefinitionMode') ? String.valueOf(params.get('isGroupDefinitionMode')) : '';
 
-		// GroupDetailsWrap groupDetails = !String.isBlank(groupDetailsString) ? (GroupDetailsWrap) JSON.deserialize (groupDetailsString, GroupDetailsWrap.class) : new GroupDetailsWrap();
 		List<SubGroupDetailsWrap> subGroupList = !String.isBlank(subGroupListString) ? (List<SubGroupDetailsWrap>) JSON.deserialize (subGroupListString, List<SubGroupDetailsWrap>.class) : new List<SubGroupDetailsWrap>();
 		Boolean isGroupDefinitionMode = !String.isBlank(isGroupDefinitionModeString) ? Boolean.valueOf(isGroupDefinitionModeString) : false;
 
@@ -527,7 +538,6 @@ public without sharing class MyRegistrationsController {
 	//	Group
 	public class GroupDetailsWrap {
 		@AuraEnabled public String groupId { get; set; }
-		// @AuraEnabled public String undefinedParticipantContactd { get; set; }		// 'Undefined Participant' (Contact record Id)
 		@AuraEnabled public String groupName { get; set; }
 		@AuraEnabled public String eventName { get; set; }
 		@AuraEnabled public Datetime eventEndTime { get; set; }

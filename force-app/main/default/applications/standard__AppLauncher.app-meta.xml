@@ -7,4 +7,7 @@
     <tabs>standard-AppLauncher</tabs>
     <tabs>Event_Registration_Group__c</tabs>
     <tabs>Event_Registration_Sub_Group__c</tabs>
+    <tabs>Presenter__c</tabs>
+    <tabs>Author__c</tabs>
+    <tabs>Abstract__c</tabs>
 </CustomApplication>

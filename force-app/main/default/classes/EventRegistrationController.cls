@@ -23,37 +23,54 @@ public without sharing class EventRegistrationController {
     }
 
     @AuraEnabled
-    public static void insertEventParticipants(
-            List<Participant__c> participants
-    ) {
-        System.debug('participants:: ' + participants);
+    public static Map<String, Object> insertEventParticipants( List<Participant__c> participants, Map<String,Object> generalData ) {
+        Savepoint sp = Database.setSavepoint();
+        try{
+            System.debug('participants:: ' + participants);
 
-        Contact undefinedContact = getUndefinedParticipant();
-
-        RecordType congressRT = [
-                SELECT Id
-                FROM RecordType
-                WHERE SobjectType = 'Participant__c' AND DeveloperName = 'Congress'
-        ];
-
-        for (Participant__c participant : participants) {
-            participant.RecordTypeId = congressRT.Id;
-            //todo event record type
-            if (participant.Contact__c == null) {
-                participant.Contact__c = undefinedContact.Id;
+            Contact undefinedContact = getUndefinedParticipant();
+            Id congressRTId = Schema.SObjectType.Participant__c.getRecordTypeInfosByDeveloperName().get('Congress').getRecordTypeId();
+            
+            if (undefinedContact == null) { 
+                return new Map<String, Object>{ 
+                    'status' => 'Error', 
+                    'message' => 'Contact record Undefined Participant not found'
+                };
             }
-        }
 
-        insert participants;
+            for (Participant__c participant : participants) {
+                participant.RecordTypeId = congressRTId;
+                //todo event record type
+                if (participant.Contact__c == null) {
+                    participant.Contact__c = undefinedContact.Id;
+                }
+            }
+
+            insert participants;
+
+            //Create order
+            List<Order__c> order = OrderHelper.createNewOrder( new Map<String,Object> {
+				'generalData' => generalData,
+                'participants' => participants
+            });
+
+            return new Map<String, Object>{ 
+                'status' => 'Success', 
+                'message' => 'Success',
+                'result' => order
+            };
+        }
+        catch (Exception e) {
+            Database.rollback(sp);
+            return new Map<String, Object>{ 
+                'status' => 'Error', 
+                'message' => e.getMessage()
+            };
+        } 
     }
 
     public static Contact getUndefinedParticipant() {
-        Contact contact = [
-                SELECT Id
-                FROM Contact
-                WHERE FirstName = 'Undefined' AND LastName = 'Participant'
-        ];
-        return contact;
+        return [ SELECT Id FROM Contact WHERE FirstName = 'Undefined' AND LastName = 'Participant' LIMIT 1 ];
     }
 
     @AuraEnabled
@@ -95,5 +112,58 @@ public without sharing class EventRegistrationController {
       Event_Registration_Sub_Group__c subGroup = new Event_Registration_Sub_Group__c(Event_Registration_Group__c = ERGroup.Id);
       insert subGroup;
       return subGroup.Id;
+    }
+
+    @AuraEnabled
+    public static Map<String, List<Session__c>> getExtraSessions(String eventId){
+        List<Session__c> sessions = [
+                SELECT Id, Name, Session_Start__c, Session_End__c
+                FROM Session__c
+                WHERE Event_custom__c = :eventId
+                AND Session_Start__c != NULL
+                AND Session_End__c != NULL
+                ORDER BY Session_Start__c ASC NULLS FIRST
+        ];
+        String dateFormat = 'dd.MM.yyyy';
+        Map<String, List<Session__c>> dateSessionsMap = new Map<String, List<Session__c>>();
+
+        for(Session__c session : sessions){
+            String sessionDate = '';
+            sessionDate = session.Session_Start__c.format(dateFormat);
+            List<Session__c> mapList;
+
+            if(dateSessionsMap.containsKey(sessionDate)){
+                mapList = dateSessionsMap.get(sessionDate);
+                mapList.add(session);
+            } else {
+                mapList = new List<Session__c>{session};
+            }
+
+            dateSessionsMap.put(sessionDate, mapList);
+        }
+
+        return dateSessionsMap;
+    }
+
+    @AuraEnabled
+    public static List<Event_Ticket__c> getSessionsTickets(String eventId) {
+        List<Session__c> sessions = [
+                SELECT Id, Name, Session_Start__c, Session_End__c
+                FROM Session__c
+                WHERE Event_custom__c = :eventId
+                AND Session_Start__c != NULL
+                AND Session_End__c != NULL
+        ];
+
+        List<Event_Ticket__c> tickets = [
+                SELECT Id, Price__c, Early_bird_price__c, Event_custom__c, Ticket__c, Ticket__r.Name,
+                        Ticket__r.Available_for_Memberships__c, Ticket__r.Available_for_Countries__c
+                FROM Event_Ticket__c
+                WHERE Session__c IN :sessions
+                AND Ticket__c != NULL
+                AND (Price__c != NULL OR Early_bird_price__c != NULL)
+        ];
+
+        return tickets;
     }
 }

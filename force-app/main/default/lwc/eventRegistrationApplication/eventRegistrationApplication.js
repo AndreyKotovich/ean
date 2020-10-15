@@ -1,18 +1,19 @@
 /* eslint-disable no-extra-boolean-cast */
-import {LightningElement, track} from "lwc";
-import {NavigationMixin} from "lightning/navigation";
-import {ShowToastEvent} from "lightning/platformShowToastEvent";
+import { LightningElement, track } from "lwc";
+import { NavigationMixin } from "lightning/navigation";
+import { ShowToastEvent } from "lightning/platformShowToastEvent";
 
 import getUserMemberships from "@salesforce/apex/Utils.getUserMemberships";
 import getEvent from "@salesforce/apex/EventRegistrationController.getEvent";
 import getContactInfo from "@salesforce/apex/EventRegistrationController.getContactInfo";
 import insertEventParticipants from "@salesforce/apex/EventRegistrationController.insertEventParticipants";
 import insertRegistrationGroup from "@salesforce/apex/EventRegistrationController.insertRegistrationGroup";
+import getCountries from "@salesforce/apex/membershipApplicationController.getCountries";
 
 export default class EventRegistrationApplication extends NavigationMixin(LightningElement) {
     //TODO validation on duplicate registration
     //TODO detection group leader
-  //TODO before participant insert check availability of participants
+    //TODO before participant insert check availability of participants
 
     @track errorMessage =
         "Something went wrong, please contact your system administrator.";
@@ -37,6 +38,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     registrationType = "solo"; //type of registration which user selected, by default 'solo'
     groupName = ""; //name of group in case group registration
     selectedTicket = "";
+    priceTicket = 0;
     ticketsAmount = 0;
     /**
      * @variable userInfo - information about user which works with the application
@@ -70,9 +72,10 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     getInitialData(eventId) {
         let promises = [];
 
-        promises.push(getEvent({eventId: eventId}));
+        promises.push(getEvent({ eventId: eventId }));
         promises.push(getContactInfo());
         promises.push(getUserMemberships());
+        promises.push(getCountries());
 
         return new Promise((resolve, reject) => {
             Promise.all(promises)
@@ -81,6 +84,19 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                     console.log(JSON.stringify(results[1]));
                     this.userInfo = Object.assign({}, results[1]);
                     this.userInfo.memberships = [...results[2]];
+
+                    //detect user region
+                    if (!this.userInfo.contact.Residency__c)
+                        reject({body: {message: "Can't detect user residency"}});
+
+                    for (let country of results[3]) {
+                        if (country.Country__c === this.userInfo.contact.Residency__c) {
+                            this.userInfo.countyRegion = country.Region__c;
+                            break;
+                        }
+                    }
+                    console.log(JSON.stringify(this.userInfo));
+
                     resolve();
                 })
                 .catch((error) => {
@@ -110,6 +126,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     onSelectTicket(event) {
         this.selectedTicket = event.detail.selectedTicket;
         this.ticketsAmount = event.detail.ticketsAmount;
+        this.priceTicket = event.detail.priceTicket;
         this.onNext();
     }
 
@@ -139,52 +156,57 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         this.isSpinner = true;
         let participants = [];
         let call = this.registrationType !== "solo" ?
-            ()=>{return insertRegistrationGroup({groupName: this.groupName, groupLeaderId: this.userInfo.contact.Id})}
-            : ()=>{return new Promise((resolve) => {resolve();})};
+            () => {
+                return insertRegistrationGroup({ groupName: this.groupName, groupLeaderId: this.userInfo.contact.Id });
+            } : () => { 
+                return new Promise((resolve) => { resolve(); }); 
+            };
 
         call()
-            .then(result=>{
-              console.log('in call');
-              if (this.registrationType === "solo") {
-                participants.push({
-                  Contact__c: this.userInfo.contact.Id,
-                  Event_custom__c: this.ean_event.Id
-                });
-              } else {
-
-                for(let i = 0; i < this.ticketsAmount; i++){
-                  participants.push({
-                    Event_custom__c: this.ean_event.Id,
-                    Event_Registration_Sub_Group__c: result
-                  });
+            .then((result) => {
+                console.log('in call');
+                let generalData = {};
+                generalData = {...generalData, ...this.userInfo};
+                generalData.selectTicket = this.selectedTicket;
+                generalData.event = this.ean_event;
+                generalData.priceTicket = this.priceTicket;
+                if (this.registrationType === "solo") {
+                    participants.push({
+                        sobjectType: "Participant__c",
+                        Contact__c: this.userInfo.contact.Id,
+                        Event_Ticket__c: this.userInfo.selectTicket,
+                        Event_custom__c: this.ean_event.Id,
+                    });
+                } else {
+                    for (let i = 0; i < this.ticketsAmount; i++) {
+                        participants.push({
+                            sobjectType: "Participant__c",
+                            Event_custom__c: this.ean_event.Id,
+                            Event_Ticket__c: this.userInfo.selectTicket,
+                            Event_Registration_Sub_Group__c: result,
+                        });
+                    }
                 }
 
-              }
+                return insertEventParticipants({ participants: participants, generalData: generalData });
+            })
+            .then((res) => {
+                this.isSpinner = false;
+                let msg = res.status !== 'Error' ? `You have successfully registered for the ${this.ean_event.Name}` : res.message;
+                this.dispatchToast(res.status, msg, res.status);
 
-              insertEventParticipants({participants: participants})
-                  .then(() => {
-                    //dispatch toast
-                    this.isSpinner = false;
-                    this.dispatchToast(
-                        "Success",
-                        "You have successfully registered for the " + this.ean_event.Name,
-                        "success"
-                    );
+                if (res.status !== 'Error') {
                     this[NavigationMixin.Navigate]({
-                      type: "comm__namedPage",
-                      attributes: {
-                        pageName: "home"
-                      }
+                        type: "comm__namedPage",
+                        attributes: {
+                            pageName: "home"
+                        }
                     });
-                  })
-                  .catch((error) => {
-                    this.handleError(error);
-                  });
-
+                }
+            })
+            .catch((error) => {
+                this.handleError(error);
             });
-
-
-
     }
 
     onError(event) {

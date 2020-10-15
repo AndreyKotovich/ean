@@ -1,6 +1,10 @@
 import { LightningElement, api } from 'lwc';
 import searchRecordsInDatabase from '@salesforce/apex/RecordSearchController.searchRecordsInDatabase'
 
+//	TODO:
+//	change implementation to dropdown
+//	use recordId (not entered text) for get record detals
+
 export default class RecordSearch extends LightningElement {
 
 	@api listfields;
@@ -26,7 +30,7 @@ export default class RecordSearch extends LightningElement {
 
 	_datalistId = '';
 	_recordIdToDetailsMap;
-	_emailToDetails;
+	// _emailToDetails;
 	_enabledtoedit = true;
 
 
@@ -101,10 +105,13 @@ export default class RecordSearch extends LightningElement {
 				for (var i = 0; i < retObj.length; i++) {
 					var value = {recordId: retObj[i].id, textvalue: retObj[i].text};
 					this._values.push(value);
-					this._emailToDetails.set(retObj[i].text, retObj[i]);
+					// this._emailToDetails.set(retObj[i].text, retObj[i]);
+					if (retObj[i].text == this.enteredtext) {
+						this.selectedRecordDetails = retObj[i];
+					}
 				}
 
-				this.selectedRecordDetails = this._emailToDetails.get(this.enteredtext);
+				// this.selectedRecordDetails = this._emailToDetails.get(this.enteredtext);
 			}
 			// console.log('serverCall this.selectedRecordDetails: ', this.selectedRecordDetails);
 			// console.log('serverCall this.uniquekey1: ', this.uniquekey1);

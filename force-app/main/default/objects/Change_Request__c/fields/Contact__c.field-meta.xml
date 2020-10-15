@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Contact__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>If request was created by EAN Staff, here we can see for what contact (community user) it was created</description>
+    <externalId>false</externalId>
+    <label>Community Contact</label>
+    <referenceTo>Contact</referenceTo>
+    <relationshipLabel>Change Requests (Contact)</relationshipLabel>
+    <relationshipName>Change_Requests</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

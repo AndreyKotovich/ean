@@ -20,6 +20,9 @@
     <tabs>standard-report</tabs>
     <tabs>Event_Registration_Group__c</tabs>
     <tabs>Event_Registration_Sub_Group__c</tabs>
+    <tabs>Presenter__c</tabs>
+    <tabs>Author__c</tabs>
+    <tabs>Abstract__c</tabs>
     <uiType>Lightning</uiType>
     <utilityBar>Nonprofit_Success_Pack_UtilityBar</utilityBar>
 </CustomApplication>

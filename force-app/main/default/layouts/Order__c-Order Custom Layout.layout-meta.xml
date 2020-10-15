@@ -55,6 +55,10 @@
                 <behavior>Edit</behavior>
                 <field>Event_Registration_Sub_Group__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Event_custom__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>

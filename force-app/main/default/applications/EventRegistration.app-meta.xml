@@ -39,6 +39,9 @@
     <tabs>Transfer_Request__c</tabs>
     <tabs>Event_Registration_Group__c</tabs>
     <tabs>Event_Registration_Sub_Group__c</tabs>
+    <tabs>Presenter__c</tabs>
+    <tabs>Author__c</tabs>
+    <tabs>Abstract__c</tabs>
     <uiType>Lightning</uiType>
     <utilityBar>Event_Registration_UtilityBar</utilityBar>
 </CustomApplication>
