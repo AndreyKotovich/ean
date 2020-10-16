@@ -1,3 +1,107 @@
 <template>
-	Change Request Component (IN DEVELOPMENT)
+	<p>Change Request Wizard (IN DEVELOPMENT) Community Contact RecordId: {recordId}</p>
+	<div class="slds-card slds-scrollable_y" style="padding: 15px; height: 480px;">
+		<template if:true={_isSpinner}>
+			<div class="slds-spinner_container" style="position: fixed">
+				<lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
+			</div>
+		</template>
+
+		<template if:false={_isSpinner}>
+			<template if:true={_isError}>
+				<div class="slds-text-heading_large slds-align_absolute-center slds-text-color_error">{_errorMessage}</div>
+			</template>
+			<template if:false={_isError}>
+
+				<template if:true={_displayChangeRequestPanel}>
+					<template if:true={_displayTopButtons}>
+						<div class="slds-text-align--right">
+							<template if:true={_displayNewChangeRequestButton}>
+								<!-- <button class="slds-button slds-button_neutral" onclick={handleNewRequestClick}><div style=" margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button> -->
+								<button class="slds-button slds-button_brand" onclick={handleNewRequestClick}><div style=" margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button>
+							</template>
+							<template if:true={_displayChangeRequestButtons}>
+								<button class="slds-button slds-button_neutral" onclick={handleConfirmClick}><div style=" margin-top: 2px; margin-bottom: -2px;">Confirm</div></button>
+								<button class="slds-button slds-button_brand" onclick={handleCancelClick}><div style=" margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
+							</template>
+						</div>
+					</template>
+
+					<template if:true={_displayChangeRequestsPanel}>
+						<template if:true={_displayNoRecordsMessage}>
+							<p style="text-align: center; font-size: 18px; font-weight: bold; color: #007DC6; margin-bottom: 10px; cursor: default;">{_noRecordsMessage}</p>
+						</template>
+						<template if:true={_displayChangeRequestsList}>
+							<p style="text-align: center; font-size: 18px; font-weight: bold; color: #007DC6; margin-bottom: 10px; cursor: default;">{_componentLabel}</p>
+							<table class="slds-table slds-table_bordered slds-table_cell-buffer" style="overflow: hidden; table-layout: fixed;">
+								<thead>
+									<tr class="slds-text-title_caps" style="cursor: default;">
+										<th style="width: 15%;" scope="col"><div class="slds-truncate" title="Draft Name">Name</div></th>
+										<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Type</div></th>
+										<th style="width: 15%;" scope="col"><div class="slds-truncate" title="Draft Name">Status</div></th>
+										<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Requested Time</div></th>
+										<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">(TBD) Button Revoke</div></th>
+									</tr>
+								</thead>
+								<tbody>
+									<template for:each={_changeRequestsList} for:item="сhangeRequest">
+										<tr key={сhangeRequest.crId} data-id={сhangeRequest.crId} onclick={handleClickOnMyRegistration} style="cursor: default;">
+											<td><div class="slds-truncate">{сhangeRequest.crName}</div></td>
+											<td><div class="slds-truncate">{сhangeRequest.crType}</div></td>
+											<td><div class="slds-truncate">{сhangeRequest.crStatus}</div></td>
+											<td><div class="slds-truncate">{сhangeRequest.crCreatedDateString} {сhangeRequest.crCreatedTimeString}</div></td>
+											<td><div class="slds-truncate">{сhangeRequest.enabledToRevoke}</div></td>
+										</tr>
+									</template>
+								</tbody>
+							</table>
+						</template>
+					</template>
+
+					<template if:true={_displayNewRequestDefinition}>
+						<p style="text-align: center; font-size: 18px; font-weight: bold; color: #007DC6; margin-bottom: 10px; cursor: default;">{_newRequestMessageLabel}</p>
+						<lightning-combobox
+							name="crtype"
+							label="Change Request Type"
+							value={_selectedCRType}
+							placeholder="Select Change Request Type"
+							options={_crTypes}
+							onchange={handleChangeCRType}>
+						</lightning-combobox>
+
+						<div class="slds-form-element" style="margin-top: 10px;">
+							<label class="slds-form-element__label" for="standardtextarea">Description</label>
+							<div class="slds-form-element__control">
+								<textarea id="standardtextarea" data-target-id="standardtextarea" class="slds-textarea" placeholder="Description" maxlength="2000" style="height: 280px;"></textarea>
+							</div>
+						</div>
+
+					</template>
+
+
+					<template if:true={_displayBottomButtons}>
+						<div class="slds-text-align--right" style="position: absolute; bottom: 0px; right: 15px;">
+							<template if:true={_displayNewChangeRequestButton}>
+								<!-- <button class="slds-button slds-button_neutral" onclick={handleNewRequestClick}><div style=" margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button> -->
+								<button class="slds-button slds-button_brand" onclick={handleNewRequestClick}><div style=" margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button>
+							</template>
+							<template if:true={_displayChangeRequestButtons}>
+								<button class="slds-button slds-button_neutral" onclick={handleConfirmClick}><div style=" margin-top: 2px; margin-bottom: -2px;">Confirm</div></button>
+								<button class="slds-button slds-button_brand" onclick={handleCancelClick}><div style=" margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
+							</template>
+						</div>
+					</template>
+				</template>
+
+				<template if:true={_displayMyRegistrationsComponent}>
+					<c-my-registrations-component
+						params = {_params}>
+					</c-my-registrations-component>
+
+				</template>
+
+			</template>
+		</template>
+	</div>
+
 </template>

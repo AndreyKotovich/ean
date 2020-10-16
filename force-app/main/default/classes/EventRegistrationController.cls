@@ -30,10 +30,10 @@ public without sharing class EventRegistrationController {
 
             Contact undefinedContact = getUndefinedParticipant();
             Id congressRTId = Schema.SObjectType.Participant__c.getRecordTypeInfosByDeveloperName().get('Congress').getRecordTypeId();
-            
-            if (undefinedContact == null) { 
-                return new Map<String, Object>{ 
-                    'status' => 'Error', 
+
+            if (undefinedContact == null) {
+                return new Map<String, Object>{
+                    'status' => 'Error',
                     'message' => 'Contact record Undefined Participant not found'
                 };
             }
@@ -54,19 +54,19 @@ public without sharing class EventRegistrationController {
                 'participants' => participants
             });
 
-            return new Map<String, Object>{ 
-                'status' => 'Success', 
+            return new Map<String, Object>{
+                'status' => 'Success',
                 'message' => 'Success',
                 'result' => order
             };
         }
         catch (Exception e) {
             Database.rollback(sp);
-            return new Map<String, Object>{ 
-                'status' => 'Error', 
+            return new Map<String, Object>{
+                'status' => 'Error',
                 'message' => e.getMessage()
             };
-        } 
+        }
     }
 
     public static Contact getUndefinedParticipant() {
@@ -115,55 +115,45 @@ public without sharing class EventRegistrationController {
     }
 
     @AuraEnabled
-    public static Map<String, List<Session__c>> getExtraSessions(String eventId){
-        List<Session__c> sessions = [
-                SELECT Id, Name, Session_Start__c, Session_End__c
+    public static List<Session__c> getExtraSessions(String eventId) {
+        return [
+                SELECT Id, Session_Start__c, Session_End__c, Registrations__c, Max_Participants__c,
+                (
+                        SELECT Id, Price__c, Early_bird_price__c, Event_custom__c, Ticket__c, Ticket__r.Name,
+                                Ticket__r.Available_for_Memberships__c, Ticket__r.Available_for_Countries__c,
+                                Session__r.Name, Session__r.Description__c
+                        FROM Event_Tickets__r
+                        WHERE Ticket__c != NULL
+                        AND (Price__c != NULL OR Early_bird_price__c != NULL)
+                )
                 FROM Session__c
                 WHERE Event_custom__c = :eventId
+                AND Type__c = 'Payable'
                 AND Session_Start__c != NULL
                 AND Session_End__c != NULL
                 ORDER BY Session_Start__c ASC NULLS FIRST
         ];
-        String dateFormat = 'dd.MM.yyyy';
-        Map<String, List<Session__c>> dateSessionsMap = new Map<String, List<Session__c>>();
-
-        for(Session__c session : sessions){
-            String sessionDate = '';
-            sessionDate = session.Session_Start__c.format(dateFormat);
-            List<Session__c> mapList;
-
-            if(dateSessionsMap.containsKey(sessionDate)){
-                mapList = dateSessionsMap.get(sessionDate);
-                mapList.add(session);
-            } else {
-                mapList = new List<Session__c>{session};
-            }
-
-            dateSessionsMap.put(sessionDate, mapList);
-        }
-
-        return dateSessionsMap;
     }
 
-    @AuraEnabled
-    public static List<Event_Ticket__c> getSessionsTickets(String eventId) {
-        List<Session__c> sessions = [
-                SELECT Id, Name, Session_Start__c, Session_End__c
-                FROM Session__c
-                WHERE Event_custom__c = :eventId
-                AND Session_Start__c != NULL
-                AND Session_End__c != NULL
-        ];
-
-        List<Event_Ticket__c> tickets = [
-                SELECT Id, Price__c, Early_bird_price__c, Event_custom__c, Ticket__c, Ticket__r.Name,
-                        Ticket__r.Available_for_Memberships__c, Ticket__r.Available_for_Countries__c
-                FROM Event_Ticket__c
-                WHERE Session__c IN :sessions
-                AND Ticket__c != NULL
-                AND (Price__c != NULL OR Early_bird_price__c != NULL)
-        ];
-
-        return tickets;
-    }
+//    @AuraEnabled
+//    public static List<Event_Ticket__c> getSessionsTickets(String eventId) {
+//        List<Session__c> sessions = [
+//                SELECT Id, Name, Session_Start__c, Session_End__c
+//                FROM Session__c
+//                WHERE Event_custom__c = :eventId
+//                AND Session_Start__c != NULL
+//                AND Session_End__c != NULL
+//        ];
+//
+//        List<Event_Ticket__c> tickets = [
+//                SELECT Id, Price__c, Early_bird_price__c, Event_custom__c, Ticket__c, Ticket__r.Name,
+//                        Ticket__r.Available_for_Memberships__c, Ticket__r.Available_for_Countries__c
+//                FROM Event_Ticket__c
+//                WHERE Session__c IN :sessions
+//                AND Ticket__c != NULL
+//                AND (Price__c != NULL OR Early_bird_price__c != NULL)
+//        ];
+//
+//        return tickets;
+//    }
 }

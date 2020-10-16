@@ -21,13 +21,18 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     @track isError = false;
     @track steps = {
         step1: {
-            label: "Step 1",
+            label: "Registration type",
             value: "step-1",
             isActive: true
         },
         step2: {
-            label: "Step 2",
+            label: "Ticket selection",
             value: "step-2",
+            isActive: false
+        },
+        step3: {
+            label: "Extra booking",
+            value: "step-3",
             isActive: false
         }
     };
@@ -135,6 +140,9 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             this.steps.step1.isActive = false;
             this.steps.step2.isActive = true;
         } else if (this.steps.step2.isActive) {
+            this.steps.step2.isActive = false;
+            this.steps.step3.isActive = true;
+        } else if (this.steps.step3.isActive) {
             // this.steps.step2.isActive = false;
             this.finishRegistration();
         }
@@ -168,13 +176,14 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                 let generalData = {};
                 generalData = {...generalData, ...this.userInfo};
                 generalData.selectTicket = this.selectedTicket;
-                generalData.event = this.ean_event;
+                generalData.eventId = this.ean_event.Id;
                 generalData.priceTicket = this.priceTicket;
+                generalData.contactId = this.userInfo.contact.Id;
                 if (this.registrationType === "solo") {
                     participants.push({
                         sobjectType: "Participant__c",
                         Contact__c: this.userInfo.contact.Id,
-                        Event_Ticket__c: this.userInfo.selectTicket,
+                        Event_Ticket__c: generalData.selectTicket,
                         Event_custom__c: this.ean_event.Id,
                     });
                 } else {
@@ -182,7 +191,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                         participants.push({
                             sobjectType: "Participant__c",
                             Event_custom__c: this.ean_event.Id,
-                            Event_Ticket__c: this.userInfo.selectTicket,
+                            Event_Ticket__c: generalData.selectTicket,
                             Event_Registration_Sub_Group__c: result,
                         });
                     }
@@ -190,16 +199,29 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
 
                 return insertEventParticipants({ participants: participants, generalData: generalData });
             })
-            .then((res) => {
+            .then((data) => {
                 this.isSpinner = false;
-                let msg = res.status !== 'Error' ? `You have successfully registered for the ${this.ean_event.Name}` : res.message;
-                this.dispatchToast(res.status, msg, res.status);
+                let msg = data.status !== 'Error' ? `You have successfully registered for the ${this.ean_event.Name}` : data.message;
+                this.dispatchToast(data.status, msg, data.status);
 
-                if (res.status !== 'Error') {
+                console.log('data insertEventParticipants ', data);
+                // console.log('data.result insertEventParticipants ', data.result);
+                // console.log('data.result[0] insertEventParticipants ', data.result[0]);
+                if (data.status !== 'Error') {
+                    // this[NavigationMixin.Navigate]({
+                    //     type: "comm__namedPage",
+                    //     attributes: {
+                    //         pageName: "home"
+                    //     }
+                    // });
+
                     this[NavigationMixin.Navigate]({
-                        type: "comm__namedPage",
+                        type: 'comm__namedPage',
                         attributes: {
-                            pageName: "home"
+                            pageName: 'payment-component'
+                        },
+                        state: {
+                            orderId: data.result[0].Id
                         }
                     });
                 }

@@ -10,4 +10,5 @@
     <tabs>Presenter__c</tabs>
     <tabs>Author__c</tabs>
     <tabs>Abstract__c</tabs>
+    <tabs>Change_Request__c</tabs>
 </CustomApplication>

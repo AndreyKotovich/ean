@@ -44,7 +44,19 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>IsAdditional__c</field>
+                <field>Max_Participants__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>Registrations__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Mutual_Exclusion__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Required</behavior>
+                <field>Type__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
@@ -140,11 +152,6 @@
         <relatedList>Lecture__c.Session__c</relatedList>
         <sortField>Lecture_Start__c</sortField>
         <sortOrder>Desc</sortOrder>
-    </relatedLists>
-    <relatedLists>
-        <fields>NAME</fields>
-        <fields>Ticket__c</fields>
-        <relatedList>EventSessionTicketJunction__c.Session__c</relatedList>
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>

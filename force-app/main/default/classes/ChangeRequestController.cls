@@ -7,17 +7,21 @@ public with sharing class ChangeRequestController {
 	public static Map<String, Object> getPreparedData(Map<String, Object> settings) {
 		try {
 
-			//	becomes from QuickAction	if our manager click 'New Change Request' button on 'Contact' record
+			//	FIRST PRIORITY	//	becomes from QuickAction	if our manager click 'New Change Request' button on 'Contact' record
 			String recordId = settings.containsKey('recordId') ? String.valueOf(settings.get('recordId')) : '';
+
+			//	SECOND PRIORITY
 			String userId = '' + UserInfo.getUserId();	//	eanStaffUserId OR communityUserId
 
 			List<User> communityUser = !String.isBlank(recordId) ? [SELECT Id, ContactId, Contact.AccountId FROM User WHERE ContactId =:recordId LIMIT 1]
 				: [SELECT Id, ContactId, Contact.AccountId FROM User WHERE Id =:userId LIMIT 1];
 
-			String communityContactId = '' + communityUser[0].ContactId;
-			// Id communityAccountId = communityUser[0].Contact.AccountId;
-
+			String communityContactId = '' + communityUser[0].ContactId;	// Id communityAccountId = communityUser[0].Contact.AccountId;
 			Boolean executedNotAtCommunity = userId != '' + communityUser[0].Id;
+
+			system.debug('executedNotAtCommunity= ' + executedNotAtCommunity);
+			system.debug('userId= ' + userId);
+			system.debug('communityUser[0].Id= ' + '' + communityUser[0].Id);
 
 			List<Change_Request__c> changeRequests = [
 				SELECT Id, Name, CreatedDate, Description__c, Event_Participation__c, Status__c,
@@ -43,17 +47,26 @@ public with sharing class ChangeRequestController {
 
 			return new Map<String, Object>{
 				'result' => true,
+
+				//	DEBUG
+				'userId' => userId,
+				'communityUser' => communityUser,
+				'communityContactId' => communityContactId,
+				'changeRequests' => changeRequests,
+
 				'changeRequestsList' => changeRequestsList,
+				'displayNoRecordsMessage' => changeRequestsList.isEmpty(),
 				'displayChangeRequestsList' => !changeRequestsList.isEmpty(),
-				'requestsTypeMap' => getPicklistValues(CHANGE_REQUEST_OBJECT_API_NAME, PICKLIST_FIELD_API_NAME),
-				// 'componentLabel' => !String.isBlank(eanStaffUserId) ? 'Community User Change Requests' : 'My Change Requests'
-				'componentLabel' => executedNotAtCommunity ? 'Community User Change Requests' : 'My Change Requests'
+				'requestsTypeListMap' => getPicklistValues(CHANGE_REQUEST_OBJECT_API_NAME, PICKLIST_FIELD_API_NAME),
+				'componentLabel' => executedNotAtCommunity ? 'Community User Change Requests' : 'My Change Requests',
+				'displayTopButtons' => !executedNotAtCommunity,
+				'displayBottomButtons' => executedNotAtCommunity
 			};
 
 		} catch (Exception e) { return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString()}; }
 	}
 
-	//	TODO: MOve to UTILS Apex class
+	//	TODO: Move to UTILS Apex class
 	public static List<Map<String, String>> getPicklistValues(String objectName, String fieldName){
 		Schema.SObjectType s = Schema.getGlobalDescribe().get(objectName);
 		Schema.DescribeSObjectResult r = s.getDescribe();
@@ -67,7 +80,6 @@ public with sharing class ChangeRequestController {
 		}
 		return listValues;
 	}
-
 
 	public class ChangeRequestWrap {
 		@AuraEnabled public String crId { get; set; }

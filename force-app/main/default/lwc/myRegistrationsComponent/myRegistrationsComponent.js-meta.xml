@@ -6,6 +6,14 @@
     <masterLabel>My Registrations</masterLabel>
     <targets>
         <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+        <target>lightning__AppPage</target>
         <target>lightning__RecordPage</target>
+        <target>lightning__HomePage</target>
     </targets>
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default, lightning__RecordPage">
+            <property name="params" type="String" label="System Params" description="JSON with system params"/>
+        </targetConfig>
+    </targetConfigs>
 </LightningComponentBundle>

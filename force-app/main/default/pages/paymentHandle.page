@@ -116,12 +116,12 @@
                         </tbody>
                     </table>
                     <div class="slds-grid slds-gutters slds-text-align_center slds-m-right_xxx-small">
-                        <div class="slds-col" style="width: 60%">
+                        <div class="slds-col slds-size_3-of-5">
                             <span style="font-weight:bold;">Total:</span>
                         </div>
-                        <div class="slds-col" style="width: 20%">
+                        <div class="slds-col slds-size_1-of-5">
                         </div>
-                        <div class="slds-col slds-text-body_regular" style="width: 20%">
+                        <div class="slds-col slds-text-body_regular slds-size_1-of-5">
                             <span id="order-total" style="font-weight:bold;"></span>
                         </div>
                     </div>

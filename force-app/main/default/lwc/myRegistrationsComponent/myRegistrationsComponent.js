@@ -4,6 +4,8 @@ import connectedCallbackApex from '@salesforce/apex/MyRegistrationsController.co
 
 export default class MyRegistrationsComponent extends NavigationMixin(LightningElement) {
 
+	@api params;
+
 	_callbackResult;
 	_callbackResultString = '';	// DELETE
 
@@ -21,7 +23,8 @@ export default class MyRegistrationsComponent extends NavigationMixin(LightningE
 	_displayNoRegistrationMessage = false;
 
 	connectedCallback() {
-		console.log('connectedCallback');
+		console.log('myRegistrationsComponent connectedCallback');
+		console.log('myRegistrationsComponent connectedCallback this.params: ', this.params);
 		connectedCallbackApex()
 			.then(result=>{
 				console.log('result: ', result);
@@ -65,6 +68,7 @@ export default class MyRegistrationsComponent extends NavigationMixin(LightningE
 
 	}
 
+	//	TODO CREATE NEW CHANGE REQUEST
 	navigateToRecordPage(id) {
 		console.log('navigateToRecordPage participantId: ', id);
 		this[NavigationMixin.Navigate]({
@@ -86,7 +90,8 @@ export default class MyRegistrationsComponent extends NavigationMixin(LightningE
 				actionName: 'view'
 			},
 			state: {
-				'recordId': id
+				'recordId': id,
+				'params': this.params
 			}
 		});
 	}

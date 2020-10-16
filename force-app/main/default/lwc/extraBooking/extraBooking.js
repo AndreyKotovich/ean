@@ -11,26 +11,31 @@ export default class ExtraBooking extends LightningElement {
     @track hideNextButton = false;
     @track hidePreviousButton = false;
     @track isSpinner = true;
+    @track sessionsCheckboxGroup = [];
 
-    daysAndSessions = {};
-    activeSessions = []; //used to auto open all accordions
+    eventExtraSessions = []; //all extra sessions for this event
+    availableExtraSession = []; //sessions which are available for the participant
+    isEarlyBird = false;
 
     connectedCallback() {
-        let promise1 = getExtraSessions({eventId: this.event.Id});
-        let promise2 = getSessionsTickets({eventId: this.event.Id});
+        if (this.registrationType !== "solo") return this.handleNextClick();
+
+        this.isEarlyBird = this.eanEvent.Early_Bird_Deadline__c ? Utils.deadlineCheck(this.eanEvent.Early_Bird_Deadline__c) : false;
+
+        let promise1 = getExtraSessions({eventId: this.eanEvent.Id});
+        // let promise2 = getSessionsTickets({eventId: this.event.Id});
 
         Promise.all([promise1])
             .then(results =>{
-                this.isSpinner = false;
-                this.daysAndSessions = results[0];
+                console.log(JSON.stringify(results));
+                this.eventExtraSessions = results[0];
 
                 if(Object.keys(results[0]).length === 0 && results[0].constructor === Object){
                     this.handleNextClick();
                 } else {
-                    let keys = Object.keys(results[0]);
-                    this.activeSessions = [...keys];
-                    this.compileAccordionArrays();
+                    this.parseSessionsAndPrice();
                 }
+                this.isSpinner = false;
             })
             .catch(error => {
                 this.isSpinner = false;
@@ -75,111 +80,58 @@ export default class ExtraBooking extends LightningElement {
         );
     }
 
-    compileAccordionArrays(){
-        let daysAndSessions = Object.assign({}, this.daysAndSessions);
-        let accordionArray = [];
-        let uniqueIteration = 0;
-        let displayedMutualExclusionSetIds = new Set();
+    parseSessionsAndPrice(){
 
-        for(let date in daysAndSessions){
-            if(!daysAndSessions.date) continue;
+        for(let session of this.eventExtraSessions){
 
-            let accordion = {};
-            let checkboxValues = [];
-            let radioButtons = [];
-            let mutualExclSessionsMap = {};
+            if(!session.Event_Tickets__r) continue;
 
-            for(let session of daysAndSessions[date]){
-                let isDisabled = session['Registrations__c'] >= session['Max_Participants__c'];
+            for (let ticket of session.Event_Tickets__r) {
 
-                let sessionName = session.Name;
-                if(session.hasOwnProperty('Start_Date__c') && session.hasOwnProperty('End_Date__c')){
-                    sessionName += ' – [';
-                    sessionName += (new Date(session.Start_Date__c).getHours() < 10 ? '0' : '') + new Date(session.Start_Date__c).getHours();
-                    sessionName += ':';
-                    sessionName += (new Date(session.Start_Date__c).getMinutes() < 10 ?'0' : '') + new Date(session.Start_Date__c).getMinutes();
-                    sessionName += ' - ';
-                    sessionName += (new Date(session.End_Date__c).getHours() < 10 ? '0' : '') + new Date(session.End_Date__c).getHours();
-                    sessionName += ':';
-                    sessionName += (new Date(session.End_Date__c).getMinutes() < 10 ? '0' : '') + new Date(session.End_Date__c).getMinutes();
-                    sessionName += ']';
-                }
+                if(session.Id !== ticket.Session__c) continue;
 
-                if(session.hasOwnProperty('Mutual_Exclusion__c')){
+                const { Available_for_Countries__c, Available_for_Memberships__c } = ticket.Ticket__r;
 
-                    if(!isDisabled){
-                        displayedMutualExclusionSetIds.add(session['Mutual_Exclusion__c']); //for future validation
-                    }
+                if (!Available_for_Countries__c || !Available_for_Countries__c.includes(this.userInfo.countyRegion))
+                    continue;
 
-                    let radioButtonItem = {
-                        Id: session.Id,
-                        elementId: 'radio-session-'+uniqueIteration,
-                        name: sessionName,
-                        description: isDisabled ? 'Ausgebucht' : session['Description__c'],
-                        mutualExclusion: session['Mutual_Exclusion__c'],
-                        checked: this.selectedSessions.includes(session.Id) && !isDisabled,
-                        isDisabled: isDisabled
-                    };
-
-                    if(mutualExclSessionsMap.hasOwnProperty(session['Mutual_Exclusion__c'])){
-                        let radioButtonsItems = [...mutualExclSessionsMap[session['Mutual_Exclusion__c']]];
-                        radioButtonsItems.push(radioButtonItem);
-                        mutualExclSessionsMap[session['Mutual_Exclusion__c']] = radioButtonsItems;
-                    } else {
-                        mutualExclSessionsMap[session['Mutual_Exclusion__c']] = [radioButtonItem];
-                    }
-
+                if (!Available_for_Memberships__c) {
+                    this.availableExtraSession.push(ticket);
                 } else {
-                    let checkBoxItem = {
-                        Id: session.Id,
-                        elementId: 'checkbox-session-'+uniqueIteration,
-                        name: sessionName,
-                        description: isDisabled ? 'Ausgebucht' : session['Description__c'],
-                        checked: this.selectedSessions.includes(session.Id) && !isDisabled,
-                        isDisabled: isDisabled
-                    };
-                    checkboxValues.push(checkBoxItem);
+
+                    for (let membership of this.userInfo.memberships) {
+                        if (Available_for_Memberships__c.includes(membership.Membership__r.API__c)) {
+                            this.availableExtraSession.push(ticket);
+                            break;
+                        }
+                    }
+
                 }
-
-                uniqueIteration++;
             }
-
-            for(let mutualExcl in mutualExclSessionsMap){
-                let radioButton = {
-                    values: mutualExclSessionsMap[mutualExcl]
-                };
-                radioButtons.push(radioButton);
-            }
-
-            accordion.day = date;
-            accordion.sessions = {
-                hasCheckboxes: checkboxValues.length > 0,
-                hasRadioButtons: radioButtons.length > 0,
-                checkboxValues: checkboxValues,
-                radioButtons: radioButtons
-            };
-
-            accordionArray.push(accordion);
         }
 
-        this.displayedMutualExclusionSetIds = displayedMutualExclusionSetIds;
+        this.generateCheckboxGroup()
+    }
 
-        this.accordionArray = [...accordionArray];
+    generateCheckboxGroup(){
+        let sessionsCheckboxGroup = [];
 
-        let sideEvents = [...this.sideEvents];
-        let accordionSideEventArray = [];
+        console.log(JSON.stringify(this.availableExtraSession));
 
-        for(let i = 0; i < sideEvents.length; i++){
-            accordionSideEventArray.push({
-                Id: sideEvents[i].Id,
-                elementId: 'checkbox-side-event-' + i,
-                name: sideEvents[i].Name,
-                description: sideEvents[i].hasOwnProperty('Start_Date__c') ? 'Start Date: '+Utils.formatDate(new Date(sideEvents[i]['Start_Date__c'])) : '',
-                checked: this.selectedSideEvents.includes(sideEvents[i].Id)
+        for(let [i, ticket] of this.availableExtraSession.entries()){
+
+            let price = this.isEarlyBird ? ticket.Early_bird_price__c : ticket.Price__c;
+            if(price === undefined) continue;
+
+            sessionsCheckboxGroup.push({
+                elementId: 'extra-session-'+i,
+                value: ticket.Id,
+                label: ticket.Session__r.Name,
+                description: ticket.Session__r.Description__c,
+                price: price
             });
         }
 
-        this.accordionSideEventArray = [...accordionSideEventArray];
-
+        this.sessionsCheckboxGroup = [...sessionsCheckboxGroup];
     }
 }

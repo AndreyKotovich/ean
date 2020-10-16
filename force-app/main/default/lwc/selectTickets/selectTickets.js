@@ -1,6 +1,7 @@
 import { api, LightningElement, track } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { Utils } from "c/utils";
+import { EventRegistrationApplication } from "c/eventRegistrationApplication";
 import getEventTickets from "@salesforce/apex/EventRegistrationController.getEventTickets";
 
 export default class SelectTickets extends LightningElement {
@@ -47,7 +48,7 @@ export default class SelectTickets extends LightningElement {
   groupTickets = [];
   iprTickets = [];
   _selectedTicket = "";
-
+//todo eatly bird check
   connectedCallback() {
     let promises = [
       getEventTickets({ eventId: this.eanEvent.Id })

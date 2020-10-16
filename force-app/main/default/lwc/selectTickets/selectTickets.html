@@ -1,13 +1,12 @@
 <!-- Select Tickets -->
 <template>
   <lightning-layout horizontal-align="center">
-    <lightning-layout-item
-      padding="around-small"
-      size="12"
-      large-device-size="4"
-      medium-device-size="6"
-      small-device-size="12"
-      flexibility="auto"
+    <lightning-layout-item padding="around-small"
+                           size="12"
+                           large-device-size="4"
+                           medium-device-size="6"
+                           small-device-size="12"
+                           flexibility="auto"
     >
       <div class="slds-card__body">
         <lightning-card>
@@ -21,13 +20,12 @@
               >
                 <div class="slds-col slds-size_10-of-12">
                   <div class="slds-radio">
-                    <input
-                      type="radio"
-                      id={radioItem.elementId}
-                      value={radioItem.id}
-                      name="individual-ticket-radio"
-                      class="input-ticket-radio"
-                      checked={radioItem.checked}
+                    <input type="radio"
+                           id={radioItem.elementId}
+                           value={radioItem.id}
+                           name="individual-ticket-radio"
+                           class="input-ticket-radio"
+                           checked={radioItem.checked}
                     />
                     <label class="slds-radio__label" for={radioItem.elementId}>
                       <div class="slds-grid slds-gutters">
@@ -65,19 +63,17 @@
 
   <div class="slds-card__footer slds-grid slds-align--absolute-center">
     <div if:false={hidePreviousButton}>
-      <lightning-button
-        class="slds-col slds-m-around_x-small"
-        label="Previous"
-        variant="neutral"
-        onclick={handlePreviousClick}
+      <lightning-button class="slds-col slds-m-around_x-small"
+                        label="Previous"
+                        variant="neutral"
+                        onclick={handlePreviousClick}
       ></lightning-button>
     </div>
     <div if:false={hideNextButton}>
-      <lightning-button
-        class="slds-col slds-m-around_x-small"
-        label="Next"
-        variant="brand"
-        onclick={handleNextClick}
+      <lightning-button class="slds-col slds-m-around_x-small"
+                        label="Next"
+                        variant="brand"
+                        onclick={handleNextClick}
       ></lightning-button>
     </div>
   </div>

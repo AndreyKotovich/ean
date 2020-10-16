@@ -5,7 +5,7 @@
     <externalId>false</externalId>
     <label>Transfer from Contact</label>
     <referenceTo>Contact</referenceTo>
-    <relationshipLabel>Change Requests</relationshipLabel>
+    <relationshipLabel>Change Requests (Transfer from Contact)</relationshipLabel>
     <relationshipName>Change_Requests_From</relationshipName>
     <required>false</required>
     <trackTrending>false</trackTrending>

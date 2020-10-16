@@ -209,12 +209,18 @@ public with sharing class PaymentHttpRequest {
 
     @RemoteAction public static String getOrderItems(String orderId) {
         List<Order__c> order = [SELECT Id, Total_amount__c, Name FROM Order__c WHERE Id = :orderId];
-        List<Order_Item__c> orderItems = [SELECT Id, Quantity__c, Membership__r.Name, Product__r.Name, Amount__c, Total_amount__c FROM Order_Item__c WHERE Order_Custom__c = :order[0].Id];
+        List<Order_Item__c> orderItems = [
+            SELECT Id, Quantity__c, Membership__r.Name, Product__r.Name, Amount__c, 
+                Total_amount__c, Event_Participation__r.Event_Ticket__r.Ticket__r.Name
+            FROM Order_Item__c 
+            WHERE Order_Custom__c = :order[0].Id
+        ];
         System.debug('orderItems:: ' + orderItems);
         List<Map<String, Object>> orderItemsMap = new List<Map<String, Object>>();
         for (Order_Item__c oi : orderItems) {
             orderItemsMap.add(new Map<String, Object>{
-                    'product' => oi.Membership__c == null ? oi.Product__r.Name : oi.Membership__r.Name,
+                    'product' => oi.Membership__c == null ? oi.Product__r.Name : oi.Membership__c == null ? 
+                        oi.Event_Participation__r.Event_Ticket__r.Ticket__r.Name : oi.Membership__r.Name,
                     'quantity' => oi.Quantity__c,
                     'amount' => oi.Amount__c,
                     'total-amount' => oi.Total_amount__c

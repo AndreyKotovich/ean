@@ -1,160 +1,85 @@
 <!-- Extra Booking -->
 <template>
-<!--    <lightning-layout horizontal-align="center">-->
-<!--        <lightning-layout-item-->
-<!--                padding="around-small"-->
-<!--                size="12"-->
-<!--                large-device-size="4"-->
-<!--                medium-device-size="6"-->
-<!--                small-device-size="12"-->
-<!--                flexibility="auto"-->
-<!--        >-->
-<!--            <div class="slds-card__body slds-p-around_medium">-->
+    <lightning-layout horizontal-align="center">
+        <lightning-layout-item
+                padding="around-small"
+                size="12"
+                large-device-size="6"
+                medium-device-size="6"
+                small-device-size="12"
+                flexibility="auto"
+        >
+            <div class="slds-card__body">
+                <lightning-card>
+                    <div slot="title">Extra Booking</div>
+                    <div class="slds-p-left_x-large slds-p-right_x-large slds-p-top_x-large">
 
+                        <div for:each={sessionsCheckboxGroup} for:item="product" key={key}>
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_10-of-12">
+                                    <div class="slds-checkbox">
+                                        <input type="checkbox" name="options" id={product.elementId} value={product.value} />
 
-<!--                <lightning-accordion allow-multiple-sections-open active-section-name={activeSessions} >-->
-<!--                    <div for:each={accordionArray} for:item="accordion" key={accordion.day}>-->
-<!--                        <lightning-accordion-section name={accordion.day} label={accordion.day}>-->
+                                        <label class="slds-checkbox__label" for={product.elementId}>
+                                            <div class="slds-grid slds-gutters">
+                                                <div class="slds-col">
+                                                    <span class="slds-checkbox_faux"></span>
+                                                </div>
+                                                <div class="slds-col">
+                                            <span class="slds-form-element__label">
+                                                <div class="slds-grid slds-grid_vertical">
+                                                    <div class="slds-col">
+                                                        {product.label}
+                                                    </div>
+                                                    <div class="slds-col slds-text-body_small">
+                                                        {product.description}
+                                                    </div>
+                                                </div>
+                                            </span>
+                                                </div>
+                                            </div>
+                                        </label>
 
-<!--                            <div if:true={accordion.sessions.hasCheckboxes}>-->
-<!--                                <lightning-layout multiple-rows="true">-->
-<!--                                    <lightning-layout-item padding="around-small" for:each={accordion.sessions.checkboxValues} for:item="session" key={key} size="12" large-device-size="4" medium-device-size="6" small-device-size="12" flexibility="auto">-->
-<!--                                        <div class="slds-checkbox">-->
-<!--                                            <input type="checkbox" name="options" class="input-session"-->
-<!--                                                   id={session.elementId} value={session.Id} checked={session.checked} disabled={session.isDisabled} />-->
-<!--                                            <label class="slds-checkbox__label" for={session.elementId}>-->
-<!--                                                <div class="slds-grid slds-gutters">-->
-<!--                                                    <div class="slds-col">-->
-<!--                                                        <span class="slds-checkbox_faux"></span>-->
-<!--                                                    </div>-->
-<!--                                                    <div class="slds-col">-->
-<!--                                                <span class="slds-form-element__label">-->
-<!--                                                    <div class="slds-grid slds-grid_vertical">-->
-<!--                                                        <div class="slds-col slds-text-color_default">-->
-<!--                                                            <b>{session.name}</b>-->
-<!--                                                        </div>-->
-<!--                                                        <div class="slds-col">-->
-<!--                                                            {session.description}-->
-<!--                                                        </div>-->
-<!--                                                    </div>-->
-<!--                                                </span>-->
-<!--                                                    </div>-->
-<!--                                                </div>-->
-<!--                                            </label>-->
-<!--                                        </div>-->
-<!--                                    </lightning-layout-item>-->
-<!--                                </lightning-layout>-->
-<!--                            </div>-->
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_2-of-12 slds-text-align_center">
+                                    <span class="community-text-gray">{product.price} &nbsp; €</span>
+                                </div>
+                            </div>
+                        </div>
 
-<!--                            <div if:true={accordion.sessions.hasRadioButtons}>-->
+                    </div>
+                </lightning-card>
+            </div>
+        </lightning-layout-item>
+    </lightning-layout>
 
-<!--                                <div class="slds-text-heading_x-small">-->
-<!--                                    {label.EventRegistrationSessionSelectionMutualHeader}-->
-<!--                                </div>-->
+    <div class="slds-card__footer slds-grid slds-align--absolute-center">
+        <div if:false={hidePreviousButton}>
+            <lightning-button
+                    class="slds-col slds-m-around_x-small"
+                    label="Previous"
+                    variant="neutral"
+                    onclick={handlePreviousClick}
+            ></lightning-button>
+        </div>
+        <div if:false={hideNextButton}>
+            <lightning-button
+                    class="slds-col slds-m-around_x-small"
+                    label="Next"
+                    variant="brand"
+                    onclick={handleNextClick}
+            ></lightning-button>
+        </div>
+    </div>
 
-<!--                                <div for:each={accordion.sessions.radioButtons} for:item="radioButton" key={key}>-->
-<!--                                    <lightning-layout multiple-rows="true">-->
-<!--                                        <lightning-layout-item for:each={radioButton.values} for:item="radioValue" key={key} padding="around-small" size="12" large-device-size="4" medium-device-size="6" small-device-size="12" flexibility="auto">-->
-<!--                                            <div class="slds-radio">-->
-<!--                                                <input type="radio" id={radioValue.elementId} value={radioValue.Id} name={radioValue.mutualExclusion} class="input-session input-session-radio" checked={radioValue.checked} disabled={radioValue.isDisabled} />-->
-<!--                                                <label class="slds-radio__label" for={radioValue.elementId}>-->
-<!--                                                    <div class="slds-grid slds-gutters">-->
-<!--                                                        <div class=" slds-col">-->
-<!--                                                            <span class="slds-radio_faux"></span>-->
-<!--                                                        </div>-->
-<!--                                                        <div class="slds-col">-->
-<!--                                                <span class="slds-form-element__label">-->
-<!--                                                    <div class="slds-grid slds-grid_vertical">-->
-<!--                                                        <div class="slds-col slds-text-color_default">-->
-<!--                                                            <b>{radioValue.name}</b>-->
-<!--                                                        </div>-->
-<!--                                                        <div class="slds-col">-->
-<!--                                                            {radioValue.description}-->
-<!--                                                        </div>-->
-<!--                                                    </div>-->
-<!--                                                </span>-->
-<!--                                                        </div>-->
-<!--                                                    </div>-->
-<!--                                                </label>-->
-<!--                                            </div>-->
-<!--                                        </lightning-layout-item>-->
-<!--                                    </lightning-layout>-->
-<!--                                </div>-->
-
-<!--                            </div>-->
-
-<!--                        </lightning-accordion-section>-->
-<!--                    </div>-->
-
-<!--                    <div if:true={hasSideEvents}>-->
-<!--                        <lightning-accordion-section name={label.EventRegistrationSideEventAccordionLabel} label={label.EventRegistrationSideEventAccordionLabel}>-->
-
-<!--                            <lightning-layout multiple-rows="true">-->
-<!--                                <lightning-layout-item padding="around-small" for:each={accordionSideEventArray} for:item="sideEvent" key={key} size="12" large-device-size="4" medium-device-size="6" small-device-size="12" flexibility="auto">-->
-<!--                                    <div class="slds-checkbox">-->
-<!--                                        <input type="checkbox" name="options" class="input-side-event"-->
-<!--                                               id={sideEvent.elementId} value={sideEvent.Id} checked={sideEvent.checked} />-->
-<!--                                        <label class="slds-checkbox__label" for={sideEvent.elementId}>-->
-<!--                                            <div class="slds-grid slds-gutters">-->
-<!--                                                <div class="slds-col">-->
-<!--                                                    <span class="slds-checkbox_faux"></span>-->
-<!--                                                </div>-->
-<!--                                                <div class="slds-col">-->
-<!--                                        <span class="slds-form-element__label">-->
-<!--                                            <div class="slds-grid slds-grid_vertical">-->
-<!--                                                <div class="slds-col slds-text-color_default">-->
-<!--                                                    <b>{sideEvent.name}</b>-->
-<!--                                                </div>-->
-<!--                                                <div class="slds-col">-->
-<!--                                                    {sideEvent.description}-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                        </span>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                        </label>-->
-<!--                                    </div>-->
-
-<!--                                </lightning-layout-item>-->
-<!--                            </lightning-layout>-->
-
-<!--                        </lightning-accordion-section>-->
-<!--                    </div>-->
-
-
-<!--                </lightning-accordion>-->
-
-
-<!--            </div>-->
-<!--        </lightning-layout-item>-->
-<!--    </lightning-layout>-->
-
-<!--    <div class="slds-card__footer slds-grid slds-align&#45;&#45;absolute-center">-->
-<!--        <div if:false={hidePreviousButton}>-->
-<!--            <lightning-button-->
-<!--                    class="slds-col slds-m-around_x-small"-->
-<!--                    label="Previous"-->
-<!--                    variant="neutral"-->
-<!--                    onclick={handlePreviousClick}-->
-<!--            ></lightning-button>-->
-<!--        </div>-->
-<!--        <div if:false={hideNextButton}>-->
-<!--            <lightning-button-->
-<!--                    class="slds-col slds-m-around_x-small"-->
-<!--                    label="Next"-->
-<!--                    variant="brand"-->
-<!--                    onclick={handleNextClick}-->
-<!--            ></lightning-button>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--    <template if:true={isSpinner}>-->
-<!--        <div class="slds-spinner_container" style="position: fixed">-->
-<!--            <lightning-spinner-->
-<!--                    alternative-text="Loading"-->
-<!--                    variant="brand"-->
-<!--                    size="large"-->
-<!--            ></lightning-spinner>-->
-<!--        </div>-->
-<!--    </template>-->
+    <template if:true={isSpinner}>
+        <div class="slds-spinner_container" style="position: fixed">
+            <lightning-spinner
+                    alternative-text="Loading"
+                    variant="brand"
+                    size="large"
+            ></lightning-spinner>
+        </div>
+    </template>
 </template>

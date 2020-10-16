@@ -34,6 +34,10 @@
                 <behavior>Edit</behavior>
                 <field>Registration_Deadline__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Abstract_Submission_Deadline__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>

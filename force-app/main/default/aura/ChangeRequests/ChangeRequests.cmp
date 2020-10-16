@@ -1,0 +1,17 @@
+<aura:component description="ChangeRequests" controller="ChangeRequestController" implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader">
+
+	<!--Style-->
+	<aura:html tag="style">
+		.slds-modal__container{
+			height : auto;
+			width: 70%;
+			max-width: 70rem;
+		}
+		.modal-body{
+			max-height: 550px !important;
+		}
+	</aura:html>
+
+	<aura:attribute name="recordId" type="String"/>
+	<c:changeRequestComponent recordId="{!v.recordId}"/>
+</aura:component>

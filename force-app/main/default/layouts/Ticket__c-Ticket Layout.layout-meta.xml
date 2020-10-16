@@ -71,12 +71,6 @@
     </layoutSections>
     <relatedLists>
         <fields>NAME</fields>
-        <fields>Event_custom__c</fields>
-        <fields>Session__c</fields>
-        <relatedList>EventSessionTicketJunction__c.Ticket__c</relatedList>
-    </relatedLists>
-    <relatedLists>
-        <fields>NAME</fields>
         <fields>Promo_Code__c</fields>
         <fields>DiscountPercent__c</fields>
         <fields>Discount__c</fields>

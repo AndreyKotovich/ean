@@ -51,6 +51,18 @@
         >
         </c-select-tickets>
       </template>
+
+      <template if:true={steps.step3.isActive}>
+        <c-extra-booking
+          oncontinue={onSelectTicket}
+          onprevious={onPrevious}
+          onerror={onError}
+          user-info={userInfo}
+          ean-event={ean_event}
+          registration-type={registrationType}
+        >
+        </c-extra-booking>
+      </template>
     </div>
   </template>
 

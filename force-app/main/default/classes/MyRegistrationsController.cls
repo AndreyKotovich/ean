@@ -10,20 +10,22 @@ public without sharing class MyRegistrationsController {
 
 	//	COMMUNITY COMPONENT: MY REGISTRAIONS
 	@AuraEnabled
-	public static Map<String, Object> connectedCallbackApex() {
-		return connectedCallbackApex2(UserInfo.getUserId());
-	}
-
-	public static Map<String, Object> connectedCallbackApex2(Id userId) {
+	public static Map<String, Object> getMyRegistrations(Map<String, Object> settings) {
 		try {
 
 			// DELETE
 			List<String> logList = new List<String>();
 
-			// Id userId = UserInfo.getUserId();
-			List<User> currentUser = [SELECT Id, ContactId, Contact.AccountId FROM User WHERE Id =:userId LIMIT 1];
-			Id contactId = currentUser[0].ContactId;
-			Id accountId = currentUser[0].Contact.AccountId;
+			//	FIRST PRIORITY	//	becomes from QuickAction	if our manager click 'New Change Request' button on 'Contact' record
+			String recordId = settings.containsKey('recordId') ? String.valueOf(settings.get('recordId')) : '';
+
+			//	SECOND PRIORITY
+			String userId = '' + UserInfo.getUserId();	//	eanStaffUserId OR communityUserId
+
+			List<User> communityUser = !String.isBlank(recordId) ? [SELECT Id, ContactId, Contact.AccountId FROM User WHERE ContactId =:recordId LIMIT 1]
+				: [SELECT Id, ContactId, Contact.AccountId FROM User WHERE Id =:userId LIMIT 1];
+
+			Id contactId = communityUser[0].ContactId;	//	Id accountId = communityUser[0].Contact.AccountId;
 			Id g2mRT = Schema.SObjectType.Participant__c.getRecordTypeInfosByDeveloperName().get('G2M').getRecordTypeId();
 
 			List<Participant__c> allMyParticipations = [
@@ -168,7 +170,7 @@ public without sharing class MyRegistrationsController {
 				'result' => true,
 				'userId' => userId,
 				'contactId' => contactId,
-				'accountId' => accountId,
+				// 'accountId' => accountId,
 				'registrationsSolo' => registrationsSolo,
 				'registrationsGroup' => registrationsGroup,
 				'displayRegistrationsSolo' => !registrationsSolo.isEmpty(),

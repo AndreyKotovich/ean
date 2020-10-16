@@ -5,6 +5,7 @@ import clickButton1Apex from '@salesforce/apex/MyRegistrationsController.clickBu
 
 export default class GroupDetailsComponent extends LightningElement {
 	@api recordId;				// required for mode 'My Registrations'
+	@api params;
 	@api maxparticipants;		// required for mode 'Create Group Registration'
 
 	_callbackResult;

@@ -25,6 +25,7 @@
     <tabs>Presenter__c</tabs>
     <tabs>Author__c</tabs>
     <tabs>Abstract__c</tabs>
+    <tabs>Change_Request__c</tabs>
     <uiType>Lightning</uiType>
     <utilityBar>LightningSalesConsole_UtilityBar</utilityBar>
     <workspaceConfig>
@@ -33,6 +34,9 @@
         </mappings>
         <mappings>
             <tab>Author__c</tab>
+        </mappings>
+        <mappings>
+            <tab>Change_Request__c</tab>
         </mappings>
         <mappings>
             <tab>Event_Registration_Group__c</tab>

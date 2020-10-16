@@ -1158,16 +1158,6 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>EventSessionTicketJunction__c.Event_custom__c</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>EventSessionTicketJunction__c.Session__c</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
         <field>Event_Registration_Sub_Group__c.Is_Locked__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -1189,6 +1179,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Event_Ticket__c.Session__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Event__c.Abstract_Submission_Deadline__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -2533,6 +2528,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Presenter__c.New_Presenter_Email__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Product2.Product_use__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -2633,12 +2633,22 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Session__c.IsAdditional__c</field>
+        <field>Session__c.Location__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Session__c.Location__c</field>
+        <field>Session__c.Max_Participants__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Session__c.Mutual_Exclusion__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Session__c.Registrations__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
