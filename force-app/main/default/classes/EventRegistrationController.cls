@@ -30,6 +30,8 @@ public without sharing class EventRegistrationController {
 
             Contact undefinedContact = getUndefinedParticipant();
             Id congressRTId = Schema.SObjectType.Participant__c.getRecordTypeInfosByDeveloperName().get('Congress').getRecordTypeId();
+            System.debug('congressRTId ' + congressRTId);
+            System.debug('undefinedContact ' + undefinedContact);
 
             if (undefinedContact == null) {
                 return new Map<String, Object>{
@@ -46,6 +48,7 @@ public without sharing class EventRegistrationController {
                 }
             }
 
+            System.debug('insert participants:: ' + participants);
             insert participants;
 
             //Create order

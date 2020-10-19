@@ -1,4 +1,4 @@
-public with sharing class OrderHelper {
+public without sharing class OrderHelper {
 
     public static List<Order__c> createNewOrder(Map<String,Object> generalData) {
         
@@ -7,14 +7,10 @@ public with sharing class OrderHelper {
         
         Map<String,Object> genData = generalData.containsKey('generalData') ? 
             (Map<String,Object>)generalData.get('generalData') : new Map<String,Object>();
-            // System.debug('OrderHelper participants ' + participants);
-            // System.debug('OrderHelper generalData ' + genData);
-            // System.debug('OrderHelper event ' + genData.get('event'));
-
+        
         String contactId = (String)genData.get('contactId');
         String eventId = (String)genData.get('eventId');
         String groupId = (String)genData.get('groupId');
-        
         Decimal priceTicket = (Decimal)genData.get('priceTicket');
         
         Order__c o = new Order__c(
@@ -24,7 +20,6 @@ public with sharing class OrderHelper {
             Purchase_Type__c = 'New',
             Event_Registration_Sub_Group__c = groupId
         );
-
         insert o;
 
         List<Order_Item__c> oi = new List<Order_Item__c>();

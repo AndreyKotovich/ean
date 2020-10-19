@@ -148,9 +148,9 @@
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-3">
                     <fieldset class="slds-form-element">
                         <div class="slds-form-element__control">
-                            <div class="slds-grid slds-gutters">
-                                <div class="slds-col" style="width: 30%">
-                                    <span class="slds-radio">
+                            <div class="slds-grid slds-gutters"> 
+                                <div class="slds-col slds-size_1-of-3">
+                                    <span class="slds-radio" name="payMethod">
                                         <input type="radio" id="card-method" value="card-method" name="options"
                                                onchange="onSelectPayment('card-method')"/>
                                           <label class="slds-radio__label" for="card-method">
@@ -169,28 +169,7 @@
                                           </label>
                                     </span>
                                 </div>
-                                <div class="slds-col" style="width: 30%">
-                                    <span class="slds-radio">
-                                      <input type="radio" id="paypal-method" value="paypal-method" name="options"
-                                             onchange="onSelectPayment('paypal-method')"/>
-                                      <label class="slds-radio__label" for="paypal-method">
-                                          <div class="slds-grid slds-grid_vertical">
-                                              <div class="slds-col slds-text-align_center">
-                                                <span class="slds-radio_faux"></span>
-                                              </div>
-                                              <div class="slds-col slds-text-align_center">
-                                                  <apex:image alt="paypal" title="Paypal"
-                                                              url="{!URLFOR($Resource.Payment_Icons, '/payment_icons/paypal.png')}"/>
-                                              </div>
-                                              <div class="slds-col slds-text-align_center">
-                                                  <span class="slds-form-element__label">Paypal</span>
-                                              </div>
-                                          </div>
-
-                                      </label>
-                                    </span>
-                                </div>
-                                <div class="slds-col" style="width: 30%">
+                                <div class="slds-col slds-size_1-of-3">
                                     <span class="slds-radio">
                                       <input type="radio" id="bank-transfer-method" value="bank-transfer-method"
                                              name="options"
@@ -206,6 +185,26 @@
                                               </div>
                                               <div class="slds-col slds-text-align_center">
                                                   <span class="slds-form-element__label">Bank transfer</span>
+                                              </div>
+                                          </div>
+                                      </label>
+                                    </span>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <span class="slds-radio" name="payMethod">
+                                      <input type="radio" id="paypal-method" value="paypal-method" name="options"
+                                             onchange="onSelectPayment('paypal-method')"/>
+                                      <label class="slds-radio__label" for="paypal-method">
+                                          <div class="slds-grid slds-grid_vertical">
+                                              <div class="slds-col slds-text-align_center">
+                                                <span class="slds-radio_faux"></span>
+                                              </div>
+                                              <div class="slds-col slds-text-align_center">
+                                                  <apex:image alt="paypal" title="Paypal"
+                                                              url="{!URLFOR($Resource.Payment_Icons, '/payment_icons/paypal.png')}"/>
+                                              </div>
+                                              <div class="slds-col slds-text-align_center">
+                                                  <span class="slds-form-element__label">Paypal</span>
                                               </div>
                                           </div>
                                       </label>
@@ -416,15 +415,19 @@
             Visualforce.remoting.Manager.invokeAction(
                 '{!$RemoteAction.PaymentHttpRequest.showPaymentCheck}',
                 orderId,
-                function (result, event) {
+                function (res, event) {
                     console.log('statusCode '+event.statusCode);
+                    let result = JSON.parse(res);
                     if (event.statusCode == 200){
-                        if (result === 'SUCCESS') {
+                        document.getElementsByName("payMethod").forEach(e => {
+                            e.style.display = result.isGroup ? "none" : "block";
+                        });
+                        if (result.status === 'SUCCESS') {
                             choosePaymentMethod();
-                        } else if(result === 'ZERO_PAYMENT'){
+                        } else if(result.status === 'ZERO_PAYMENT'){
                             //ZERO_PAYMENT
                             zeroPayment();
-                        } else if(result === 'PAID'){
+                        } else if(result.status === 'PAID'){
                             //PAID_SCREEN
                             spinner.setAttribute('hidden', 'hidden');
                             showAndDetermineSuccessScreen();
@@ -435,7 +438,7 @@
                             let log = {
                                 'Process_Name__c':'Visualforce: paymentHandle page init() function',
                                 'Type__c':'Other',
-                                'Message__c' : 'PaymentHttpRequest.showPaymentCheck return: '+result + '\nurl: '+window.top.location.href + '\nOS: '+getOS(),
+                                'Message__c' : 'PaymentHttpRequest.showPaymentCheck return: '+result.status + '\nurl: '+window.top.location.href + '\nOS: '+getOS(),
                                 'Status__c' : 'Error',
                                 'End_Time__c' : new Date().toUTCString()
                             };
@@ -453,7 +456,9 @@
                         };
                         createCustomLog(log);
                     }
-                });
+                },
+                {escape:false}
+                );
         }
 
         function getOS() {
@@ -884,6 +889,7 @@
                 function (result, event) {
                     let parsedResult = JSON.parse(result);
                     let rows = '';
+                    console.log('parsedResult ', parsedResult)
                     parsedResult['order-items'].forEach(item => {
                         rows += `
                         <tr class="slds-hint-parent">

@@ -1,4 +1,4 @@
-public with sharing class PaymentHttpRequest {
+public without sharing class PaymentHttpRequest {
     public static Payment_Credentials__mdt paymentCredentials = new Payment_Credentials__mdt();
     @RemoteAction public static String cardsCheck(String orderId) {
         List<Order__c> order = [SELECT Id, Contact__c FROM Order__c WHERE Id = :orderId];
@@ -24,11 +24,13 @@ public with sharing class PaymentHttpRequest {
     }
     @RemoteAction public static String showPaymentCheck(String orderId) {
         String resultString = 'SUCCESS';
-        List<Order__c> order = [SELECT Id, Total_amount__c, Status__c FROM Order__c WHERE Id = :orderId];
+        List<Order__c> order = [SELECT Id, Total_amount__c, Status__c, Event_Registration_Sub_Group__c FROM Order__c WHERE Id = :orderId];
         List<Transaction__c> transactions = [SELECT Id, Status__c, Amount__c FROM Transaction__c WHERE Order_Custom__c = :orderId];
         List<Payment_Credentials__mdt> creds = [SELECT Id, Merchant_Account_Id__c, Merchant_PayPal_Account_Id__c, DeveloperName, Named_Credentials__c, Payment_Info_PayPal_Named_Credentials__c, Named_Credentials_PayPal__c FROM Payment_Credentials__mdt WHERE Active__c = true];
         Decimal paidAmount = 0;
+        Boolean isGroup;
         if (!creds.isEmpty() && !order.isEmpty() && order[0].Status__c == 'Opened') {
+            isGroup = !String.isBlank(order[0].Event_Registration_Sub_Group__c);
             choosePaymentCredentials(creds);
             for (Transaction__c trnsaction : transactions) {
                 if (trnsaction.Status__c == 'Success') {
@@ -55,10 +57,15 @@ public with sharing class PaymentHttpRequest {
             message += '\n'+'orderId: '+orderId;
             message += '\n'+'order: '+JSON.serialize(order);
             message += '\n'+'creds isEmpty?: '+JSON.serialize(creds.isEmpty());
-            insert new Log__c(Process_Name__c = 'Apex: PaymentHttpRequest.showPaymentCheck()', Order__c=orderId, Type__c='Other', Message__c = message, Status__c='Success', End_Time__c = Datetime.now());
+            insert new Log__c(
+                Process_Name__c = 'Apex: PaymentHttpRequest.showPaymentCheck()', 
+                Order__c=orderId, Type__c='Other', Message__c = message, 
+                Status__c='Success', End_Time__c = Datetime.now()
+            );
         }
-        return resultString;
+        return JSON.serialize(new Map<String,Object> { 'status' => resultString, 'isGroup' => isGroup });
     }
+
     public static void choosePaymentCredentials(List<Payment_Credentials__mdt> creds) {
         if (creds.size() >= 2) {
             for (Payment_Credentials__mdt pc : creds) {
@@ -89,7 +96,12 @@ public with sharing class PaymentHttpRequest {
     public static String getSeamlessURLBody(String cardId, String orderId, String addressesObject) {
         List<Card__c> card = [SELECT Id, Token_Id__c FROM Card__c WHERE Id = :cardId];
         List<Order__c> order = [SELECT Id, Total_amount__c, Name, Contact__r.FirstName, Contact__r.LastName FROM Order__c WHERE Id = :orderId];
-        List<Order_Item__c> orderItem = [SELECT Id, Amount__c, Membership__r.Name, Product__r.Name, Name, Quantity__c FROM Order_Item__c WHERE Order_Custom__c = :orderId];
+        List<Order_Item__c> orderItem = [
+            SELECT Id, Amount__c, Product__c, Membership__c, Membership__r.Name, Product__r.Name, Name, Quantity__c, Total_amount__c,
+                Event_Participation__r.Event_Ticket__r.Ticket__c, Event_Participation__r.Event_Ticket__r.Ticket__r.Name
+            FROM Order_Item__c
+            WHERE Order_Custom__c = :orderId
+        ];
         List<Map<String, Object>> m = new List<Map<String, Object>>();
         for (Order_Item__c oi : orderItem) {
             m.add(new Map<String, Object>{
@@ -97,7 +109,8 @@ public with sharing class PaymentHttpRequest {
                             'currency' => 'EUR', 'value' => oi.Amount__c
                     },
                     'article-number' => oi.Name,
-                    'name' => oi.Membership__c == null ? oi.Product__r.Name : oi.Membership__r.Name,
+                    'name' => !String.isBlank(oi.Membership__c) ? oi.Membership__r.Name : !String.isBlank(oi.Product__c) ? 
+                        oi.Product__r.Name : oi.Event_Participation__r.Event_Ticket__r.Ticket__r.Name,
                     'quantity' => oi.Quantity__c
             });
         }
@@ -210,17 +223,17 @@ public with sharing class PaymentHttpRequest {
     @RemoteAction public static String getOrderItems(String orderId) {
         List<Order__c> order = [SELECT Id, Total_amount__c, Name FROM Order__c WHERE Id = :orderId];
         List<Order_Item__c> orderItems = [
-            SELECT Id, Quantity__c, Membership__r.Name, Product__r.Name, Amount__c, 
-                Total_amount__c, Event_Participation__r.Event_Ticket__r.Ticket__r.Name
-            FROM Order_Item__c 
+            SELECT Id, Amount__c, Product__c, Membership__c, Membership__r.Name, Product__r.Name, Name, Quantity__c, Total_amount__c,
+                Event_Participation__r.Event_Ticket__r.Ticket__c, Event_Participation__r.Event_Ticket__r.Ticket__r.Name
+            FROM Order_Item__c
             WHERE Order_Custom__c = :order[0].Id
         ];
         System.debug('orderItems:: ' + orderItems);
         List<Map<String, Object>> orderItemsMap = new List<Map<String, Object>>();
         for (Order_Item__c oi : orderItems) {
             orderItemsMap.add(new Map<String, Object>{
-                    'product' => oi.Membership__c == null ? oi.Product__r.Name : oi.Membership__c == null ? 
-                        oi.Event_Participation__r.Event_Ticket__r.Ticket__r.Name : oi.Membership__r.Name,
+                    'product' => !String.isBlank(oi.Membership__c) ? oi.Membership__r.Name : !String.isBlank(oi.Product__c) ? 
+                        oi.Product__r.Name : oi.Event_Participation__r.Event_Ticket__r.Ticket__r.Name,
                     'quantity' => oi.Quantity__c,
                     'amount' => oi.Amount__c,
                     'total-amount' => oi.Total_amount__c
@@ -368,7 +381,11 @@ public with sharing class PaymentHttpRequest {
         String communityOriginURL = getCommunityOriginUrl('Community');
         String communityURL = getCommunityHomeUrl();
         List<Order__c> order = [SELECT Id, Total_amount__c, Name, Contact__r.FirstName, Contact__r.LastName FROM Order__c WHERE Id = :orderId];
-        List<Order_Item__c> orderItem = [SELECT Id, Amount__c, Membership__r.Name, Product__r.Name, Name, Quantity__c FROM Order_Item__c WHERE Order_Custom__c = :orderId];
+        List<Order_Item__c> orderItem = [
+            SELECT Id, Amount__c, Product__c, Membership__c, Membership__r.Name, Product__r.Name, Name, Quantity__c, Total_amount__c,
+                Event_Participation__r.Event_Ticket__r.Ticket__c, Event_Participation__r.Event_Ticket__r.Ticket__r.Name
+            FROM Order_Item__c 
+            WHERE Order_Custom__c = :orderId];
         List<Map<String, Object>> orderItems = new List<Map<String, Object>>();
         for (Order_Item__c oi : orderItem) {
             orderItems.add(new Map<String, Object>{
@@ -376,7 +393,8 @@ public with sharing class PaymentHttpRequest {
                             'currency' => 'EUR', 'value' => oi.Amount__c
                     },
                     'article-number' => oi.Name,
-                    'name' => oi.Membership__c == null ? oi.Product__r.Name : oi.Membership__r.Name,
+                    'name' => !String.isBlank(oi.Membership__c) ? oi.Membership__r.Name : !String.isBlank(oi.Product__c) ? 
+                        oi.Product__r.Name : oi.Event_Participation__r.Event_Ticket__r.Ticket__r.Name,
                     'quantity' => oi.Quantity__c
             });
         }

@@ -141,7 +141,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     onExtraBooking(event){
         console.log('extraBooking: '+JSON.stringify(event.detail.selectedSessions));
         this.selectedSessions = [...event.detail.selectedSessions];
-        // this.onNext();
+        this.onNext();
     }
 
     onNext() {
@@ -198,6 +198,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                         Event_custom__c: this.ean_event.Id,
                     });
                 } else {
+                    generalData.groupId = result;
                     for (let i = 0; i < this.ticketsAmount; i++) {
                         participants.push({
                             sobjectType: "Participant__c",
