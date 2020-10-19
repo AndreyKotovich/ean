@@ -7,6 +7,10 @@ public without sharing class MyRegistrationsController {
 
 	public static final String SYSTEM_GROUP_CONTACT_NAME = 'Undefined Participant';
 
+	public static final String CR_TYPE_SOLO_CANCELATION = 'Solo Registration Cancelation';
+	public static final String CR_TYPE_GROUP_CANCELATION = 'Group Registration Cancelation';
+	public static final String CR_TYPE_SOLO_TRANSFER = 'Solo Registration Transfer';
+	public static final String CR_TYPE_GROUP_TRANSFER = 'Group Registration Transfer';
 
 	//	COMMUNITY COMPONENT: MY REGISTRAIONS
 	@AuraEnabled
@@ -16,28 +20,30 @@ public without sharing class MyRegistrationsController {
 			// DELETE
 			List<String> logList = new List<String>();
 
+			String paramsString = settings.containsKey('params') ? String.valueOf(settings.get('params')) : '';
+			Map<String, String> params = !String.isBlank(paramsString) ? (Map<String, String>) JSON.deserialize(paramsString, Map<String, String>.class) : new Map<String, String>();
+			String selectedCRType = params.containsKey('selectedCRType') ? String.valueOf(params.get('selectedCRType')) : '';
+
 			//	FIRST PRIORITY	//	becomes from QuickAction	if our manager click 'New Change Request' button on 'Contact' record
-			String recordId = settings.containsKey('recordId') ? String.valueOf(settings.get('recordId')) : '';
+			String contactRecordId = params.containsKey('contactRecordId') ? String.valueOf(params.get('contactRecordId')) : '';
+			system.debug('getMyRegistrations settings = ' + JSON.serialize(settings));
+
+
+			system.debug('contactRecordId= ' + contactRecordId);
 
 			//	SECOND PRIORITY
 			String userId = '' + UserInfo.getUserId();	//	eanStaffUserId OR communityUserId
 
-			List<User> communityUser = !String.isBlank(recordId) ? [SELECT Id, ContactId, Contact.AccountId FROM User WHERE ContactId =:recordId LIMIT 1]
+			List<User> communityUser = !String.isBlank(contactRecordId) ? [SELECT Id, ContactId, Contact.AccountId FROM User WHERE ContactId =:contactRecordId LIMIT 1]
 				: [SELECT Id, ContactId, Contact.AccountId FROM User WHERE Id =:userId LIMIT 1];
+			Id communityContactId = communityUser[0].ContactId;	//	Id accountId = communityUser[0].Contact.AccountId;
 
-			Id contactId = communityUser[0].ContactId;	//	Id accountId = communityUser[0].Contact.AccountId;
-			Id g2mRT = Schema.SObjectType.Participant__c.getRecordTypeInfosByDeveloperName().get('G2M').getRecordTypeId();
+			system.debug('getMyRegistrations communityUser= ' + JSON.serialize(communityUser));
+			system.debug('getMyRegistrations communityContactId= ' + communityContactId);
 
-			List<Participant__c> allMyParticipations = [
-				SELECT Id, Name, Contact__c, Contact__r.Name,
-					Event_custom__c, Event_custom__r.Name, Event_custom__r.End_Time__c, Event_custom__r.Start_Time__c,
-					Event_Registration_Sub_Group__c,
-					Event_Registration_Sub_Group__r.Event_Registration_Group__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name,
-					Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__r.Name
-				FROM Participant__c
-				WHERE (Contact__c =:contactId OR Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c =:contactId)
-				AND RecordTypeId !=:g2mRT
-			];
+			List<Participant__c> allMyParticipations = queryParticipants(communityContactId, selectedCRType);
+
+			system.debug('getMyRegistrations allMyParticipations= ' + JSON.serialize(allMyParticipations));
 
 			//	SOLO
 			Map<String, EventRegistrationWrap> registrationsMapSolo = new Map<String, EventRegistrationWrap>();		// participantId TO Details
@@ -74,22 +80,22 @@ public without sharing class MyRegistrationsController {
 				if (!String.isBlank(myRegistration.registrationSubGroupId)) subGroupIdToParticipantId.put(myRegistration.registrationSubGroupId, myRegistration.participantId);
 
 				//	event participations where the user was participated (NOTE: he can patricipate himself at group, where he is a group leader)
-				if (participation.Contact__c == contactId) {
+				if (participation.Contact__c == communityContactId) {
 					myRegistration.registrationType = participation.Event_Registration_Sub_Group__c != null ? 'Group' : 'Solo';
 					registrationsMapSolo.put(myRegistration.participantId, myRegistration);
 				}
 
 				// logList.add('participantId=' + myRegistration.participantId + ' 1 RULE= ' + Boolean.valueOf(participation.Event_custom__c != null) +
 				// 	' 2 RULE= ' + Boolean.valueOf(participation.Event_Registration_Sub_Group__c != null) +
-				// 	' 3 RULE= ' + Boolean.valueOf(participation.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c == contactId) +
-				// 	' 4 ContactId = ' + contactId +
+				// 	' 3 RULE= ' + Boolean.valueOf(participation.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c == communityContactId) +
+				// 	' 4 communityContactId = ' + communityContactId +
 				// 	' 5 RULE= ' + participation.Event_Registration_Sub_Group__c +
 				// 	' 6 RULE= ' + participation.Event_Registration_Sub_Group__r.Event_Registration_Group__c +
 				// 	' 7 RULE= ' + participation.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c +
 				// 	' 8 RULE= ' + JSON.serialize(participation));
 
 				//	event participations where the user is group leader
-				if (participation.Event_custom__c != null && participation.Event_Registration_Sub_Group__c != null && participation.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c == contactId) {
+				if (participation.Event_custom__c != null && participation.Event_Registration_Sub_Group__c != null && participation.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c == communityContactId) {
 
 					myRegistration.registrationType = 'Group';
 
@@ -169,7 +175,7 @@ public without sharing class MyRegistrationsController {
 			return new Map<String, Object>{
 				'result' => true,
 				'userId' => userId,
-				'contactId' => contactId,
+				'contactId' => communityContactId,
 				// 'accountId' => accountId,
 				'registrationsSolo' => registrationsSolo,
 				'registrationsGroup' => registrationsGroup,
@@ -248,6 +254,69 @@ public without sharing class MyRegistrationsController {
 		@AuraEnabled public String registrationSubGroupId { get; set; }			// SOLO
 		@AuraEnabled public Integer groupExistingParticipants { get; set; }					// GROUP
 		@AuraEnabled public Integer groupMaxParticipants { get; set; }						// GROUP
+	}
+
+	public static List<Participant__c> queryParticipants(String communityContactId, String changeRequestType) {
+		Id g2mRT = Schema.SObjectType.Participant__c.getRecordTypeInfosByDeveloperName().get('G2M').getRecordTypeId();
+
+		String queryString = 'SELECT Id, Name, Contact__c, Contact__r.Name, ' +
+			'Event_custom__c, Event_custom__r.Name, Event_custom__r.End_Time__c, Event_custom__r.Start_Time__c, Event_Registration_Sub_Group__c, ' +
+			'Event_Registration_Sub_Group__r.Event_Registration_Group__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name,' +
+			'Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__r.Name ' +
+			'FROM Participant__c ' +
+			'WHERE ';
+
+		queryString += String.isBlank(changeRequestType) ? '(Contact__c =:communityContactId OR Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c =:communityContactId) '
+			: changeRequestType == CR_TYPE_SOLO_CANCELATION || changeRequestType == CR_TYPE_SOLO_TRANSFER ? 'Contact__c =:communityContactId '
+				: changeRequestType == CR_TYPE_GROUP_CANCELATION || changeRequestType == CR_TYPE_GROUP_TRANSFER ? 'Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c =:communityContactId'
+					: '';	// TEST ERROR 
+
+		queryString += 'AND RecordTypeId !=:g2mRT ';
+		queryString += 'AND (Status__c =\'Registered\' OR Status__c =\'Participated\')';
+		Map<String, SObject> allMyParticipationsMap = new Map<String, SObject>(Database.query(queryString));
+
+		if (String.isBlank(changeRequestType)) return (List<Participant__c>) allMyParticipationsMap.values();
+
+
+		List<Change_Request__c> changeRequestList = [
+			SELECT Id, Name, Contact__c, Event_Participation__c, Event_Registration_Group__c,
+				TransferFromContact__c, TransferFromEmail__c,
+				TransferToContact__c, TransferToEmail__c, Type__c, Status__c
+			FROM Change_Request__c
+			WHERE Type__c =:changeRequestType
+			AND Status__c !='Done'
+			AND Status__c !='Revoked'
+			AND Status__c !='Rejected'
+			AND Status__c != null
+			ORDER BY CreatedDate DESC
+			LIMIT 1000
+		];
+
+		if (changeRequestType == CR_TYPE_SOLO_CANCELATION || changeRequestType == CR_TYPE_SOLO_TRANSFER) {
+			for (Change_Request__c changeRequest : changeRequestList) {
+				if (allMyParticipationsMap.containsKey('' + changeRequest.Event_Participation__c)) allMyParticipationsMap.remove('' + changeRequest.Event_Participation__c);
+			}
+		}
+
+		if (changeRequestType == CR_TYPE_GROUP_CANCELATION) {
+
+			Set<String> crGroupIds = new Set<String>();
+			for (Change_Request__c changeRequest : changeRequestList) {
+				if (changeRequest.Event_Registration_Group__c != null) crGroupIds.add('' + changeRequest.Event_Registration_Group__c);
+			}
+
+			List<Participant__c> queriedParticipants = (List<Participant__c>) allMyParticipationsMap.values();
+			List<Participant__c> filteredParticipants = new List<Participant__c>();
+			for (Participant__c queriedParticipant : queriedParticipants) {
+				if (queriedParticipant.Event_Registration_Sub_Group__c == null || !crGroupIds.contains('' + queriedParticipant.Event_Registration_Sub_Group__r.Event_Registration_Group__c))
+					filteredParticipants.add(queriedParticipant);
+			}
+			return filteredParticipants;
+		}
+
+		//	Logic for CR_TYPE_GROUP_TRANSFER will be in 'groupDetailsComponent' LWC
+
+		return (List<Participant__c>) allMyParticipationsMap.values();
 	}
 
 

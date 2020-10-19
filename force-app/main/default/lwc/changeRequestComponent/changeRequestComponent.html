@@ -80,7 +80,7 @@
 
 
 					<template if:true={_displayBottomButtons}>
-						<div class="slds-text-align--right" style="position: absolute; bottom: 0px; right: 15px;">
+						<div class="slds-text-align--right" style="position: absolute; bottom: 5px; right: 15px;">
 							<template if:true={_displayNewChangeRequestButton}>
 								<!-- <button class="slds-button slds-button_neutral" onclick={handleNewRequestClick}><div style=" margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button> -->
 								<button class="slds-button slds-button_brand" onclick={handleNewRequestClick}><div style=" margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button>
@@ -95,7 +95,7 @@
 
 				<template if:true={_displayMyRegistrationsComponent}>
 					<c-my-registrations-component
-						params = {_params}>
+						params = {_paramsString}>
 					</c-my-registrations-component>
 
 				</template>

@@ -12,7 +12,7 @@
         <target>lightning__HomePage</target>
     </targets>
     <targetConfigs>
-        <targetConfig targets="lightningCommunity__Default, lightning__RecordPage">
+        <targetConfig targets="lightningCommunity__Default, lightning__AppPage, lightning__RecordPage">
             <property name="params" type="String" label="System Params" description="JSON with system params"/>
         </targetConfig>
     </targetConfigs>

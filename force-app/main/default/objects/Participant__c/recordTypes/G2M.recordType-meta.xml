@@ -113,6 +113,10 @@
     <picklistValues>
         <picklist>Status__c</picklist>
         <values>
+            <fullName>Canceled</fullName>
+            <default>false</default>
+        </values>
+        <values>
             <fullName>Participated</fullName>
             <default>false</default>
         </values>

@@ -121,7 +121,8 @@ public without sharing class EventRegistrationController {
                 (
                         SELECT Id, Price__c, Early_bird_price__c, Event_custom__c, Ticket__c, Ticket__r.Name,
                                 Ticket__r.Available_for_Memberships__c, Ticket__r.Available_for_Countries__c,
-                                Session__r.Name, Session__r.Description__c
+                                Session__r.Name, Session__r.Description__c, Session__r.Mutual_Exclusion__c,
+                                Session__r.Max_Participants__c, Session__r.Registrations__c
                         FROM Event_Tickets__r
                         WHERE Ticket__c != NULL
                         AND (Price__c != NULL OR Early_bird_price__c != NULL)

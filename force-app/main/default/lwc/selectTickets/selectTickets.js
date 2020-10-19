@@ -184,6 +184,8 @@ export default class SelectTickets extends LightningElement {
     this._priceTicket = this.ticketsRadio.find(e => {
       return e.id === selectedTicket;
     }).price;
+    console.log(selectedTicket);
+    console.log(this._priceTicket);
     this._selectedTicket = selectedTicket;
   }
 

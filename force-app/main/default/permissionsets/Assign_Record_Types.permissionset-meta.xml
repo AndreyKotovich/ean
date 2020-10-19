@@ -71,6 +71,16 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Abstract__c.Stage__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Abstract__c.Status__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Abstract__c.Title__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -527,6 +537,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Change_Request__c.Event_Participation__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Change_Request__c.Event_Registration_Group__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>

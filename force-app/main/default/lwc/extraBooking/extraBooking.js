@@ -8,6 +8,14 @@ export default class ExtraBooking extends LightningElement {
     @api userInfo = {};
     @api registrationType = "";
 
+    @api
+    get selectedSessions() {
+        return this._selectedSessions;
+    }
+    set selectedTicket(value) {
+        this._selectedSessions = value;
+    }
+
     @track hideNextButton = false;
     @track hidePreviousButton = false;
     @track isSpinner = true;
@@ -16,6 +24,7 @@ export default class ExtraBooking extends LightningElement {
     eventExtraSessions = []; //all extra sessions for this event
     availableExtraSession = []; //sessions which are available for the participant
     isEarlyBird = false;
+    _selectedSessions = [];
 
     connectedCallback() {
         if (this.registrationType !== "solo") return this.handleNextClick();
@@ -57,10 +66,14 @@ export default class ExtraBooking extends LightningElement {
     }
 
     handleNextClick() {
+
         const selectEvent = new CustomEvent("continue", {
-            detail: {}
+            detail: {
+                selectedSessions: this.getSelectedSessions()
+            }
         });
         this.dispatchEvent(selectEvent);
+
     }
 
     throwError(error) {
@@ -120,18 +133,81 @@ export default class ExtraBooking extends LightningElement {
 
         for(let [i, ticket] of this.availableExtraSession.entries()){
 
+            const { Max_Participants__c, Registrations__c, Description__c, Name, Mutual_Exclusion__c } = ticket.Session__r;
+
             let price = this.isEarlyBird ? ticket.Early_bird_price__c : ticket.Price__c;
             if(price === undefined) continue;
+
+            let isFull = Max_Participants__c ? Registrations__c >= Max_Participants__c : false;
+
+            let isChecked = !!this._selectedSessions.find(obj=>{ obj.id === ticket.Id });
+
+            console.log(isChecked);
+            console.log(Name, Max_Participants__c, Registrations__c, isFull);
 
             sessionsCheckboxGroup.push({
                 elementId: 'extra-session-'+i,
                 value: ticket.Id,
-                label: ticket.Session__r.Name,
-                description: ticket.Session__r.Description__c,
-                price: price
+                label: Name,
+                description: Description__c,
+                price: price,
+                exclusion: Mutual_Exclusion__c ? Mutual_Exclusion__c : "",
+                isDisabled: isFull,
+                isFull,
+                isChecked
             });
         }
 
         this.sessionsCheckboxGroup = [...sessionsCheckboxGroup];
+    }
+
+    handleSelectSession(event){
+        let exclusion = event.target.dataset.exclusion;
+
+        let validation = true;
+
+        for(let checkbox of this.sessionsCheckboxGroup){
+            if(checkbox.value === event.target.value && checkbox.isDisabled) validation = false;
+        }
+
+        if(exclusion !== '' && validation){
+            let disabledFlag = event.target.checked;
+
+            for(let checkbox of this.sessionsCheckboxGroup){
+                if(checkbox.exclusion !== exclusion || checkbox.value === event.target.value || checkbox.isFull) continue;
+                checkbox.isDisabled = disabledFlag;
+            }
+        }
+    }
+
+    getSelectedSessions(){
+
+        let sessionsInputs = this.template.querySelectorAll('input[data-name="extra-session"]');
+
+        let selectedSessions = [];
+
+        for(let sessionInput of sessionsInputs) {
+            if (!sessionInput.checked) continue;
+            selectedSessions.push(sessionInput.value);
+        }
+
+        let validatedSelectedSessions = [];
+
+        for(let selectedSession of selectedSessions){
+
+            for(let sessionCheckbox of this.sessionsCheckboxGroup){
+                if(selectedSession === sessionCheckbox.value && !sessionCheckbox.isDisabled){
+                    validatedSelectedSessions.push({
+                        id: selectedSession,
+                        price: sessionCheckbox.price
+                    });
+                }
+            }
+
+        }
+
+        this._selectedSessions = validatedSelectedSessions;
+        return validatedSelectedSessions;
+
     }
 }

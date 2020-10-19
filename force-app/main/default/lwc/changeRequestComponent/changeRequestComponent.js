@@ -28,7 +28,7 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 	_displayChangeRequestPanel = true;
 	_displayMyRegistrationsComponent = false;
 	
-	_params;
+	_paramsString;
 
 	_crTypes = [];
 	_selectedCRType;
@@ -56,19 +56,11 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 				this._displayNoRecordsMessage = result.displayNoRecordsMessage;
 				this._displayChangeRequestsList = result.displayChangeRequestsList;
 				this._componentLabel = result.componentLabel;
-				// this._requestsTypeListMap = result.requestsTypeListMap;
 				this._displayTopButtons = result.displayTopButtons;
 				this._displayBottomButtons = result.displayBottomButtons;
 				this._displayNewChangeRequestButton = true;
 
 				var requestsTypeListMap = result.requestsTypeListMap;
-
-				console.log('this._displayTopButtons= ', this._displayTopButtons);
-				console.log('this._displayBottomButtons= ', this._displayBottomButtons);
-				console.log('this._displayNewChangeRequestButton= ', this._displayNewChangeRequestButton);
-
-				//	TODO Generate picklist
-				// var opts = [];
 				this._selectedCRType = requestsTypeListMap[0].value
 				for (var i = 0 ; i < requestsTypeListMap.length ; i++) {
 					this._crTypes.push({label: requestsTypeListMap[i].label, value: requestsTypeListMap[i].value});
@@ -105,12 +97,15 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 		let commentText = target.value;
 		console.log('handleConfirmClick commentText: ', commentText);
 
-		this._params = new Map();
-		this._params.set('selectedCRType', this._selectedCRType);
+		var params = {};
+		params.selectedCRType = this._selectedCRType;
+		params.contactRecordId = this.recordId;
+		this._paramsString = JSON.stringify(params);
 
 		var redirectToMyRegistrationsPage = ['Solo Registration Cancelation', 'Group Registration Cancelation', 'Solo Registration Transfer', 'Group Registration Transfer'];
 
 		if (redirectToMyRegistrationsPage.includes(this._selectedCRType)) {
+			console.log('FFFF _params: ', params);
 			this._displayChangeRequestPanel = false;
 			this._displayMyRegistrationsComponent = true;
 			// navigateCommunityPage(targetPageName, id);

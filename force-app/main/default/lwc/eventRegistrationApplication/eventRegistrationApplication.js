@@ -14,6 +14,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     //TODO validation on duplicate registration
     //TODO detection group leader
     //TODO before participant insert check availability of participants
+    //TODO create session participants
 
     @track errorMessage =
         "Something went wrong, please contact your system administrator.";
@@ -52,6 +53,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
      * */
     userInfo = {};
     participants = {}; //event participants which we insert in database
+    selectedSessions = []; //selected extra sessions
 
     connectedCallback() {
         for (let prop in this.steps) {
@@ -129,10 +131,17 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     }
 
     onSelectTicket(event) {
+        console.log(JSON.parse(JSON.stringify(event.detail)));
         this.selectedTicket = event.detail.selectedTicket;
         this.ticketsAmount = event.detail.ticketsAmount;
         this.priceTicket = event.detail.priceTicket;
         this.onNext();
+    }
+
+    onExtraBooking(event){
+        console.log('extraBooking: '+JSON.stringify(event.detail.selectedSessions));
+        this.selectedSessions = [...event.detail.selectedSessions];
+        // this.onNext();
     }
 
     onNext() {
@@ -179,6 +188,8 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                 generalData.eventId = this.ean_event.Id;
                 generalData.priceTicket = this.priceTicket;
                 generalData.contactId = this.userInfo.contact.Id;
+
+                console.log('generalData',JSON.parse(JSON.stringify(generalData)));
                 if (this.registrationType === "solo") {
                     participants.push({
                         sobjectType: "Participant__c",

@@ -21,6 +21,7 @@ public with sharing class EAN_EmailController {
             emailTemplateDevName = String.valueOf(emailOptionsMap.get('emailTemplateDevName'));
         }
         List<EmailTemplate> templates = getEmailTemplate(emailTemplateDevName);
+        System.debug(templates);
         Set<String> additionalFieldApiNames = new Set<String>();
         //if (!templates.isEmpty()) {
         //     additionalFieldApiNames.addAll(getAdditionalFieldApiNames(templates[0].Subject, objectApiName));
@@ -30,7 +31,11 @@ public with sharing class EAN_EmailController {
         List<SObject> emptyEmailObjects = emptyEmailFieldCheck(objects, emailFieldApiName);
         try {
         List<Messaging.SingleEmailMessage> mails = createMails(objects, objectApiName, emailFieldApiName, templates);
-            Messaging.sendEmail(mails);
+        for (Messaging.SingleEmailMessage mail : mails) {
+            System.debug(mail);
+        }
+        System.debug(mails.size());
+        Messaging.sendEmail(mails);
         } catch(Exception error){
             throw new AuraHandledException(error.getMessage());
         }

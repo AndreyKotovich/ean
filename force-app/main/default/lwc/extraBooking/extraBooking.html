@@ -18,7 +18,15 @@
                             <div class="slds-grid slds-wrap">
                                 <div class="slds-col slds-size_10-of-12">
                                     <div class="slds-checkbox">
-                                        <input type="checkbox" name="options" id={product.elementId} value={product.value} />
+                                        <input type="checkbox"
+                                               id={product.elementId}
+                                               data-name="extra-session"
+                                               data-exclusion={product.exclusion}
+                                               name="options"
+                                               value={product.value}
+                                               onchange={handleSelectSession}
+                                               disabled={product.isDisabled}
+                                               checked={product.isChecked} />
 
                                         <label class="slds-checkbox__label" for={product.elementId}>
                                             <div class="slds-grid slds-gutters">

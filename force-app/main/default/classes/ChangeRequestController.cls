@@ -52,7 +52,7 @@ public with sharing class ChangeRequestController {
 				'userId' => userId,
 				'communityUser' => communityUser,
 				'communityContactId' => communityContactId,
-				'changeRequests' => changeRequests,
+				// 'changeRequests' => changeRequests,
 
 				'changeRequestsList' => changeRequestsList,
 				'displayNoRecordsMessage' => changeRequestsList.isEmpty(),

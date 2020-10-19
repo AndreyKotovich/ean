@@ -26,7 +26,6 @@
     <masterLabel>ean</masterLabel>
     <referrerPolicyOriginWhenCrossOrigin>true</referrerPolicyOriginWhenCrossOrigin>
     <requireHttps>true</requireHttps>
-    <requireInsecurePortalAccess>false</requireInsecurePortalAccess>
     <selfRegPage>CommunitiesSelfReg</selfRegPage>
     <siteAdmin>ilya.litovchik@succraft.com</siteAdmin>
     <siteGuestRecordDefaultOwner>ilya.litovchik@succraft.com</siteGuestRecordDefaultOwner>

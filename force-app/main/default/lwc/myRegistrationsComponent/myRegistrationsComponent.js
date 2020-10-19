@@ -1,10 +1,11 @@
 import { LightningElement, api, track } from 'lwc';
 import { NavigationMixin } from "lightning/navigation";
-import connectedCallbackApex from '@salesforce/apex/MyRegistrationsController.connectedCallbackApex'
+import getMyRegistrations from '@salesforce/apex/MyRegistrationsController.getMyRegistrations'
 
 export default class MyRegistrationsComponent extends NavigationMixin(LightningElement) {
 
 	@api params;
+	// @api contactRecordId;
 
 	_callbackResult;
 	_callbackResultString = '';	// DELETE
@@ -24,8 +25,10 @@ export default class MyRegistrationsComponent extends NavigationMixin(LightningE
 
 	connectedCallback() {
 		console.log('myRegistrationsComponent connectedCallback');
-		console.log('myRegistrationsComponent connectedCallback this.params: ', this.params);
-		connectedCallbackApex()
+		console.log('myRegistrationsComponent connectedCallback this.params: ', JSON.stringify(this.params));
+		getMyRegistrations({settings: {
+			params: this.params
+			}})
 			.then(result=>{
 				console.log('result: ', result);
 				this._callbackResult = result;

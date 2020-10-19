@@ -21,6 +21,11 @@
                 <label>Participated</label>
             </value>
             <value>
+                <fullName>Canceled</fullName>
+                <default>false</default>
+                <label>Canceled</label>
+            </value>
+            <value>
                 <fullName>Status 1</fullName>
                 <default>false</default>
                 <isActive>false</isActive>

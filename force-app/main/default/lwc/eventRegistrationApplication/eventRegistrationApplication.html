@@ -54,12 +54,13 @@
 
       <template if:true={steps.step3.isActive}>
         <c-extra-booking
-          oncontinue={onSelectTicket}
           onprevious={onPrevious}
+          oncontinue={onExtraBooking}
           onerror={onError}
           user-info={userInfo}
           ean-event={ean_event}
           registration-type={registrationType}
+          selected-sessions={selectedSessions}
         >
         </c-extra-booking>
       </template>
