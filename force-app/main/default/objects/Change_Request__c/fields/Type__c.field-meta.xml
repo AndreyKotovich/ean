@@ -2,7 +2,10 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Type__c</fullName>
     <description>ADD NEW VALUES TO
-changeRequestComponent.js</description>
+changeRequestComponent.js
+myRegistrationsComponent.js
+ChangeRequestController.cls
+MyRegistrationsController.cls</description>
     <externalId>false</externalId>
     <label>Type</label>
     <required>false</required>
@@ -13,14 +16,14 @@ changeRequestComponent.js</description>
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>Solo Registration Cancelation</fullName>
+                <fullName>Solo Registration Cancellation</fullName>
                 <default>false</default>
-                <label>Solo Registration Cancelation</label>
+                <label>Solo Registration Cancellation</label>
             </value>
             <value>
-                <fullName>Group Registration Cancelation</fullName>
+                <fullName>Group Registration Cancellation</fullName>
                 <default>false</default>
-                <label>Group Registration Cancelation</label>
+                <label>Group Registration Cancellation</label>
             </value>
             <value>
                 <fullName>Solo Registration Transfer</fullName>

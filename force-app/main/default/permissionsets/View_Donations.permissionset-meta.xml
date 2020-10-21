@@ -78,6 +78,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Abstract__c.Submitter__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Abstract__c.Title__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -539,6 +544,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Change_Request__c.Event_Registration_Group__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Change_Request__c.Event_custom__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -2363,6 +2373,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Participant__c.Badge_Retrieval__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Participant__c.Congress_Live_Access__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -2434,6 +2449,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Participant__c.Terms_Acceped__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Participant__c.Visa_Letter__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>

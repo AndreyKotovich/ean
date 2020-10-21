@@ -12,8 +12,16 @@ export default class ExtraBooking extends LightningElement {
     get selectedSessions() {
         return this._selectedSessions;
     }
-    set selectedTicket(value) {
+    set selectedSessions(value) {
         this._selectedSessions = value;
+    }
+
+    @api
+    get selectedServices(){
+        return this._selectedServices;
+    }
+    set selectedServices(value){
+        this._selectedServices = value;
     }
 
     @track hideNextButton = false;
@@ -25,6 +33,7 @@ export default class ExtraBooking extends LightningElement {
     availableExtraSession = []; //sessions which are available for the participant
     isEarlyBird = false;
     _selectedSessions = [];
+    _selectedServices = {};
 
     connectedCallback() {
         if (this.registrationType !== "solo") return this.handleNextClick();
@@ -32,14 +41,12 @@ export default class ExtraBooking extends LightningElement {
         this.isEarlyBird = this.eanEvent.Early_Bird_Deadline__c ? Utils.deadlineCheck(this.eanEvent.Early_Bird_Deadline__c) : false;
 
         let promise1 = getExtraSessions({eventId: this.eanEvent.Id});
-        // let promise2 = getSessionsTickets({eventId: this.event.Id});
 
         Promise.all([promise1])
             .then(results =>{
-                console.log(JSON.stringify(results));
                 this.eventExtraSessions = results[0];
 
-                if(Object.keys(results[0]).length === 0 && results[0].constructor === Object){
+                if(this.registrationType === 'group' || Object.keys(results[0]).length === 0 && results[0].constructor === Object){
                     this.handleNextClick();
                 } else {
                     this.parseSessionsAndPrice();
@@ -67,12 +74,17 @@ export default class ExtraBooking extends LightningElement {
 
     handleNextClick() {
 
-        const selectEvent = new CustomEvent("continue", {
-            detail: {
-                selectedSessions: this.getSelectedSessions()
-            }
-        });
-        this.dispatchEvent(selectEvent);
+        if(Utils.validateElements.call(this, '.validate-service')){
+            const selectEvent = new CustomEvent("continue", {
+                detail: {
+                    selectedSessions: this.getSelectedSessions(),
+                    selectedServices: this._selectedServices
+                }
+            });
+            this.dispatchEvent(selectEvent);
+        } else {
+            this.dispatchToast('Error', 'Complete all required fields', 'error');
+        }
 
     }
 
@@ -128,8 +140,12 @@ export default class ExtraBooking extends LightningElement {
 
     generateCheckboxGroup(){
         let sessionsCheckboxGroup = [];
+        let selectedExclusions = [];
 
-        console.log(JSON.stringify(this.availableExtraSession));
+        for(let session of this._selectedSessions){
+            let rec = this.availableExtraSession.find(obj => obj.Id === session.id);
+            selectedExclusions.push(rec.Session__r.Mutual_Exclusion__c);
+        }
 
         for(let [i, ticket] of this.availableExtraSession.entries()){
 
@@ -140,10 +156,12 @@ export default class ExtraBooking extends LightningElement {
 
             let isFull = Max_Participants__c ? Registrations__c >= Max_Participants__c : false;
 
-            let isChecked = !!this._selectedSessions.find(obj=>{ obj.id === ticket.Id });
+            let isChecked = !!this._selectedSessions.find(obj => obj.id === ticket.Id ); //used only during init to auto populate
 
-            console.log(isChecked);
-            console.log(Name, Max_Participants__c, Registrations__c, isFull);
+            let isDisabled = isFull;
+            if(!isDisabled && Mutual_Exclusion__c && !isChecked){
+                isDisabled = selectedExclusions.includes(Mutual_Exclusion__c);
+            }
 
             sessionsCheckboxGroup.push({
                 elementId: 'extra-session-'+i,
@@ -152,7 +170,7 @@ export default class ExtraBooking extends LightningElement {
                 description: Description__c,
                 price: price,
                 exclusion: Mutual_Exclusion__c ? Mutual_Exclusion__c : "",
-                isDisabled: isFull,
+                isDisabled,
                 isFull,
                 isChecked
             });
@@ -174,40 +192,65 @@ export default class ExtraBooking extends LightningElement {
             let disabledFlag = event.target.checked;
 
             for(let checkbox of this.sessionsCheckboxGroup){
+                if(checkbox.value === event.target.value && !checkbox.isFull) checkbox.isChecked = event.target.checked;
+
                 if(checkbox.exclusion !== exclusion || checkbox.value === event.target.value || checkbox.isFull) continue;
+
                 checkbox.isDisabled = disabledFlag;
             }
         }
     }
 
     getSelectedSessions(){
-
-        let sessionsInputs = this.template.querySelectorAll('input[data-name="extra-session"]');
-
-        let selectedSessions = [];
-
-        for(let sessionInput of sessionsInputs) {
-            if (!sessionInput.checked) continue;
-            selectedSessions.push(sessionInput.value);
-        }
-
         let validatedSelectedSessions = [];
 
-        for(let selectedSession of selectedSessions){
-
-            for(let sessionCheckbox of this.sessionsCheckboxGroup){
-                if(selectedSession === sessionCheckbox.value && !sessionCheckbox.isDisabled){
-                    validatedSelectedSessions.push({
-                        id: selectedSession,
-                        price: sessionCheckbox.price
-                    });
-                }
+        for(let sessionCheckbox of this.sessionsCheckboxGroup){
+            if(!sessionCheckbox.isDisabled && sessionCheckbox.isChecked){
+                validatedSelectedSessions.push({
+                    id: sessionCheckbox.value,
+                    price: sessionCheckbox.price
+                });
             }
-
         }
 
         this._selectedSessions = validatedSelectedSessions;
         return validatedSelectedSessions;
+    }
 
+    get badgeRetrievalOptions(){
+        let options = [];
+        let eventStartDay = Date.parse(this.eanEvent.Start_Time__c);
+        let dateNow = new Date();
+        dateNow.setDate(dateNow.getDate() + 10);
+
+        if(dateNow.getTime() <= eventStartDay){
+            options.push({ label: 'Pre-print by EAN', value: 'pre_print'});
+        }
+
+        options.push({ label: 'Onsite print', value: 'onsite' });
+
+        return options
+    }
+
+    get isBadgeRequired(){
+        return this.eanEvent.RecordType.DeveloperName === 'Congress';
+    }
+
+    handleChangeBR(event){
+        this._selectedServices.badgeRetrieval = event.detail.value;
+    }
+
+    handleChangeVL(event){
+        this._selectedServices.visaLetter = event.detail.checked;
+        console.log(JSON.stringify(this._selectedServices));
+    }
+
+    get isGroupRegistration(){
+        return this.registrationType !== 'solo';
+    }
+
+    handleJournalSelect(event){
+        this._selectedServices.journals = [...event.detail.selectedProducts];
+        console.log(JSON.stringify(this._selectedServices));
     }
 }

@@ -1,20 +1,27 @@
 import { LightningElement, api } from 'lwc';
 import { NavigationMixin } from "lightning/navigation";
-import getPreparedData from '@salesforce/apex/ChangeRequestController.getPreparedData'
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import getPreparedData from '@salesforce/apex/ChangeRequestController.getPreparedData';
+import clickOnRevoke from '@salesforce/apex/ChangeRequestController.clickOnRevoke';
+import submitSoloCancellation from '@salesforce/apex/ChangeRequestController.submitSoloCancellation';
+import submitGroupCancellation from '@salesforce/apex/ChangeRequestController.submitGroupCancellation';
+import submitSoloTransfer from '@salesforce/apex/ChangeRequestController.submitSoloTransfer';
 
 export default class ChangeRequestComponent extends NavigationMixin(LightningElement) {
 	@api recordId;				// required to work as EAN Staff (Customer Contact Record Id)
 
-	_errorMessage = 'Something went wrong, please contact your system administrator.';
-	_noRecordsMessage = 'You have no Change Requests.'
-	_newRequestMessageLabel = 'Define New Change Request';
+	_errorMessage = '';
+	_noRecordsMessage = ''
+	_newRequestMessageLabel = '';
 	_isSpinner = true;
 	_isError = false;
 
 	_changeRequestsList;
 	_componentLabel;
-	// _requestsTypeListMap;
 
+	_communityContactId;
+	_communityContactName;
+	_communityContactEmail;
 
 	_displayNoRecordsMessage = false;
 	_displayChangeRequestsPanel = false;
@@ -23,18 +30,83 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 	_displayTopButtons = false;
 	_displayBottomButtons = false;
 	_displayNewChangeRequestButton = false;
-	_displayChangeRequestButtons = false;
+	_displayChangeRequestNextButton = false;
+	_displayChangeRequestCancellButton = false;
 
 	_displayChangeRequestPanel = true;
 	_displayMyRegistrationsComponent = false;
+
+	_displaySoloTransferContainer = false;
+	_displaySoloTransferFinalConfirmButton = false;
+	_selectedSoloTransferParticipantId = '';
+	_requestedContactId = '';
+	_requestedContactEmail = '';
+	_requestedContactName = '';
+	_whereclause = '';
+
+	_displayGroupTransferContainer = false;
+	_selectedGroupIdToTransferRequest = '';
+	
 	
 	_paramsString;
 
 	_crTypes = [];
 	_selectedCRType;
+	_crDescription = '';
+
+	initialSettings() {
+		this._errorMessage = 'Something went wrong, please contact your system administrator.';
+		this._noRecordsMessage = 'You have no Change Requests.'
+		this._newRequestMessageLabel = 'Define A New Change Request';
+		this._isSpinner = true;
+		this._isError = false;
+		this._displayNoRecordsMessage = false;
+		this._displayChangeRequestsPanel = false;
+		this._displayChangeRequestsList = false;
+		this._displayNewRequestDefinition = false;
+		this._displayTopButtons = false;
+		this._displayBottomButtons = false;
+		this._displayNewChangeRequestButton = false;
+		this._displayChangeRequestNextButton = false;
+		this._displayChangeRequestCancelButton = false;
+		this._displayChangeRequestPanel = true;
+		this._displayMyRegistrationsComponent = false;
+
+		this._crTypes = [];
+		this._selectedCRType;
+		this._crDescription = '';
+
+		this._displaySoloTransferContainer = false;
+		this._requestedContactId = '';
+		this._requestedContactEmail = '';
+		this._requestedContactName = '';
+		this._displaySoloTransferFinalConfirmButton = false;
+
+		this._displayGroupTransferContainer = false;
+		this._selectedGroupIdToTransferRequest = '';
+	}
+
+	initialPositiveSettings() {
+		console.log('initialPositiveSettings');
+		this._displayNewChangeRequestButton = true;
+		this._displayChangeRequestNextButton = false;
+		this._displayChangeRequestCancelButton = false;
+		this._displayChangeRequestsPanel = true;
+		this._displayNewRequestDefinition = false;
+		this._displayMyRegistrationsComponent = false;
+
+		this._displayChangeRequestPanel = true;
+		this._displaySoloTransferFinalConfirmButton = false;
+		this._displaySoloTransferContainer = false;
+		this._selectedSoloTransferParticipantId = '';
+		// this.connectedCallback();
+
+		this._displayGroupTransferContainer = false;
+		this._selectedGroupIdToTransferRequest = '';
+	}
 
 	connectedCallback() {
-		this._displayChangeRequestPanel = true;
+		this.initialSettings();
 		console.log('ChangeRequestComponent connectedCallback');
 		console.log('this.recordId: ', this.recordId);
 
@@ -44,21 +116,26 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 				console.log('result: ', result);
 				// this._callbackResult = result;
 				// this._callbackResultString = JSON.stringify(result);	// DELETE
-				this._isError = false;
 				this._isSpinner = false;
 
-				if (result.result) {
-					console.log('result.result: ', result.result);
+				if (!result.result) {
+					this._isError = true;
+					return;
 				}
 
-				this._displayChangeRequestsPanel = true;
+				this._isError = false;
+				this._communityContactId = result.communityContactId;
+				this._communityContactName = result.communityContactName;
+				this._communityContactEmail = result.communityContactEmail;
+				// this._displayChangeRequestsPanel = true;
 				this._changeRequestsList = result.changeRequestsList;
 				this._displayNoRecordsMessage = result.displayNoRecordsMessage;
 				this._displayChangeRequestsList = result.displayChangeRequestsList;
 				this._componentLabel = result.componentLabel;
 				this._displayTopButtons = result.displayTopButtons;
 				this._displayBottomButtons = result.displayBottomButtons;
-				this._displayNewChangeRequestButton = true;
+				// this._displayNewChangeRequestButton = true;
+				this.initialPositiveSettings();
 
 				var requestsTypeListMap = result.requestsTypeListMap;
 				this._selectedCRType = requestsTypeListMap[0].value
@@ -79,30 +156,32 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 	handleNewRequestClick() {
 		console.log('handleNewRequestClick');
 		this._displayNewChangeRequestButton = false;
-		this._displayChangeRequestButtons = true;
+		this._displayChangeRequestNextButton = true;
+		this._displayChangeRequestCancelButton = true;
 		this._displayChangeRequestsPanel = false;
 		this._displayNewRequestDefinition = true;
 	}
 
-	//	'Solo Registration Cancelation'
-	//	'Group Registration Cancelation'
+	//	'Solo Registration Cancellation'
+	//	'Group Registration Cancellation'
 	//	'Solo Registration Transfer'
 	//	'Group Registration Transfer'
-	handleConfirmClick() {
-		console.log('handleConfirmClick this._selectedCRType: ', this._selectedCRType);
+	handleNextClick() {
+		console.log('handleNextClick this._selectedCRType: ', this._selectedCRType);
 		this._displayNewChangeRequestButton = false;
-		this._displayChangeRequestButtons = false;
+		this._displayChangeRequestNextButton = false;
+		this._displayChangeRequestCancelButton = true;
 
 		let target = this.template.querySelector('[data-target-id="standardtextarea"]');
-		let commentText = target.value;
-		console.log('handleConfirmClick commentText: ', commentText);
+		this._crDescription = target.value;
+		console.log('handleNextClick this._crDescription: ', this._crDescription);
 
 		var params = {};
 		params.selectedCRType = this._selectedCRType;
 		params.contactRecordId = this.recordId;
 		this._paramsString = JSON.stringify(params);
 
-		var redirectToMyRegistrationsPage = ['Solo Registration Cancelation', 'Group Registration Cancelation', 'Solo Registration Transfer', 'Group Registration Transfer'];
+		var redirectToMyRegistrationsPage = ['Solo Registration Cancellation', 'Group Registration Cancellation', 'Solo Registration Transfer', 'Group Registration Transfer'];
 
 		if (redirectToMyRegistrationsPage.includes(this._selectedCRType)) {
 			console.log('FFFF _params: ', params);
@@ -110,15 +189,11 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 			this._displayMyRegistrationsComponent = true;
 			// navigateCommunityPage(targetPageName, id);
 		}
-
 	}
 
 	handleCancelClick() {
 		console.log('handleCancelClick');
-		this._displayNewChangeRequestButton = true;
-		this._displayChangeRequestButtons = false;
-		this._displayChangeRequestsPanel = true;
-		this._displayNewRequestDefinition = false;
+		this.initialPositiveSettings();
 	}
 
 	handleChangeCRType(event) {
@@ -127,6 +202,213 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 		console.log('handleChangeCRType this._selectedCRType: ', this._selectedCRType);
 	}
 
+	handleClickOnRevoke(event) {
+		var сhangeRequestId = event.currentTarget.dataset.id;
+		this._isSpinner = true;
+		clickOnRevoke({params: {
+			selectedChangeRequestId: сhangeRequestId
+			}}).then(result=>{
+				console.log('result: ', result);
+				this._isError = false;
+				this._isSpinner = false;
+
+				if (result.result) {
+					this.showSuccessToast(result.message);
+				}
+				if (!result.result) {
+					this.showErrorToast(result.message);
+				}
+
+				this.connectedCallback();
+			})
+			.catch(error=>{
+				console.log('ChangeRequestComponent');
+				console.log('handleClickOnRevoke Error: ' + JSON.stringify(error));
+				this._isError = true;
+				this._isSpinner = false;
+			})
+	}
+
+	//	SOLO CANCELLATION BLOCK
+	handleSubmitSoloCancellation(event) {
+		const selectedParticipantId = event.detail.selectedParticipantId;
+		console.log('handleSubmitSoloCancellation selectedParticipantId: ', selectedParticipantId);
+
+		this._isSpinner = true;
+		submitSoloCancellation({params: {
+			selectedContactId: this._communityContactId,
+			crDescription: this._crDescription,
+			selectedParticipantId: selectedParticipantId
+			}}).then(result=>{
+				console.log('result: ', result);
+				this._isError = false;
+				this._isSpinner = false;
+
+				if (result.result) {
+					this.showSuccessToast(result.message);
+				}
+				if (!result.result) {
+					this.showErrorToast(result.message);
+				}
+
+				this.connectedCallback();
+			})
+			.catch(error=>{
+				console.log('ChangeRequestComponent');
+				console.log('submitSoloCancellation Error: ' + JSON.stringify(error));
+				this._isError = true;
+				this._isSpinner = false;
+			})
+	}
+
+	//	SOLO TRANSFER BLOCK
+	handleSubmitSoloTransfer(event) {
+		this._selectedSoloTransferParticipantId = event.detail.selectedParticipantId;
+		console.log('handleSubmitSoloTransfer this._selectedSoloTransferParticipantId: ', this._selectedSoloTransferParticipantId);
+
+		// this._displayChangeRequestPanel = false;
+		// this._displayMyRegistrationsComponent = false;
+		this._displaySoloTransferContainer = true;
+		this._displayChangeRequestCancelButton = false;
+		this._displaySoloTransferFinalConfirmButton = false;
+		this._requestedContactId = '';
+		this._requestedContactEmail = '';
+		this._requestedContactName = '';
+	}
+
+	handleCRChangeNewContactEmail(event) {
+		console.log('AAA handleCRChangeNewContactEmail');
+		// this._displaySoloTransferFinalConfirmButton = false;
+		var newContactDetails = event.detail.recorddetails ? JSON.parse(event.detail.recorddetails) : null;
+		this._requestedContactId = newContactDetails ? newContactDetails.id : '';
+		// this._requestedContactEmail = newContactDetails ? newContactDetails.text : '';
+		this._requestedContactEmail = newContactDetails ? newContactDetails.enteredText !== null ? newContactDetails.enteredText : '' : '';
+		this._requestedContactName = newContactDetails ? newContactDetails.field2val : '';
+		console.log('AAAAAAAAA this._displaySoloTransferFinalConfirmButton: ', this._displaySoloTransferFinalConfirmButton);
+		// this._displaySoloTransferFinalConfirmButton = JSON.parse(JSON.stringify(!!this._requestedContactEmail && this._communityContactEmail !== this._requestedContactEmail));
+		this._displaySoloTransferFinalConfirmButton = (this._requestedContactEmail != '' && this._communityContactEmail !== this._requestedContactEmail);
+		console.log('BBBBBBBB this._displaySoloTransferFinalConfirmButton: ', this._displaySoloTransferFinalConfirmButton);
+	}
+
+	handleSoloTransferFinalConfirmClick() {
+		console.log('handleSoloTransferFinalConfirmClick');
+
+		console.log('selectedParticipantId: ', this._selectedSoloTransferParticipantId);
+		console.log('communityContactId: ', this._communityContactId);
+		console.log('communityContactEmail: ', this._communityContactEmail);
+
+		console.log('requestedContactId= ', this._requestedContactId);
+		console.log('requestedContactEmail= ', this._requestedContactEmail);
+		// console.log('requestedContactName= ', this._requestedContactName);
+
+		this._isSpinner = true;
+		submitSoloTransfer({params: {
+			selectedParticipantId: this._selectedSoloTransferParticipantId,
+			communityContactId: this._communityContactId,
+			communityContactEmail: this._communityContactEmail,
+			requestedContactId: this._requestedContactId,
+			requestedContactEmail: this._requestedContactEmail,
+			crDescription: this._crDescription
+			}}).then(result=>{
+				console.log('result: ', result);
+				this._isError = false;
+				this._isSpinner = false;
+
+				if (result.result) {
+					this.showSuccessToast(result.message);
+				}
+				if (!result.result) {
+					this.showErrorToast(result.message);
+				}
+
+				this.connectedCallback();
+			})
+			.catch(error=>{
+				console.log('ChangeRequestComponent');
+				console.log('handleSoloTransferFinalConfirmClick Error: ' + JSON.stringify(error));
+				this._isError = true;
+				this._isSpinner = false;
+			})
+
+
+	}
+
+	handleSoloTransferFinalCancelClick() {
+		console.log('handleSoloTransferFinalCancelClick');
+		// this.connectedCallback();
+		this._displaySoloTransferContainer = false;
+		this._displayChangeRequestCancelButton = true;
+	}
+
+	//	GROUP CANCELLATION BLOCK
+	handleSubmitGroupCancellation(event) {
+		const selectedGroupId = event.detail.selectedGroupId;
+		console.log('handleSubmitGroupCancellation selectedGroupId: ', selectedGroupId);
+
+		submitGroupCancellation({params: {
+			selectedContactId: this._communityContactId,
+			crDescription: this._crDescription,
+			selectedGroupId: selectedGroupId
+			}}).then(result=>{
+				console.log('result: ', result);
+				this._isError = false;
+				this._isSpinner = false;
+
+				if (result.result) {
+					this.showSuccessToast(result.message);
+				}
+				if (!result.result) {
+					this.showErrorToast(result.message);
+				}
+
+				this.connectedCallback();
+			})
+			.catch(error=>{
+				console.log('ChangeRequestComponent');
+				console.log('submitGroupCancellation Error: ' + JSON.stringify(error));
+				this._isError = true;
+				this._isSpinner = false;
+			})
+
+	}
+
+	//	GROUP TRANSFER BLOCK
+	handleSubmitGroupTransfer(event) {
+		this._selectedGroupIdToTransferRequest = event.detail.selectedGroupId;
+		console.log('handleSubmitGroupTransfer _selectedGroupIdToTransferRequest: ', _selectedGroupIdToTransferRequest);
+
+		var params = {};
+		params.selectedCRType = this._selectedCRType;
+		params.contactRecordId = this.recordId;
+		params.selectedGroupId = this._selectedGroupIdToTransferRequest;
+		this._paramsString = JSON.stringify(params);
+
+		this._displayMyRegistrationsComponent = false;
+		this._displayGroupTransferContainer = true;
+	}
+
+
+	showSuccessToast(msg) {
+		const evt = new ShowToastEvent({
+			title: 'Success',
+			message: msg,
+			variant: 'success',
+			mode: 'dismissable'
+		});
+		this.dispatchEvent(evt);
+	}
+
+	showErrorToast(msg) {
+		const evt = new ShowToastEvent({
+			title: 'Error',
+			message: msg,
+			variant: 'error',
+			mode: 'dismissable'
+		});
+		this.dispatchEvent(evt);
+	}
+
+	//	DELETE ???
 	navigateCommunityPage(targetPageName, id){
 		console.log('changeRequestComponent navigateCommunityPage targetPageName: ', targetPageName);
 		console.log('changeRequestComponent navigateCommunityPage recordId: ', id);

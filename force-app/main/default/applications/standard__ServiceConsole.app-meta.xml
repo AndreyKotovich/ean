@@ -185,6 +185,7 @@
     <tabs>Author__c</tabs>
     <tabs>Abstract__c</tabs>
     <tabs>Change_Request__c</tabs>
+    <tabs>Session_Speaker__c</tabs>
     <workspaceConfig>
         <mappings>
             <tab>Abstract__c</tab>
@@ -203,6 +204,9 @@
         </mappings>
         <mappings>
             <tab>Presenter__c</tab>
+        </mappings>
+        <mappings>
+            <tab>Session_Speaker__c</tab>
         </mappings>
         <mappings>
             <tab>standard-Account</tab>

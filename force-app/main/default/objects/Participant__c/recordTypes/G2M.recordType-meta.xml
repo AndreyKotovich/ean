@@ -4,6 +4,17 @@
     <active>true</active>
     <label>G2M</label>
     <picklistValues>
+        <picklist>Badge_Retrieval__c</picklist>
+        <values>
+            <fullName>onsite</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>pre_print</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>Role__c</picklist>
         <values>
             <fullName>FW Convenor</fullName>

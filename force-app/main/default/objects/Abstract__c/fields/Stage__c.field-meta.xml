@@ -4,7 +4,7 @@
     <externalId>false</externalId>
     <label>Stage</label>
     <required>false</required>
-    <trackHistory>false</trackHistory>
+    <trackHistory>true</trackHistory>
     <trackTrending>false</trackTrending>
     <type>Picklist</type>
     <valueSet>
@@ -32,9 +32,9 @@
                 <label>In Review</label>
             </value>
             <value>
-                <fullName>Close</fullName>
+                <fullName>Closed</fullName>
                 <default>false</default>
-                <label>Close</label>
+                <label>Closed</label>
             </value>
         </valueSetDefinition>
     </valueSet>

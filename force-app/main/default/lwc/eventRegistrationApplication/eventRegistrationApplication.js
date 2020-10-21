@@ -1,7 +1,7 @@
 /* eslint-disable no-extra-boolean-cast */
-import { LightningElement, track } from "lwc";
-import { NavigationMixin } from "lightning/navigation";
-import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import {LightningElement, track} from "lwc";
+import {NavigationMixin} from "lightning/navigation";
+import {ShowToastEvent} from "lightning/platformShowToastEvent";
 
 import getUserMemberships from "@salesforce/apex/Utils.getUserMemberships";
 import getEvent from "@salesforce/apex/EventRegistrationController.getEvent";
@@ -35,6 +35,11 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             label: "Extra booking",
             value: "step-3",
             isActive: false
+        },
+        step4: {
+            label: "Summarize",
+            value: "step-4",
+            isActive: false
         }
     };
     @track progressIndicatorSteps = [];
@@ -54,6 +59,11 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     userInfo = {};
     participants = {}; //event participants which we insert in database
     selectedSessions = []; //selected extra sessions
+    selectedServices = { //selected extra services
+        journals: [],
+        visaLetter: false,
+        badgeRetrieval: ''
+    };
 
     connectedCallback() {
         for (let prop in this.steps) {
@@ -79,7 +89,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     getInitialData(eventId) {
         let promises = [];
 
-        promises.push(getEvent({ eventId: eventId }));
+        promises.push(getEvent({eventId: eventId}));
         promises.push(getContactInfo());
         promises.push(getUserMemberships());
         promises.push(getCountries());
@@ -138,9 +148,14 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         this.onNext();
     }
 
-    onExtraBooking(event){
-        console.log('extraBooking: '+JSON.stringify(event.detail.selectedSessions));
+    onExtraBooking(event) {
+        console.log('extraBooking: ' + JSON.stringify(event.detail.selectedSessions));
         this.selectedSessions = [...event.detail.selectedSessions];
+        this.selectedServices = Object.assign({}, event.detail.selectedServices);
+        this.onNext();
+    }
+
+    onSummarize(event) {
         this.onNext();
     }
 
@@ -152,6 +167,9 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             this.steps.step2.isActive = false;
             this.steps.step3.isActive = true;
         } else if (this.steps.step3.isActive) {
+            this.steps.step3.isActive = false;
+            this.steps.step4.isActive = true;
+        } else if (this.steps.step4.isActive) {
             // this.steps.step2.isActive = false;
             this.finishRegistration();
         }
@@ -165,6 +183,14 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         } else if (this.steps.step3.isActive) {
             this.steps.step3.isActive = false;
             this.steps.step2.isActive = true;
+        } else if (this.steps.step4.isActive) {
+            if(this.registrationType === 'solo'){
+                this.steps.step4.isActive = false;
+                this.steps.step3.isActive = true;
+            } else {
+                this.steps.step4.isActive = false;
+                this.steps.step2.isActive = true;
+            }
         }
         this.setCurrentStep();
     }
@@ -174,9 +200,11 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         let participants = [];
         let call = this.registrationType !== "solo" ?
             () => {
-                return insertRegistrationGroup({ groupName: this.groupName, groupLeaderId: this.userInfo.contact.Id });
-            } : () => { 
-                return new Promise((resolve) => { resolve(); }); 
+                return insertRegistrationGroup({groupName: this.groupName, groupLeaderId: this.userInfo.contact.Id});
+            } : () => {
+                return new Promise((resolve) => {
+                    resolve();
+                });
             };
 
         call()
@@ -188,14 +216,17 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                 generalData.eventId = this.ean_event.Id;
                 generalData.priceTicket = this.priceTicket;
                 generalData.contactId = this.userInfo.contact.Id;
+                generalData.journals = [...this.selectedServices.journals];
 
-                console.log('generalData',JSON.parse(JSON.stringify(generalData)));
+                console.log('generalData', JSON.parse(JSON.stringify(generalData)));
                 if (this.registrationType === "solo") {
                     participants.push({
                         sobjectType: "Participant__c",
                         Contact__c: this.userInfo.contact.Id,
                         Event_Ticket__c: generalData.selectTicket,
                         Event_custom__c: this.ean_event.Id,
+                        Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
+                        Visa_Letter__c: this.selectedServices.visaLetter,
                     });
                 } else {
                     generalData.groupId = result;
@@ -209,7 +240,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                     }
                 }
 
-                return insertEventParticipants({ participants: participants, generalData: generalData });
+                return insertEventParticipants({participants: participants, generalData: generalData, selectedSession: this.selectedSessions});
             })
             .then((data) => {
                 this.isSpinner = false;

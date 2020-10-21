@@ -39,5 +39,6 @@
     <tabs>Author__c</tabs>
     <tabs>Abstract__c</tabs>
     <tabs>Change_Request__c</tabs>
+    <tabs>Session_Speaker__c</tabs>
     <uiType>Lightning</uiType>
 </CustomApplication>

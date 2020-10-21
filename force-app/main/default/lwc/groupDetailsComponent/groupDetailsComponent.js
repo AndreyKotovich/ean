@@ -1,6 +1,6 @@
 import { LightningElement, api } from 'lwc';
 import { NavigationMixin } from "lightning/navigation";
-import connectedCallbackGetGroupDetails from '@salesforce/apex/MyRegistrationsController.connectedCallbackGetGroupDetails'
+import getGroupDetails from '@salesforce/apex/MyRegistrationsController.getGroupDetails'
 import clickButton1Apex from '@salesforce/apex/MyRegistrationsController.clickButton1Apex'
 
 export default class GroupDetailsComponent extends LightningElement {
@@ -48,7 +48,8 @@ export default class GroupDetailsComponent extends LightningElement {
 		console.log('GroupDetailsComponent connectedCallback');
 		console.log('this.recordId: ', this.recordId);
 
-		connectedCallbackGetGroupDetails({settings: {
+		getGroupDetails({settings: {
+			params: this.params,
 			groupId: this.recordId,
 			maxParticipants: this.maxparticipants
 			}}).then(result=>{
@@ -84,7 +85,7 @@ export default class GroupDetailsComponent extends LightningElement {
 			})
 			.catch(error=>{
 				console.log('GroupDetails component');
-				console.log('connectedCallbackGetGroupDetails Error: ' + JSON.stringify(error));
+				console.log('getGroupDetails Error: ' + JSON.stringify(error));
 				this._isError = true;
 				this._isSpinner = false;
 			})

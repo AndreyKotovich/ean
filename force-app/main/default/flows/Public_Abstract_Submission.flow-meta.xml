@@ -3,8 +3,8 @@
     <assignments>
         <name>AssignAbstractValues</name>
         <label>AssignAbstractValues</label>
-        <locationX>495</locationX>
-        <locationY>524</locationY>
+        <locationX>486</locationX>
+        <locationY>526</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Event__c</assignToReference>
             <operator>Assign</operator>
@@ -96,8 +96,8 @@
     <assignments>
         <name>AssignAuthor</name>
         <label>AssignAuthor</label>
-        <locationX>1188</locationX>
-        <locationY>417</locationY>
+        <locationX>1367</locationX>
+        <locationY>432</locationY>
         <assignmentItems>
             <assignToReference>AbstractAuthor.Author__c</assignToReference>
             <operator>Assign</operator>
@@ -119,8 +119,8 @@
     <assignments>
         <name>AssignNewAuthor</name>
         <label>AssignNewAuthor</label>
-        <locationX>1188</locationX>
-        <locationY>528</locationY>
+        <locationX>1370</locationX>
+        <locationY>539</locationY>
         <assignmentItems>
             <assignToReference>AbstractAuthor.Author__c</assignToReference>
             <operator>Assign</operator>
@@ -158,8 +158,8 @@
     <assignments>
         <name>AssignPresenter</name>
         <label>AssignPresenter</label>
-        <locationX>802</locationX>
-        <locationY>425</locationY>
+        <locationX>757</locationX>
+        <locationY>427</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Presenter__c</assignToReference>
             <operator>Assign</operator>
@@ -174,8 +174,8 @@
     <assignments>
         <name>Reset_Author</name>
         <label>Reset Author</label>
-        <locationX>1342</locationX>
-        <locationY>188</locationY>
+        <locationX>1514</locationX>
+        <locationY>193</locationY>
         <assignmentItems>
             <assignToReference>LookupAuthor.recordId</assignToReference>
             <operator>Assign</operator>
@@ -191,10 +191,10 @@
     <decisions>
         <name>AddAnotherAuthorDecision</name>
         <label>AddAnotherAuthorDecision</label>
-        <locationX>1535</locationX>
-        <locationY>199</locationY>
+        <locationX>1667</locationX>
+        <locationY>190</locationY>
         <defaultConnector>
-            <targetReference>Upload_Files_Screen</targetReference>
+            <targetReference>Submit_Screen</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>No</defaultConnectorLabel>
         <rules>
@@ -216,8 +216,8 @@
     <decisions>
         <name>AuthorFound</name>
         <label>AuthorFound</label>
-        <locationX>1053</locationX>
-        <locationY>170</locationY>
+        <locationX>1322</locationX>
+        <locationY>194</locationY>
         <defaultConnector>
             <targetReference>CreateAuthor</targetReference>
         </defaultConnector>
@@ -285,8 +285,8 @@
     <decisions>
         <name>SubmitAbstractDecision</name>
         <label>SubmitAbstractDecision</label>
-        <locationX>1820</locationX>
-        <locationY>204</locationY>
+        <locationX>1821</locationX>
+        <locationY>191</locationY>
         <defaultConnector>
             <targetReference>DraftSuccessMessage</targetReference>
         </defaultConnector>
@@ -364,6 +364,12 @@
         </value>
     </processMetadataValues>
     <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
         <name>OriginBuilderType</name>
         <value>
             <stringValue>LightningFlowBuilder</stringValue>
@@ -373,8 +379,8 @@
     <recordCreates>
         <name>Create_Presenter</name>
         <label>Create Presenter</label>
-        <locationX>688</locationX>
-        <locationY>541</locationY>
+        <locationX>672</locationX>
+        <locationY>540</locationY>
         <connector>
             <targetReference>AssignNewPresenter</targetReference>
         </connector>
@@ -396,18 +402,18 @@
     <recordCreates>
         <name>CreateAbstract</name>
         <label>CreateAbstract</label>
-        <locationX>929</locationX>
-        <locationY>485</locationY>
+        <locationX>951</locationX>
+        <locationY>511</locationY>
         <connector>
-            <targetReference>Add_Authors_Screen</targetReference>
+            <targetReference>Upload_Files_Screen</targetReference>
         </connector>
         <inputReference>AbstractRecordVariable</inputReference>
     </recordCreates>
     <recordCreates>
         <name>CreateAbstractAuthor</name>
         <label>CreateAbstractAuthor</label>
-        <locationX>1367</locationX>
-        <locationY>474</locationY>
+        <locationX>1520</locationX>
+        <locationY>477</locationY>
         <connector>
             <targetReference>Add_Another_Author_Screen</targetReference>
         </connector>
@@ -416,8 +422,8 @@
     <recordCreates>
         <name>CreateAuthor</name>
         <label>CreateAuthor</label>
-        <locationX>1056</locationX>
-        <locationY>530</locationY>
+        <locationX>1230</locationX>
+        <locationY>539</locationY>
         <assignRecordIdToReference>NewAuthorID</assignRecordIdToReference>
         <connector>
             <targetReference>AssignNewAuthor</targetReference>
@@ -485,8 +491,8 @@
     <screens>
         <name>Add_Another_Author_Screen</name>
         <label>Add Another Author Screen</label>
-        <locationX>1478</locationX>
-        <locationY>363</locationY>
+        <locationX>1594</locationX>
+        <locationY>341</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -529,8 +535,8 @@
     <screens>
         <name>Add_Authors_Screen</name>
         <label>Add Authors Screen</label>
-        <locationX>926</locationX>
-        <locationY>351</locationY>
+        <locationX>1223</locationX>
+        <locationY>346</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -944,13 +950,13 @@
     <screens>
         <name>Upload_Files_Screen</name>
         <label>Upload Files Screen</label>
-        <locationX>1693</locationX>
-        <locationY>344</locationY>
+        <locationX>1073</locationX>
+        <locationY>348</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
         <connector>
-            <targetReference>Submit_Screen</targetReference>
+            <targetReference>Add_Authors_Screen</targetReference>
         </connector>
         <fields>
             <name>FileUpload1</name>
@@ -959,7 +965,7 @@
             <inputParameters>
                 <name>label</name>
                 <value>
-                    <stringValue>Add Files</stringValue>
+                    <stringValue>Introduction: Upload Image</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -971,13 +977,19 @@
             <inputParameters>
                 <name>accept</name>
                 <value>
-                    <stringValue>.jpg,.png,.pdf</stringValue>
+                    <stringValue>.jpg,.png</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>fileNames</name>
                 <value>
                     <elementReference>UploadedFiles</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>contentDocIds</name>
+                <value>
+                    <elementReference>ContentDocumentIDs</elementReference>
                 </value>
             </inputParameters>
             <isRequired>true</isRequired>
@@ -990,7 +1002,7 @@
             <inputParameters>
                 <name>label</name>
                 <value>
-                    <stringValue>Add File</stringValue>
+                    <stringValue>Methods: Upload Image</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -1002,13 +1014,19 @@
             <inputParameters>
                 <name>accept</name>
                 <value>
-                    <stringValue>.jpg,.png,.pdf</stringValue>
+                    <stringValue>.jpg,.png</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>fileNames</name>
                 <value>
                     <elementReference>UploadedFiles</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>contentDocIds</name>
+                <value>
+                    <elementReference>ContentDocumentIDs</elementReference>
                 </value>
             </inputParameters>
             <isRequired>true</isRequired>
@@ -1021,7 +1039,7 @@
             <inputParameters>
                 <name>label</name>
                 <value>
-                    <stringValue>Add File</stringValue>
+                    <stringValue>Results: Upload Image</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -1033,13 +1051,19 @@
             <inputParameters>
                 <name>accept</name>
                 <value>
-                    <stringValue>.jpg,.png,.pdf</stringValue>
+                    <stringValue>.jpg,.png</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>fileNames</name>
                 <value>
                     <elementReference>UploadedFiles</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>contentDocIds</name>
+                <value>
+                    <elementReference>ContentDocumentIDs</elementReference>
                 </value>
             </inputParameters>
             <isRequired>true</isRequired>
@@ -1079,6 +1103,13 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
         <objectType>Abstract__c</objectType>
+    </variables>
+    <variables>
+        <name>ContentDocumentIDs</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
     </variables>
     <variables>
         <name>NewAuthorID</name>

@@ -4,7 +4,6 @@
     <externalId>false</externalId>
     <label>Presenter</label>
     <referenceTo>Presenter__c</referenceTo>
-    <relationshipLabel>Speaking Engagements</relationshipLabel>
     <relationshipName>Speaking_Engagements</relationshipName>
     <relationshipOrder>1</relationshipOrder>
     <reparentableMasterDetail>true</reparentableMasterDetail>

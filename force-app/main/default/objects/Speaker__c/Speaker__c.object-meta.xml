@@ -153,13 +153,13 @@
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
     <externalSharingModel>ControlledByParent</externalSharingModel>
-    <label>Speaking Engagement</label>
+    <label>Lecture Presentation</label>
     <nameField>
-        <displayFormat>SPR-{0000}</displayFormat>
-        <label>Speaking Engagement Name</label>
+        <displayFormat>PRES-{YY}-{0000}</displayFormat>
+        <label>Lecture Presentation</label>
         <type>AutoNumber</type>
     </nameField>
-    <pluralLabel>Speaking Engagements</pluralLabel>
+    <pluralLabel>Lecture Presentations</pluralLabel>
     <searchLayouts/>
     <sharingModel>ControlledByParent</sharingModel>
     <visibility>Public</visibility>

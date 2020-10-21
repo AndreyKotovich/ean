@@ -7,10 +7,18 @@ public without sharing class MyRegistrationsController {
 
 	public static final String SYSTEM_GROUP_CONTACT_NAME = 'Undefined Participant';
 
-	public static final String CR_TYPE_SOLO_CANCELATION = 'Solo Registration Cancelation';
-	public static final String CR_TYPE_GROUP_CANCELATION = 'Group Registration Cancelation';
+	public static final String CR_TYPE_SOLO_CANCELLATION = 'Solo Registration Cancellation';
+	public static final String CR_TYPE_GROUP_CANCELLATION = 'Group Registration Cancellation';
 	public static final String CR_TYPE_SOLO_TRANSFER = 'Solo Registration Transfer';
 	public static final String CR_TYPE_GROUP_TRANSFER = 'Group Registration Transfer';
+
+	public static final String MY_REGISTRATIONS_TABLE_LABEL = 'My Registrations';
+	public static final String MY_REGISTERED_GROUPS_TABLE_LABEL = 'My Registered Groups';
+
+	public static final String AVAILABLE_MY_REGISTRATIONS_FOR_CR_LABEL = 'Click on the available Registration to associate with Change Request';
+	public static final String AVAILABLE_MY_GROUPS_FOR_CR_LABEL = 'Click on the available Registered Group to associate with Change Request';
+	public static final String NO_AVAILABLE_MY_REGISTRATIONS_FOR_CR_LABEL = 'You have no available registrations to create a new Solo Change Request';
+	public static final String NO_AVAILABLE_MY_GROUPS_FOR_CR_LABEL = 'You have no available groups to create a new Group Change Request';
 
 	//	COMMUNITY COMPONENT: MY REGISTRAIONS
 	@AuraEnabled
@@ -30,6 +38,7 @@ public without sharing class MyRegistrationsController {
 
 
 			system.debug('contactRecordId= ' + contactRecordId);
+			system.debug('paramsString= ' + paramsString);
 
 			//	SECOND PRIORITY
 			String userId = '' + UserInfo.getUserId();	//	eanStaffUserId OR communityUserId
@@ -172,6 +181,11 @@ public without sharing class MyRegistrationsController {
 			List<EventRegistrationWrap> registrationsSolo = sortEventRegistrationsMap(registrationsMapSolo);
 			List<EventRegistrationWrap> registrationsGroup = sortEventRegistrationsMap(groupIdToRegistrationDetails);
 
+			String crUnavailableMessage = (selectedCRType == CR_TYPE_GROUP_CANCELLATION || selectedCRType == CR_TYPE_GROUP_TRANSFER) && registrationsGroup.isEmpty()
+				? NO_AVAILABLE_MY_GROUPS_FOR_CR_LABEL
+					: (selectedCRType == CR_TYPE_SOLO_CANCELLATION || selectedCRType == CR_TYPE_SOLO_TRANSFER) && registrationsSolo.isEmpty()
+						? NO_AVAILABLE_MY_REGISTRATIONS_FOR_CR_LABEL : '';
+
 			return new Map<String, Object>{
 				'result' => true,
 				'userId' => userId,
@@ -179,13 +193,22 @@ public without sharing class MyRegistrationsController {
 				// 'accountId' => accountId,
 				'registrationsSolo' => registrationsSolo,
 				'registrationsGroup' => registrationsGroup,
-				'displayRegistrationsSolo' => !registrationsSolo.isEmpty(),
-				'displayRegistrationsGroup' => !registrationsGroup.isEmpty(),
-				'displayNoRegistrationMessage' => registrationsSolo.isEmpty() && registrationsGroup.isEmpty(),
+				'displayRegistrationsSolo' => !registrationsSolo.isEmpty() && selectedCRType != CR_TYPE_GROUP_CANCELLATION && selectedCRType != CR_TYPE_GROUP_TRANSFER,
+				'displayRegistrationsGroup' => !registrationsGroup.isEmpty() && selectedCRType != CR_TYPE_SOLO_CANCELLATION && selectedCRType != CR_TYPE_SOLO_TRANSFER,
+				'displayNoRegistrationMessage' => registrationsSolo.isEmpty() && registrationsGroup.isEmpty() && String.isBlank(selectedCRType),
+				'myRegistrationsLabel' => String.isBlank(selectedCRType) ? MY_REGISTRATIONS_TABLE_LABEL : AVAILABLE_MY_REGISTRATIONS_FOR_CR_LABEL,
+				'myRegisteredGroupsLabel' => String.isBlank(selectedCRType) ? MY_REGISTERED_GROUPS_TABLE_LABEL : AVAILABLE_MY_GROUPS_FOR_CR_LABEL,
+				'crUnavailableMessage' => crUnavailableMessage,
+				'displayCRUnavailableMessage' => !String.isBlank(crUnavailableMessage),
+				'selectedCRType' => selectedCRType,
 				'logList' => logList
 			};
 
-		} catch (Exception e) { return new Map<String, Object>{'result' => false, 'message' => e.getStackTraceString()}; }
+		} catch (Exception e) { 
+			system.debug('!!! ERROR !!! : ' + e.getMessage());
+			system.debug('!!! ERROR !!! : ' + e.getStackTraceString());
+			return new Map<String, Object>{'result' => false, 'message' => e.getStackTraceString()};
+		}
 	}
 
 	public static List<EventRegistrationWrap> sortEventRegistrationsMap(Map<String, EventRegistrationWrap> eventRegistrationsMap) {
@@ -267,23 +290,43 @@ public without sharing class MyRegistrationsController {
 			'WHERE ';
 
 		queryString += String.isBlank(changeRequestType) ? '(Contact__c =:communityContactId OR Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c =:communityContactId) '
-			: changeRequestType == CR_TYPE_SOLO_CANCELATION || changeRequestType == CR_TYPE_SOLO_TRANSFER ? 'Contact__c =:communityContactId '
-				: changeRequestType == CR_TYPE_GROUP_CANCELATION || changeRequestType == CR_TYPE_GROUP_TRANSFER ? 'Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c =:communityContactId'
+			: changeRequestType == CR_TYPE_SOLO_CANCELLATION || changeRequestType == CR_TYPE_SOLO_TRANSFER ? 'Contact__c =:communityContactId '
+				: changeRequestType == CR_TYPE_GROUP_CANCELLATION || changeRequestType == CR_TYPE_GROUP_TRANSFER ? 'Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c =:communityContactId '
 					: '';	// TEST ERROR 
 
 		queryString += 'AND RecordTypeId !=:g2mRT ';
-		queryString += 'AND (Status__c =\'Registered\' OR Status__c =\'Participated\')';
-		Map<String, SObject> allMyParticipationsMap = new Map<String, SObject>(Database.query(queryString));
+		queryString += 'AND Status__c =\'Registered\' ';
+		// queryString += 'AND (Status__c =\'Registered\' OR Status__c =\'Participated\')';
+		// queryString += 'AND Status__c !=\'Canceled\' ';
 
+		system.debug('queryString= ' + queryString);
+
+		Map<String, SObject> allMyParticipationsMap = new Map<String, SObject>(Database.query(queryString));
 		if (String.isBlank(changeRequestType)) return (List<Participant__c>) allMyParticipationsMap.values();
 
+		//	part of logic to prevent SOLO requests (as a group member) if we have a Group Cancellation Request
+		Map<String, Set<String>> groupIdToParticipantIdSet = new Map<String, Set<String>>();
+		for (String participantId : allMyParticipationsMap.keySet()) {
+			Participant__c patricipant = (Participant__c) allMyParticipationsMap.get(participantId);
+			if (patricipant.Event_Registration_Sub_Group__c == null) continue;
+
+			Set<String> groupParticipantIdSet = groupIdToParticipantIdSet.containsKey('' + patricipant.Event_Registration_Sub_Group__r.Event_Registration_Group__c)
+				? groupIdToParticipantIdSet.get('' + patricipant.Event_Registration_Sub_Group__r.Event_Registration_Group__c)
+					: new Set<String>();
+
+			groupParticipantIdSet.add(participantId);
+			groupIdToParticipantIdSet.put('' + patricipant.Event_Registration_Sub_Group__r.Event_Registration_Group__c, groupParticipantIdSet);
+		}
+
+		List<String> changeRequestTypes = new List<String>{CR_TYPE_SOLO_CANCELLATION, CR_TYPE_SOLO_TRANSFER, CR_TYPE_GROUP_CANCELLATION, CR_TYPE_GROUP_TRANSFER};
 
 		List<Change_Request__c> changeRequestList = [
 			SELECT Id, Name, Contact__c, Event_Participation__c, Event_Registration_Group__c,
 				TransferFromContact__c, TransferFromEmail__c,
 				TransferToContact__c, TransferToEmail__c, Type__c, Status__c
 			FROM Change_Request__c
-			WHERE Type__c =:changeRequestType
+			// WHERE Type__c =:changeRequestType
+			WHERE Type__c IN :changeRequestTypes
 			AND Status__c !='Done'
 			AND Status__c !='Revoked'
 			AND Status__c !='Rejected'
@@ -292,23 +335,38 @@ public without sharing class MyRegistrationsController {
 			LIMIT 1000
 		];
 
-		if (changeRequestType == CR_TYPE_SOLO_CANCELATION || changeRequestType == CR_TYPE_SOLO_TRANSFER) {
+		system.debug('111 GGGG allMyParticipationsMap= ' + JSON.serialize(allMyParticipationsMap));
+		system.debug('111 GGGG allMyParticipationsMap.size()= ' + allMyParticipationsMap.size());
+
+		if (changeRequestType == CR_TYPE_SOLO_CANCELLATION || changeRequestType == CR_TYPE_SOLO_TRANSFER) {
 			for (Change_Request__c changeRequest : changeRequestList) {
-				if (allMyParticipationsMap.containsKey('' + changeRequest.Event_Participation__c)) allMyParticipationsMap.remove('' + changeRequest.Event_Participation__c);
+				if (changeRequest.Event_Participation__c != null && allMyParticipationsMap.containsKey('' + changeRequest.Event_Participation__c))
+					allMyParticipationsMap.remove('' + changeRequest.Event_Participation__c);
+
+				//	part of logic to prevent SOLO requests (as a group member) if we have a Group Cancellation Request
+				if (changeRequest.Type__c == CR_TYPE_GROUP_CANCELLATION && changeRequest.Event_Registration_Group__c != null) {
+					if (groupIdToParticipantIdSet.containsKey('' + changeRequest.Event_Registration_Group__c)) {
+						Set<String> groupParticipantIdSet = groupIdToParticipantIdSet.get('' + changeRequest.Event_Registration_Group__c);
+						for (String groupParticipantId : groupParticipantIdSet) {
+							allMyParticipationsMap.remove(groupParticipantId);
+						}
+					}
+				}
 			}
 		}
 
-		if (changeRequestType == CR_TYPE_GROUP_CANCELATION) {
+		if (changeRequestType == CR_TYPE_GROUP_CANCELLATION) {
 
 			Set<String> crGroupIds = new Set<String>();
 			for (Change_Request__c changeRequest : changeRequestList) {
-				if (changeRequest.Event_Registration_Group__c != null) crGroupIds.add('' + changeRequest.Event_Registration_Group__c);
+				if (changeRequest.Event_Registration_Group__c != null && changeRequest.Type__c == CR_TYPE_GROUP_CANCELLATION) crGroupIds.add('' + changeRequest.Event_Registration_Group__c);
 			}
 
 			List<Participant__c> queriedParticipants = (List<Participant__c>) allMyParticipationsMap.values();
 			List<Participant__c> filteredParticipants = new List<Participant__c>();
 			for (Participant__c queriedParticipant : queriedParticipants) {
-				if (queriedParticipant.Event_Registration_Sub_Group__c == null || !crGroupIds.contains('' + queriedParticipant.Event_Registration_Sub_Group__r.Event_Registration_Group__c))
+				if (queriedParticipant.Event_Registration_Sub_Group__c != null && !crGroupIds.contains('' + queriedParticipant.Event_Registration_Sub_Group__r.Event_Registration_Group__c))
+				// if (queriedParticipant.Event_Registration_Sub_Group__c == null || !crGroupIds.contains('' + queriedParticipant.Event_Registration_Sub_Group__r.Event_Registration_Group__c))
 					filteredParticipants.add(queriedParticipant);
 			}
 			return filteredParticipants;
@@ -316,25 +374,56 @@ public without sharing class MyRegistrationsController {
 
 		//	Logic for CR_TYPE_GROUP_TRANSFER will be in 'groupDetailsComponent' LWC
 
+		system.debug('222 GGGG allMyParticipationsMap= ' + JSON.serialize(allMyParticipationsMap));
+		system.debug('222 GGGG allMyParticipationsMap.size()= ' + allMyParticipationsMap.size());
+
 		return (List<Participant__c>) allMyParticipationsMap.values();
 	}
 
 
 	//	COMMUNITY PAGE: GROUP DETAILS
 	@AuraEnabled
-	public static Map<String, Object> connectedCallbackGetGroupDetails(Map<String, Object> settings) {
+	public static Map<String, Object> getGroupDetails(Map<String, Object> settings) {
+		try {
+			String paramsString = settings.containsKey('params') ? String.valueOf(settings.get('params')) : '';
+			Map<String, String> params = !String.isBlank(paramsString) ? (Map<String, String>) JSON.deserialize(paramsString, Map<String, String>.class) : new Map<String, String>();
+			String selectedCRType = params.containsKey('selectedCRType') ? String.valueOf(params.get('selectedCRType')) : '';
 
-		String userId = settings.containsKey('userId') ? String.valueOf(settings.get('userId')) : '0050E000007hFBsQAM';
-		String groupId = settings.containsKey('groupId') ? String.valueOf(settings.get('groupId')) : 'a0H0E0000095GLNUA2';
+			//	FIRST PRIORITY	//	becomes from QuickAction	EAN Staff q-action on 'Contact' record
+			String contactRecordId = params.containsKey('contactRecordId') ? String.valueOf(params.get('contactRecordId')) : '';
+			system.debug('getGroupDetails settings = ' + JSON.serialize(settings));
+			system.debug('contactRecordId= ' + contactRecordId);
+			system.debug('paramsString= ' + paramsString);
 
-		String maxParticipantsString = settings.containsKey('maxParticipants') ? String.valueOf(settings.get('maxParticipants')) : null;
-		Integer maxParticipants = !String.isBlank(maxParticipantsString) ? Integer.valueOf(maxParticipantsString) : null;
+			//	SECOND PRIORITY
+			String userId = '' + UserInfo.getUserId();	//	eanStaffUserId OR communityUserId
 
-		//	TEST GROUP DEFINITION
-		// maxParticipants = 10;
+			List<User> communityUser = !String.isBlank(contactRecordId) ? [SELECT Id, ContactId, Contact.AccountId FROM User WHERE ContactId =:contactRecordId LIMIT 1]
+				: [SELECT Id, ContactId, Contact.AccountId FROM User WHERE Id =:userId LIMIT 1];
+			String communityContactId = !communityUser.isEmpty() ? '' + communityUser[0].ContactId : '';	//	Id accountId = communityUser[0].Contact.AccountId;
 
-		if (maxParticipants == null && !String.isBlank(groupId)) return getExistingGroupDetails(userId, groupId);
+			String groupIdFromParams = params.containsKey('selectedGroupId') ? String.valueOf(params.get('selectedGroupId')) : '';
+			String groupId = !String.isBlank(groupIdFromParams) ? groupIdFromParams : settings.containsKey('groupId') ? String.valueOf(settings.get('groupId')) : '';
 
+			String maxParticipantsString = settings.containsKey('maxParticipants') ? String.valueOf(settings.get('maxParticipants')) : null;
+			Integer maxParticipants = !String.isBlank(maxParticipantsString) ? Integer.valueOf(maxParticipantsString) : null;
+
+			//	TEST GROUP DEFINITION
+			// maxParticipants = 10;
+
+			if (maxParticipants == null && !String.isBlank(groupId)) return getExistingGroupDetails(communityContactId, groupId);
+
+			//	for group registration flow
+			return generateEmptyGroup(maxParticipants);
+
+		} catch (Exception e) { 
+			system.debug('!!! ERROR !!! : ' + e.getMessage());
+			system.debug('!!! ERROR !!! : ' + e.getStackTraceString());
+			return new Map<String, Object>{'result' => false, 'message' => e.getStackTraceString()};
+		}
+	}
+
+	public static Map<String, Object> generateEmptyGroup(Integer maxParticipants) {
 		// for community builder
 		maxParticipants = maxParticipants == null ? 10 : maxParticipants;
 
@@ -395,26 +484,19 @@ public without sharing class MyRegistrationsController {
 			'button1Label' => 'Submit',
 			'button2Label' => 'Cancel'
 		};
-
 	}
 
-	public static Map<String, Object> getExistingGroupDetails(String userId, String groupId) {
+	public static Map<String, Object> getExistingGroupDetails(String communityContactId, String groupId) {
 
 		List<String> logList = new List<String>();	// DELETE
 
-		system.debug('getExistingGroupDetails userId= ' + userId);
+		system.debug('getExistingGroupDetails communityContactId= ' + communityContactId);
 		system.debug('getExistingGroupDetails groupId= ' + groupId);
-		if (userId == null || String.isBlank(groupId)) {
-			return new Map<String, Object>{'result' => false, 'message' => 'User or Group not found.'};
+		if (String.isBlank(communityContactId) || String.isBlank(groupId)) {
+			return new Map<String, Object>{'result' => false, 'message' => 'ContactId or Group not found.'};
 		}
 
-			// Id userId = UserInfo.getUserId();
-			List<User> currentUser = [SELECT Id, ContactId, Contact.AccountId FROM User WHERE Id =:userId LIMIT 1];
-			Id contactId = currentUser[0].ContactId;
-			Id accountId = currentUser[0].Contact.AccountId;
-
 			Id g2mRT = Schema.SObjectType.Participant__c.getRecordTypeInfosByDeveloperName().get('G2M').getRecordTypeId();
-
 			List<Participant__c> groupParticipations = [
 				SELECT Id, Name, Contact__c, Contact__r.Name, Contact__r.Email,
 					Event_custom__c, Event_custom__r.Name, Event_custom__r.End_Time__c, Event_custom__r.Start_Time__c,
@@ -424,7 +506,7 @@ public without sharing class MyRegistrationsController {
 					Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__r.Name
 					// (SELECT Id FROM Order_Items__r LIMIT 1)	// to lock record if we have order item for participant (OLD LOGIC)
 				FROM Participant__c
-				WHERE Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c =:contactId
+				WHERE Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c =:communityContactId
 				AND RecordTypeId !=:g2mRT
 				AND Event_Registration_Sub_Group__r.Event_Registration_Group__c =:groupId
 				AND Contact__c != null
@@ -439,7 +521,7 @@ public without sharing class MyRegistrationsController {
 				logList.add(
 					' 1 LOG= ' + JSON.serialize(groupParticipations) +
 					' 2 LOG= ' + groupParticipations.size() +
-					' 3 LOG= ' + userId +
+					' 3 LOG= ' + communityContactId +
 					' 4 LOG= ' + groupId
 				);
 
@@ -448,7 +530,6 @@ public without sharing class MyRegistrationsController {
 
 		Integer totalGroupExistingParticipants = 0;
 		Integer totalGroupMaxParticipants = 0;
-		// String undefinedParticipantContactId = '';
 
 		
 		Set<String> disabledEmails = new Set<String>();	// do not allow dublicate emails
@@ -465,9 +546,6 @@ public without sharing class MyRegistrationsController {
 			subGroupParticipant.newContactId = '' + subGroupParticipant.participantId;
 			subGroupParticipant.newContactName = '' + subGroupParticipant.oldContactName;
 			subGroupParticipant.newContactEmail = '' + subGroupParticipant.oldContactEmail;
-
-
-
 			// subGroupParticipant.disabledToEdit = !(participant.Order_Items__r).isEmpty();
 
 			SubGroupDetailsWrap subGroupDetails = subGroupIdToDetailsWrap.containsKey('' + participant.Event_Registration_Sub_Group__c)

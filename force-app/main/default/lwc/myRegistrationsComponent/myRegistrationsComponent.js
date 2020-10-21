@@ -22,6 +22,11 @@ export default class MyRegistrationsComponent extends NavigationMixin(LightningE
 	_registrationsGroup;
 	_displayRegistrationsGroup;
 	_displayNoRegistrationMessage = false;
+	_myRegistrationsLabel;
+	_myRegisteredGroupsLabel;
+	_displayCRUnavailableMessage = false;
+	_crUnavailableMessage = '';
+	_selectedCRType = '';
 
 	connectedCallback() {
 		console.log('myRegistrationsComponent connectedCallback');
@@ -43,6 +48,11 @@ export default class MyRegistrationsComponent extends NavigationMixin(LightningE
 				this._displayRegistrationsSolo = result.displayRegistrationsSolo;
 				this._displayRegistrationsGroup = result.displayRegistrationsGroup;
 				this._displayNoRegistrationMessage = result.displayNoRegistrationMessage;
+				this._myRegistrationsLabel = result.myRegistrationsLabel
+				this._myRegisteredGroupsLabel = result.myRegisteredGroupsLabel
+				this._displayCRUnavailableMessage = result.displayCRUnavailableMessage;
+				this._crUnavailableMessage = result.crUnavailableMessage;
+				this._selectedCRType = result.selectedCRType;
 			})
 			.catch(error=>{
 				console.log('MyRegistrationsComponent component');
@@ -56,7 +66,19 @@ export default class MyRegistrationsComponent extends NavigationMixin(LightningE
 		console.log('handleClickOnMyRegistration');
 		var participantId = event.currentTarget.dataset.id;
 		console.log('participantId: ', participantId);
-		this.navigateToRecordPage(participantId);
+		if (this._selectedCRType == '') {
+			this.navigateToRecordPage(participantId);
+			return;
+		}
+
+		if (this._selectedCRType == 'Solo Registration Cancellation') {
+			this.dispatchEvent(new CustomEvent('submitsolocancellation', { bubbles: true, detail: { selectedParticipantId: participantId } }));
+		}
+
+		if (this._selectedCRType == 'Solo Registration Transfer') {
+			this.dispatchEvent(new CustomEvent('submitsolotransfer', { bubbles: true, detail: { selectedParticipantId: participantId } }));
+		}
+
 	}
 
 	handleClickOnGroupRegistration(event){
@@ -64,10 +86,19 @@ export default class MyRegistrationsComponent extends NavigationMixin(LightningE
 		var registrationGroupId = event.currentTarget.dataset.id;
 		console.log('registrationGroupId: ', registrationGroupId);
 		
-		//	TODO
 		//	navigate to configure/update group registration
-		//	new window or popup ???
-		this.navigateToGroupDetailsPage(registrationGroupId);
+		if (this._selectedCRType == '') {
+			this.navigateToGroupDetailsPage(registrationGroupId);
+			return;
+		}
+
+		if (this._selectedCRType == 'Group Registration Cancellation') {
+			this.dispatchEvent(new CustomEvent('submitgroupcancellation', { bubbles: true, detail: { selectedGroupId: registrationGroupId } }));
+		}
+
+		if (this._selectedCRType == 'Group Registration Transfer') {
+			this.dispatchEvent(new CustomEvent('submitgrouptransfer', { bubbles: true, detail: { selectedGroupId: registrationGroupId } }));
+		}
 
 	}
 

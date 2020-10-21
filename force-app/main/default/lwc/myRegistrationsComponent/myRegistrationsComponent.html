@@ -11,8 +11,12 @@
 	<template if:false={_isError}>
 
 		<div class="slds-card">
+			<template if:true={_displayCRUnavailableMessage}>
+				<p style="text-align: center; font-size: 18px; font-weight: bold; color: #007DC6; margin-top: 25px; margin-bottom: 10px; cursor: default;">{_crUnavailableMessage}</p>
+			</template>
+
 			<template if:true={_displayRegistrationsSolo}>
-				<p style="text-align: center; font-size: 18px; font-weight: bold; color: #007DC6; margin-top: 25px; margin-bottom: 10px; cursor: default;">My Registrations</p>
+				<p style="text-align: center; font-size: 18px; font-weight: bold; color: #007DC6; margin-top: 25px; margin-bottom: 10px; cursor: default;">{_myRegistrationsLabel}</p>
 				<table class="slds-table slds-table_bordered slds-table_cell-buffer" style="overflow: hidden; table-layout: fixed;">
 					<thead>
 						<tr class="slds-text-title_caps" style="cursor: default;">
@@ -38,7 +42,7 @@
 				</br>
 			</template>
 			<template if:true={_displayRegistrationsGroup}>
-				<p style="text-align: center; font-size: 18px; font-weight: bold; color: #007DC6; margin-top: 20px; margin-bottom: 10px; cursor: default;">My Registered Groups</p>
+				<p style="text-align: center; font-size: 18px; font-weight: bold; color: #007DC6; margin-top: 20px; margin-bottom: 10px; cursor: default;">{_myRegisteredGroupsLabel}</p>
 				<table class="slds-table slds-table_bordered slds-table_cell-buffer" style="overflow: hidden; table-layout: fixed;">
 					<thead>
 						<tr class="slds-text-title_caps" style="cursor: default;">

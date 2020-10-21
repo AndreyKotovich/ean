@@ -13,19 +13,23 @@
 			</template>
 			<template if:false={_isError}>
 
+				<template if:true={_displayTopButtons}>
+					<div class="slds-text-align--right">
+						<template if:true={_displayNewChangeRequestButton}>
+							<!-- <button class="slds-button slds-button_neutral" onclick={handleNewRequestClick}><div style=" margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button> -->
+							<button class="slds-button slds-button_brand" onclick={handleNewRequestClick}><div style="margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button>
+						</template>
+						<template if:true={_displayChangeRequestCancelButton}>
+							<button class="slds-button slds-button_brand" onclick={handleCancelClick}><div style="margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
+						</template>
+						<template if:true={_displayChangeRequestConfirmButton}>
+							<button class="slds-button slds-button_neutral" onclick={handleNextClick}><div style="margin-top: 2px; margin-bottom: -2px;">Next</div></button>
+						</template>
+					</div>
+				</template>
+
 				<template if:true={_displayChangeRequestPanel}>
-					<template if:true={_displayTopButtons}>
-						<div class="slds-text-align--right">
-							<template if:true={_displayNewChangeRequestButton}>
-								<!-- <button class="slds-button slds-button_neutral" onclick={handleNewRequestClick}><div style=" margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button> -->
-								<button class="slds-button slds-button_brand" onclick={handleNewRequestClick}><div style=" margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button>
-							</template>
-							<template if:true={_displayChangeRequestButtons}>
-								<button class="slds-button slds-button_neutral" onclick={handleConfirmClick}><div style=" margin-top: 2px; margin-bottom: -2px;">Confirm</div></button>
-								<button class="slds-button slds-button_brand" onclick={handleCancelClick}><div style=" margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
-							</template>
-						</div>
-					</template>
+
 
 					<template if:true={_displayChangeRequestsPanel}>
 						<template if:true={_displayNoRecordsMessage}>
@@ -36,21 +40,31 @@
 							<table class="slds-table slds-table_bordered slds-table_cell-buffer" style="overflow: hidden; table-layout: fixed;">
 								<thead>
 									<tr class="slds-text-title_caps" style="cursor: default;">
-										<th style="width: 15%;" scope="col"><div class="slds-truncate" title="Draft Name">Name</div></th>
-										<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Type</div></th>
-										<th style="width: 15%;" scope="col"><div class="slds-truncate" title="Draft Name">Status</div></th>
-										<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Requested Time</div></th>
-										<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">(TBD) Button Revoke</div></th>
+										<th style="width: 14%;" scope="col"><div class="slds-truncate">Name</div></th>
+										<th style="width: 23%;" scope="col"><div class="slds-truncate">Type</div></th>
+										<th style="width: 20%;" scope="col"><div class="slds-truncate">Event Name</div></th>
+										<th style="width: 9%;" scope="col"><div class="slds-truncate">Status</div></th>
+										<th style="width: 15%;" scope="col"><div class="slds-truncate">Requested Time</div></th>
+										<th style="width: 9%;" scope="col"><div class="slds-truncate"></div></th>
 									</tr>
 								</thead>
 								<tbody>
 									<template for:each={_changeRequestsList} for:item="сhangeRequest">
-										<tr key={сhangeRequest.crId} data-id={сhangeRequest.crId} onclick={handleClickOnMyRegistration} style="cursor: default;">
+										<tr key={сhangeRequest.crId} data-id={сhangeRequest.crId} onclick={handleClickOnMyRegistration} style="cursor: default;" title={сhangeRequest.crDescription}>
 											<td><div class="slds-truncate">{сhangeRequest.crName}</div></td>
 											<td><div class="slds-truncate">{сhangeRequest.crType}</div></td>
+											<td><div class="slds-truncate">{сhangeRequest.crEventName}</div></td>
 											<td><div class="slds-truncate">{сhangeRequest.crStatus}</div></td>
 											<td><div class="slds-truncate">{сhangeRequest.crCreatedDateString} {сhangeRequest.crCreatedTimeString}</div></td>
-											<td><div class="slds-truncate">{сhangeRequest.enabledToRevoke}</div></td>
+											<td>
+												<div class="slds-truncate">
+													<template if:true={сhangeRequest.enabledToRevoke}>
+														<a style="text-decoration: underline; color: #007DC6; font-weight: bold; cursor: pointer;" data-id={сhangeRequest.crId} onclick={handleClickOnRevoke}>
+															Revoke
+														</a>
+													</template>
+												</div>
+											</td>
 										</tr>
 									</template>
 								</tbody>
@@ -75,29 +89,92 @@
 								<textarea id="standardtextarea" data-target-id="standardtextarea" class="slds-textarea" placeholder="Description" maxlength="2000" style="height: 280px;"></textarea>
 							</div>
 						</div>
-
 					</template>
 
 
-					<template if:true={_displayBottomButtons}>
-						<div class="slds-text-align--right" style="position: absolute; bottom: 5px; right: 15px;">
-							<template if:true={_displayNewChangeRequestButton}>
-								<!-- <button class="slds-button slds-button_neutral" onclick={handleNewRequestClick}><div style=" margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button> -->
-								<button class="slds-button slds-button_brand" onclick={handleNewRequestClick}><div style=" margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button>
-							</template>
-							<template if:true={_displayChangeRequestButtons}>
-								<button class="slds-button slds-button_neutral" onclick={handleConfirmClick}><div style=" margin-top: 2px; margin-bottom: -2px;">Confirm</div></button>
-								<button class="slds-button slds-button_brand" onclick={handleCancelClick}><div style=" margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
-							</template>
-						</div>
-					</template>
 				</template>
 
 				<template if:true={_displayMyRegistrationsComponent}>
 					<c-my-registrations-component
-						params = {_paramsString}>
+						params = {_paramsString}
+						onsubmitsolocancellation = {handleSubmitSoloCancellation}
+						onsubmitsolotransfer = {handleSubmitSoloTransfer}
+						onsubmitgroupcancellation = {handleSubmitGroupCancellation}
+						onsubmitgrouptransfer = {handleSubmitGroupTransfer}
+						>
 					</c-my-registrations-component>
+				</template>
 
+				<template if:true={_displaySoloTransferContainer}>
+					<div style="z-index: 9999; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.1);">
+						<div style="border: 1px solid lightgray; border-radius: 5px; background-color: #FFFFFF; width: 600px; height: 300px; padding: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);">
+								<p class="slds-align_absolute-center" style="text-align: center; font-size: 18px; font-weight: bold; color: #007DC6; margin-bottom: 10px; cursor: default;">Select Contact To Transfer Participation</p>
+								<div>
+									<div>From Contact:</div>
+									<div style="display: inline-block; width: 250px;">
+										<input id="inputDisabled" class="slds-input" type="email" value={_communityContactEmail} autocomplete="password" disabled/>
+									</div>
+									<div style="display: inline-block; width: 280px; margin-left: 20px; vertical-align: bottom;">
+										{_communityContactName}
+									</div>
+								</div>
+								<div style="margin-top: 15px;">
+									<div>To Contact:</div>
+									<div style="display: inline-block; width: 250px;">
+										<c-record-search
+											listfields = "Id,Name,Email"
+											objectname = "Contact"
+											searchfield = "Email"
+											whereclause = {_whereclause}
+											limitrecords = 4
+											lookupicon = "standard:contact"
+											enteredtext = {_communityContactEmail}
+											existingrecordid = {_communityContactId}
+											placeholder = "Enter email to search Contacts"
+											inputtype = "email"
+											uniquekey1 = "uniquekey1"
+											uniquekey2 = "uniquekey2"
+											disabledtoedit = false
+											onchangenewcontactemail = {handleCRChangeNewContactEmail}>
+										</c-record-search>
+									</div>
+									<div style="display: inline-block; width: 280px; margin-left: 20px; vertical-align: bottom;">
+										{_requestedContactName}
+									</div>
+
+									<div class="slds-text-align--right" style="position: absolute; bottom: 20px; right: 20px;">
+										<button class="slds-button slds-button_brand" onclick={handleSoloTransferFinalCancelClick}><div style="margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
+										<template if:true={_displaySoloTransferFinalConfirmButton}>
+											<button class="slds-button slds-button_neutral" onclick={handleSoloTransferFinalConfirmClick}><div style="margin-top: 2px; margin-bottom: -2px;">Confirm</div></button>
+										</template>
+									</div>
+
+								</div>
+						</div>
+					</div>
+				</template>
+
+				<template if:true={_displayGroupTransferContainer}>
+					<p>GroupTransferContainer</p>
+
+					<c-group-details-component params = {_paramsString}>
+					</c-group-details-component>
+
+				</template>
+
+				<template if:true={_displayBottomButtons}>
+					<div class="slds-text-align--right" style="position: absolute; bottom: 5px; right: 15px;">
+						<template if:true={_displayNewChangeRequestButton}>
+							<!-- <button class="slds-button slds-button_neutral" onclick={handleNewRequestClick}><div style=" margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button> -->
+							<button class="slds-button slds-button_brand" onclick={handleNewRequestClick}><div style="margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button>
+						</template>
+						<template if:true={_displayChangeRequestCancelButton}>
+							<button class="slds-button slds-button_brand" onclick={handleCancelClick}><div style="margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
+						</template>
+						<template if:true={_displayChangeRequestNextButton}>
+							<button class="slds-button slds-button_neutral" onclick={handleNextClick}><div style="margin-top: 2px; margin-bottom: -2px;">Next</div></button>
+						</template>
+					</div>
 				</template>
 
 			</template>

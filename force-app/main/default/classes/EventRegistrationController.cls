@@ -2,7 +2,8 @@ public without sharing class EventRegistrationController {
     @AuraEnabled
     public static Event__c getEvent(String eventId) {
         Event__c event = [
-                SELECT Id, Name, Early_Bird_Deadline__c, Registration_Deadline__c
+                SELECT Id, Name, Early_Bird_Deadline__c, Registration_Deadline__c, RecordType.DeveloperName,
+                        Start_Time__c, End_Time__c
                 FROM Event__c
                 WHERE Id = :eventId
         ];
@@ -23,7 +24,7 @@ public without sharing class EventRegistrationController {
     }
 
     @AuraEnabled
-    public static Map<String, Object> insertEventParticipants( List<Participant__c> participants, Map<String,Object> generalData ) {
+    public static Map<String, Object> insertEventParticipants( List<Participant__c> participants, Map<String,Object> generalData, List<Object> selectedSession ) {
         Savepoint sp = Database.setSavepoint();
         try{
             System.debug('participants:: ' + participants);
@@ -50,6 +51,10 @@ public without sharing class EventRegistrationController {
 
             System.debug('insert participants:: ' + participants);
             insert participants;
+
+            if(participants.size() == 1){
+                insertSessionParticipants(selectedSession, participants[0].Id);
+            }
 
             //Create order
             List<Order__c> order = OrderHelper.createNewOrder( new Map<String,Object> {
@@ -138,6 +143,31 @@ public without sharing class EventRegistrationController {
                 ORDER BY Session_Start__c ASC NULLS FIRST
         ];
     }
+
+    public static void insertSessionParticipants(List<Object> selectedSessions, String participantId) {
+        Set<String> eventTicketIds = new Set<String>();
+
+        for (Integer i = 0; i < selectedSessions.size(); i++) {
+            Map<Object, Object> obj = (Map<Object, Object>) selectedSessions[i];
+            eventTicketIds.add((String)obj.get('id'));
+        }
+
+        List<Event_Ticket__c> extraSessions = [SELECT Id, Session__c, Session__r.Event_custom__c FROM Event_Ticket__c WHERE Id IN :eventTicketIds];
+        List<Session_Participation__c> sessionParticipants = new List<Session_Participation__c>();
+
+        Map<String, Object> contactInfo = getContactInfo();
+        Contact contact = (Contact) contactInfo.get('contact');
+
+        for (Event_Ticket__c et : extraSessions) {
+            sessionParticipants.add(new Session_Participation__c(Session__c = et.Session__c, Contact__c = contact.Id, Event__c = et.Session__r.Event_custom__c, Event_Participation__c = participantId));
+        }
+
+        if(!sessionParticipants.isEmpty()){
+            insert sessionParticipants;
+        }
+    }
+
+
 
 //    @AuraEnabled
 //    public static List<Event_Ticket__c> getSessionsTickets(String eventId) {

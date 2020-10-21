@@ -26,6 +26,7 @@
     <tabs>Author__c</tabs>
     <tabs>Abstract__c</tabs>
     <tabs>Change_Request__c</tabs>
+    <tabs>Session_Speaker__c</tabs>
     <uiType>Lightning</uiType>
     <utilityBar>LightningSalesConsole_UtilityBar</utilityBar>
     <workspaceConfig>
@@ -46,6 +47,9 @@
         </mappings>
         <mappings>
             <tab>Presenter__c</tab>
+        </mappings>
+        <mappings>
+            <tab>Session_Speaker__c</tab>
         </mappings>
         <mappings>
             <tab>standard-Account</tab>
