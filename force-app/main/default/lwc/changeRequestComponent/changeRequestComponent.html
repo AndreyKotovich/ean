@@ -22,7 +22,7 @@
 						<template if:true={_displayChangeRequestCancelButton}>
 							<button class="slds-button slds-button_brand" onclick={handleCancelClick}><div style="margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
 						</template>
-						<template if:true={_displayChangeRequestConfirmButton}>
+						<template if:true={_displayChangeRequestNextButton}>
 							<button class="slds-button slds-button_neutral" onclick={handleNextClick}><div style="margin-top: 2px; margin-bottom: -2px;">Next</div></button>
 						</template>
 					</div>
@@ -156,10 +156,8 @@
 
 				<template if:true={_displayGroupTransferContainer}>
 					<p>GroupTransferContainer</p>
-
 					<c-group-details-component params = {_paramsString}>
 					</c-group-details-component>
-
 				</template>
 
 				<template if:true={_displayBottomButtons}>

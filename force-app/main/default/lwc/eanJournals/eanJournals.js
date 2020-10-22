@@ -1,4 +1,4 @@
-import {LightningElement, track} from "lwc";
+import {LightningElement, track, api} from "lwc";
 import getProduct2s from '@salesforce/apex/EanJournalsController.getProduct2s';
 
 export default class EanJournals extends LightningElement {
@@ -8,6 +8,8 @@ export default class EanJournals extends LightningElement {
     @track isShowErrorScreen = false;
     @track isSpinner = true;
     @track errorMessage = 'Something went wrong, please, contact your system administrator.';
+
+    @api autoPopulate = [];
 
     connectedCallback() {
         getProduct2s()
@@ -45,7 +47,8 @@ export default class EanJournals extends LightningElement {
                             value: item['Id'],
                             price: PBEItem['UnitPrice'],
                             line: 'checkbox-product ' + line,
-                            description: item['Description']
+                            description: item['Description'],
+                            checked: false
                         });
                     }
                 });
@@ -61,27 +64,35 @@ export default class EanJournals extends LightningElement {
     }
 
 
-    catchSelectedProducts() {
-        let selectedProducts = [];
-        let checkedValues = this.template.querySelectorAll('.checkbox-product:checked');
+    catchSelectedProducts(event) {
+        console.log(event.target.value);
+        console.log(event.target.checked);
+        let option = this.productOptions.find( obj => obj.value === event.target.value);
+        option.checked = event.target.checked;
 
-        for(let item of checkedValues) {
-            if (!item.checked) continue;
-            let option = this.productOptions.find( obj => obj.value === item.value);
-            selectedProducts.push({
-                productId: option.value,
-                price: option.price,
-                quantity: 1
-            });
-        }
+        console.log(JSON.stringify(this.productOptions));
 
-        const selectEvent = new CustomEvent("select", {
-            detail: {
-                selectedProducts: selectedProducts
-            }
-        });
+        // let selectedProducts = [];
+        // let checkedValues = this.template.querySelectorAll('.checkbox-product:checked');
+        //
+        // for(let item of checkedValues) {
+        //     if (!item.checked) continue;
+        //     let option = this.productOptions.find( obj => obj.value === item.value);
+        //     selectedProducts.push({
+        //         productId: option.value,
+        //         price: option.price,
+        //         quantity: 1
+        //     });
+        // }
 
-        this.dispatchEvent(selectEvent);
+        // console.log('selectedProducts: '+JSON.stringify(selectedProducts));
+        // const selectEvent = new CustomEvent("select", {
+        //     detail: {
+        //         selectedProducts: selectedProducts
+        //     }
+        // });
+        //
+        // this.dispatchEvent(selectEvent);
     }
 
 }

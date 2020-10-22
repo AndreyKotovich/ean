@@ -21,7 +21,7 @@ export default class ExtraBooking extends LightningElement {
         return this._selectedServices;
     }
     set selectedServices(value){
-        this._selectedServices = value;
+        this._selectedServices = Object.assign({}, value);
     }
 
     @track hideNextButton = false;
@@ -250,7 +250,13 @@ export default class ExtraBooking extends LightningElement {
     }
 
     handleJournalSelect(event){
-        this._selectedServices.journals = [...event.detail.selectedProducts];
-        console.log(JSON.stringify(this._selectedServices));
+        console.log('extra_journal_event: '+JSON.stringify(event.detail.selectedProducts));
+        try{
+            this._selectedServices.journals = event.detail.selectedProducts;
+
+        } catch (e){
+            console.log(e);
+        }
+        console.log('this._selectedServices.journals: '+JSON.stringify(this._selectedServices.journals));
     }
 }

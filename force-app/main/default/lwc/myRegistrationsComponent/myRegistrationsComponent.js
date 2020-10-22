@@ -82,22 +82,28 @@ export default class MyRegistrationsComponent extends NavigationMixin(LightningE
 	}
 
 	handleClickOnGroupRegistration(event){
-		console.log('handleClickOnGroupRegistration');
+		console.log('handleClickOnGroupRegistration this._selectedCRType: ', this._selectedCRType);
 		var registrationGroupId = event.currentTarget.dataset.id;
 		console.log('registrationGroupId: ', registrationGroupId);
 		
 		//	navigate to configure/update group registration
 		if (this._selectedCRType == '') {
+			console.log('CONSOLE 1');
 			this.navigateToGroupDetailsPage(registrationGroupId);
+			console.log('CONSOLE 2');
 			return;
 		}
 
 		if (this._selectedCRType == 'Group Registration Cancellation') {
+			console.log('CONSOLE 3');
 			this.dispatchEvent(new CustomEvent('submitgroupcancellation', { bubbles: true, detail: { selectedGroupId: registrationGroupId } }));
+			console.log('CONSOLE 4');
 		}
 
 		if (this._selectedCRType == 'Group Registration Transfer') {
+			console.log('CONSOLE 5');
 			this.dispatchEvent(new CustomEvent('submitgrouptransfer', { bubbles: true, detail: { selectedGroupId: registrationGroupId } }));
+			console.log('CONSOLE 6');
 		}
 
 	}

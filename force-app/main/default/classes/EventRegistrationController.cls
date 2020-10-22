@@ -52,14 +52,20 @@ public without sharing class EventRegistrationController {
             System.debug('insert participants:: ' + participants);
             insert participants;
 
+            List<Session_Participation__c> sessionParticipation = new List<Session_Participation__c>();
+            System.debug('participants.size(): '+participants.size());
             if(participants.size() == 1){
-                insertSessionParticipants(selectedSession, participants[0].Id);
+                sessionParticipation = insertSessionParticipants(selectedSession, participants[0].Id);
             }
+            System.debug('sessionParticipation: '+sessionParticipation);
+
 
             //Create order
             List<Order__c> order = OrderHelper.createNewOrder( new Map<String,Object> {
 				'generalData' => generalData,
-                'participants' => participants
+                'participants' => participants,
+                'selectedSessions' => selectedSession,
+                'sessionParticipants' => sessionParticipation
             });
 
             return new Map<String, Object>{
@@ -144,7 +150,7 @@ public without sharing class EventRegistrationController {
         ];
     }
 
-    public static void insertSessionParticipants(List<Object> selectedSessions, String participantId) {
+    public static List<Session_Participation__c> insertSessionParticipants(List<Object> selectedSessions, String participantId) {
         Set<String> eventTicketIds = new Set<String>();
 
         for (Integer i = 0; i < selectedSessions.size(); i++) {
@@ -159,12 +165,13 @@ public without sharing class EventRegistrationController {
         Contact contact = (Contact) contactInfo.get('contact');
 
         for (Event_Ticket__c et : extraSessions) {
-            sessionParticipants.add(new Session_Participation__c(Session__c = et.Session__c, Contact__c = contact.Id, Event__c = et.Session__r.Event_custom__c, Event_Participation__c = participantId));
+            sessionParticipants.add(new Session_Participation__c(
+                    Session__c = et.Session__c, Contact__c = contact.Id, Event__c = et.Session__r.Event_custom__c,
+                    Event_Participation__c = participantId, Event_Ticket__c = et.Id));
         }
 
-        if(!sessionParticipants.isEmpty()){
-            insert sessionParticipants;
-        }
+        insert sessionParticipants;
+        return sessionParticipants;
     }
 
 

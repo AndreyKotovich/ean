@@ -45,7 +45,7 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 	_whereclause = '';
 
 	_displayGroupTransferContainer = false;
-	_selectedGroupIdToTransferRequest = '';
+	// _selectedGroupIdToTransferRequest = '';
 	
 	
 	_paramsString;
@@ -83,7 +83,7 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 		this._displaySoloTransferFinalConfirmButton = false;
 
 		this._displayGroupTransferContainer = false;
-		this._selectedGroupIdToTransferRequest = '';
+		// this._selectedGroupIdToTransferRequest = '';
 	}
 
 	initialPositiveSettings() {
@@ -102,7 +102,7 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 		// this.connectedCallback();
 
 		this._displayGroupTransferContainer = false;
-		this._selectedGroupIdToTransferRequest = '';
+		// this._selectedGroupIdToTransferRequest = '';
 	}
 
 	connectedCallback() {
@@ -374,13 +374,14 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 
 	//	GROUP TRANSFER BLOCK
 	handleSubmitGroupTransfer(event) {
-		this._selectedGroupIdToTransferRequest = event.detail.selectedGroupId;
-		console.log('handleSubmitGroupTransfer _selectedGroupIdToTransferRequest: ', _selectedGroupIdToTransferRequest);
+
+		const selectedGroupId = event.detail.selectedGroupId;
+		console.log('handleSubmitGroupTransfer selectedGroupId: ', selectedGroupId);
 
 		var params = {};
 		params.selectedCRType = this._selectedCRType;
 		params.contactRecordId = this.recordId;
-		params.selectedGroupId = this._selectedGroupIdToTransferRequest;
+		params.selectedGroupId = selectedGroupId;
 		this._paramsString = JSON.stringify(params);
 
 		this._displayMyRegistrationsComponent = false;

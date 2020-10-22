@@ -34,6 +34,15 @@ export default class RecordSearch extends LightningElement {
 	_lastServerResults = [];
 
     renderedCallback() {
+		if (this.enteredtext != undefined) {
+			this._lastenteredtext = this.enteredtext;
+		}
+		if (this.enteredtext == undefined) {
+			this.enteredtext = this._lastenteredtext;
+		}
+
+		console.log('RecordSearch renderedCallback this.enteredtext: ', this.enteredtext);
+		console.log('RecordSearch renderedCallback this._lastenteredtext: ', this._lastenteredtext);
         if (this._initialized || !this._enabledtoedit) {
             return;
         }
@@ -44,6 +53,8 @@ export default class RecordSearch extends LightningElement {
     }
 
 	connectedCallback() {
+		console.log('RecordSearch connectedCallback this.enteredtext: ', this.enteredtext);
+		console.log('RecordSearch connectedCallback this._lastenteredtext: ', this._lastenteredtext);
 		if (this.uniquekey1 == null) {
 			this.uniquekey1 = '1234567890';
 			this.uniquekey2 = 0;
@@ -51,15 +62,24 @@ export default class RecordSearch extends LightningElement {
 
 		this._enabledtoedit = this.disabledtoedit == undefined || this.disabledtoedit == null || this.disabledtoedit == false || this.disabledtoedit == 'false' ? true : false;
 		this._datalistId = '' + this.uniquekey1 + this.uniquekey2;
-		this.serverCall();
+		// this.serverCall();
 	}
 
     handleChange(evt) {
 		var newEnteredText = evt.target.value;
+		console.log('RecordSearch newEnteredText: ', newEnteredText);
+
+		if (newEnteredText == undefined) return;
+
 		this._lastenteredtext = this.enteredtext;
 		this.enteredtext = newEnteredText;
+
+
 		if (newEnteredText.startsWith(this._lastenteredtext) && this._lastServerResults.length <= 0) return;
 		if (this._lastenteredtext == newEnteredText) return;
+
+		console.log('RecordSearch this.enteredtext: ', this.enteredtext);
+
 		this.serverCall();
     }
 

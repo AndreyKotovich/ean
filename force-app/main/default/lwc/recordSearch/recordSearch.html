@@ -1,9 +1,15 @@
 <template>
     <div class="slds-form-element__control">
         <template if:true={_enabledtoedit}>
+
             <input id="input" name="input" list="valueList" placeholder={placeholder} class="slds-input"
             type={inputtype} key={existingrecordid} value={enteredtext} autocomplete="password"
             oninput={handleChange} onchange={handleChange} onblur={handleChange}/>
+
+            <!-- <input id="input" name="input" list="valueList" placeholder={placeholder} class="slds-input"
+            type="text" key={existingrecordid} value={enteredtext} autocomplete="password"
+            oninput={handleChange} onchange={handleChange} onblur={handleChange}/> -->
+
             <datalist id={_datalistId} class="">
             <!-- <datalist id="valueList" class=""> -->
                 <template for:each={_values} for:item='item'>
@@ -13,6 +19,7 @@
             </datalist>
         </template>
         <template if:false={_enabledtoedit}>
+            <!-- <input id="inputDisabled" class="slds-input" type="text" value={enteredtext} autocomplete="password" disabled/> -->
             <input id="inputDisabled" class="slds-input" type={inputtype} value={enteredtext} autocomplete="password" disabled/>
         </template>
 

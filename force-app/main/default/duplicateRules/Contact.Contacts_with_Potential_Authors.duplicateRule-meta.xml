@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DuplicateRule xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <actionOnInsert>Allow</actionOnInsert>
+    <actionOnUpdate>Allow</actionOnUpdate>
+    <alertText>We found an author with the sam email address. Do you want to connect them?</alertText>
+    <description xsi:nil="true"/>
+    <duplicateRuleFilter xsi:nil="true"/>
+    <duplicateRuleMatchRules>
+        <matchRuleSObjectType>Author__c</matchRuleSObjectType>
+        <matchingRule>Contacts_with_Potential_Authors_matching_rule</matchingRule>
+        <objectMapping>
+            <inputObject>Contact</inputObject>
+            <mappingFields>
+                <inputField>Email</inputField>
+                <outputField>New_Author_Email__c</outputField>
+            </mappingFields>
+            <outputObject>Author__c</outputObject>
+        </objectMapping>
+    </duplicateRuleMatchRules>
+    <isActive>true</isActive>
+    <masterLabel>Contacts with Potential Authors</masterLabel>
+    <operationsOnInsert>Alert</operationsOnInsert>
+    <operationsOnInsert>Report</operationsOnInsert>
+    <operationsOnUpdate>Alert</operationsOnUpdate>
+    <securityOption>BypassSharingRules</securityOption>
+    <sortOrder>6</sortOrder>
+</DuplicateRule>

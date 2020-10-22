@@ -1,6 +1,6 @@
 <template>
 
-	<p>System params: {params}</p>
+	<!-- <p>System params: {params}</p> -->
 
 	<div class="slds-card" style="padding: 15px;">
 		<template if:true={_isSpinner}>
@@ -17,11 +17,8 @@
 			<template if:false={_isError}>
 				<div>
 					<div style="width: 70%; display: inline-block;">
-						<!-- <template if:true={_disableDisplayGroupDetails}>
 
-						</template> -->
-
-						<template if:false={_disableDisplayGroupDetails}>
+						<template if:true={_displayGroupDetails}>
 							<div>
 								<div class="detail-section">
 									<p style="font-size: 12px;">Group Name</p>
@@ -67,17 +64,17 @@
 
 					<div style="width: 30%; display: inline-block; vertical-align: top; padding-right: 10px;">
 						<div class="slds-text-align--right">
-							<template if:false={_disalbeDisplayButton1}>
+							<template if:true={_displayButton1}>
 								<button class="slds-button slds-button_neutral" onclick={handleClickButton1}><div style=" margin-top: 2px; margin-bottom: -2px;">{_button1Label}</div></button>
 							</template>
-							<template if:false={_disalbeDisplayButton2}>
+							<template if:true={_displayButton2}>
 								<button class="slds-button slds-button_brand" onclick={handleClickButton2}><div style=" margin-top: 2px; margin-bottom: -2px;">{_button2Label}</div></button>
 							</template>
 						</div>
 					</div>
 
 					<!-- group definition -->
-					<template if:false={_disableDisplayGroupDefinition}>
+					<template if:true={_displayGroupDefinition}>
 						<template for:each={_subGroupList} for:item="subGroup">
 							<div key={subGroup.subGroupId}>
 								<p style="text-align: center; font-size: 18px; font-weight: bold; color: #007DC6;">{subGroup.accordionTitle}</p>
@@ -112,15 +109,64 @@
 					</template>
 
 
-					<template if:false={_disalbeDisplayAccordions}>
-						<lightning-accordion
+					<template if:true={_displayAccordions}>
+
+
+						<p>----- TEST CUSTOM ACCORDION START -----</p>
+
+						<template for:each={_subGroupList} for:item="subGroup">
+							<div key={subGroup.subGroupId} style="margin-top: 2px; margin-bottom: 2px;">
+								<template if:false={subGroup.accordionIsExpanded}>
+									<div data-id={subGroup.accordionIndex} onclick={handleAccordionArrowClick} style="cursor: pointer;">
+										<div style="display: inline-block;"><lightning-icon icon-name="utility:right"></lightning-icon></div>
+										<div class="accordion-title">{subGroup.accordionTitle}</div>
+									</div>
+								</template>
+								<template if:true={subGroup.accordionIsExpanded}>
+									<div data-id={subGroup.accordionIndex} onclick={handleAccordionArrowClick} style="cursor: pointer;">
+										<div style="display: inline-block;"><lightning-icon icon-name="utility:down"></lightning-icon></div>
+										<div class="accordion-title">{subGroup.accordionTitle}</div>
+									</div>
+									<template for:each={subGroup.subGroupParticipantList} for:item="participant">
+										<div key={participant.participantId} style="margin-top: 2px; margin-bottom: 2px;">
+											<div style="display: inline-block; width: 250px;">
+												<c-record-search
+													listfields = "Id,Name,Email"
+													objectname = "Contact"
+													searchfield = "Email"
+													whereclause = {_whereclause}
+													limitrecords = 4
+													lookupicon = "standard:contact"
+													enteredtext = {participant.newContactEmail}
+													existingrecordid = {participant.newContactId}
+													placeholder = "Enter email to search Contacts"
+													inputtype = "email"
+													uniquekey1 = {participant.uniquekey1}
+													uniquekey2 = {participant.uniquekey2}
+													disabledtoedit = {participant.disabledToEdit}
+													onchangenewcontactemail = {handleOngroupchangecontactemail}>
+												</c-record-search>
+											</div>
+											<div style="display: inline-block; width: 300px; margin-left: 20px; vertical-align: bottom;">
+												{participant.newContactName}
+											</div>
+										</div>
+									</template>
+								</template>
+
+							</div>
+						</template>
+						<p>------ TEST CUSTOM ACCORDION END ------</p>
+
+						<!-- <lightning-accordion
 										onsectiontoggle={handleToggleSection}
 										allow-multiple-sections-open>
 							<template for:each={_subGroupList} for:item="subGroup">
 								<div key={subGroup.subGroupId}>
 
+
+
 									<lightning-accordion-section name={subGroup.subGroupId} label={subGroup.accordionTitle}>
-										<!-- <p>Sub Group Details: {subGroup}</p> -->
 										<template for:each={subGroup.subGroupParticipantList} for:item="participant">
 											<div key={participant.participantId} style="margin-top: 2px; margin-bottom: 2px;">
 												<div style="display: inline-block; width: 250px;">
@@ -150,7 +196,7 @@
 									</lightning-accordion-section>
 								</div>
 							</template>
-						</lightning-accordion>
+						</lightning-accordion> -->
 					</template>
 				</div>
 			</template>

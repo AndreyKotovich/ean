@@ -295,9 +295,10 @@ public without sharing class MyRegistrationsController {
 					: '';	// TEST ERROR 
 
 		queryString += 'AND RecordTypeId !=:g2mRT ';
-		queryString += 'AND Status__c =\'Registered\' ';
+		// queryString += 'AND Status__c =\'Registered\' ';
 		// queryString += 'AND (Status__c =\'Registered\' OR Status__c =\'Participated\')';
-		// queryString += 'AND Status__c !=\'Canceled\' ';
+		queryString += 'AND Status__c !=\'Canceled\' ';
+		// queryString += 'AND Status__c !=\'Canceled\' AND Status__c !=\'Participated\'';
 
 		system.debug('queryString= ' + queryString);
 
@@ -411,7 +412,7 @@ public without sharing class MyRegistrationsController {
 			//	TEST GROUP DEFINITION
 			// maxParticipants = 10;
 
-			if (maxParticipants == null && !String.isBlank(groupId)) return getExistingGroupDetails(communityContactId, groupId);
+			if (maxParticipants == null && !String.isBlank(groupId)) return getExistingGroupDetails(communityContactId, groupId, selectedCRType);
 
 			//	for group registration flow
 			return generateEmptyGroup(maxParticipants);
@@ -467,8 +468,11 @@ public without sharing class MyRegistrationsController {
 		newSubGroup.subGroupMaxParticipants = maxParticipants;
 		newSubGroup.subGroupParticipantList = subGroupParticipantList;
 		newSubGroup.accordionTitle = 'Please add participants to a new group';
+		newSubGroup.accordionIsExpanded = true;
 		// newSubGroup.createdDateString = '';
 		// newSubGroup.createdTimeString = '';
+
+		newSubGroup.accordionIndex = 0;		// TEST CUSTOM ACCORDIONS
 		subGroupList.add(newSubGroup);
 
 		return new Map<String, Object>{
@@ -476,17 +480,17 @@ public without sharing class MyRegistrationsController {
 			'groupDetails' => groupDetails,
 			'subGroupList' => subGroupList,
 			'logList' => new List<String>(),	// DELETE
-			'disableDisplayGroupDetails' => true,
-			'disableDisplayGroupDefinition' => false,
-			'disalbeDisplayAccordions' => true,
-			'disalbeDisplayButton1' => false,
-			'disalbeDisplayButton2' => true,
+			'displayGroupDetails' => false,
+			'displayGroupDefinition' => true,
+			'displayAccordions' => false,
+			'displayButton1' => true,
+			'displayButton2' => false,
 			'button1Label' => 'Submit',
 			'button2Label' => 'Cancel'
 		};
 	}
 
-	public static Map<String, Object> getExistingGroupDetails(String communityContactId, String groupId) {
+	public static Map<String, Object> getExistingGroupDetails(String communityContactId, String groupId, String selectedCRType) {
 
 		List<String> logList = new List<String>();	// DELETE
 
@@ -597,12 +601,16 @@ public without sharing class MyRegistrationsController {
 
 		//	define titles on Accordions
 		List<SubGroupDetailsWrap> subGroupList = new List<SubGroupDetailsWrap>();
+		Integer index = 0;
 		for (String subGroupId : subGroupIds) {
 			SubGroupDetailsWrap subGroupDetails = subGroupIdToDetailsWrap.get(subGroupId);
 			subGroupDetails.accordionTitle = 'Created: ' + subGroupDetails.createdDateString + ' ' + subGroupDetails.createdTimeString +
 			' (Selected ' + subGroupDetails.subGroupExistingParticipants + ' of ' + subGroupDetails.subGroupMaxParticipants + ' Participants)';
 
+			subGroupDetails.accordionIsExpanded = true;
+			subGroupDetails.accordionIndex = index;			// TEST CUSTOM ACCORDIONS
 			subGroupList.add(subGroupDetails);
+			index++;
 			// subGroupList.add(subGroupIdToDetailsWrap.get(subGroupId));
 		}
 
@@ -631,11 +639,11 @@ public without sharing class MyRegistrationsController {
 			'disabledEmails' => new List<String>(disabledEmails),	// TBD
 
 			'logList' => logList,				// delete
-			'disableDisplayGroupDetails' => false,
-			'disableDisplayGroupDefinition' => true,
-			'disalbeDisplayAccordions' => subGroupList.isEmpty(),
-			'disalbeDisplayButton1' => false,
-			'disalbeDisplayButton2' => false,
+			'displayGroupDetails' => String.isBlank(selectedCRType),
+			'displayGroupDefinition' => false,
+			'displayAccordions' => !subGroupList.isEmpty(),
+			'displayButton1' => String.isBlank(selectedCRType),
+			'displayButton2' => String.isBlank(selectedCRType),
 			'button1Label' => 'Submit',
 			'button2Label' => 'Cancel'
 		};
@@ -707,10 +715,13 @@ public without sharing class MyRegistrationsController {
 		@AuraEnabled public Integer subGroupExistingParticipants { get; set; }
 		@AuraEnabled public Integer subGroupMaxParticipants { get; set; }
 		@AuraEnabled public List<SubGroupParticipantWrap> subGroupParticipantList { get; set; }
-
-		@AuraEnabled public String accordionTitle { get; set; }
 		@AuraEnabled public String createdDateString { get; set; }
 		@AuraEnabled public String createdTimeString { get; set; }
+		@AuraEnabled public Boolean disabledToEdit { get; set; }
+
+		@AuraEnabled public String accordionTitle { get; set; }
+		@AuraEnabled public Boolean accordionIsExpanded { get; set; }
+		@AuraEnabled public Integer accordionIndex { get; set; }		// TEST CUSTOM ACCORDIONS
 	}
 
 	//	Sub Group Participant
@@ -725,6 +736,6 @@ public without sharing class MyRegistrationsController {
 		@AuraEnabled public String uniquekey1 { get; set; }				//	subGroupId
 		@AuraEnabled public String uniquekey2 { get; set; }				//	index in list (0...)
 
-		@AuraEnabled public Boolean disabledToEdit { get; set; }
+		@AuraEnabled public Boolean disabledToEdit { get; set; }		// MOVE UPPER !!!
 	}
 }

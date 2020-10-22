@@ -149,7 +149,8 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     }
 
     onExtraBooking(event) {
-        console.log('extraBooking: ' + JSON.stringify(event.detail.selectedSessions));
+        console.log('selectedSessions: ' + JSON.stringify(event.detail.selectedSessions));
+        console.log('selectedServices: ' + JSON.stringify(event.detail.selectedServices));
         this.selectedSessions = [...event.detail.selectedSessions];
         this.selectedServices = Object.assign({}, event.detail.selectedServices);
         this.onNext();

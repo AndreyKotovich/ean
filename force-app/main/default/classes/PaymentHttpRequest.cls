@@ -13,8 +13,8 @@ public without sharing class PaymentHttpRequest {
     @RemoteAction public static String SeamlessURL(String orderId, String cardId, String addressesObject) {
         Map<String, Object> vfdata = new Map<String, Object>();
         Order__c orderRec = [SELECT Id, Total_amount__c FROM Order__c WHERE Id = :orderId];
-        String showPaidForm = showPaymentCheck(orderId);
-        if (showPaidForm == 'SUCCESS') {
+        Map<String,Object> showPaidForm = (Map<String,Object>)JSON.deserializeUntyped(showPaymentCheck(orderId));
+        if (showPaidForm.get('status') == 'SUCCESS') {
             String s = getSeamlessURLBody(cardId, orderId, addressesObject);
             String seamlessUrl = getSeamlessURLHttp(s, orderId);
             vfdata.put('url', seamlessUrl);

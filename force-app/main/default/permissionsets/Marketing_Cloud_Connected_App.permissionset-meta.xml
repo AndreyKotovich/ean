@@ -452,6 +452,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Author__c.Contact_Matched__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Author__c.Contact__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -2297,6 +2302,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Order_Item__c.Session_Participation__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Order_Item__c.Ticket__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -2313,6 +2323,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Order__c.Billing_address__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Order__c.Change_Request__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -2348,6 +2363,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Order__c.Payment_Date__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Order__c.Payment_Invoice__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -2533,6 +2553,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Session_Participation__c.Event_Participation__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Session_Participation__c.Event_Ticket__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>

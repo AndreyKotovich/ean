@@ -32,11 +32,11 @@ export default class GroupDetailsComponent extends LightningElement {
 	_totalGroupExistingParticipants = 0;
 	_totalGroupMaxParticipants = 0;
 
-	_disableDisplayGroupDetails = true;
-	_disableDisplayGroupDefinition = true;
-	_disalbeDisplayAccordions = true;
-	_disalbeDisplayButton1 = false;
-	_disalbeDisplayButton2 = false;
+	_displayGroupDetails = false;
+	_displayGroupDefinition = true;
+	_displayAccordions = false;
+	_displayButton1 = false;
+	_displayButton2 = false;
 
 	_whereclause = '';
 	_selitem = 'empty@nomail.com';
@@ -71,12 +71,12 @@ export default class GroupDetailsComponent extends LightningElement {
 				this._totalGroupExistingParticipants = result.groupDetails.totalGroupExistingParticipants;
 				this._totalGroupMaxParticipants = result.groupDetails.totalGroupMaxParticipants;
 
-				this._disableDisplayGroupDetails = result.disableDisplayGroupDetails;
-				this._disableDisplayGroupDefinition= result.disableDisplayGroupDefinition;
-				this._disalbeDisplayAccordions = result.disalbeDisplayAccordions;
+				this._displayGroupDetails = result.displayGroupDetails;
+				this._displayGroupDefinition= result.displayGroupDefinition;
+				this._displayAccordions = result.displayAccordions;
 
-				this._disalbeDisplayButton1 = result.disalbeDisplayButton1;
-				this._disalbeDisplayButton2 = result.disalbeDisplayButton2;
+				this._displayButton1 = result.displayButton1;
+				this._displayButton1 = result.displayButton2;
 				this._button1Label = result.button1Label;
 				this._button2Label = result.button2Label;
 
@@ -110,11 +110,11 @@ export default class GroupDetailsComponent extends LightningElement {
 		const details1 = event.detail.recorddetails;
 		const subGroupId = event.detail.uniquekey1;
 		const participantIndex = event.detail.uniquekey2;
-		console.log('---------');
-		console.log('details1: ', details1);
-		console.log('subGroupId: ', subGroupId);
-		console.log('participantIndex: ', participantIndex);
-		console.log('---------');
+		// console.log('---------');
+		// console.log('details1: ', details1);
+		// console.log('subGroupId: ', subGroupId);
+		// console.log('participantIndex: ', participantIndex);
+		// console.log('---------');
 
 		var participantDetails = event.detail.recorddetails ? JSON.parse(event.detail.recorddetails) : null;
 
@@ -133,9 +133,9 @@ export default class GroupDetailsComponent extends LightningElement {
 			// this._subGroupList[i].subGroupParticipantList[participantIndex].newContactEmail = participantDetails.text;
 			// this._subGroupList[i].subGroupParticipantList[participantIndex].newContactName = participantDetails.field2val;
 
-			console.log('3333 this._subGroupList[i]: ', this._subGroupList[i]);
-			console.log('3333 this._subGroupList[i].subGroupParticipantList[participantIndex]: ', this._subGroupList[i].subGroupParticipantList[participantIndex]);
-			console.log('3333 this._subGroupList[i].subGroupParticipantList[participantIndex].newContactId: ', this._subGroupList[i].subGroupParticipantList[participantIndex].newContactId);
+			// console.log('3333 this._subGroupList[i]: ', this._subGroupList[i]);
+			// console.log('3333 this._subGroupList[i].subGroupParticipantList[participantIndex]: ', this._subGroupList[i].subGroupParticipantList[participantIndex]);
+			// console.log('3333 this._subGroupList[i].subGroupParticipantList[participantIndex].newContactId: ', this._subGroupList[i].subGroupParticipantList[participantIndex].newContactId);
 		}
 	}
 
@@ -146,7 +146,7 @@ export default class GroupDetailsComponent extends LightningElement {
 		clickButton1Apex({params: {
 			// groupDetails: JSON.stringify(this.recordId),
 			subGroupList: JSON.stringify(this._subGroupList),
-			isGroupDefinitionMode: !this._disableDisplayGroupDefinition
+			isGroupDefinitionMode: this._displayGroupDefinition
 			}}).then(result=>{
 				console.log('handleClickButton1 result: ', result);
 				console.log('handleClickButton1 result.participantsString: ', result.participantsString);
@@ -159,12 +159,25 @@ export default class GroupDetailsComponent extends LightningElement {
 				this._isError = true;
 				this._isSpinner = false;
 			})
-
 	}
 
 	handleClickButton2() {
 		console.log('handleClickButton2');
 	}
+
+	handleAccordionArrowClick(event) {
+		var accordionIndex = event.currentTarget.dataset.id;
+		console.log('accordionIndex: ', accordionIndex);
+
+		var tempSubGroupList = JSON.parse(JSON.stringify(this._subGroupList));
+		tempSubGroupList[accordionIndex].accordionIsExpanded = !tempSubGroupList[accordionIndex].accordionIsExpanded;
+		this._subGroupList = tempSubGroupList;
+
+		// console.log('111 this._subGroupList[accordionIndex].accordionIsExpanded: ', this._subGroupList[accordionIndex].accordionIsExpanded);
+		// this._subGroupList[accordionIndex].accordionIsExpanded = !this._subGroupList[accordionIndex].accordionIsExpanded;
+		// console.log('222 this._subGroupList[accordionIndex].accordionIsExpanded: ', this._subGroupList[accordionIndex].accordionIsExpanded);
+	}
+
 
 
 }

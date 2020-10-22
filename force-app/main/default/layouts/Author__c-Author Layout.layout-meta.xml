@@ -19,6 +19,10 @@
                 <behavior>Edit</behavior>
                 <field>New_Author_Email__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>Contact_Matched__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>

@@ -1,4 +1,4 @@
-public with sharing class ChangeRequestController {
+public without sharing class ChangeRequestController {
 
 	public static final String CHANGE_REQUEST_OBJECT_API_NAME = 'Change_Request__c';
 	public static final String PICKLIST_FIELD_API_NAME = 'Type__c';
@@ -140,6 +140,7 @@ public with sharing class ChangeRequestController {
 			if (selectedGroup.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => 'Group Not Found. Id: ' + selectedGroupId};
 			String subGroupId = !selectedGroup[0].Event_Registration_Sub_Groups__r.isEmpty() ? '' + selectedGroup[0].Event_Registration_Sub_Groups__r[0].Id : '';
 			List<Participant__c> participant = !String.isBlank(subGroupId)
+				// ? [SELECT Id FROM Participant__c WHERE Event_Registration_Sub_Group__c =:subGroupId LIMIT 1]
 				? [SELECT Id, Event_custom__c, Event_Registration_Sub_Group__c FROM Participant__c WHERE Event_Registration_Sub_Group__c =:subGroupId LIMIT 1]
 					: new List<Participant__c>();
 
@@ -155,6 +156,10 @@ public with sharing class ChangeRequestController {
 			newChangeRequest = [SELECT Id, Name FROM Change_Request__c WHERE Id =:newChangeRequest.Id LIMIT 1];
 
 			return new Map<String, Object> {
+				'selectedGroup' => JSON.serialize(selectedGroup),
+				'subGroupId' => subGroupId,
+				'participant' => participant,
+				// 'participant[0].Event_custom__c' => participant[0].Event_custom__c,
 				'result' => true,
 				'message' => 'Change Request: ' + newChangeRequest.Name + ' successfully created.'
 			};
@@ -180,7 +185,12 @@ public with sharing class ChangeRequestController {
 				return new Map<String, Object>{'result' => false, 'message' => 'Not All Params Are Defined (' + selectedParticipantId + ' / ' + communityContactEmail + ' / ' + requestedContactEmail + ')'};
 			}
 
-			List<Participant__c> participant = [SELECT Id, Event_custom__c FROM Participant__c WHERE Id =:selectedParticipantId LIMIT 1];
+			List<Participant__c> participant = [
+				SELECT Id, Event_custom__c, Event_Registration_Sub_Group__c, Event_Registration_Sub_Group__r.Event_Registration_Group__c
+				FROM Participant__c
+				WHERE Id =:selectedParticipantId
+				LIMIT 1
+			];
 			if (participant.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => 'Participant Not Found. Id: ' + selectedParticipantId};
 
 			Change_Request__c newChangeRequest = new Change_Request__c(
@@ -192,6 +202,7 @@ public with sharing class ChangeRequestController {
 				TransferFromEmail__c = communityContactEmail,
 				TransferToContact__c = requestedContactId,
 				TransferToEmail__c = requestedContactEmail,
+				Event_Registration_Group__c = participant[0].Event_Registration_Sub_Group__c != null ? participant[0].Event_Registration_Sub_Group__r.Event_Registration_Group__c : null,
 				Status__c = 'Requested',
 				Type__c = CR_TYPE_SOLO_TRANSFER
 			);
