@@ -22,7 +22,7 @@ export default class RecordSearch extends LightningElement {
 	@api disabledvalues;	//	list string in JSON (only for text search)
 	@api disabledtoedit;
 
-	@api selectedRecordDetails;
+	@api selectedRecordDetails = {};
 
 	_initialized = false;
 	_values = [];
@@ -32,6 +32,7 @@ export default class RecordSearch extends LightningElement {
 	_enabledtoedit = true;
 	_lastenteredtext = '';
 	_lastServerResults = [];
+	_originaltext = '';
 
     renderedCallback() {
 		if (this.enteredtext != undefined) {
@@ -40,21 +41,21 @@ export default class RecordSearch extends LightningElement {
 		if (this.enteredtext == undefined) {
 			this.enteredtext = this._lastenteredtext;
 		}
-
-		console.log('RecordSearch renderedCallback this.enteredtext: ', this.enteredtext);
-		console.log('RecordSearch renderedCallback this._lastenteredtext: ', this._lastenteredtext);
         if (this._initialized || !this._enabledtoedit) {
             return;
-        }
+		}
+		
+		// console.log('renderedCallback this.enteredtext: ', this.enteredtext);
+		this._originaltext = this.enteredtext;
+
 		this._initialized = true;
 
 		let listId = this.template.querySelector('datalist').id;
 		this.template.querySelector("input").setAttribute("list", listId);
+		// this.template.querySelector(this._datalistId).setAttribute("list", listId);
     }
 
 	connectedCallback() {
-		console.log('RecordSearch connectedCallback this.enteredtext: ', this.enteredtext);
-		console.log('RecordSearch connectedCallback this._lastenteredtext: ', this._lastenteredtext);
 		if (this.uniquekey1 == null) {
 			this.uniquekey1 = '1234567890';
 			this.uniquekey2 = 0;
@@ -67,18 +68,18 @@ export default class RecordSearch extends LightningElement {
 
     handleChange(evt) {
 		var newEnteredText = evt.target.value;
-		console.log('RecordSearch newEnteredText: ', newEnteredText);
-
 		if (newEnteredText == undefined) return;
 
 		this._lastenteredtext = this.enteredtext;
 		this.enteredtext = newEnteredText;
-
-
-		if (newEnteredText.startsWith(this._lastenteredtext) && this._lastServerResults.length <= 0) return;
+		if (this._lastenteredtext != '' && newEnteredText.startsWith(this._lastenteredtext) && this._lastServerResults.length <= 0) {
+			this.selectedRecordDetails.enteredText = this.enteredtext;
+			this.selectedRecordDetails.originalText = this._originaltext;
+			this.dispatchEvent(new CustomEvent('changenewcontactemail', { bubbles: true, detail: { recorddetails: JSON.stringify(this.selectedRecordDetails), uniquekey1: this.uniquekey1, uniquekey2: this.uniquekey2 } }));
+			this._originaltext = this.enteredtext;
+			return;
+		}
 		if (this._lastenteredtext == newEnteredText) return;
-
-		console.log('RecordSearch this.enteredtext: ', this.enteredtext);
 
 		this.serverCall();
     }
@@ -87,7 +88,7 @@ export default class RecordSearch extends LightningElement {
 		searchRecordsInDatabase(
 			{listfields: this.listfields, objectname: this.objectname, searchfield: this.searchfield, searchtext: this.enteredtext, whereclause: this.whereclause, limitrecords: this.limitrecords, disabledvalues: this.disabledvalues}
 			).then(result=>{
-			console.log('serverCall result: ', result);
+			// console.log('serverCall result: ', result);
 
 			this._values = [];
 			this._emailToDetails = new Map();
@@ -106,7 +107,9 @@ export default class RecordSearch extends LightningElement {
 			}
 			this._lastServerResults = serverResults;
 			this.selectedRecordDetails.enteredText = this.enteredtext;
+			this.selectedRecordDetails.originalText = this._originaltext;
 			this.dispatchEvent(new CustomEvent('changenewcontactemail', { bubbles: true, detail: { recorddetails: JSON.stringify(this.selectedRecordDetails), uniquekey1: this.uniquekey1, uniquekey2: this.uniquekey2 } }));
+			this._originaltext = this.enteredtext;
 		})
 		.catch(error=>{
 			console.log('RecordSearch component');

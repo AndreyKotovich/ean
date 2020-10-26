@@ -8,7 +8,7 @@
                         <div class="slds-checkbox">
                             <input type="checkbox" name="options" class="checkbox-product"
                                    id={product.line} value={product.value}
-                                   onchange={catchSelectedProducts} />
+                                   onchange={catchSelectedProducts} checked={product.checked} />
                             <label class="slds-checkbox__label" for={product.line}>
                                 <div class="slds-grid slds-gutters">
                                     <div class="slds-col">

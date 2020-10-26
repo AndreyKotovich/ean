@@ -3,7 +3,7 @@
     <fullName>Bursary__c</fullName>
     <defaultValue>false</defaultValue>
     <externalId>false</externalId>
-    <label>Bursary</label>
+    <label>I wish to apply for a bursary</label>
     <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>Checkbox</type>

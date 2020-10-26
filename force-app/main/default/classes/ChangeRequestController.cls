@@ -221,10 +221,61 @@ public without sharing class ChangeRequestController {
 		}
 	}
 
-	// public static final String CR_TYPE_SOLO_CANCELLATION = 'Solo Registration Cancellation';
-	// public static final String CR_TYPE_GROUP_CANCELLATION = 'Group Registration Cancellation';
-	// public static final String CR_TYPE_SOLO_TRANSFER = 'Solo Registration Transfer';
-	// public static final String CR_TYPE_GROUP_TRANSFER = 'Group Registration Transfer';
+	@AuraEnabled
+	public static Map<String, Object> finalSubmitTransferGroup(Map<String, Object> params) {
+		try {
+			system.debug('finalSubmitTransferGroup params: ' + JSON.serialize(params));
+
+			String crDescription = params.containsKey('crDescription') ? String.valueOf(params.get('crDescription')) : '';
+			String eventparamsString = params.containsKey('eventparams') ? String.valueOf(params.get('eventparams')) : '';
+
+			String communityContactId = params.containsKey('communityContactId') ? String.valueOf(params.get('communityContactId')) : '';
+			String selectedGroupId = params.containsKey('selectedGroupId') ? String.valueOf(params.get('selectedGroupId')) : '';
+
+			List<GroupDetailsController.SubGroupDetailsWrap> subGroupDetailsList = !String.isBlank(eventparamsString)
+				? (List<GroupDetailsController.SubGroupDetailsWrap>) JSON.deserialize(eventparamsString, List<GroupDetailsController.SubGroupDetailsWrap>.class)
+					: new List<GroupDetailsController.SubGroupDetailsWrap>();
+
+			String zeroParticipantId = !subGroupDetailsList.isEmpty() ? subGroupDetailsList[0].subGroupParticipantList[0].participantId : '';
+			List<Participant__c> zeroParticipant = !String.isBlank(zeroParticipantId)
+				? [SELECT Id, Event_custom__c FROM Participant__c WHERE Id =:zeroParticipantId LIMIT 1] : new List<Participant__c>();
+			if (zeroParticipant.isEmpty() || zeroParticipant[0].Event_custom__c == null) {
+				return new Map<String, Object>{'result' => false, 'message' => 'Not valid params'};
+			}
+
+			List<Change_Request__c> newChangeRequests = new List<Change_Request__c>();
+			for (GroupDetailsController.SubGroupDetailsWrap subGroupDetails : subGroupDetailsList) {
+				List<GroupDetailsController.SubGroupParticipantWrap> subGroupParticipants = subGroupDetails.subGroupParticipantList != null ? subGroupDetails.subGroupParticipantList : new List<GroupDetailsController.SubGroupParticipantWrap>();
+				for (GroupDetailsController.SubGroupParticipantWrap subGroupParticipant : subGroupParticipants) {
+					if (!subGroupParticipant.isNewTransferExist) continue;
+
+					newChangeRequests.add(new Change_Request__c (
+						Contact__c = communityContactId,
+						Description__c = crDescription,
+						Event_custom__c = zeroParticipant[0].Event_custom__c,
+						Event_Participation__c = subGroupParticipant.participantId,
+						Event_Registration_Group__c = selectedGroupId,
+						Status__c = 'Requested',
+						TransferFromContact__c = subGroupParticipant.oldContactId,
+						TransferFromEmail__c = subGroupParticipant.oldContactEmail,
+						TransferToContact__c = subGroupParticipant.newTransferDetails.crContactId,
+						TransferToEmail__c = subGroupParticipant.newTransferDetails.crContactEmail,
+						Type__c = CR_TYPE_GROUP_TRANSFER
+					));
+				}
+			}
+			insert newChangeRequests;
+			return new Map<String, Object> {
+				'result' => true,
+				'message' => 'Change Requests successfully created.'
+			};
+
+		} catch (Exception e) { 
+			system.debug('!!! ERROR !!! : ' + e.getMessage());
+			system.debug('!!! ERROR !!! : ' + e.getStackTraceString());
+			return new Map<String, Object>{'result' => false, 'message' => e.getStackTraceString()};
+		}
+	}
 
 
 	//	TODO: Move to UTILS Apex class

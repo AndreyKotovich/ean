@@ -13,6 +13,9 @@ public without sharing class RecordSearchController {
 	@AuraEnabled (cacheable=true)
 	public static String searchRecordsInDatabase(String listfields, String objectname, String searchfield, String searchtext, String whereclause, Integer limitrecords, String disabledvalues){
 		List<String> disabledValuesList = String.isBlank(disabledvalues) ? new List<String>() : (List<String>) JSON.deserialize(disabledvalues, List<String>.class);
+
+		system.debug('disabledValuesList= ' + disabledValuesList);
+
 		List<ResultWrapper> recordsResult = new List<ResultWrapper>();
 		searchtext = '\'%' + String.escapeSingleQuotes(searchtext.trim()) + '%\'';
 		List<String> objectFields = !String.isBlank(listfields) ? listfields.split(',') : new List<String>();

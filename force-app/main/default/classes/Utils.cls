@@ -27,4 +27,20 @@ public with sharing class Utils {
         return contactsMemberships;
     }
 
+    public static List<Map<String, String>> picklistValues(String objectName, String fieldName) {
+        List<Map<String, String>> values = new List<Map<String, String>>();
+        List<String> types = new List<String>{objectName};
+        List<Schema.DescribeSObjectResult> results = Schema.describeSObjects(types);
+        for(Schema.DescribeSObjectResult res : results) {
+            for (Schema.PicklistEntry entry : res.fields.getMap().get(fieldName).getDescribe().getPicklistValues()) {
+                if (entry.isActive()) {
+                    values.add(new Map<String, String>{'value' => entry.getValue(), 'label' => entry.getLabel()});
+                }
+            }
+        }
+        return values;
+    }
+
+
+
 }

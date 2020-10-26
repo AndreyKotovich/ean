@@ -98,7 +98,7 @@ public without sharing class PaymentHttpRequest {
         List<Order__c> order = [SELECT Id, Total_amount__c, Name, Contact__r.FirstName, Contact__r.LastName FROM Order__c WHERE Id = :orderId];
         List<Order_Item__c> orderItem = [
             SELECT Id, Amount__c, Product__c, Membership__c, Membership__r.Name, Product__r.Name, Name, Quantity__c, Total_amount__c,
-                Event_Participation__r.Event_Ticket__r.Ticket__c, Event_Participation__r.Event_Ticket__r.Ticket__r.Name
+                Event_Participation__r.Event_Ticket__r.Ticket__c, Event_Participation__r.Event_Ticket__r.Ticket__r.Name, Session_Participation__r.Session__r.Name
             FROM Order_Item__c
             WHERE Order_Custom__c = :orderId
         ];
@@ -110,7 +110,8 @@ public without sharing class PaymentHttpRequest {
                     },
                     'article-number' => oi.Name,
                     'name' => !String.isBlank(oi.Membership__c) ? oi.Membership__r.Name : !String.isBlank(oi.Product__c) ? 
-                        oi.Product__r.Name : oi.Event_Participation__r.Event_Ticket__r.Ticket__r.Name,
+                        oi.Product__r.Name : !String.isBlank(oi.Event_Participation__c) ? oi.Event_Participation__r.Event_Ticket__r.Ticket__r.Name :
+                                    !String.isBlank(oi.Session_Participation__c) ? oi.Session_Participation__r.Session__r.Name : 'undefined name',
                     'quantity' => oi.Quantity__c
             });
         }
@@ -224,7 +225,7 @@ public without sharing class PaymentHttpRequest {
         List<Order__c> order = [SELECT Id, Total_amount__c, Name FROM Order__c WHERE Id = :orderId];
         List<Order_Item__c> orderItems = [
             SELECT Id, Amount__c, Product__c, Membership__c, Membership__r.Name, Product__r.Name, Name, Quantity__c, Total_amount__c,
-                Event_Participation__r.Event_Ticket__r.Ticket__c, Event_Participation__r.Event_Ticket__r.Ticket__r.Name
+                Event_Participation__r.Event_Ticket__r.Ticket__c, Event_Participation__r.Event_Ticket__r.Ticket__r.Name, Session_Participation__r.Session__r.Name
             FROM Order_Item__c
             WHERE Order_Custom__c = :order[0].Id
         ];
@@ -233,7 +234,8 @@ public without sharing class PaymentHttpRequest {
         for (Order_Item__c oi : orderItems) {
             orderItemsMap.add(new Map<String, Object>{
                     'product' => !String.isBlank(oi.Membership__c) ? oi.Membership__r.Name : !String.isBlank(oi.Product__c) ? 
-                        oi.Product__r.Name : oi.Event_Participation__r.Event_Ticket__r.Ticket__r.Name,
+                        oi.Product__r.Name : !String.isBlank(oi.Event_Participation__c) ? oi.Event_Participation__r.Event_Ticket__r.Ticket__r.Name :
+                                    !String.isBlank(oi.Session_Participation__c) ? oi.Session_Participation__r.Session__r.Name : 'undefined name',
                     'quantity' => oi.Quantity__c,
                     'amount' => oi.Amount__c,
                     'total-amount' => oi.Total_amount__c
@@ -619,4 +621,9 @@ public without sharing class PaymentHttpRequest {
     @RemoteAction public static void writeOrderBillingAddress(String orderId, String addressesObject){
         OrderUtils.writeOrderBillingAddress(orderId, addressesObject);
     }
+
+    public static void refundTransaction(List<Order__c> ords) {
+
+    }
+
 }

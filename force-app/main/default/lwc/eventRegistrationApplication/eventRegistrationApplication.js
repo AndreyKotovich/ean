@@ -149,10 +149,25 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     }
 
     onExtraBooking(event) {
-        console.log('selectedSessions: ' + JSON.stringify(event.detail.selectedSessions));
-        console.log('selectedServices: ' + JSON.stringify(event.detail.selectedServices));
+        // console.log('selectedSessions: ' + JSON.stringify(event.detail.selectedSessions));
+        // console.log('selectedServices: ' + JSON.stringify(event.detail.selectedServices));
         this.selectedSessions = [...event.detail.selectedSessions];
         this.selectedServices = Object.assign({}, event.detail.selectedServices);
+
+        this.selections = {
+            selectedTickets : [
+                {
+                    ticketId: this.selectedTicket,
+                    amount: this.registrationType === 'solo' ? 1 : this.ticketsAmount,
+                    price: this.priceTicket
+                }
+            ],
+            selectedServices: this.selectedServices,
+            selectedSessions: this.selectedSessions
+        }
+
+        // console.log(JSON.parse(JSON.stringify(this.selections)));
+
         this.onNext();
     }
 
@@ -185,13 +200,8 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             this.steps.step3.isActive = false;
             this.steps.step2.isActive = true;
         } else if (this.steps.step4.isActive) {
-            if(this.registrationType === 'solo'){
-                this.steps.step4.isActive = false;
-                this.steps.step3.isActive = true;
-            } else {
-                this.steps.step4.isActive = false;
-                this.steps.step2.isActive = true;
-            }
+            this.steps.step4.isActive = false;
+            this.steps.step3.isActive = true;
         }
         this.setCurrentStep();
     }
@@ -237,6 +247,8 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                             Event_custom__c: this.ean_event.Id,
                             Event_Ticket__c: generalData.selectTicket,
                             Event_Registration_Sub_Group__c: result,
+                            Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
+                            Visa_Letter__c: this.selectedServices.visaLetter,
                         });
                     }
                 }

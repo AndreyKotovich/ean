@@ -20,6 +20,9 @@
     <tabs>Abstract__c</tabs>
     <tabs>Change_Request__c</tabs>
     <tabs>Session_Speaker__c</tabs>
+    <tabs>Email_activity__c</tabs>
+    <tabs>Speaker__c</tabs>
+    <tabs>Lecture__c</tabs>
     <uiType>Lightning</uiType>
     <utilityBar>LightningService_UtilityBar</utilityBar>
     <workspaceConfig>
@@ -33,16 +36,25 @@
             <tab>Change_Request__c</tab>
         </mappings>
         <mappings>
+            <tab>Email_activity__c</tab>
+        </mappings>
+        <mappings>
             <tab>Event_Registration_Group__c</tab>
         </mappings>
         <mappings>
             <tab>Event_Registration_Sub_Group__c</tab>
         </mappings>
         <mappings>
+            <tab>Lecture__c</tab>
+        </mappings>
+        <mappings>
             <tab>Presenter__c</tab>
         </mappings>
         <mappings>
             <tab>Session_Speaker__c</tab>
+        </mappings>
+        <mappings>
+            <tab>Speaker__c</tab>
         </mappings>
         <mappings>
             <tab>standard-Account</tab>

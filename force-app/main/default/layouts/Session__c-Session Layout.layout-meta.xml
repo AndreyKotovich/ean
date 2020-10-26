@@ -137,15 +137,6 @@
     </layoutSections>
     <relatedLists>
         <fields>NAME</fields>
-        <fields>Event__c</fields>
-        <fields>Contact.CNTC_FIRST_NAME</fields>
-        <fields>Contact.NAME</fields>
-        <fields>Role__c</fields>
-        <fields>Status__c</fields>
-        <relatedList>Session_Participation__c.Session__c</relatedList>
-    </relatedLists>
-    <relatedLists>
-        <fields>NAME</fields>
         <fields>Lecture_Start__c</fields>
         <fields>Lecture_End__c</fields>
         <fields>Lecture_Type__c</fields>
@@ -155,15 +146,16 @@
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
+        <fields>Event__c</fields>
+        <fields>Contact.CNTC_FIRST_NAME</fields>
+        <fields>Contact.NAME</fields>
+        <fields>Role__c</fields>
+        <fields>Status__c</fields>
+        <relatedList>Session_Participation__c.Session__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
         <relatedList>Event_Ticket__c.Session__c</relatedList>
-    </relatedLists>
-    <relatedLists>
-        <fields>NAME</fields>
-        <relatedList>Abstract__c.Session__c</relatedList>
-    </relatedLists>
-    <relatedLists>
-        <fields>NAME</fields>
-        <relatedList>Session_Speaker__c.Session__c</relatedList>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>

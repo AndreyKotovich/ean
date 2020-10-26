@@ -3,8 +3,8 @@
     <assignments>
         <name>Assign_Abstract_Values</name>
         <label>Assign Abstract Values</label>
-        <locationX>460</locationX>
-        <locationY>331</locationY>
+        <locationX>537</locationX>
+        <locationY>399</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecord.Authors_consent__c</assignToReference>
             <operator>Assign</operator>
@@ -37,7 +37,7 @@
             <assignToReference>AbstractRecord.Event__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Get_Session.Event_custom__c</elementReference>
+                <elementReference>Get_Lecture.Event_custom__c</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -58,7 +58,7 @@
             <assignToReference>AbstractRecord.Presenter__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Get_Session_Id.Presenter__c</elementReference>
+                <elementReference>Get_Lecture_Presentation.Presenter__c</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -72,7 +72,7 @@
             <assignToReference>AbstractRecord.Session__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Get_Session_Id.Session__c</elementReference>
+                <elementReference>Get_Lecture.Session__c</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -90,10 +90,10 @@
             </value>
         </assignmentItems>
         <assignmentItems>
-            <assignToReference>AbstractRecord.Tournament__c</assignToReference>
+            <assignToReference>AbstractRecord.Tournament_Basic__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Tournament</elementReference>
+                <elementReference>Tournament_Basic</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -103,15 +103,29 @@
                 <elementReference>Type</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecord.Tournament_Clinical__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Tournament_Clinical</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecord.Disclosure__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Disclosure</elementReference>
+            </value>
+        </assignmentItems>
         <connector>
-            <targetReference>Create_Abstract</targetReference>
+            <targetReference>Review_Abstract_Screen</targetReference>
         </connector>
     </assignments>
     <assignments>
         <name>Reset_Author</name>
         <label>Reset Author</label>
-        <locationX>999</locationX>
-        <locationY>56</locationY>
+        <locationX>1057</locationX>
+        <locationY>54</locationY>
         <assignmentItems>
             <assignToReference>LookupAuthor.recordId</assignToReference>
             <operator>Assign</operator>
@@ -121,7 +135,7 @@
             <operator>Assign</operator>
         </assignmentItems>
         <connector>
-            <targetReference>Author_Found</targetReference>
+            <targetReference>Add_Authors_Screen</targetReference>
         </connector>
     </assignments>
     <constants>
@@ -134,7 +148,7 @@
     <decisions>
         <name>Add_Another_Author</name>
         <label>Add Another Author</label>
-        <locationX>1227</locationX>
+        <locationX>1350</locationX>
         <locationY>64</locationY>
         <defaultConnector>
             <targetReference>Submit_Screen</targetReference>
@@ -157,31 +171,72 @@
         </rules>
     </decisions>
     <decisions>
-        <name>Author_Found</name>
-        <label>Author Found</label>
-        <locationX>927</locationX>
-        <locationY>177</locationY>
+        <name>Already_Submitted</name>
+        <label>Already Submitted?</label>
+        <locationX>290</locationX>
+        <locationY>357</locationY>
         <defaultConnector>
-            <targetReference>Create_Author</targetReference>
+            <targetReference>Already_Submitted_Screen</targetReference>
         </defaultConnector>
-        <defaultConnectorLabel>Create Author</defaultConnectorLabel>
+        <defaultConnectorLabel>Previous Submission</defaultConnectorLabel>
         <rules>
-            <name>Assign_Author</name>
+            <name>No_Previous_Submission</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Lecture.Abstract__c</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <connector>
+                <targetReference>Fill_Abstract_Screen</targetReference>
+            </connector>
+            <label>No Previous Submission</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Author_Found</name>
+        <label>Author Found?</label>
+        <locationX>1050</locationX>
+        <locationY>178</locationY>
+        <defaultConnector>
+            <targetReference>Submit_Screen</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Author</defaultConnectorLabel>
+        <rules>
+            <name>Assign_Author_Outcome</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>LookupAuthor.recordId</leftValueReference>
-                <operator>EqualTo</operator>
+                <operator>NotEqualTo</operator>
             </conditions>
             <connector>
                 <targetReference>Add_Author</targetReference>
             </connector>
             <label>Assign Author</label>
         </rules>
+        <rules>
+            <name>Create_Author_Outcome</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>NewAuthorEmail.value</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue/>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>LookupAuthor.recordId</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <connector>
+                <targetReference>Create_Author</targetReference>
+            </connector>
+            <label>Create Author</label>
+        </rules>
     </decisions>
     <decisions>
         <name>Submit_Abstract</name>
         <label>Submit Abstract</label>
-        <locationX>1525</locationX>
+        <locationX>1648</locationX>
         <locationY>85</locationY>
         <defaultConnector>
             <targetReference>DraftSuccessScreen</targetReference>
@@ -219,6 +274,21 @@
         <picklistField>Type__c</picklistField>
         <picklistObject>Abstract__c</picklistObject>
     </dynamicChoiceSets>
+    <formulas>
+        <name>Image1Name</name>
+        <dataType>String</dataType>
+        <expression>SUBSTITUTE(SUBSTITUTE({!FileUpload1.fileNames},&apos;[&apos;,&apos;&apos;),&apos;]&apos;,&apos;&apos;)</expression>
+    </formulas>
+    <formulas>
+        <name>Image2Name</name>
+        <dataType>String</dataType>
+        <expression>SUBSTITUTE(SUBSTITUTE({!FileUpload2.fileNames},&apos;[&apos;,&apos;&apos;),&apos;]&apos;,&apos;&apos;)</expression>
+    </formulas>
+    <formulas>
+        <name>Image3Name</name>
+        <dataType>String</dataType>
+        <expression>SUBSTITUTE(SUBSTITUTE({!FileUpload3.fileNames},&apos;[&apos;,&apos;&apos;),&apos;]&apos;,&apos;&apos;)</expression>
+    </formulas>
     <interviewLabel>Invited Abstract Submission {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Invited Abstract Submission</label>
     <processMetadataValues>
@@ -243,8 +313,8 @@
     <recordCreates>
         <name>Add_Author</name>
         <label>Add Author</label>
-        <locationX>1106</locationX>
-        <locationY>175</locationY>
+        <locationX>1219</locationX>
+        <locationY>227</locationY>
         <connector>
             <targetReference>Add_Another_Author_Screen</targetReference>
         </connector>
@@ -266,8 +336,8 @@
     <recordCreates>
         <name>Add_New_Author</name>
         <label>Add New Author</label>
-        <locationX>1118</locationX>
-        <locationY>383</locationY>
+        <locationX>1241</locationX>
+        <locationY>401</locationY>
         <connector>
             <targetReference>Add_Another_Author_Screen</targetReference>
         </connector>
@@ -289,17 +359,17 @@
     <recordCreates>
         <name>Create_Abstract</name>
         <label>Create Abstract</label>
-        <locationX>609</locationX>
-        <locationY>330</locationY>
+        <locationX>668</locationX>
+        <locationY>405</locationY>
         <connector>
-            <targetReference>Upload_Files_Screen</targetReference>
+            <targetReference>Assign_Abstract_to_Lecture</targetReference>
         </connector>
         <inputReference>AbstractRecord</inputReference>
     </recordCreates>
     <recordCreates>
         <name>Create_Author</name>
         <label>Create Author</label>
-        <locationX>943</locationX>
+        <locationX>1066</locationX>
         <locationY>384</locationY>
         <assignRecordIdToReference>NewAuthorId</assignRecordIdToReference>
         <connector>
@@ -320,38 +390,40 @@
         <object>Author__c</object>
     </recordCreates>
     <recordLookups>
-        <name>Get_Session</name>
-        <label>Get Session</label>
-        <locationX>176</locationX>
-        <locationY>331</locationY>
+        <name>Get_Lecture</name>
+        <label>Get Lecture</label>
+        <locationX>174</locationX>
+        <locationY>356</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Fill_Abstract_Screen</targetReference>
+            <targetReference>Already_Submitted</targetReference>
         </connector>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
             <value>
-                <elementReference>Get_Session_Id.Session__c</elementReference>
+                <elementReference>Get_Lecture_Presentation.Lecture__c</elementReference>
             </value>
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>Session__c</object>
+        <object>Lecture__c</object>
         <queriedFields>Id</queriedFields>
         <queriedFields>Event_custom__c</queriedFields>
-        <queriedFields>Status__c</queriedFields>
-        <queriedFields>Session_Start__c</queriedFields>
-        <queriedFields>Session_Title__c</queriedFields>
+        <queriedFields>Session__c</queriedFields>
+        <queriedFields>Lecture_Type__c</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <queriedFields>Lecture_Title__c</queriedFields>
+        <queriedFields>Abstract__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
-        <name>Get_Session_Id</name>
-        <label>Get Session Id</label>
-        <locationX>177</locationX>
-        <locationY>192</locationY>
+        <name>Get_Lecture_Presentation</name>
+        <label>Get Lecture Presentation</label>
+        <locationX>175</locationX>
+        <locationY>200</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Get_Session</targetReference>
+            <targetReference>Get_Lecture</targetReference>
         </connector>
         <filters>
             <field>Id</field>
@@ -361,17 +433,40 @@
             </value>
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>Session_Speaker__c</object>
+        <object>Speaker__c</object>
         <queriedFields>Id</queriedFields>
-        <queriedFields>Session__c</queriedFields>
+        <queriedFields>Lecture__c</queriedFields>
         <queriedFields>Presenter__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordUpdates>
+        <name>Assign_Abstract_to_Lecture</name>
+        <label>Assign Abstract to Lecture</label>
+        <locationX>811</locationX>
+        <locationY>400</locationY>
+        <connector>
+            <targetReference>Upload_Files_Screen</targetReference>
+        </connector>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Lecture_Presentation.Lecture__c</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Abstract__c</field>
+            <value>
+                <elementReference>AbstractRecord.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Lecture__c</object>
+    </recordUpdates>
+    <recordUpdates>
         <name>Update_Abstract</name>
         <label>Update Abstract</label>
-        <locationX>1674</locationX>
-        <locationY>88</locationY>
+        <locationX>1864</locationX>
+        <locationY>86</locationY>
         <connector>
             <targetReference>SubmitSuccessScreen</targetReference>
         </connector>
@@ -390,11 +485,64 @@
         </inputAssignments>
         <object>Abstract__c</object>
     </recordUpdates>
+    <recordUpdates>
+        <name>UpdateAbstract</name>
+        <label>UpdateAbstract</label>
+        <locationX>941</locationX>
+        <locationY>383</locationY>
+        <connector>
+            <targetReference>Add_Authors_Screen</targetReference>
+        </connector>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>AbstractRecord.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Image_1_Caption__c</field>
+            <value>
+                <elementReference>Image_1_Caption</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Image_1__c</field>
+            <value>
+                <elementReference>Image1Name</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Image_2_Caption__c</field>
+            <value>
+                <elementReference>Image_2_Caption</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Image_2__c</field>
+            <value>
+                <elementReference>Image2Name</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Image_3_Caption__c</field>
+            <value>
+                <elementReference>Image_3_Caption</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Image_3__c</field>
+            <value>
+                <elementReference>Image3Name</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Abstract__c</object>
+    </recordUpdates>
     <screens>
         <name>Add_Another_Author_Screen</name>
         <label>Add Another Author Screen</label>
-        <locationX>1242</locationX>
-        <locationY>254</locationY>
+        <locationX>1374</locationX>
+        <locationY>227</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -437,8 +585,8 @@
     <screens>
         <name>Add_Authors_Screen</name>
         <label>Add Authors Screen</label>
-        <locationX>782</locationX>
-        <locationY>193</locationY>
+        <locationX>928</locationX>
+        <locationY>185</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -447,7 +595,7 @@
         </connector>
         <fields>
             <name>CreatedAbstractSuccessMessage</name>
-            <fieldText>&lt;p&gt;&lt;b&gt;A draft of your abstract has been successfully created!&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Following images have been added:&lt;/p&gt;&lt;p&gt;{!FileUpload1.fileNames}&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;{!FileUpload2.fileNames}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;{!FileUpload3.fileNames}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-size: var(--lwc-fontSize3,0.8125rem); font-family: var(--lwc-fontFamily,&amp;quot;Salesforce Sans&amp;quot;, Arial, sans-serif);&quot;&gt;You can still make changes to this draft later.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;Now, please add at least one author to your abstract.&lt;/b&gt;&lt;/p&gt;&lt;p&gt;You also have the option to add more authors later.&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;b&gt;A draft of your abstract has been successfully created!&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Following images have been added:&lt;/p&gt;&lt;p&gt;{!Image_1_Caption}: {!Image1Name}&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;{!Image_2_Caption}: {!Image2Name}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;{!Image_3_Caption}: {!Image3Name}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-size: var(--lwc-fontSize3,0.8125rem); font-family: var(--lwc-fontFamily,&amp;quot;Salesforce Sans&amp;quot;, Arial, sans-serif);&quot;&gt;You can still make changes to this draft later.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;&lt;i&gt;Now, please add at least one author to your abstract.&lt;/i&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;You also have the option to add more authors later.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <fields>
@@ -477,7 +625,7 @@
         </fields>
         <fields>
             <name>AuthorNotFoundDisplay</name>
-            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;﻿&lt;/span&gt;&lt;b style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;If you cannot find the author&lt;/b&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt; in the search, please create a new author by entering the email here:&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;﻿&lt;/span&gt;&lt;b style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;&lt;i&gt;If you cannot find the author&lt;/i&gt;&lt;/b&gt;&lt;i style=&quot;background-color: rgb(255, 255, 255);&quot;&gt; in the search, please create a new author by entering the email here:&lt;/i&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <visibilityRule>
                 <conditionLogic>and</conditionLogic>
@@ -500,6 +648,12 @@
                     <stringValue>Add Author Email</stringValue>
                 </value>
             </inputParameters>
+            <inputParameters>
+                <name>placeholder</name>
+                <value>
+                    <stringValue>authorname@example.com</stringValue>
+                </value>
+            </inputParameters>
             <isRequired>true</isRequired>
             <storeOutputAutomatically>true</storeOutputAutomatically>
             <visibilityRule>
@@ -517,10 +671,26 @@
         <showHeader>true</showHeader>
     </screens>
     <screens>
+        <name>Already_Submitted_Screen</name>
+        <label>Already Submitted Screen</label>
+        <locationX>297</locationX>
+        <locationY>177</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>AlreadySubmittedText</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;An abstract has already been submitted for this Lecture.&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;Please check your abstract submissions in the community.  &lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
         <name>DraftSuccessScreen</name>
         <label>DraftSuccessScreen</label>
-        <locationX>1532</locationX>
-        <locationY>393</locationY>
+        <locationX>1664</locationX>
+        <locationY>235</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -535,8 +705,8 @@
     <screens>
         <name>Fill_Abstract_Screen</name>
         <label>Fill Abstract Screen</label>
-        <locationX>336</locationX>
-        <locationY>331</locationY>
+        <locationX>443</locationX>
+        <locationY>202</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -545,7 +715,7 @@
         </connector>
         <fields>
             <name>InvitedSubmissionIntroText</name>
-            <fieldText>&lt;p&gt;&lt;b&gt;You are completing a submission for an abstract for your lecture at following session: &lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px;&quot;&gt;&lt;u&gt;{!Get_Session.Session_Title__c}&lt;/u&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;If this is not the correct session, please contact EAN staff.&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;b&gt;You are completing a submission for an abstract for your lecture: &lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px;&quot;&gt;{!Get_Lecture.Lecture_Title__c}&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;If this is not the correct lecture, please contact EAN staff.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <fields>
@@ -557,16 +727,65 @@
             <isRequired>true</isRequired>
         </fields>
         <fields>
-            <name>Bursary</name>
+            <name>Tournament_Basic</name>
             <dataType>Boolean</dataType>
-            <fieldText>Bursary</fieldText>
+            <fieldText>I wish to participate in the Tournament Basic</fieldText>
             <fieldType>InputField</fieldType>
             <isRequired>true</isRequired>
+            <validationRule>
+                <errorMessage>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;It is only possible to particiate in one tournament.&lt;/span&gt;&lt;/p&gt;</errorMessage>
+                <formulaExpression>NOT({!Tournament_Basic}=true &amp;&amp; {!Tournament_Clinical}=true)</formulaExpression>
+            </validationRule>
+            <visibilityRule>
+                <conditionLogic>or</conditionLogic>
+                <conditions>
+                    <leftValueReference>Type</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Virtual oral</stringValue>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Type</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Onsite oral</stringValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
         </fields>
         <fields>
-            <name>Tournament</name>
+            <name>Tournament_Clinical</name>
             <dataType>Boolean</dataType>
-            <fieldText>Tournament</fieldText>
+            <fieldText>I wish to participate in the Tournament Clinical</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+            <validationRule>
+                <errorMessage>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;It is only possible to particiate in one tournament.&lt;/span&gt;&lt;/p&gt;</errorMessage>
+                <formulaExpression>NOT({!Tournament_Basic}=true &amp;&amp; {!Tournament_Clinical}=true)</formulaExpression>
+            </validationRule>
+            <visibilityRule>
+                <conditionLogic>or</conditionLogic>
+                <conditions>
+                    <leftValueReference>Type</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Virtual oral</stringValue>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Type</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Onsite oral</stringValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Bursary</name>
+            <dataType>Boolean</dataType>
+            <fieldText>I wish to apply for a bursary for the EAN Congress</fieldText>
             <fieldType>InputField</fieldType>
             <isRequired>true</isRequired>
         </fields>
@@ -584,12 +803,19 @@
             <isRequired>true</isRequired>
         </fields>
         <fields>
+            <name>Disclosure</name>
+            <dataType>String</dataType>
+            <fieldText>Disclosure</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
             <name>TopicSelection</name>
             <choiceReferences>TopicsChoiceSet</choiceReferences>
             <dataType>String</dataType>
             <fieldText>Topics</fieldText>
             <fieldType>MultiSelectCheckboxes</fieldType>
-            <isRequired>false</isRequired>
+            <isRequired>true</isRequired>
         </fields>
         <fields>
             <name>ConfirmationDisplay</name>
@@ -633,10 +859,84 @@
         <showHeader>true</showHeader>
     </screens>
     <screens>
+        <name>Review_Abstract_Screen</name>
+        <label>Review Abstract Screen</label>
+        <locationX>584</locationX>
+        <locationY>200</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Create_Abstract</targetReference>
+        </connector>
+        <fields>
+            <name>AbstractSummary</name>
+            <fieldText>&lt;p&gt;&lt;b style=&quot;font-size: 16px;&quot;&gt;&lt;i&gt;Please review your submission:&lt;/i&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 16px;&quot;&gt;﻿&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;Abstract Type:&lt;/b&gt;&lt;/p&gt;&lt;p&gt;{!Type}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;Abstract Title:&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Title}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;Body: &lt;/b&gt;&lt;/p&gt;&lt;p&gt;{!Body}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;Disclosure: &lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;{!Disclosure}&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>AbstractTopic</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Topics:&lt;/b&gt;&lt;/p&gt;&lt;p&gt;{!TopicSelection}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>TournamentBasicConfirmation</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;You are participating in the Tournament Basic.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>Tournament_Basic</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>TournamentClinicalConfirmation</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;You are participating in the Tournament Clinical.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>Tournament_Clinical</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>BursaryConfirmation</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;You are applying for a bursary for the EAN Congress&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>Bursary</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>ConfirmText</name>
+            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px; color: rgb(62, 62, 60);&quot;&gt;&lt;i&gt;Click Next to confirm and continue.&lt;/i&gt;&lt;/b&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
         <name>Submit_Screen</name>
         <label>Submit Screen</label>
-        <locationX>1388</locationX>
-        <locationY>258</locationY>
+        <locationX>1551</locationX>
+        <locationY>239</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -680,8 +980,8 @@
     <screens>
         <name>SubmitSuccessScreen</name>
         <label>SubmitSuccessScreen</label>
-        <locationX>1678</locationX>
-        <locationY>234</locationY>
+        <locationX>1869</locationX>
+        <locationY>237</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -696,13 +996,13 @@
     <screens>
         <name>Upload_Files_Screen</name>
         <label>Upload Files Screen</label>
-        <locationX>607</locationX>
-        <locationY>194</locationY>
+        <locationX>795</locationX>
+        <locationY>193</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Add_Authors_Screen</targetReference>
+            <targetReference>UpdateAbstract</targetReference>
         </connector>
         <fields>
             <name>FileUpload1</name>
@@ -711,7 +1011,7 @@
             <inputParameters>
                 <name>label</name>
                 <value>
-                    <stringValue>Introduction: Upload Image</stringValue>
+                    <stringValue>1. Upload Image</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -736,13 +1036,20 @@
             <storeOutputAutomatically>true</storeOutputAutomatically>
         </fields>
         <fields>
+            <name>Image_1_Caption</name>
+            <dataType>String</dataType>
+            <fieldText>1. Add caption to first image</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>false</isRequired>
+        </fields>
+        <fields>
             <name>FileUpload2</name>
             <extensionName>forceContent:fileUpload</extensionName>
             <fieldType>ComponentInstance</fieldType>
             <inputParameters>
                 <name>label</name>
                 <value>
-                    <stringValue>Body: Upload Image</stringValue>
+                    <stringValue>2. Upload Image</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -765,6 +1072,13 @@
             </inputParameters>
             <isRequired>true</isRequired>
             <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <fields>
+            <name>Image_2_Caption</name>
+            <dataType>String</dataType>
+            <fieldText>2. Add caption to second image</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>false</isRequired>
         </fields>
         <fields>
             <name>FileUpload3</name>
@@ -779,7 +1093,7 @@
             <inputParameters>
                 <name>label</name>
                 <value>
-                    <stringValue>Body: Upload Image 2</stringValue>
+                    <stringValue>3. Upload Image</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -797,14 +1111,26 @@
             <isRequired>true</isRequired>
             <storeOutputAutomatically>true</storeOutputAutomatically>
         </fields>
+        <fields>
+            <name>Image_3_Caption</name>
+            <dataType>String</dataType>
+            <fieldText>3. Add caption to third Image</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>false</isRequired>
+        </fields>
+        <fields>
+            <name>ConfirmText2</name>
+            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;i style=&quot;font-size: 14px;&quot;&gt;Click &lt;/i&gt;&lt;b style=&quot;font-size: 14px;&quot;&gt;&lt;i&gt;Next&lt;/i&gt;&lt;/b&gt;&lt;i style=&quot;font-size: 14px;&quot;&gt; to see which files you have uploaded.&lt;/i&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
     </screens>
     <start>
         <locationX>50</locationX>
-        <locationY>50</locationY>
+        <locationY>44</locationY>
         <connector>
-            <targetReference>Get_Session_Id</targetReference>
+            <targetReference>Get_Lecture_Presentation</targetReference>
         </connector>
     </start>
     <status>Active</status>

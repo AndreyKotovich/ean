@@ -24,9 +24,9 @@ public without sharing class EventRegistrationController {
     }
 
     @AuraEnabled
-    public static Map<String, Object> insertEventParticipants( List<Participant__c> participants, Map<String,Object> generalData, List<Object> selectedSession ) {
+    public static Map<String, Object> insertEventParticipants(List<Participant__c> participants, Map<String, Object> generalData, List<Object> selectedSession) {
         Savepoint sp = Database.setSavepoint();
-        try{
+        try {
             System.debug('participants:: ' + participants);
 
             Contact undefinedContact = getUndefinedParticipant();
@@ -36,8 +36,8 @@ public without sharing class EventRegistrationController {
 
             if (undefinedContact == null) {
                 return new Map<String, Object>{
-                    'status' => 'Error',
-                    'message' => 'Contact record Undefined Participant not found'
+                        'status' => 'Error',
+                        'message' => 'Contact record Undefined Participant not found'
                 };
             }
 
@@ -52,39 +52,37 @@ public without sharing class EventRegistrationController {
             System.debug('insert participants:: ' + participants);
             insert participants;
 
-            List<Session_Participation__c> sessionParticipation = new List<Session_Participation__c>();
-            System.debug('participants.size(): '+participants.size());
-            if(participants.size() == 1){
-                sessionParticipation = insertSessionParticipants(selectedSession, participants[0].Id);
+            Map<String, Decimal> sessionParticipationPriceMap = new Map<String, Decimal>();
+            System.debug('participants.size(): ' + participants.size());
+            if (participants.size() == 1) {
+                sessionParticipationPriceMap = insertSessionParticipants(selectedSession, participants[0].Id);
             }
-            System.debug('sessionParticipation: '+sessionParticipation);
+            System.debug('sessionParticipation: ' + sessionParticipationPriceMap);
 
 
             //Create order
-            List<Order__c> order = OrderHelper.createNewOrder( new Map<String,Object> {
-				'generalData' => generalData,
-                'participants' => participants,
-                'selectedSessions' => selectedSession,
-                'sessionParticipants' => sessionParticipation
+            List<Order__c> order = OrderHelper.createNewOrder(new Map<String, Object>{
+                    'generalData' => generalData,
+                    'participants' => participants,
+                    'sessionParticipantPrice' => sessionParticipationPriceMap
             });
 
             return new Map<String, Object>{
-                'status' => 'Success',
-                'message' => 'Success',
-                'result' => order
+                    'status' => 'Success',
+                    'message' => 'Success',
+                    'result' => order
             };
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Database.rollback(sp);
             return new Map<String, Object>{
-                'status' => 'Error',
-                'message' => e.getMessage()
+                    'status' => 'Error',
+                    'message' => e.getMessage()
             };
         }
     }
 
     public static Contact getUndefinedParticipant() {
-        return [ SELECT Id FROM Contact WHERE FirstName = 'Undefined' AND LastName = 'Participant' LIMIT 1 ];
+        return [SELECT Id FROM Contact WHERE FirstName = 'Undefined' AND LastName = 'Participant' LIMIT 1];
     }
 
     @AuraEnabled
@@ -113,26 +111,25 @@ public without sharing class EventRegistrationController {
     }
 
     @AuraEnabled public static String insertRegistrationGroup(String groupName, String groupLeaderId) {
-      Event_Registration_Group__c ERGroup = new Event_Registration_Group__c();
-      List<Event_Registration_Group__c> groups = [SELECT Id FROM Event_Registration_Group__c WHERE Name = :groupName AND Contact__c = :groupLeaderId LIMIT 1];
+        Event_Registration_Group__c ERGroup = new Event_Registration_Group__c();
+        List<Event_Registration_Group__c> groups = [SELECT Id FROM Event_Registration_Group__c WHERE Name = :groupName AND Contact__c = :groupLeaderId LIMIT 1];
 
-      if(groups.isEmpty()){
-        ERGroup = new Event_Registration_Group__c(Name = groupName, Contact__c = groupLeaderId);
-        insert ERGroup;
-      } else {
-        ERGroup = groups[0];
-      }
+        if (groups.isEmpty()) {
+            ERGroup = new Event_Registration_Group__c(Name = groupName, Contact__c = groupLeaderId);
+            insert ERGroup;
+        } else {
+            ERGroup = groups[0];
+        }
 
-      Event_Registration_Sub_Group__c subGroup = new Event_Registration_Sub_Group__c(Event_Registration_Group__c = ERGroup.Id);
-      insert subGroup;
-      return subGroup.Id;
+        Event_Registration_Sub_Group__c subGroup = new Event_Registration_Sub_Group__c(Event_Registration_Group__c = ERGroup.Id);
+        insert subGroup;
+        return subGroup.Id;
     }
 
     @AuraEnabled
     public static List<Session__c> getExtraSessions(String eventId) {
         return [
-                SELECT Id, Session_Start__c, Session_End__c, Registrations__c, Max_Participants__c,
-                (
+                SELECT Id, Session_Start__c, Session_End__c, Registrations__c, Max_Participants__c, (
                         SELECT Id, Price__c, Early_bird_price__c, Event_custom__c, Ticket__c, Ticket__r.Name,
                                 Ticket__r.Available_for_Memberships__c, Ticket__r.Available_for_Countries__c,
                                 Session__r.Name, Session__r.Description__c, Session__r.Mutual_Exclusion__c,
@@ -150,31 +147,42 @@ public without sharing class EventRegistrationController {
         ];
     }
 
-    public static List<Session_Participation__c> insertSessionParticipants(List<Object> selectedSessions, String participantId) {
-        Set<String> eventTicketIds = new Set<String>();
+    public static Map<String, Decimal> insertSessionParticipants(List<Object> selectedSessions, String participantId) {
+        Map<String, Decimal> sessionParticipantPriceMap = new Map<String, Decimal>();
+        Map<String, Decimal> selectedSessionsMap = new Map<String, Decimal>();
 
         for (Integer i = 0; i < selectedSessions.size(); i++) {
             Map<Object, Object> obj = (Map<Object, Object>) selectedSessions[i];
-            eventTicketIds.add((String)obj.get('id'));
+            selectedSessionsMap.put((String) obj.get('id'), (Decimal) obj.get('price'));
         }
 
-        List<Event_Ticket__c> extraSessions = [SELECT Id, Session__c, Session__r.Event_custom__c FROM Event_Ticket__c WHERE Id IN :eventTicketIds];
+        List<Event_Ticket__c> extraSessions = [SELECT Id, Session__c, Session__r.Event_custom__c FROM Event_Ticket__c WHERE Id IN :selectedSessionsMap.keySet()];
         List<Session_Participation__c> sessionParticipants = new List<Session_Participation__c>();
 
         Map<String, Object> contactInfo = getContactInfo();
         Contact contact = (Contact) contactInfo.get('contact');
 
         for (Event_Ticket__c et : extraSessions) {
-            sessionParticipants.add(new Session_Participation__c(
+            Session_Participation__c sessionParticipation = new Session_Participation__c(
                     Session__c = et.Session__c, Contact__c = contact.Id, Event__c = et.Session__r.Event_custom__c,
-                    Event_Participation__c = participantId, Event_Ticket__c = et.Id));
+                    Event_Participation__c = participantId, Event_Ticket__c = et.Id);
+
+            sessionParticipants.add(sessionParticipation);
         }
 
         insert sessionParticipants;
-        return sessionParticipants;
+
+        for (Session_Participation__c sp : sessionParticipants) {
+            sessionParticipantPriceMap.put(sp.Id, selectedSessionsMap.get(sp.Event_Ticket__c));
+        }
+
+        return sessionParticipantPriceMap;
     }
 
-
+    @AuraEnabled
+    public static List<Map<String, String>> getPicklistValues(String objectName, String fieldName){
+        return Utils.picklistValues(objectName, fieldName);
+    }
 
 //    @AuraEnabled
 //    public static List<Event_Ticket__c> getSessionsTickets(String eventId) {

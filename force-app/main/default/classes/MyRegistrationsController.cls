@@ -34,11 +34,6 @@ public without sharing class MyRegistrationsController {
 
 			//	FIRST PRIORITY	//	becomes from QuickAction	if our manager click 'New Change Request' button on 'Contact' record
 			String contactRecordId = params.containsKey('contactRecordId') ? String.valueOf(params.get('contactRecordId')) : '';
-			system.debug('getMyRegistrations settings = ' + JSON.serialize(settings));
-
-
-			system.debug('contactRecordId= ' + contactRecordId);
-			system.debug('paramsString= ' + paramsString);
 
 			//	SECOND PRIORITY
 			String userId = '' + UserInfo.getUserId();	//	eanStaffUserId OR communityUserId
@@ -47,12 +42,7 @@ public without sharing class MyRegistrationsController {
 				: [SELECT Id, ContactId, Contact.AccountId FROM User WHERE Id =:userId LIMIT 1];
 			Id communityContactId = communityUser[0].ContactId;	//	Id accountId = communityUser[0].Contact.AccountId;
 
-			system.debug('getMyRegistrations communityUser= ' + JSON.serialize(communityUser));
-			system.debug('getMyRegistrations communityContactId= ' + communityContactId);
-
 			List<Participant__c> allMyParticipations = queryParticipants(communityContactId, selectedCRType);
-
-			system.debug('getMyRegistrations allMyParticipations= ' + JSON.serialize(allMyParticipations));
 
 			//	SOLO
 			Map<String, EventRegistrationWrap> registrationsMapSolo = new Map<String, EventRegistrationWrap>();		// participantId TO Details
@@ -336,9 +326,6 @@ public without sharing class MyRegistrationsController {
 			LIMIT 1000
 		];
 
-		system.debug('111 GGGG allMyParticipationsMap= ' + JSON.serialize(allMyParticipationsMap));
-		system.debug('111 GGGG allMyParticipationsMap.size()= ' + allMyParticipationsMap.size());
-
 		if (changeRequestType == CR_TYPE_SOLO_CANCELLATION || changeRequestType == CR_TYPE_SOLO_TRANSFER) {
 			for (Change_Request__c changeRequest : changeRequestList) {
 				if (changeRequest.Event_Participation__c != null && allMyParticipationsMap.containsKey('' + changeRequest.Event_Participation__c))
@@ -375,9 +362,6 @@ public without sharing class MyRegistrationsController {
 
 		//	Logic for CR_TYPE_GROUP_TRANSFER will be in 'groupDetailsComponent' LWC
 
-		system.debug('222 GGGG allMyParticipationsMap= ' + JSON.serialize(allMyParticipationsMap));
-		system.debug('222 GGGG allMyParticipationsMap.size()= ' + allMyParticipationsMap.size());
-
 		return (List<Participant__c>) allMyParticipationsMap.values();
 	}
 
@@ -393,8 +377,6 @@ public without sharing class MyRegistrationsController {
 			//	FIRST PRIORITY	//	becomes from QuickAction	EAN Staff q-action on 'Contact' record
 			String contactRecordId = params.containsKey('contactRecordId') ? String.valueOf(params.get('contactRecordId')) : '';
 			system.debug('getGroupDetails settings = ' + JSON.serialize(settings));
-			system.debug('contactRecordId= ' + contactRecordId);
-			system.debug('paramsString= ' + paramsString);
 
 			//	SECOND PRIORITY
 			String userId = '' + UserInfo.getUserId();	//	eanStaffUserId OR communityUserId
@@ -420,10 +402,11 @@ public without sharing class MyRegistrationsController {
 		} catch (Exception e) { 
 			system.debug('!!! ERROR !!! : ' + e.getMessage());
 			system.debug('!!! ERROR !!! : ' + e.getStackTraceString());
-			return new Map<String, Object>{'result' => false, 'message' => e.getStackTraceString()};
+			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString()};
 		}
 	}
 
+	//	USED ON REGISTRATION FLOW
 	public static Map<String, Object> generateEmptyGroup(Integer maxParticipants) {
 		// for community builder
 		maxParticipants = maxParticipants == null ? 10 : maxParticipants;
@@ -458,7 +441,7 @@ public without sharing class MyRegistrationsController {
 			subGroupParticipant.newContactEmail = '';
 			subGroupParticipant.uniquekey1 = uniqueKey1;
 			subGroupParticipant.uniquekey2 = '' + index;
-			subGroupParticipant.disabledToEdit = false;
+			// subGroupParticipant.disabledToEdit = false;	//	OLD
 			subGroupParticipantList.add(subGroupParticipant);
 		}
 		List<SubGroupDetailsWrap> subGroupList = new List<SubGroupDetailsWrap>();
@@ -472,7 +455,8 @@ public without sharing class MyRegistrationsController {
 		// newSubGroup.createdDateString = '';
 		// newSubGroup.createdTimeString = '';
 
-		newSubGroup.accordionIndex = 0;		// TEST CUSTOM ACCORDIONS
+		newSubGroup.accordionIndex = 0;		// CUSTOM ACCORDIONS
+		newSubGroup.disabledToEdit = false;
 		subGroupList.add(newSubGroup);
 
 		return new Map<String, Object>{
@@ -486,133 +470,76 @@ public without sharing class MyRegistrationsController {
 			'displayButton1' => true,
 			'displayButton2' => false,
 			'button1Label' => 'Submit',
-			'button2Label' => 'Cancel'
+			'button2Label' => 'Cancel',
+			'disabledEmails' => new List<String>(),
+			'isChangeRequestMode' => false
 		};
 	}
 
+
+	public static String transferGroupId = '';
+	public static List<Participant__c> groupParticipations = new List<Participant__c>();
+
+	public static Integer totalGroupExistingParticipants = 0;
+	public static Integer totalGroupMaxParticipants = 0;
+	public static Set<String> disabledEmails = new Set<String>();	// do not allow dublicate emails
+	public static Set<String> groupParticipantIds = new Set<String>();
+	public static List<String> orderedSubGroupIds = new List<String>();
+	public static Map<String, SubGroupDetailsWrap> subGroupIdToDetailsWrap = new Map<String, SubGroupDetailsWrap>();
+	public static Map<String, Change_Request__c> participantIdToChangeRequest = new Map<String, Change_Request__c>();
+
+	public static List<SubGroupDetailsWrap> subGroupList = new List<SubGroupDetailsWrap>();
+
+	public static Boolean disableTransfersInGroup = false;
+
+	// public static Set<String> disabledEmails = new Set<String>();	// do not allow dublicate emails
+
 	public static Map<String, Object> getExistingGroupDetails(String communityContactId, String groupId, String selectedCRType) {
+
+			//	DEVELOP MOMENT		//	TEST BUTTONS POSITION
+			// selectedCRType = '';
 
 		List<String> logList = new List<String>();	// DELETE
 
-		system.debug('getExistingGroupDetails communityContactId= ' + communityContactId);
-		system.debug('getExistingGroupDetails groupId= ' + groupId);
 		if (String.isBlank(communityContactId) || String.isBlank(groupId)) {
 			return new Map<String, Object>{'result' => false, 'message' => 'ContactId or Group not found.'};
 		}
+		transferGroupId = groupId;
 
-			Id g2mRT = Schema.SObjectType.Participant__c.getRecordTypeInfosByDeveloperName().get('G2M').getRecordTypeId();
-			List<Participant__c> groupParticipations = [
-				SELECT Id, Name, Contact__c, Contact__r.Name, Contact__r.Email,
-					Event_custom__c, Event_custom__r.Name, Event_custom__r.End_Time__c, Event_custom__r.Start_Time__c,
-					Event_Registration_Sub_Group__c,
-					Event_Registration_Sub_Group__r.CreatedDate,
-					Event_Registration_Sub_Group__r.Event_Registration_Group__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name,
-					Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__r.Name
-					// (SELECT Id FROM Order_Items__r LIMIT 1)	// to lock record if we have order item for participant (OLD LOGIC)
-				FROM Participant__c
-				WHERE Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c =:communityContactId
-				AND RecordTypeId !=:g2mRT
-				AND Event_Registration_Sub_Group__r.Event_Registration_Group__c =:groupId
-				AND Contact__c != null
-				AND Event_custom__c != null
-				ORDER BY Event_Registration_Sub_Group__r.CreatedDate, LastModifiedDate
-			];
-
-		system.debug('groupParticipations= ' + JSON.serialize(groupParticipations));
-		system.debug('111 SIZE= ' + groupParticipations.size());
-
-		// delete
-				logList.add(
-					' 1 LOG= ' + JSON.serialize(groupParticipations) +
-					' 2 LOG= ' + groupParticipations.size() +
-					' 3 LOG= ' + communityContactId +
-					' 4 LOG= ' + groupId
-				);
-
-
+		//	METHOD 1
+		//	SOQL
+		getGroupParticipations(communityContactId);
 		if (groupParticipations.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => 'Group configuration is not correct.'};
 
-		Integer totalGroupExistingParticipants = 0;
-		Integer totalGroupMaxParticipants = 0;
+		//	METHOD 2	user only at Change Requests
+		//	result:
+		//		disableTransfersInGroup
+		//		participantIdToChangeRequest
+		filterByCreatedChangeRequests(selectedCRType);
 
-		
-		Set<String> disabledEmails = new Set<String>();	// do not allow dublicate emails
-		Set<String> participantIds = new Set<String>();
-		List<String> subGroupIds = new List<String>();
+		//	METHOD 3
+		//	result:
+		//		totalGroupExistingParticipants
+		//		totalGroupMaxParticipants
+		//		disabledEmails
+		//		orderedSubGroupIds
+		//		subGroupIdToDetailsWrap
+		collectInfoFromGroupParticipants();
 
-		Map<String, SubGroupDetailsWrap> subGroupIdToDetailsWrap = new Map<String, SubGroupDetailsWrap>();
-		for (Participant__c participant : groupParticipations) {
-			SubGroupParticipantWrap subGroupParticipant = new SubGroupParticipantWrap();
-			subGroupParticipant.participantId = '' + participant.Id;
-			subGroupParticipant.oldContactId = '' + participant.Contact__c;
-			subGroupParticipant.oldContactName = participant.Contact__r.Name == SYSTEM_GROUP_CONTACT_NAME ? '' : participant.Contact__r.Name;
-			subGroupParticipant.oldContactEmail = '' + participant.Contact__r.Name == SYSTEM_GROUP_CONTACT_NAME ? '' : participant.Contact__r.Email;
-			subGroupParticipant.newContactId = '' + subGroupParticipant.participantId;
-			subGroupParticipant.newContactName = '' + subGroupParticipant.oldContactName;
-			subGroupParticipant.newContactEmail = '' + subGroupParticipant.oldContactEmail;
-			// subGroupParticipant.disabledToEdit = !(participant.Order_Items__r).isEmpty();
-
-			SubGroupDetailsWrap subGroupDetails = subGroupIdToDetailsWrap.containsKey('' + participant.Event_Registration_Sub_Group__c)
-				? subGroupIdToDetailsWrap.get('' + participant.Event_Registration_Sub_Group__c) : new SubGroupDetailsWrap();
-			subGroupDetails.subGroupId = '' + participant.Event_Registration_Sub_Group__c;
-
-			subGroupDetails.subGroupExistingParticipants = subGroupDetails.subGroupExistingParticipants == null ? 0 : subGroupDetails.subGroupExistingParticipants;
-			subGroupDetails.subGroupExistingParticipants += participant.Contact__r.Name == SYSTEM_GROUP_CONTACT_NAME ? 0 : 1;
-			totalGroupExistingParticipants += participant.Contact__r.Name == SYSTEM_GROUP_CONTACT_NAME ? 0 : 1;
-
-			subGroupDetails.subGroupMaxParticipants = subGroupDetails.subGroupMaxParticipants == null ? 1 : subGroupDetails.subGroupMaxParticipants + 1;
-			totalGroupMaxParticipants++;
-
-			subGroupDetails.createdDateString = (participant.Event_Registration_Sub_Group__r.CreatedDate).format('dd.MM.yyyy');
-			subGroupDetails.createdTimeString = (participant.Event_Registration_Sub_Group__r.CreatedDate).format('HH:mm');
-
-			// collect data for transfer requestes and do not allow enter duplicate email
-			disabledEmails.add(subGroupParticipant.oldContactEmail);
-			participantIds.add(subGroupParticipant.participantId);
-
-			List<SubGroupParticipantWrap> subGroupParticipantList = subGroupDetails.subGroupParticipantList == null ? new List<SubGroupParticipantWrap>() : subGroupDetails.subGroupParticipantList;
-
-			subGroupParticipant.uniquekey1 = subGroupDetails.subGroupId;
-			subGroupParticipant.uniquekey2 = '' + subGroupParticipantList.size();	// index of participant in list
-
-			subGroupParticipantList.add(subGroupParticipant);
-			subGroupDetails.subGroupParticipantList = subGroupParticipantList;
-			
-			subGroupIdToDetailsWrap.put('' + participant.Event_Registration_Sub_Group__c, subGroupDetails);
-			if (!subGroupIds.contains('' + participant.Event_Registration_Sub_Group__c)) subGroupIds.add('' + participant.Event_Registration_Sub_Group__c);
-		}
-
-
+		//	METHOD 4
 		//	disable edit participants if 'subgroup' is locked OR 'subgroup order status' == 'Open'
-		List<Order__c> orders = !subGroupIds.isEmpty() ? 
-			[SELECT Id, Status__c, Event_Registration_Sub_Group__c, Event_Registration_Sub_Group__r.Is_Locked__c FROM Order__c WHERE Event_Registration_Sub_Group__c IN :subGroupIds]
-			: new List<Order__c>();
-		for (Order__c order : orders) {
-			if (!subGroupIdToDetailsWrap.containsKey('' + order.Event_Registration_Sub_Group__c)) continue;
+		//	logic for 'Group Registration Transfer':	remove not locked subgroups 
+		lockSubgroups(selectedCRType);
 
-			Boolean disabledToEdit = !(order.Status__c == 'Paid' && !order.Event_Registration_Sub_Group__r.Is_Locked__c);
-			SubGroupDetailsWrap subGroupDetails = subGroupIdToDetailsWrap.get('' + order.Event_Registration_Sub_Group__c);
-			for (SubGroupParticipantWrap subGroupParticipant : subGroupDetails.subGroupParticipantList) {
-				subGroupParticipant.disabledToEdit = disabledToEdit;
-			}
-			subGroupIdToDetailsWrap.put('' + order.Event_Registration_Sub_Group__c, subGroupDetails);
-		}
-
-
+		//	METHOD 5
+		//	create 'subGroupList' order by 'orderedSubGroupIds'
 		//	define titles on Accordions
-		List<SubGroupDetailsWrap> subGroupList = new List<SubGroupDetailsWrap>();
-		Integer index = 0;
-		for (String subGroupId : subGroupIds) {
-			SubGroupDetailsWrap subGroupDetails = subGroupIdToDetailsWrap.get(subGroupId);
-			subGroupDetails.accordionTitle = 'Created: ' + subGroupDetails.createdDateString + ' ' + subGroupDetails.createdTimeString +
-			' (Selected ' + subGroupDetails.subGroupExistingParticipants + ' of ' + subGroupDetails.subGroupMaxParticipants + ' Participants)';
+		//	allow 'Submit Button' if sub-group is not locked and all participants are added
+		genereteAccordionsAndSubmitButton();
 
-			subGroupDetails.accordionIsExpanded = true;
-			subGroupDetails.accordionIndex = index;			// TEST CUSTOM ACCORDIONS
-			subGroupList.add(subGroupDetails);
-			index++;
-			// subGroupList.add(subGroupIdToDetailsWrap.get(subGroupId));
-		}
+
+
+
 
 		//	define the main details of Group (to display at the community page)
 		GroupDetailsWrap groupDetails = new GroupDetailsWrap();
@@ -636,7 +563,7 @@ public without sharing class MyRegistrationsController {
 			'groupDetails' => groupDetails,
 			'subGroupList' => subGroupList,
 
-			'disabledEmails' => new List<String>(disabledEmails),	// TBD
+			'disabledEmails' => disabledEmails,	// TBD
 
 			'logList' => logList,				// delete
 			'displayGroupDetails' => String.isBlank(selectedCRType),
@@ -645,10 +572,196 @@ public without sharing class MyRegistrationsController {
 			'displayButton1' => String.isBlank(selectedCRType),
 			'displayButton2' => String.isBlank(selectedCRType),
 			'button1Label' => 'Submit',
-			'button2Label' => 'Cancel'
+			'button2Label' => 'Cancel',
+			'isChangeRequestMode' => !String.isBlank(selectedCRType)
 		};
 	}
 
+	public static void getGroupParticipations(String communityContactId) {
+		Id g2mRT = Schema.SObjectType.Participant__c.getRecordTypeInfosByDeveloperName().get('G2M').getRecordTypeId();
+		groupParticipations = [
+			SELECT Id, Name, Participant_Email__c, Contact__c, Contact__r.Name, Contact__r.Email,
+				Event_custom__c, Event_custom__r.Name, Event_custom__r.End_Time__c, Event_custom__r.Start_Time__c,
+				Event_Registration_Sub_Group__c,
+				Event_Registration_Sub_Group__r.CreatedDate,
+				Event_Registration_Sub_Group__r.Event_Registration_Group__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name,
+				Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__r.Name
+				// (SELECT Id FROM Order_Items__r LIMIT 1)	// to lock record if we have order item for participant (OLD LOGIC)
+			FROM Participant__c
+			WHERE Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c =:communityContactId
+			AND RecordTypeId !=:g2mRT
+			AND Event_Registration_Sub_Group__r.Event_Registration_Group__c =:transferGroupId
+			AND Contact__c != null
+			AND Event_custom__c != null
+			ORDER BY Event_Registration_Sub_Group__r.CreatedDate, LastModifiedDate
+		];
+	}
+
+	//	result:
+	//	disableTransfersInGroup
+	//	participantIdToChangeRequest
+	public static void filterByCreatedChangeRequests(String selectedCRType) {
+		if (String.isBlank(selectedCRType)) return;
+		List<Change_Request__c> changeRequestList = [
+			SELECT Id, Name, Contact__c, Description__c, Event_Participation__c, Type__c,
+				TransferFromContact__c, TransferFromContact__r.Name, TransferFromEmail__c,
+				TransferToContact__c, TransferToContact__r.Name, TransferToEmail__c
+			FROM Change_Request__c
+			WHERE (Event_Participation__c IN :groupParticipantIds OR Event_Registration_Group__c =:transferGroupId)
+			AND Status__c !='Done'
+			AND Status__c !='Revoked'
+			AND Status__c !='Rejected'
+			AND Status__c != null
+		];
+
+		for (Change_Request__c changeRequest : changeRequestList) {
+			if (changeRequest.Type__c == CR_TYPE_GROUP_CANCELLATION) {
+				disableTransfersInGroup = true;
+				break;
+			}
+			if (changeRequest.Event_Participation__c == null) continue;
+			participantIdToChangeRequest.put('' + changeRequest.Event_Participation__c, changeRequest);
+		}
+	}
+
+	//	result:
+	//		totalGroupExistingParticipants
+	//		totalGroupMaxParticipants
+	//		disabledEmails
+	//		orderedSubGroupIds
+	//		groupParticipantIds
+	//		subGroupIdToDetailsWrap
+	public static void collectInfoFromGroupParticipants() {
+		for (Participant__c participant : groupParticipations) {
+			SubGroupParticipantWrap subGroupParticipant = new SubGroupParticipantWrap();
+			subGroupParticipant.participantId = '' + participant.Id;
+			subGroupParticipant.oldContactId = '' + participant.Contact__c;
+			subGroupParticipant.oldContactName = participant.Contact__r.Name == SYSTEM_GROUP_CONTACT_NAME ? '' : participant.Contact__r.Name;
+
+
+			subGroupParticipant.oldContactEmail = participant.Contact__r.Name != SYSTEM_GROUP_CONTACT_NAME ? participant.Contact__r.Email
+				: !String.isBlank(participant.Participant_Email__c) ? participant.Participant_Email__c : '';
+			//	OLD
+			// subGroupParticipant.oldContactEmail = '' + participant.Contact__r.Name == SYSTEM_GROUP_CONTACT_NAME ? '' : participant.Contact__r.Email;
+
+			subGroupParticipant.newContactId = '' + subGroupParticipant.participantId;
+			subGroupParticipant.newContactName = '' + subGroupParticipant.oldContactName;
+			subGroupParticipant.newContactEmail = '' + subGroupParticipant.oldContactEmail;
+			// subGroupParticipant.disabledToEdit = !(participant.Order_Items__r).isEmpty();
+
+			SubGroupDetailsWrap subGroupDetails = subGroupIdToDetailsWrap.containsKey('' + participant.Event_Registration_Sub_Group__c)
+				? subGroupIdToDetailsWrap.get('' + participant.Event_Registration_Sub_Group__c) : new SubGroupDetailsWrap();
+			subGroupDetails.subGroupId = '' + participant.Event_Registration_Sub_Group__c;
+
+			subGroupDetails.subGroupExistingParticipants = subGroupDetails.subGroupExistingParticipants == null ? 0 : subGroupDetails.subGroupExistingParticipants;
+			subGroupDetails.subGroupExistingParticipants += participant.Contact__r.Name == SYSTEM_GROUP_CONTACT_NAME ? 0 : 1;
+			totalGroupExistingParticipants += participant.Contact__r.Name == SYSTEM_GROUP_CONTACT_NAME ? 0 : 1;
+
+			subGroupDetails.subGroupMaxParticipants = subGroupDetails.subGroupMaxParticipants == null ? 1 : subGroupDetails.subGroupMaxParticipants + 1;
+			totalGroupMaxParticipants++;
+
+			subGroupDetails.createdDateString = (participant.Event_Registration_Sub_Group__r.CreatedDate).format('dd.MM.yyyy');
+			subGroupDetails.createdTimeString = (participant.Event_Registration_Sub_Group__r.CreatedDate).format('HH:mm');
+
+			// collect data for transfer requestes and do not allow enter duplicate email
+			disabledEmails.add(subGroupParticipant.oldContactEmail);
+			groupParticipantIds.add(subGroupParticipant.participantId);
+
+			List<SubGroupParticipantWrap> subGroupParticipantList = subGroupDetails.subGroupParticipantList == null ? new List<SubGroupParticipantWrap>() : subGroupDetails.subGroupParticipantList;
+
+			subGroupParticipant.uniquekey1 = subGroupDetails.subGroupId;
+			subGroupParticipant.uniquekey2 = '' + subGroupParticipantList.size();	// index of participant in list
+
+			Boolean isOldTransferExist = participantIdToChangeRequest.containsKey(subGroupParticipant.participantId);
+			subGroupParticipant.isOldTransferExist = isOldTransferExist;
+			subGroupParticipant.isNewTransferExist = false;
+			if (isOldTransferExist) {
+				Change_Request__c existingCR = participantIdToChangeRequest.get(subGroupParticipant.participantId);
+
+				if (!String.isBlank(existingCR.TransferToEmail__c)) disabledEmails.add(existingCR.TransferToEmail__c);
+
+				TransferDetailsWrap oldTransferDetails = new TransferDetailsWrap();
+				oldTransferDetails.crId = '' + existingCR.Id;
+				oldTransferDetails.crName = existingCR.Name;
+				oldTransferDetails.crDescription = existingCR.Description__c;
+				oldTransferDetails.crContactId = existingCR.TransferToContact__c;
+
+				oldTransferDetails.crContactEmail = existingCR.TransferToContact__c != null && existingCR.TransferToContact__r.Name != SYSTEM_GROUP_CONTACT_NAME
+					? existingCR.TransferToEmail__c : '';
+
+				oldTransferDetails.crContactName = existingCR.TransferToContact__c != null && existingCR.TransferToContact__r.Name != SYSTEM_GROUP_CONTACT_NAME
+					? existingCR.Name : '';
+
+				subGroupParticipant.oldTransferDetails = oldTransferDetails;
+			}
+
+
+			subGroupParticipantList.add(subGroupParticipant);
+			subGroupDetails.subGroupParticipantList = subGroupParticipantList;
+			
+			subGroupIdToDetailsWrap.put('' + participant.Event_Registration_Sub_Group__c, subGroupDetails);
+			if (!orderedSubGroupIds.contains('' + participant.Event_Registration_Sub_Group__c)) orderedSubGroupIds.add('' + participant.Event_Registration_Sub_Group__c);
+		}
+	}
+
+		//		disableTransfersInGroup
+		//		participantIdToChangeRequest
+		
+
+	public static void lockSubgroups(String selectedCRType) {
+		//	disable edit participants if 'subgroup' is locked OR 'subgroup order status' == 'Open'
+		List<Order__c> orders = !orderedSubGroupIds.isEmpty() ? 
+			[SELECT Id, Status__c, Event_Registration_Sub_Group__c, Event_Registration_Sub_Group__r.Is_Locked__c FROM Order__c WHERE Event_Registration_Sub_Group__c IN :orderedSubGroupIds]
+			: new List<Order__c>();
+		for (Order__c order : orders) {
+			if (!subGroupIdToDetailsWrap.containsKey('' + order.Event_Registration_Sub_Group__c)) continue;
+
+			//	disableTransfersInGroup	IS USED ONLY at 'Group Transfer Request'
+			Boolean disabledToEdit = (!(order.Status__c == 'Paid' && !order.Event_Registration_Sub_Group__r.Is_Locked__c) || disableTransfersInGroup);
+			subGroupIdToDetailsWrap.get('' + order.Event_Registration_Sub_Group__c).disabledToEdit = disabledToEdit;
+
+			//	logic for 'Group Registration Transfer':	remove not locked subgroups 
+			if (selectedCRType == CR_TYPE_GROUP_TRANSFER && !disabledToEdit) {
+				subGroupIdToDetailsWrap.remove('' + order.Event_Registration_Sub_Group__c);
+
+				Integer subGroupIndex = orderedSubGroupIds.indexOf('' + order.Event_Registration_Sub_Group__c);
+				if (subGroupIndex > -1) orderedSubGroupIds.remove(subGroupIndex);
+			}
+		}
+	}
+
+	//	create 'subGroupList' order by 'orderedSubGroupIds'
+	//	define titles on Accordions
+	//	collect 'disabledEmails'	// REMOVERD
+	public static void genereteAccordionsAndSubmitButton() {
+		Integer index = 0;
+		for (String subGroupId : orderedSubGroupIds) {
+			SubGroupDetailsWrap subGroupDetails = subGroupIdToDetailsWrap.get(subGroupId);
+
+			//	define titles on Accordions
+			subGroupDetails.accordionTitle = 'Created: ' + subGroupDetails.createdDateString + ' ' + subGroupDetails.createdTimeString +
+			(subGroupDetails.disabledToEdit ? ' (Locked)' : '');
+
+			//	logic for show button Submit to Lock Subgroup
+			//	if we have 'Undefined Participant' with empty Email in subgroup => then subgroup can't be locked
+			Boolean enableSubmitButton = !subGroupDetails.disabledToEdit;
+			for (SubGroupParticipantWrap subGroupParticipant : subGroupDetails.subGroupParticipantList) {
+				if (String.isBlank(subGroupParticipant.oldContactEmail)) {
+					enableSubmitButton = false;
+					break;
+				}
+			}
+			enableSubmitButton = !(!enableSubmitButton || subGroupDetails.disabledToEdit);
+			subGroupDetails.enableSubmitButton = enableSubmitButton;
+
+			subGroupDetails.accordionIsExpanded = true;
+			subGroupDetails.accordionIndex = index;			//	CUSTOM ACCORDIONS
+			subGroupList.add(subGroupDetails);
+			index++;
+		}
+	}
+
+	//	USED AT REGISTRATION FLOW
 	//	CLICK SUBMIT
 	@AuraEnabled
 	public static Map<String, Object> clickButton1Apex(Map<String, Object> params) {
@@ -692,6 +805,8 @@ public without sharing class MyRegistrationsController {
 	}
 
 
+
+
 	//	Group
 	public class GroupDetailsWrap {
 		@AuraEnabled public String groupId { get; set; }
@@ -721,7 +836,8 @@ public without sharing class MyRegistrationsController {
 
 		@AuraEnabled public String accordionTitle { get; set; }
 		@AuraEnabled public Boolean accordionIsExpanded { get; set; }
-		@AuraEnabled public Integer accordionIndex { get; set; }		// TEST CUSTOM ACCORDIONS
+		@AuraEnabled public Integer accordionIndex { get; set; }		// CUSTOM ACCORDIONS
+		@AuraEnabled public Boolean enableSubmitButton { get; set; }
 	}
 
 	//	Sub Group Participant
@@ -736,6 +852,20 @@ public without sharing class MyRegistrationsController {
 		@AuraEnabled public String uniquekey1 { get; set; }				//	subGroupId
 		@AuraEnabled public String uniquekey2 { get; set; }				//	index in list (0...)
 
-		@AuraEnabled public Boolean disabledToEdit { get; set; }		// MOVE UPPER !!!
+		// @AuraEnabled public Boolean disabledToEdit { get; set; }		// MOVE UPPER !!! ???
+
+		@AuraEnabled public Boolean isOldTransferExist { get; set; }	// Unable to Create A New Transfer (Transfer Already Exist)
+		@AuraEnabled public TransferDetailsWrap oldTransferDetails { get; set; }
+		@AuraEnabled public Boolean isNewTransferExist { get; set; }
+		@AuraEnabled public TransferDetailsWrap newTransferDetails { get; set; }
+	}
+
+	public class TransferDetailsWrap {
+		@AuraEnabled public String crId { get; set; }
+		@AuraEnabled public String crName { get; set; }
+		@AuraEnabled public String crDescription { get; set; }
+		@AuraEnabled public String crContactId { get; set; }
+		@AuraEnabled public String crContactEmail { get; set; }
+		@AuraEnabled public String crContactName { get; set; }
 	}
 }

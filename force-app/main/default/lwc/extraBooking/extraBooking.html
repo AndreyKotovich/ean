@@ -2,14 +2,13 @@
 <template>
     <div class="slds-card__body">
         <lightning-layout multiple-rows="true">
-            <lightning-layout-item
-                    padding="around-small"
-                    size="12"
-                    large-device-size="12"
-                    medium-device-size="12"
-                    small-device-size="12"
-                    flexibility="auto"
-            >
+            <lightning-layout-item if:true={showSessions}
+                                   padding="around-small"
+                                   size="12"
+                                   large-device-size="12"
+                                   medium-device-size="12"
+                                   small-device-size="12"
+                                   flexibility="auto">
                 <lightning-card>
                     <div slot="title">Additional Sessions</div>
                     <div class="slds-p-left_x-large slds-p-right_x-large slds-p-top_x-large">
@@ -70,20 +69,22 @@
             >
                 <lightning-card>
                     <div slot="title">Additional Services</div>
-                    <div class="slds-p-left_x-large slds-p-right_x-large slds-p-top_x-large">
+                    <div class="slds-p-left_x-large slds-p-right_x-large">
 
                         <lightning-layout multiple-rows="true" vertical-align="center">
-                            <lightning-layout-item
-                                    padding="around-small"
-                                    size="12"
-                                    large-device-size="12"
-                                    medium-device-size="12"
-                                    small-device-size="12"
-                                    flexibility="auto"
+                            <lightning-layout-item if:false={isGroupRegistration}
+                                                   padding="around-small"
+                                                   size="12"
+                                                   large-device-size="12"
+                                                   medium-device-size="12"
+                                                   small-device-size="12"
+                                                   flexibility="auto"
                             >
-                                <div if:false={isGroupRegistration} class="slds-m-top_x-small slds-m-bottom_x-small">
+                                <div class="slds-m-top_x-small slds-m-bottom_x-small">
                                     <c-ean-journals class="slds-text-align_left"
-                                                    onselect={handleJournalSelect}></c-ean-journals>
+                                                    onselect={handleJournalSelect}
+                                                    auto-populate={selectedJournals}
+                                    ></c-ean-journals>
                                 </div>
 
                             </lightning-layout-item>

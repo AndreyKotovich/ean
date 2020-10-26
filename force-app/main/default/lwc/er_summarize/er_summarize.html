@@ -1,46 +1,112 @@
 <!-- Er Summarize -->
 <template>
-  <lightning-layout horizontal-align="center">
-    <lightning-layout-item
-      padding="around-small"
-      size="12"
-      large-device-size="4"
-      medium-device-size="6"
-      small-device-size="12"
-      flexibility="auto"
-    >
-      <div class="slds-card__body slds-p-around_medium">
-        <slot> Summary </slot>
-      </div>
-    </lightning-layout-item>
-  </lightning-layout>
+    <lightning-layout horizontal-align="center">
+        <lightning-layout-item
+                padding="around-small"
+                size="12"
+                large-device-size="12"
+                medium-device-size="12"
+                small-device-size="12"
+                flexibility="auto"
+        >
+            <div class="slds-card__body slds-p-around_medium">
+                <slot> Summary screen. In development...</slot>
 
-  <div class="slds-card__footer slds-grid slds-align--absolute-center">
-    <div if:false={hidePreviousButton}>
-      <lightning-button
-        class="slds-col slds-m-around_x-small"
-        label="Previous"
-        variant="neutral"
-        onclick={handlePreviousClick}
-      ></lightning-button>
-    </div>
-    <div if:false={hideNextButton}>
-      <lightning-button
-        class="slds-col slds-m-around_x-small"
-        label={nextButtonLabel}
-        variant="brand"
-        onclick={handleNextClick}
-      ></lightning-button>
-    </div>
-  </div>
+                <lightning-card if:true={hasTickets}>
+                    <h3 slot="title">
+                        <lightning-icon icon-name="custom:custom45" size="small"></lightning-icon>
+                        <span class="slds-m-left_small">Ticket(s)</span>
+                    </h3>
 
-  <template if:true={isSpinner}>
-    <div class="slds-spinner_container" style="position: fixed">
-      <lightning-spinner
-        alternative-text="Loading"
-        variant="brand"
-        size="large"
-      ></lightning-spinner>
+                    <table class="slds-table slds-table_cell-buffer">
+                        <tbody>
+                        <tr class="slds-hint-parent" for:each={data} for:item="dataItem" key={key}>
+                            <td style="width: 30%">
+                                <div class="slds-truncate">{dataItem.name}</div>
+                            </td>
+                            <td style="width: 30%">
+                                <div class="slds-truncate">{dataItem.quantity}</div>
+                            </td>
+                            <td style="width: 30%">
+                                <div class="slds-truncate">{dataItem.amount}</div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </lightning-card>
+                <lightning-card if:true={hasSessions}>
+                    <h3 slot="title">
+                        <lightning-icon icon-name="standard:education" size="small"></lightning-icon>
+                        <span class="slds-m-left_small">Additional Session(s)</span>
+                    </h3>
+
+                    <table class="slds-table slds-table_cell-buffer">
+                        <tbody>
+                        <tr class="slds-hint-parent" for:each={data} for:item="dataItem" key={key}>
+                            <td data-label="Account Name" style="width: 30%">
+                                <div class="slds-truncate" title="Cloudhub">{dataItem.name}</div>
+                            </td>
+                            <td data-label="Prospecting" style="width: 30%">
+                                <div class="slds-truncate" title="Prospecting">{dataItem.quantity}</div>
+                            </td>
+                            <td data-label="Amount" style="width: 30%">
+                                <div class="slds-truncate" title="$25k">{dataItem.amount}</div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </lightning-card>
+
+                <table class="slds-table slds-table_cell-buffer">
+                    <tbody>
+                    <tr class="slds-hint-parent">
+                        <td data-label="Account Name" style="width: 30%">
+                            <div class="slds-truncate" title="Cloudhub">Total Amount</div>
+                        </td>
+                        <td data-label="Prospecting" style="width: 30%">
+                            <div class="slds-truncate" title="Prospecting"></div>
+                        </td>
+                        <td data-label="Amount" style="width: 30%">
+                            <div class="slds-truncate" title="$25k">5000 €</div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <lightning-badge if:true={showBadgeRetrieval} label={_selections.selectedServices.badgeRetrieval}></lightning-badge>
+                <lightning-badge if:true={showVisaLetter} label="Visa-Letter"></lightning-badge>
+            </div>
+        </lightning-layout-item>
+    </lightning-layout>
+
+    <div class="slds-card__footer slds-grid slds-align--absolute-center">
+        <div if:false={hidePreviousButton}>
+            <lightning-button
+                    class="slds-col slds-m-around_x-small"
+                    label="Previous"
+                    variant="neutral"
+                    onclick={handlePreviousClick}
+            ></lightning-button>
+        </div>
+        <div if:false={hideNextButton}>
+            <lightning-button
+                    class="slds-col slds-m-around_x-small"
+                    label="Finish"
+                    variant="brand"
+                    onclick={handleNextClick}
+            ></lightning-button>
+        </div>
     </div>
-  </template>
+
+    <template if:true={isSpinner}>
+        <div class="slds-spinner_container" style="position: fixed">
+            <lightning-spinner
+                    alternative-text="Loading"
+                    variant="brand"
+                    size="large"
+            ></lightning-spinner>
+        </div>
+    </template>
 </template>

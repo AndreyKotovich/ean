@@ -22,4 +22,7 @@
     <tabs>Abstract__c</tabs>
     <tabs>Change_Request__c</tabs>
     <tabs>Session_Speaker__c</tabs>
+    <tabs>Email_activity__c</tabs>
+    <tabs>Speaker__c</tabs>
+    <tabs>Lecture__c</tabs>
 </CustomApplication>

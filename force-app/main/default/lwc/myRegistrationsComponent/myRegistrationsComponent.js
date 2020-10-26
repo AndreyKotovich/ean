@@ -65,7 +65,6 @@ export default class MyRegistrationsComponent extends NavigationMixin(LightningE
 	handleClickOnMyRegistration(event){
 		console.log('handleClickOnMyRegistration');
 		var participantId = event.currentTarget.dataset.id;
-		console.log('participantId: ', participantId);
 		if (this._selectedCRType == '') {
 			this.navigateToRecordPage(participantId);
 			return;
@@ -88,22 +87,16 @@ export default class MyRegistrationsComponent extends NavigationMixin(LightningE
 		
 		//	navigate to configure/update group registration
 		if (this._selectedCRType == '') {
-			console.log('CONSOLE 1');
 			this.navigateToGroupDetailsPage(registrationGroupId);
-			console.log('CONSOLE 2');
 			return;
 		}
 
 		if (this._selectedCRType == 'Group Registration Cancellation') {
-			console.log('CONSOLE 3');
 			this.dispatchEvent(new CustomEvent('submitgroupcancellation', { bubbles: true, detail: { selectedGroupId: registrationGroupId } }));
-			console.log('CONSOLE 4');
 		}
 
 		if (this._selectedCRType == 'Group Registration Transfer') {
-			console.log('CONSOLE 5');
 			this.dispatchEvent(new CustomEvent('submitgrouptransfer', { bubbles: true, detail: { selectedGroupId: registrationGroupId } }));
-			console.log('CONSOLE 6');
 		}
 
 	}

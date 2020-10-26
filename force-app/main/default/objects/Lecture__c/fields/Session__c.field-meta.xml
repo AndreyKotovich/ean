@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Session__c</fullName>
-    <deleteConstraint>SetNull</deleteConstraint>
     <externalId>false</externalId>
     <label>Session</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>You can only select sessions that are part of the selected event.</errorMessage>
+        <filterItems>
+            <field>Session__c.Event_custom__c</field>
+            <operation>equals</operation>
+            <valueField>$Source.Event_custom__c</valueField>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
     <referenceTo>Session__c</referenceTo>
     <relationshipLabel>Lectures</relationshipLabel>
     <relationshipName>Lectures</relationshipName>
-    <required>false</required>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>true</reparentableMasterDetail>
     <trackTrending>false</trackTrending>
-    <type>Lookup</type>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
 </CustomField>

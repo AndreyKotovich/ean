@@ -28,6 +28,7 @@ export default class ExtraBooking extends LightningElement {
     @track hidePreviousButton = false;
     @track isSpinner = true;
     @track sessionsCheckboxGroup = [];
+    @track showSessions = true;
 
     eventExtraSessions = []; //all extra sessions for this event
     availableExtraSession = []; //sessions which are available for the participant
@@ -36,7 +37,7 @@ export default class ExtraBooking extends LightningElement {
     _selectedServices = {};
 
     connectedCallback() {
-        if (this.registrationType !== "solo") return this.handleNextClick();
+        // if (this.registrationType !== "solo") return this.handleNextClick();
 
         this.isEarlyBird = this.eanEvent.Early_Bird_Deadline__c ? Utils.deadlineCheck(this.eanEvent.Early_Bird_Deadline__c) : false;
 
@@ -46,10 +47,15 @@ export default class ExtraBooking extends LightningElement {
             .then(results =>{
                 this.eventExtraSessions = results[0];
 
-                if(this.registrationType === 'group' || Object.keys(results[0]).length === 0 && results[0].constructor === Object){
-                    this.handleNextClick();
+                if(Object.keys(results[0]).length === 0 && results[0].constructor === Object){
+                    // this.handleNextClick();
+                    this.showSessions = false;
                 } else {
-                    this.parseSessionsAndPrice();
+                    if(this.registrationType !== 'solo'){
+                        this.showSessions = false;
+                    } else {
+                        this.parseSessionsAndPrice();
+                    }
                 }
                 this.isSpinner = false;
             })
@@ -223,6 +229,7 @@ export default class ExtraBooking extends LightningElement {
         let dateNow = new Date();
         dateNow.setDate(dateNow.getDate() + 10);
 
+        //TODO picklist
         if(dateNow.getTime() <= eventStartDay){
             options.push({ label: 'Pre-print by EAN', value: 'pre_print'});
         }
@@ -250,13 +257,16 @@ export default class ExtraBooking extends LightningElement {
     }
 
     handleJournalSelect(event){
-        console.log('extra_journal_event: '+JSON.stringify(event.detail.selectedProducts));
-        try{
-            this._selectedServices.journals = event.detail.selectedProducts;
+        this._selectedServices.journals = event.detail.selectedProducts;
+    }
 
-        } catch (e){
-            console.log(e);
+    get selectedJournals(){
+        let selectedJournals = [];
+
+        for(let journal of this._selectedServices.journals){
+            selectedJournals.push(journal.productId);
         }
-        console.log('this._selectedServices.journals: '+JSON.stringify(this._selectedServices.journals));
+
+        return selectedJournals;
     }
 }

@@ -95,14 +95,13 @@ public without sharing class OrderHelper {
 
                 o.Change_Request__c = ordToChanges.get(o.Id);
                 o.Purchase_Type__c = 'Update';
-                o.Status__c = 'Cancelled';
+                
                 ords.add(o);
-
                 ords.add(
                     new Order__c(
                         Payment_Invoice__c = o.Id,
                         Contact__c = o.Contact__c,
-                        Status__c = o.Status__c,
+                        Status__c = 'Cancelled',
                         Event_custom__c = o.Event_custom__c,
                         Purchase_Type__c = 'New',
                         Event_Registration_Sub_Group__c = o.Event_Registration_Sub_Group__c,

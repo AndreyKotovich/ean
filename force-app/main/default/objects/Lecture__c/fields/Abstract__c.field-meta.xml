@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Abstract__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <label>Abstract</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>You can only select an abstract that is associated to the same session as this lecture.</errorMessage>
+        <filterItems>
+            <field>Abstract__c.Session__c</field>
+            <operation>equals</operation>
+            <valueField>$Source.Session__c</valueField>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Abstract__c</referenceTo>
+    <relationshipLabel>Lectures</relationshipLabel>
+    <relationshipName>Lectures</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

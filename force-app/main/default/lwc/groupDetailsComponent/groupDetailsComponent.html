@@ -2,7 +2,8 @@
 
 	<!-- <p>System params: {params}</p> -->
 
-	<div class="slds-card" style="padding: 15px;">
+	<div class="slds-card" style="padding: 15px; height: 100%;">
+	<!-- <div class="slds-card" style="height: 100%;"> -->
 		<template if:true={_isSpinner}>
 			<div class="slds-spinner_container" style="position: fixed">
 				<lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
@@ -15,37 +16,46 @@
 			</template>
 
 			<template if:false={_isError}>
+
 				<div>
 					<div style="width: 70%; display: inline-block;">
 
-						<template if:true={_displayGroupDetails}>
-							<div>
+						<div>
+							<template if:true={_displayGroupDetailsPartial}>
 								<div class="detail-section">
 									<p style="font-size: 12px;">Group Name</p>
 									<p>{_groupName}</p>
 								</div>
+							</template>
+							<template if:true={_displayGroupDetails}>
 								<div class="detail-section">
-									<p>Registration Status</p>
+									<p style="font-size: 12px;">Registration Status</p>
 									<p>{_registrationStatus}</p>
 								</div>
-							</div>
-							<div>
+							</template>
+						</div>
+						<div>
+							<template if:true={_displayGroupDetailsPartial}>
 								<div class="detail-section">
 									<p style="font-size: 12px;">Event Name</p>
 									<p>{_eventName}</p>
 								</div>
+							</template>
+							<template if:true={_displayGroupDetails}>
 								<div class="detail-section">
-									<p>Selected Participants</p>
+									<p style="font-size: 12px;">Selected Participants</p>
 									<p>{_totalGroupExistingParticipants}</p>
 								</div>
-							</div>
+							</template>
+						</div>
+						<template if:true={_displayGroupDetails}>
 							<div>
 								<div class="detail-section">
 									<p style="font-size: 12px;">Event Start Time</p>
 									<p>{_eventStartDateString} {_eventStartTimeString}</p>
 								</div>
 								<div class="detail-section">
-									<p>Requested Participants</p>
+									<p style="font-size: 12px;">Requested Participants</p>
 									<p>{_totalGroupMaxParticipants}</p>
 								</div>
 							</div>
@@ -55,7 +65,7 @@
 									<p>{_eventEndDateString} {_eventEndTimeString}</p>
 								</div>
 								<!-- <div class="detail-section">
-									<p>Requested Participants</p>
+									<p style="font-size: 12px;">Requested Participants</p>
 									<p>{_totalGroupMaxParticipants}</p>
 								</div> -->
 							</div>
@@ -64,11 +74,17 @@
 
 					<div style="width: 30%; display: inline-block; vertical-align: top; padding-right: 10px;">
 						<div class="slds-text-align--right">
-							<template if:true={_displayButton1}>
-								<button class="slds-button slds-button_neutral" onclick={handleClickButton1}><div style=" margin-top: 2px; margin-bottom: -2px;">{_button1Label}</div></button>
+							<template if:true={_displayFinalSubmitTransferButton}>
+								<button class="slds-button slds-button_brand" onclick={handleFinalSubmitTransferClick}><div style="margin-top: 2px; margin-bottom: -2px;">Submit Transfer</div></button>
 							</template>
-							<template if:true={_displayButton2}>
-								<button class="slds-button slds-button_brand" onclick={handleClickButton2}><div style=" margin-top: 2px; margin-bottom: -2px;">{_button2Label}</div></button>
+							<template if:true={_displayFinalCancel}>
+								<button class="slds-button slds-button_neutral" onclick={handleFinalCancel}><div style="margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
+							</template>
+							<template if:true={_displayRegistrationSubmit}>
+								<button class="slds-button slds-button_brand" onclick={handleClickSubmitRegistrationFlow}><div style=" margin-top: 2px; margin-bottom: -2px;">Submit</div></button>
+							</template>
+							<template if:true={_displayGroupDetailsCancelButton}>
+								<button class="slds-button slds-button_neutral" onclick={connectedCallback}><div style="margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
 							</template>
 						</div>
 					</div>
@@ -94,7 +110,8 @@
 												inputtype = "email"
 												uniquekey1 = {participant.uniquekey1}
 												uniquekey2 = {participant.uniquekey2}
-												disabledtoedit = {participant.disabledToEdit}
+												disabledvalues = {_disabledEmailsString}
+												disabledtoedit = {subGroup.disabledToEdit}
 												ongroupchangecontactemail = {handleOngroupchangecontactemail}>
 											</c-record-search>
 										</div>
@@ -110,66 +127,53 @@
 
 
 					<template if:true={_displayAccordions}>
-
-
-						<p>----- TEST CUSTOM ACCORDION START -----</p>
-
 						<template for:each={_subGroupList} for:item="subGroup">
 							<div key={subGroup.subGroupId} style="margin-top: 2px; margin-bottom: 2px;">
 								<template if:false={subGroup.accordionIsExpanded}>
-									<div data-id={subGroup.accordionIndex} onclick={handleAccordionArrowClick} style="cursor: pointer;">
-										<div style="display: inline-block;"><lightning-icon icon-name="utility:right"></lightning-icon></div>
-										<div class="accordion-title">{subGroup.accordionTitle}</div>
+									<div>
+										<div data-id={subGroup.accordionIndex} onclick={handleAccordionArrowClick} style="display: inline-block; cursor: pointer; width: 500px; margin-top: 5px;">
+											<div style="display: inline-block; vertical-align: top; padding-top: 1px;"><lightning-icon icon-name="utility:right" size="x-small"></lightning-icon></div>
+											<div class="accordion-title">{subGroup.accordionTitle}</div>
+										</div>
+										<template if:true={subGroup.enableSubmitButton}>
+											<div style="display: inline-block;">
+												<!-- (TBD: SUBMIT SUBGROUP BUTTON) -->
+
+												<a style="text-decoration: underline; color: #007DC6; font-weight: bold; cursor: pointer;"
+													data-id={subGroup.subGroupId} onclick={handleSubmitSubGroupChanges}>
+													Submit Group Changes
+												</a>
+
+											</div>
+										</template>
 									</div>
 								</template>
 								<template if:true={subGroup.accordionIsExpanded}>
-									<div data-id={subGroup.accordionIndex} onclick={handleAccordionArrowClick} style="cursor: pointer;">
-										<div style="display: inline-block;"><lightning-icon icon-name="utility:down"></lightning-icon></div>
-										<div class="accordion-title">{subGroup.accordionTitle}</div>
+									<div>
+										<div data-id={subGroup.accordionIndex} onclick={handleAccordionArrowClick} style="display: inline-block; cursor: pointer; width: 500px; margin-top: 5px;">
+											<div style="display: inline-block; vertical-align: top; padding-top: 1px;"><lightning-icon icon-name="utility:down" size="x-small"></lightning-icon></div>
+											<div class="accordion-title">{subGroup.accordionTitle}</div>
+										</div>
+										<template if:true={subGroup.enableSubmitButton}>
+											<div style="display: inline-block;">
+												<!-- (TBD: SUBMIT SUBGROUP BUTTON) -->
+
+												<a style="text-decoration: underline; color: #007DC6; font-weight: bold; cursor: pointer;"
+													data-id={subGroup.subGroupId} onclick={handleSubmitSubGroupChanges}>
+													Submit Group Changes
+												</a>
+
+											</div>
+										</template>
 									</div>
+
 									<template for:each={subGroup.subGroupParticipantList} for:item="participant">
 										<div key={participant.participantId} style="margin-top: 2px; margin-bottom: 2px;">
 											<div style="display: inline-block; width: 250px;">
-												<c-record-search
-													listfields = "Id,Name,Email"
-													objectname = "Contact"
-													searchfield = "Email"
-													whereclause = {_whereclause}
-													limitrecords = 4
-													lookupicon = "standard:contact"
-													enteredtext = {participant.newContactEmail}
-													existingrecordid = {participant.newContactId}
-													placeholder = "Enter email to search Contacts"
-													inputtype = "email"
-													uniquekey1 = {participant.uniquekey1}
-													uniquekey2 = {participant.uniquekey2}
-													disabledtoedit = {participant.disabledToEdit}
-													onchangenewcontactemail = {handleOngroupchangecontactemail}>
-												</c-record-search>
-											</div>
-											<div style="display: inline-block; width: 300px; margin-left: 20px; vertical-align: bottom;">
-												{participant.newContactName}
-											</div>
-										</div>
-									</template>
-								</template>
-
-							</div>
-						</template>
-						<p>------ TEST CUSTOM ACCORDION END ------</p>
-
-						<!-- <lightning-accordion
-										onsectiontoggle={handleToggleSection}
-										allow-multiple-sections-open>
-							<template for:each={_subGroupList} for:item="subGroup">
-								<div key={subGroup.subGroupId}>
-
-
-
-									<lightning-accordion-section name={subGroup.subGroupId} label={subGroup.accordionTitle}>
-										<template for:each={subGroup.subGroupParticipantList} for:item="participant">
-											<div key={participant.participantId} style="margin-top: 2px; margin-bottom: 2px;">
-												<div style="display: inline-block; width: 250px;">
+												<template if:true={subGroup.disabledToEdit}>
+													<input class="slds-input" type="email" value={participant.oldContactEmail} autocomplete="password" disabled/>
+												</template>
+												<template if:false={subGroup.disabledToEdit}>
 													<c-record-search
 														listfields = "Id,Name,Email"
 														objectname = "Contact"
@@ -183,22 +187,120 @@
 														inputtype = "email"
 														uniquekey1 = {participant.uniquekey1}
 														uniquekey2 = {participant.uniquekey2}
-														disabledtoedit = {participant.disabledToEdit}
+														disabledvalues = {_disabledEmailsString}
+														disabledtoedit = {subGroup.disabledToEdit}
 														onchangenewcontactemail = {handleOngroupchangecontactemail}>
 													</c-record-search>
-												</div>
-												<div style="display: inline-block; width: 300px; margin-left: 20px; vertical-align: bottom;">
-													{participant.newContactName}
-												</div>
+												</template>
 											</div>
-										</template>
+											<div style="display: inline-block; width: 200px; margin-left: 20px; vertical-align: bottom;">
+												<template if:true={_isChangeRequestMode}>
+													{participant.oldContactName}
+												</template>
+												<template if:false={_isChangeRequestMode}>
+													{participant.newContactName}
+												</template>
+											</div>
 
-									</lightning-accordion-section>
+											<template if:true={_isChangeRequestMode}>
+												<template if:false={participant.isOldTransferExist}>
+													<template if:false={participant.isNewTransferExist}>
+														<div style="display: inline-block; width: 120px; margin-left: 10px; vertical-align: bottom;">
+															<a style="text-decoration: underline; color: #007DC6; font-weight: bold; cursor: pointer;"
+																data-id={participant.uniquekey1} data-index={participant.uniquekey2} onclick={handleClickOnRequestTransfer}>
+																Request Transfer
+															</a>
+														</div>
+													</template>
+												</template>
+
+												<template if:true={participant.isOldTransferExist}>
+													<div style="display: inline-block; margin-left: 10px; width: 350px; border: 1px solid darkgray; border-radius: 5px; vertical-align: bottom;">
+														<div style="display: inline-block; padding-left: 10px; vertical-align: text-top;">{participant.oldTransferDetails.crName}</div>
+													</div>
+												</template>
+
+												<template if:true={participant.isNewTransferExist}>
+													<div style="display: inline-block; margin-left: 10px; width: 350px; border: 1px solid darkgray; border-radius: 5px; vertical-align: bottom;">
+														<div style="display: inline-block; padding-left: 10px; vertical-align: text-top;">
+															{participant.newTransferDetails.crContactEmail} {participant.newTransferDetails.crContactName}
+														</div>
+														<!-- <div style="display: inline-block; float: right; margin-top: -2px; padding-right: 5px; cursor: pointer;" -->
+														<div style="display: inline-block; float: right; padding-right: 5px; cursor: pointer;"
+															data-id={participant.uniquekey1} data-index={participant.uniquekey2} onclick={handleClickOnNewRequestEdit}>
+															<lightning-icon icon-name="utility:edit_form" size="x-small" title="Edit Changes"></lightning-icon>
+														</div>
+														<!-- <div style="display: inline-block; float: right; margin-top: -2px; padding-right: 5px; cursor: pointer;" -->
+														<div style="display: inline-block; padding-right: 5px; float: right; cursor: pointer;"
+															data-id={participant.uniquekey1} data-index={participant.uniquekey2} onclick={handleClickOnNewRequestDelete}>
+															<lightning-icon icon-name="utility:delete" size="x-small"  title="Delete Changes"></lightning-icon>
+														</div>
+													</div>
+												</template>
+											</template>
+
+										</div>
+									</template>
+								</template>
+
+							</div>
+						</template>
+					</template>
+
+					<template if:true={_displayTransferContainer}>
+						<div style="z-index: 9999; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.1);">
+							<div style="border: 1px solid lightgray; border-radius: 5px; background-color: #FFFFFF; width: 600px; height: 300px; padding: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);">
+								<p class="slds-align_absolute-center" style="text-align: center; font-size: 18px; font-weight: bold; color: #007DC6; margin-bottom: 10px; cursor: default;">Select Contact To Transfer Participation</p>
+								<div>
+									<div>From Contact:</div>
+									<div style="display: inline-block; width: 250px;">
+										<input id="inputDisabled" class="slds-input" type="email" value={_tempParticipant.oldContactEmail} autocomplete="password" disabled/>
+									</div>
+									<div style="display: inline-block; width: 280px; margin-left: 20px; vertical-align: bottom;">
+										{_tempParticipant.oldContactName}
+									</div>
 								</div>
-							</template>
-						</lightning-accordion> -->
+								<div style="margin-top: 15px;">
+									<div>To Contact:</div>
+									<div style="display: inline-block; width: 250px;">
+										<c-record-search
+											listfields = "Id,Name,Email"
+											objectname = "Contact"
+											searchfield = "Email"
+											whereclause = {_whereclause}
+											limitrecords = 4
+											lookupicon = "standard:contact"
+											enteredtext = {_tempParticipant.newContactEmail}
+											existingrecordid = {_tempParticipant.newContactId}
+											placeholder = "Enter email to search Contacts"
+											inputtype = "email"
+											uniquekey1 = "uniquekey1"
+											uniquekey2 = "uniquekey2"
+											disabledvalues = {_disabledEmailsString}
+											disabledtoedit = false
+											onchangenewcontactemail = {handleCRChangeNewContactEmail}>
+										</c-record-search>
+									</div>
+									<div style="display: inline-block; width: 280px; margin-left: 20px; vertical-align: bottom;">
+										<!-- {_tempParticipant.newContactName} -->
+										{_requestedContactName}
+									</div>
+
+									<div class="slds-text-align--right" style="position: absolute; bottom: 20px; right: 20px;">
+										<button class="slds-button slds-button_neutral" onclick={handleTransferFinalCancelClick}><div style="margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
+										<template if:true={_displayTransferFinalNextButton}>
+											<button class="slds-button slds-button_brand" onclick={handleTransferFinalNextClick}><div style="margin-top: 2px; margin-bottom: -2px;">Next</div></button>
+										</template>
+									</div>
+
+								</div>
+							</div>
+						</div>
 					</template>
 				</div>
+
+
+				
 			</template>
 		</template>
 

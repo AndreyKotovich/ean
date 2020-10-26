@@ -4,6 +4,75 @@
     <active>true</active>
     <label>Invited Submission</label>
     <picklistValues>
+        <picklist>Image_1_Location__c</picklist>
+        <values>
+            <fullName>Conclusion</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Introduction</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Methods</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>No Location Selected</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Results</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Image_2_Location__c</picklist>
+        <values>
+            <fullName>Conclusion</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Introduction</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Methods</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>No Location Selected</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Results</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Image_3_Location__c</picklist>
+        <values>
+            <fullName>Conclusion</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Introduction</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Methods</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>No Location Selected</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Results</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>Stage__c</picklist>
         <values>
             <fullName>Closed</fullName>
@@ -215,11 +284,19 @@
     <picklistValues>
         <picklist>Type__c</picklist>
         <values>
-            <fullName>Oral</fullName>
+            <fullName>Onsite oral</fullName>
             <default>false</default>
         </values>
         <values>
             <fullName>Poster</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Poster or Oral</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Virtual oral</fullName>
             <default>false</default>
         </values>
     </picklistValues>

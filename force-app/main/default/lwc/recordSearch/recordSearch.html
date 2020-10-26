@@ -2,8 +2,13 @@
     <div class="slds-form-element__control">
         <template if:true={_enabledtoedit}>
 
-            <input id="input" name="input" list="valueList" placeholder={placeholder} class="slds-input"
-            type={inputtype} key={existingrecordid} value={enteredtext} autocomplete="password"
+    
+            <!-- <input id="input" name={_datalistId} list="valueList" placeholder={placeholder} class="slds-input"
+            type={inputtype} key={existingrecordid} value={enteredtext} autocomplete="off"
+            oninput={handleChange} onchange={handleChange} onblur={handleChange}/> -->
+
+            <input id="input" name="inputCustom" list="valueList" placeholder={placeholder} class="slds-input"
+            type={inputtype} key={existingrecordid} value={enteredtext} autocomplete="off"
             oninput={handleChange} onchange={handleChange} onblur={handleChange}/>
 
             <!-- <input id="input" name="input" list="valueList" placeholder={placeholder} class="slds-input"
