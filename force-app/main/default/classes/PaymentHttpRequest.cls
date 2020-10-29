@@ -26,7 +26,8 @@ public without sharing class PaymentHttpRequest {
         String resultString = 'SUCCESS';
         List<Order__c> order = [SELECT Id, Total_amount__c, Status__c, Event_Registration_Sub_Group__c FROM Order__c WHERE Id = :orderId];
         List<Transaction__c> transactions = [SELECT Id, Status__c, Amount__c FROM Transaction__c WHERE Order_Custom__c = :orderId];
-        List<Payment_Credentials__mdt> creds = [SELECT Id, Merchant_Account_Id__c, Merchant_PayPal_Account_Id__c, DeveloperName, Named_Credentials__c, Payment_Info_PayPal_Named_Credentials__c, Named_Credentials_PayPal__c FROM Payment_Credentials__mdt WHERE Active__c = true];
+        List<Payment_Credentials__mdt> creds = [SELECT Id, Merchant_Account_Id__c, Merchant_PayPal_Account_Id__c, DeveloperName, 
+            Named_Credentials__c, Payment_Info_PayPal_Named_Credentials__c, Named_Credentials_PayPal__c FROM Payment_Credentials__mdt WHERE Active__c = true];
         Decimal paidAmount = 0;
         Boolean isGroup;
         if (!creds.isEmpty() && !order.isEmpty() && order[0].Status__c == 'Opened') {
@@ -67,6 +68,12 @@ public without sharing class PaymentHttpRequest {
     }
 
     public static void choosePaymentCredentials(List<Payment_Credentials__mdt> creds) {
+
+        if (creds.size() == 0) {
+            creds = [SELECT Id, Merchant_Account_Id__c, Merchant_PayPal_Account_Id__c, DeveloperName, Named_Credentials__c, 
+                Payment_Info_PayPal_Named_Credentials__c, Named_Credentials_Base__c FROM Payment_Credentials__mdt WHERE Active__c = true];
+        }
+        
         if (creds.size() >= 2) {
             for (Payment_Credentials__mdt pc : creds) {
                 if (pc.DeveloperName == 'Test_Seamless') {
@@ -249,7 +256,8 @@ public without sharing class PaymentHttpRequest {
         return JSON.serialize(resultMap);
     }
     @AuraEnabled public static String getPaymentInfoByRequestId(String requestId, String orderId) {
-        List<Payment_Credentials__mdt> creds = [SELECT Id, Merchant_Account_Id__c, Merchant_PayPal_Account_Id__c, DeveloperName, Named_Credentials__c, Payment_Info_PayPal_Named_Credentials__c FROM Payment_Credentials__mdt WHERE Active__c = true];
+        List<Payment_Credentials__mdt> creds = [SELECT Id, Merchant_Account_Id__c, Merchant_PayPal_Account_Id__c, DeveloperName, Named_Credentials__c, 
+            Payment_Info_PayPal_Named_Credentials__c FROM Payment_Credentials__mdt WHERE Active__c = true];
         choosePaymentCredentials(creds);
         Http http = new Http();
         HttpRequest request = new HttpRequest();
@@ -310,7 +318,8 @@ public without sharing class PaymentHttpRequest {
     }
 
     @RemoteAction public static String getPayPalUrl(String orderId, String addressesObject) {
-        List<Payment_Credentials__mdt> creds = [SELECT Id, Merchant_Account_Id__c, Merchant_PayPal_Account_Id__c, DeveloperName, Named_Credentials__c, Payment_Info_PayPal_Named_Credentials__c, Named_Credentials_PayPal__c FROM Payment_Credentials__mdt WHERE Active__c = true];
+        List<Payment_Credentials__mdt> creds = [SELECT Id, Merchant_Account_Id__c, Merchant_PayPal_Account_Id__c, DeveloperName,
+            Named_Credentials__c, Payment_Info_PayPal_Named_Credentials__c, Named_Credentials_PayPal__c FROM Payment_Credentials__mdt WHERE Active__c = true];
         choosePaymentCredentials(creds);
         Http http = new Http();
         HttpRequest request = new HttpRequest();
@@ -622,8 +631,81 @@ public without sharing class PaymentHttpRequest {
         OrderUtils.writeOrderBillingAddress(orderId, addressesObject);
     }
 
-    public static void refundTransaction(List<Order__c> ords) {
+    public static void refundTransaction(String orderRefunedId, String orderCancelledId) {
+        System.debug('START refundTransaction');
+        try { 
+            List<Order__c> ords = [
+                SELECT Id, Status__c, (SELECT Id, Amount__c, Status__c, Payment_Method__c, Request_Id__c, Reference_Id__c FROM Transactions__r WHERE Status__c = 'Success') 
+                FROM Order__c WHERE Id = :orderRefunedId
+            ];
 
+            if (ords.size() == 0 || ords[0].Transactions__r.size() == 0 || String.isBlank(ords[0].Transactions__r[0].Payment_Method__c) || 
+                ords[0].Transactions__r[0].Payment_Method__c == 'Bank Transfer') { return; }
+
+            choosePaymentCredentials( new List<Payment_Credentials__mdt>() );
+
+            Boolean isPayPal = ords[0].Transactions__r[0].Payment_Method__c == 'paypal';
+            String apiUrl = paymentCredentials.Named_Credentials_Base__c;
+            String merchantAccountId = isPayPal ? paymentCredentials.Merchant_PayPal_Account_Id__c : paymentCredentials.Merchant_Account_Id__c;
+            String tranType = isPayPal ? 'refund-debit' : 'refund-purchase';
+            String paymentMethod = isPayPal ? 'paypal' : 'creditcard';
+
+            String requestBody = JSON.serialize( new Map<String,Object> {
+                'payment' => new Map<String,Object> {
+                    'merchant-account-id' => new Map<String,Object> { 'value' => merchantAccountId },
+                    'request-id' => getUUID(),
+                    'transaction-type' => tranType,
+                    'parent-transaction-id' => ords[0].Transactions__r[0].Reference_Id__c,
+                    'payment-methods' => new Map<String,Object> { 
+                        'payment-method' => new List<Map<String,Object>>{ 
+                            new Map<String,Object> { 'name' => paymentMethod}
+                        }
+                    },
+                    'requested-amount' => new Map<String, Object>{
+                        'currency' => 'EUR', 
+                        'value' => ords[0].Transactions__r[0].Amount__c
+                    }
+                }
+            });
+
+            Http http = new Http();
+            HttpRequest request = new HttpRequest();
+            request.setEndpoint('callout:baseUrlWireCard_test');
+            request.setMethod('POST');
+            request.setHeader('Content-Type', 'application/json');
+            request.setHeader('Accept', 'application/json');
+            request.setBody(requestBody);
+            HttpResponse response = http.send(request);
+            
+            Log__c log = new Log__c(Process_Name__c = 'REST: Payment Refund', Order__c = orderRefunedId, Type__c = 'REST');
+            createLog(log, requestBody, response.getBody(), Datetime.now(), response.getStatusCode());
+
+            Transaction__c tr = new Transaction__c();
+            Map<String, Object> payments = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(((Map<String, Object>) JSON.deserializeUntyped(response.getBody())).get('payment')));
+            Map<String, Object> requestedAmount = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(payments.get('requested-amount')));
+            tr.Amount__c = (Decimal) requestedAmount.get('value');
+            Object completionTimeStamp = payments.get('completion-time-stamp');
+            tr.Completion_Time_Stamp__c = Datetime.newInstance((Long) (completionTimeStamp));
+            tr.Request_Id__c = (String) payments.get('request-id');
+            tr.Reference_Id__c = (String) payments.get('transaction-id');
+            tr.JSONResponse__c = (response.getBody()).replaceAll(',', ',\r\n');
+            tr.Order_Custom__c = orderCancelledId;
+            Object statuses = payments.get('statuses');
+            Object status = ((Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(statuses))).get('status');
+            List<Object> statusList = ((List<Object>) JSON.deserializeUntyped(JSON.serialize(status)));
+            Object statusCode = ((Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(statusList[0]))).get('code');
+            tr.Status__c = Decimal.valueOf((String) statusCode) == 201 ? 'Refund' : 'Error';
+            Map<String, Object> paymentMethods = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(payments.get('payment-methods')));
+            List<Object> paymentMethodList = (List<Object>) JSON.deserializeUntyped(JSON.serialize(paymentMethods.get('payment-method')));
+            String name = (String) ((Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(paymentMethodList[0]))).get('name');
+            tr.Payment_Method__c = String.valueOf(name);
+            
+            insert tr;
+
+            System.debug('response.getBody()' + response.getBody());
+        }
+        catch(Exception e) {
+            System.debug('catch ' + e.getMessage());
+        }
     }
-
 }

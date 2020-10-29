@@ -113,12 +113,15 @@ public without sharing class OrderHelper {
             upsert ords;
 
             List<Order_Item__c> ordItems = new List<Order_Item__c>();
+            String orderRefunedId, orderCancelledId;
             for (Order__c o : ords) {
                 if (!String.isBlank(o.Payment_Invoice__c)) {
+                    orderCancelledId = o.Id;
+                    orderRefunedId = o.Payment_Invoice__c;
                     ordItems.add( 
                         new Order_Item__c(
                             Order_Custom__c = o.Id,
-                            Amount__c =  (-1) * ordPrice.get(o.Payment_Invoice__c),
+                            Amount__c =  ordPrice.get(o.Payment_Invoice__c),
                             Quantity__c = 1
                         )
                     );  
@@ -126,11 +129,18 @@ public without sharing class OrderHelper {
             }
             insert ordItems;
 
+            refundTransaction(orderRefunedId, orderCancelledId);
+
         } catch(Exception e) {
             System.debug('The following exception has occurred: ' + e.getMessage());
         }
     }
 
+    @future(callout=true)
+	public static void refundTransaction(String orderRefunedId, String orderCancelledId) {
+        PaymentHttpRequest.refundTransaction(orderRefunedId, orderCancelledId);
+    }
+    
     @AuraEnabled
     public static Map<String, String> getOrderIdFromParticipant(Id participantId) {
         List<Participant__c> participants = [SELECT Id, (SELECT Id, Order_Custom__c, Order_Custom__r.Status__c FROM Order_Items__r) FROM Participant__c WHERE Id = :participantId];
@@ -142,5 +152,4 @@ public without sharing class OrderHelper {
         }
         return new Map<String, String>();
     }
-
 }
