@@ -4,13 +4,12 @@
         <lightning-layout-item
                 padding="around-small"
                 size="12"
-                large-device-size="12"
+                large-device-size="6"
                 medium-device-size="12"
                 small-device-size="12"
                 flexibility="auto"
         >
             <div class="slds-card__body slds-p-around_medium">
-                <slot> Summary screen. In development...</slot>
 
                 <lightning-card if:true={hasTickets}>
                     <h3 slot="title">
@@ -18,17 +17,17 @@
                         <span class="slds-m-left_small">Ticket(s)</span>
                     </h3>
 
-                    <table class="slds-table slds-table_cell-buffer">
+                    <table class="slds-table slds-table_cell-buffer slds-table_fixed-layout slds-table_striped">
                         <tbody>
-                        <tr class="slds-hint-parent" for:each={data} for:item="dataItem" key={key}>
-                            <td style="width: 30%">
-                                <div class="slds-truncate">{dataItem.name}</div>
+                        <tr class="slds-hint-parent" for:each={ticketsTable} for:item="dataItem" key={key}>
+                            <td class="slds-cell-wrap" style="width: 55%;">
+                                <div class="slds-cell-wrap">{dataItem.name}</div>
                             </td>
-                            <td style="width: 30%">
-                                <div class="slds-truncate">{dataItem.quantity}</div>
+                            <td class="slds-cell-wrap" style="width: 15%">
+                                <div class="slds-cell-wrap slds-text-align--center">x {dataItem.quantity}</div>
                             </td>
-                            <td style="width: 30%">
-                                <div class="slds-truncate">{dataItem.amount}</div>
+                            <td class="slds-cell-wrap" style="width: 30%">
+                                <div class="slds-cell-wrap slds-text-align--right">{dataItem.amount}&nbsp;€</div>
                             </td>
                         </tr>
                         </tbody>
@@ -43,15 +42,15 @@
 
                     <table class="slds-table slds-table_cell-buffer">
                         <tbody>
-                        <tr class="slds-hint-parent" for:each={data} for:item="dataItem" key={key}>
-                            <td data-label="Account Name" style="width: 30%">
-                                <div class="slds-truncate" title="Cloudhub">{dataItem.name}</div>
+                        <tr class="slds-hint-parent" for:each={sessionsTable} for:item="dataItem" key={key}>
+                            <td style="width: 55%">
+                                <div class="slds-cell-wrap">{dataItem.name}</div>
                             </td>
-                            <td data-label="Prospecting" style="width: 30%">
-                                <div class="slds-truncate" title="Prospecting">{dataItem.quantity}</div>
+                            <td style="width: 15%">
+                                <div class="slds-cell-wrap slds-text-align--center">x {dataItem.quantity}</div>
                             </td>
-                            <td data-label="Amount" style="width: 30%">
-                                <div class="slds-truncate" title="$25k">{dataItem.amount}</div>
+                            <td style="width: 30%">
+                                <div class="slds-cell-wrap slds-text-align--right">{dataItem.amount}&nbsp;€</div>
                             </td>
                         </tr>
                         </tbody>
@@ -62,21 +61,23 @@
                 <table class="slds-table slds-table_cell-buffer">
                     <tbody>
                     <tr class="slds-hint-parent">
-                        <td data-label="Account Name" style="width: 30%">
-                            <div class="slds-truncate" title="Cloudhub">Total Amount</div>
+                        <td style="width: 55%">
+                            <div class="slds-cell-wrap">Total Amount</div>
                         </td>
-                        <td data-label="Prospecting" style="width: 30%">
-                            <div class="slds-truncate" title="Prospecting"></div>
+                        <td style="width: 15%">
+                            <div class="slds-cell-wrap"></div>
                         </td>
-                        <td data-label="Amount" style="width: 30%">
-                            <div class="slds-truncate" title="$25k">5000 €</div>
+                        <td style="width: 30%">
+                            <div class="slds-cell-wrap slds-text-align--right">{totalAmount}&nbsp;€</div>
                         </td>
                     </tr>
                     </tbody>
                 </table>
 
-                <lightning-badge if:true={showBadgeRetrieval} label={_selections.selectedServices.badgeRetrieval}></lightning-badge>
-                <lightning-badge if:true={showVisaLetter} label="Visa-Letter"></lightning-badge>
+                <div class="slds-m-around_small">
+                    <lightning-badge if:true={showBadgeRetrieval} label={badgeRetrievalLabel}></lightning-badge>
+                    <lightning-badge if:true={showVisaLetter} label="Visa-Letter"></lightning-badge>
+                </div>
             </div>
         </lightning-layout-item>
     </lightning-layout>

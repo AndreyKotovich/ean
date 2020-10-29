@@ -9,10 +9,16 @@ public without sharing class RecordSearchController {
 	// @whereclause - additional where clause (example 'FirstName != null') (not required)
 	// @limitrecords - total number of record to be returned (not required)
 	// @disabledvalues - list of String values. result will not include records where searchfield in these values (only for text fields)
+	// @enabledvalue - this value will be removed from 'disabledvalues'
 
 	@AuraEnabled (cacheable=true)
-	public static String searchRecordsInDatabase(String listfields, String objectname, String searchfield, String searchtext, String whereclause, Integer limitrecords, String disabledvalues){
+	public static String searchRecordsInDatabase(String listfields, String objectname, String searchfield, String searchtext,
+		String whereclause, Integer limitrecords, String disabledvalues, String enabledvalue){
 		List<String> disabledValuesList = String.isBlank(disabledvalues) ? new List<String>() : (List<String>) JSON.deserialize(disabledvalues, List<String>.class);
+
+		if (!String.isBlank(enabledvalue) && disabledValuesList.indexOf(enabledvalue) > -1) {
+			disabledValuesList.remove(disabledValuesList.indexOf(enabledvalue));
+		}
 
 		system.debug('disabledValuesList= ' + disabledValuesList);
 

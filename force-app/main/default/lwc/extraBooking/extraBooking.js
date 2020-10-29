@@ -194,13 +194,13 @@ export default class ExtraBooking extends LightningElement {
             if(checkbox.value === event.target.value && checkbox.isDisabled) validation = false;
         }
 
-        if(exclusion !== '' && validation){
+        if(validation){
             let disabledFlag = event.target.checked;
 
             for(let checkbox of this.sessionsCheckboxGroup){
                 if(checkbox.value === event.target.value && !checkbox.isFull) checkbox.isChecked = event.target.checked;
 
-                if(checkbox.exclusion !== exclusion || checkbox.value === event.target.value || checkbox.isFull) continue;
+                if(exclusion === '' || checkbox.exclusion !== exclusion || checkbox.value === event.target.value || checkbox.isFull) continue;
 
                 checkbox.isDisabled = disabledFlag;
             }

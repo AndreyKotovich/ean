@@ -11,10 +11,9 @@ import insertRegistrationGroup from "@salesforce/apex/EventRegistrationControlle
 import getCountries from "@salesforce/apex/membershipApplicationController.getCountries";
 
 export default class EventRegistrationApplication extends NavigationMixin(LightningElement) {
-    //TODO validation on duplicate registration
-    //TODO detection group leader
     //TODO before participant insert check availability of participants
     //TODO create session participants
+    //TODO participant available validation
 
     @track errorMessage =
         "Something went wrong, please contact your system administrator.";
@@ -24,7 +23,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         step1: {
             label: "Registration type",
             value: "step-1",
-            isActive: true
+            isActive: false
         },
         step2: {
             label: "Ticket selection",
@@ -46,8 +45,9 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     @track currentStep = null;
     @track ean_event = {};
 
-    registrationType = "solo"; //type of registration which user selected, by default 'solo'
-    groupName = ""; //name of group in case group registration
+    registrationType = ""; //type of registration which user selected
+    // groupName = ""; //name of group in case group registration
+    eventGroupInformation = {}; //information about group during group registration
     selectedTicket = "";
     priceTicket = 0;
     ticketsAmount = 0;
@@ -114,6 +114,8 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                     }
                     console.log(JSON.stringify(this.userInfo));
 
+                    this.steps.step1.isActive = true;
+
                     resolve();
                 })
                 .catch((error) => {
@@ -135,8 +137,9 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
 
     onNextRegType(event) {
         this.registrationType = event.detail.registrationType;
-        this.groupName = event.detail.groupName;
-        console.log(this.registrationType, this.groupName);
+        this.eventGroupInformation = Object.assign({}, event.detail.eventGroupInformation);
+        this.userInfo.iprInfo = event.detail.iprInfo;
+        // console.log(this.registrationType, this.groupName);
         this.onNext();
     }
 
@@ -158,8 +161,8 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             selectedTickets : [
                 {
                     ticketId: this.selectedTicket,
-                    amount: this.registrationType === 'solo' ? 1 : this.ticketsAmount,
-                    price: this.priceTicket
+                    quantity: this.registrationType === 'solo' ? 1 : this.ticketsAmount,
+                    amount: this.priceTicket
                 }
             ],
             selectedServices: this.selectedServices,
@@ -211,7 +214,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         let participants = [];
         let call = this.registrationType !== "solo" ?
             () => {
-                return insertRegistrationGroup({groupName: this.groupName, groupLeaderId: this.userInfo.contact.Id});
+                return insertRegistrationGroup({eventGroupInformation: this.eventGroupInformation, groupLeaderId: this.userInfo.contact.Id});
             } : () => {
                 return new Promise((resolve) => {
                     resolve();
@@ -242,16 +245,23 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                 } else {
                     generalData.groupId = result;
                     for (let i = 0; i < this.ticketsAmount; i++) {
-                        participants.push({
+                        let obj = {
                             sobjectType: "Participant__c",
                             Event_custom__c: this.ean_event.Id,
                             Event_Ticket__c: generalData.selectTicket,
                             Event_Registration_Sub_Group__c: result,
                             Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
-                            Visa_Letter__c: this.selectedServices.visaLetter,
-                        });
+                            Visa_Letter__c: this.selectedServices.visaLetter
+                        }
+
+                        if(this.registrationType === 'ipr'){
+                            obj.Event_Exhibitor__c = this.userInfo.iprInfo.Id
+                        }
+
+                        participants.push(obj);
                     }
                 }
+                console.log('participants', participants)
 
                 return insertEventParticipants({participants: participants, generalData: generalData, selectedSession: this.selectedSessions});
             })

@@ -140,16 +140,33 @@ public without sharing class OrderHelper {
 	public static void refundTransaction(String orderRefunedId, String orderCancelledId) {
         PaymentHttpRequest.refundTransaction(orderRefunedId, orderCancelledId);
     }
-    
+
     @AuraEnabled
-    public static Map<String, String> getOrderIdFromParticipant(Id participantId) {
-        List<Participant__c> participants = [SELECT Id, (SELECT Id, Order_Custom__c, Order_Custom__r.Status__c FROM Order_Items__r) FROM Participant__c WHERE Id = :participantId];
-        if (participants.size() > 0 && participants[0].Order_Items__r.size() > 0 && !String.isBlank(participants[0].Order_Items__r[0].Order_Custom__c)) {
-            return new Map<String, String> {
+    public static Map<String, Object> getSoloParticipatCommunityButtonsInitData(Id participantId) {
+        List<Participant__c> participants = [SELECT Id, Event_custom__c, (SELECT Id, Order_Custom__c, Order_Custom__r.Status__c FROM Order_Items__r) FROM Participant__c WHERE Id = :participantId];
+
+        if (participants.size() > 0) {
+            String status;
+            Boolean displayDoPaymentButton = false;
+            if (participants[0].Order_Items__r.size() > 0 && !String.isBlank(participants[0].Order_Items__r[0].Order_Custom__c)){
+                status = participants[0].Order_Items__r[0].Order_Custom__r.Status__c;
+                if (status == 'Opened') {
+                    displayDoPaymentButton = true;
+                }                
+            }
+            return new Map<String, Object> {
                 'id' => participants[0].Order_Items__r[0].Order_Custom__c,
-                'status' => participants[0].Order_Items__r[0].Order_Custom__r.Status__c
+                'status' => status,
+                'eventId' => participants[0].Event_custom__c,
+                'displayCancelButton' => false,
+                'displayUpgradeButton' => true,
+                'displayDoPaymentButton' => displayDoPaymentButton
             };
         }
-        return new Map<String, String>();
+        return new Map<String, Object>{
+            'displayCancelButton' => false,
+            'displayUpgradeButton' => false,
+            'displayDoPaymentButton' => false
+        };
     }
 }

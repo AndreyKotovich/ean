@@ -20,6 +20,7 @@ export default class RecordSearch extends LightningElement {
 	@api uniquekey1;		//	component instance/tag unique key 1
 	@api uniquekey2;		//	component instance/tag unique key 2
 	@api disabledvalues;	//	list string in JSON (only for text search)
+	@api enabledvalue;
 	@api disabledtoedit;
 
 	@api selectedRecordDetails = {};
@@ -33,6 +34,9 @@ export default class RecordSearch extends LightningElement {
 	_lastenteredtext = '';
 	_lastServerResults = [];
 	_originaltext = '';
+
+	//	prevent browser autofill
+	_inputName = 'incust';
 
     renderedCallback() {
 		if (this.enteredtext != undefined) {
@@ -64,30 +68,47 @@ export default class RecordSearch extends LightningElement {
 		this._enabledtoedit = this.disabledtoedit == undefined || this.disabledtoedit == null || this.disabledtoedit == false || this.disabledtoedit == 'false' ? true : false;
 		this._datalistId = '' + this.uniquekey1 + this.uniquekey2;
 		// this.serverCall();
+
+		//	prevent browser autofill
+		var charset = "abcdefghijklmnopqrstuvwxyz0123456789";
+		for (var i = 0; i < 16; i++) this._inputName += charset.charAt(Math.floor(Math.random() * charset.length));
 	}
 
     handleChange(evt) {
 		var newEnteredText = evt.target.value;
-		if (newEnteredText == undefined) return;
+		if (newEnteredText == undefined) {
+			// console.log('handleChange return 1');
+			return;
+		}
 
 		this._lastenteredtext = this.enteredtext;
 		this.enteredtext = newEnteredText;
 		if (this._lastenteredtext != '' && newEnteredText.startsWith(this._lastenteredtext) && this._lastServerResults.length <= 0) {
+			// console.log('handleChange return 2');
 			this.selectedRecordDetails.enteredText = this.enteredtext;
 			this.selectedRecordDetails.originalText = this._originaltext;
 			this.dispatchEvent(new CustomEvent('changenewcontactemail', { bubbles: true, detail: { recorddetails: JSON.stringify(this.selectedRecordDetails), uniquekey1: this.uniquekey1, uniquekey2: this.uniquekey2 } }));
 			this._originaltext = this.enteredtext;
 			return;
 		}
-		if (this._lastenteredtext == newEnteredText) return;
+		if (this._lastenteredtext == newEnteredText) {
+			// console.log('handleChange return 3');
+			return;
+		}
 
 		this.serverCall();
     }
 
 	serverCall() {
+		// console.log('serverCall this.enteredtext: ', this.enteredtext);
 		searchRecordsInDatabase(
-			{listfields: this.listfields, objectname: this.objectname, searchfield: this.searchfield, searchtext: this.enteredtext, whereclause: this.whereclause, limitrecords: this.limitrecords, disabledvalues: this.disabledvalues}
-			).then(result=>{
+			{
+				listfields: this.listfields, objectname: this.objectname,
+				searchfield: this.searchfield, searchtext: this.enteredtext,
+				whereclause: this.whereclause, limitrecords: this.limitrecords,
+				disabledvalues: this.disabledvalues,
+				enabledvalue: this.enabledvalue
+			}).then(result=>{
 			// console.log('serverCall result: ', result);
 
 			this._values = [];

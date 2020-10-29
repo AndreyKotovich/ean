@@ -101,7 +101,6 @@ export default class MyRegistrationsComponent extends NavigationMixin(LightningE
 
 	}
 
-	//	TODO CREATE NEW CHANGE REQUEST
 	navigateToRecordPage(id) {
 		console.log('navigateToRecordPage participantId: ', id);
 		this[NavigationMixin.Navigate]({

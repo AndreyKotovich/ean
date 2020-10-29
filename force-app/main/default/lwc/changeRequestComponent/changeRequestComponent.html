@@ -1,7 +1,4 @@
 <template>
-	<!-- <p>Change Request Wizard (UNDER DEVELOPMENT)</p> -->
-	<!-- <p>Community Contact RecordId: {recordId}</p> -->
-	<!-- <div class="slds-card slds-scrollable_y" style="padding: 15px; height: 490px;"> -->
 	<div style="padding: 15px; height: 490px;">
 		<template if:true={_isSpinner}>
 			<div class="slds-spinner_container" style="position: fixed">
@@ -19,8 +16,7 @@
 					<!-- <div style="position: fixed; top: 80px; right: 50px;"> -->
 					<div class="slds-text-align--right">
 						<template if:true={_displayNewChangeRequestButton}>
-							<!-- <button class="slds-button slds-button_neutral" onclick={handleNewRequestClick}><div style=" margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button> -->
-							<button class="slds-button slds-button_neutral" onclick={handleNewRequestClick}><div style="margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button>
+							<button class="slds-button slds-button_brand" onclick={handleNewRequestClick}><div style="margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button>
 						</template>
 						<template if:true={_displayChangeRequestCancelButton}>
 							<button class="slds-button slds-button_neutral" onclick={handleCancelClick}><div style="margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
@@ -151,9 +147,9 @@
 									</div>
 
 									<div class="slds-text-align--right" style="position: absolute; bottom: 20px; right: 20px;">
-										<button class="slds-button slds-button_brand" onclick={handleSoloTransferFinalCancelClick}><div style="margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
+										<button class="slds-button slds-button_neutral" onclick={handleSoloTransferFinalCancelClick}><div style="margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
 										<template if:true={_displayTransferFinalConfirmButton}>
-											<button class="slds-button slds-button_neutral" onclick={handleSoloTransferFinalConfirmClick}><div style="margin-top: 2px; margin-bottom: -2px;">Confirm</div></button>
+											<button class="slds-button slds-button_brand" onclick={handleSoloTransferFinalConfirmClick}><div style="margin-top: 2px; margin-bottom: -2px;">Confirm</div></button>
 										</template>
 									</div>
 
@@ -169,21 +165,6 @@
 							onfinalsubmitgrouptransfer = {handleGroupTransferFinalSubmitClick}
 							ongdcomponentterminate = {initialPositiveSettings}>
 						</c-group-details-component>
-					</div>
-				</template>
-
-				<template if:true={_displayBottomButtons}>
-					<div class="slds-text-align--right" style="position: fixed; bottom: 75px; right: 55px;">
-						<template if:true={_displayNewChangeRequestButton}>
-							<!-- <button class="slds-button slds-button_neutral" onclick={handleNewRequestClick}><div style=" margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button> -->
-							<button class="slds-button slds-button_brand" onclick={handleNewRequestClick}><div style="margin-top: 2px; margin-bottom: -2px;">New Change Request</div></button>
-						</template>
-						<template if:true={_displayChangeRequestCancelButton}>
-							<button class="slds-button slds-button_brand" onclick={handleCancelClick}><div style="margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
-						</template>
-						<template if:true={_displayChangeRequestNextButton}>
-							<button class="slds-button slds-button_neutral" onclick={handleNextClick}><div style="margin-top: 2px; margin-bottom: -2px;">Next</div></button>
-						</template>
 					</div>
 				</template>
 

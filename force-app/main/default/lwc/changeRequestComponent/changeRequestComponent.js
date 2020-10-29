@@ -29,7 +29,6 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 	_displayChangeRequestsList = false;
 	_displayNewRequestDefinition = false;
 	_displayTopButtons = false;
-	_displayBottomButtons = false;
 	_displayNewChangeRequestButton = false;
 	_displayChangeRequestNextButton = false;
 	_displayChangeRequestCancellButton = false;
@@ -66,7 +65,6 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 		this._displayChangeRequestsList = false;
 		this._displayNewRequestDefinition = false;
 		this._displayTopButtons = false;
-		this._displayBottomButtons = false;
 		this._displayNewChangeRequestButton = false;
 		this._displayChangeRequestNextButton = false;
 		this._displayChangeRequestCancelButton = false;
@@ -135,10 +133,6 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 				this._componentLabel = result.componentLabel;
 
 				this._displayTopButtons = true;
-				this._displayBottomButtons = false;
-				// this._displayTopButtons = result.displayTopButtons;
-				// this._displayBottomButtons = result.displayBottomButtons;
-				// this._displayNewChangeRequestButton = true;
 				this.initialPositiveSettings();
 
 				var requestsTypeListMap = result.requestsTypeListMap;
@@ -276,12 +270,16 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 	}
 
 	handleCRChangeNewContactEmail(event) {
-		console.log('AAA handleCRChangeNewContactEmail');
+		console.log('handleCRChangeNewContactEmail');
 		var newContactDetails = event.detail.recorddetails ? JSON.parse(event.detail.recorddetails) : null;
 		this._requestedContactId = newContactDetails ? newContactDetails.id : '';
 		this._requestedContactEmail = newContactDetails ? newContactDetails.enteredText !== null ? newContactDetails.enteredText : '' : '';
 		this._requestedContactName = newContactDetails ? newContactDetails.field2val : '';
 		this._displayTransferFinalConfirmButton = (this._requestedContactEmail != '' && this._communityContactEmail !== this._requestedContactEmail);
+
+		if (this._requestedContactEmail !== undefined ) {
+			if (!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this._requestedContactEmail))) this._displayTransferFinalConfirmButton = false;
+		}
 	}
 
 	handleSoloTransferFinalConfirmClick() {
@@ -378,7 +376,6 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 	handleGroupTransferFinalSubmitClick(event) {
 		console.log('handleGroupTransferFinalSubmitClick');
 		var eventparams = event.detail.eventparams;
-		console.log('eventparams: ', eventparams);
 		this._displayGroupTransferContainer = false;
 
 		this._isSpinner = true;

@@ -1,90 +1,92 @@
 <!-- Select Tickets -->
 <template>
-  <lightning-layout horizontal-align="center">
-    <lightning-layout-item padding="around-small"
-                           size="12"
-                           large-device-size="4"
-                           medium-device-size="6"
-                           small-device-size="12"
-                           flexibility="auto"
-    >
-      <div class="slds-card__body">
-        <lightning-card>
-          <div slot="title">Tickets:</div>
-          <div
-            class="slds-p-left_x-large slds-p-right_x-large slds-p-top_x-large"
-          >
-            <div for:each={ticketsRadio} for:item="radioItem" key={key}>
-              <div
-                class="slds-grid slds-grid_align-spread slds-p-bottom_x-large"
-              >
-                <div class="slds-col slds-size_10-of-12">
-                  <div class="slds-radio">
-                    <input type="radio"
-                           id={radioItem.elementId}
-                           value={radioItem.id}
-                           name="individual-ticket-radio"
-                           class="input-ticket-radio"
-                           checked={radioItem.checked}
-                    />
-                    <label class="slds-radio__label" for={radioItem.elementId}>
-                      <div class="slds-grid slds-gutters">
-                        <div class="slds-col">
-                          <span class="slds-radio_faux"></span>
-                        </div>
-                        <div class="slds-col">
+    <lightning-layout horizontal-align="center">
+        <lightning-layout-item padding="around-small"
+                               size="12"
+                               large-device-size="4"
+                               medium-device-size="6"
+                               small-device-size="12"
+                               flexibility="auto"
+        >
+            <div class="slds-card__body">
+                <lightning-card>
+                    <div slot="title">Tickets:</div>
+                    <div
+                            class="slds-p-left_x-large slds-p-right_x-large slds-p-top_x-large"
+                    >
+                        <div for:each={ticketsRadio} for:item="radioItem" key={key}>
+                            <div
+                                    class="slds-grid slds-grid_align-spread slds-p-bottom_x-large"
+                            >
+                                <div class="slds-col slds-size_10-of-12">
+                                    <div class="slds-radio">
+                                        <input type="radio"
+                                               id={radioItem.elementId}
+                                               value={radioItem.id}
+                                               name="individual-ticket-radio"
+                                               class="input-ticket-radio"
+                                               checked={radioItem.checked}
+                                        />
+                                        <label class="slds-radio__label" for={radioItem.elementId}>
+                                            <div class="slds-grid slds-gutters">
+                                                <div class="slds-col">
+                                                    <span class="slds-radio_faux"></span>
+                                                </div>
+                                                <div class="slds-col">
                           <span class="slds-form-element__label">
                             <span>{radioItem.name}</span>
                           </span>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_2-of-12 slds-text-align_center">
+                                    <span class="community-text-gray">{radioItem.price} €</span>
+                                </div>
+                            </div>
                         </div>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-                <div class="slds-col slds-size_2-of-12 slds-text-align_center">
-                  <span class="community-text-gray">{radioItem.price} €</span>
-                </div>
-              </div>
+                        <template if:true={isGroupRegistration}>
+                            <lightning-input type="number"
+                                             name="ticket-amount"
+                                             label={inputLabel}
+                                             placeholder="Type ticket amount"
+                                             onchange={handleSelectTicketsAmount}
+                                             value={ticketsAmount}
+                                             max={availableParticipantNumber}
+                                             min="1"
+                            ></lightning-input>
+                        </template>
+                    </div>
+                </lightning-card>
             </div>
-            <template if:true={isGroupRegistration}>
-              <lightning-input type="number"
-                               name="ticket-amount"
-                               label="Ticket Amount"
-                               placeholder="Type ticket amount"
-                               onchange={handleSelectTicketsAmount}
-                               value={ticketsAmount}
-              ></lightning-input>
-            </template>
-          </div>
-        </lightning-card>
-      </div>
-    </lightning-layout-item>
-  </lightning-layout>
+        </lightning-layout-item>
+    </lightning-layout>
 
-  <div class="slds-card__footer slds-grid slds-align--absolute-center">
-    <div if:false={hidePreviousButton}>
-      <lightning-button class="slds-col slds-m-around_x-small"
-                        label="Previous"
-                        variant="neutral"
-                        onclick={handlePreviousClick}
-      ></lightning-button>
+    <div class="slds-card__footer slds-grid slds-align--absolute-center">
+        <div if:false={hidePreviousButton}>
+            <lightning-button class="slds-col slds-m-around_x-small"
+                              label="Previous"
+                              variant="neutral"
+                              onclick={handlePreviousClick}
+            ></lightning-button>
+        </div>
+        <div if:false={hideNextButton}>
+            <lightning-button class="slds-col slds-m-around_x-small"
+                              label="Next"
+                              variant="brand"
+                              onclick={handleNextClick}
+            ></lightning-button>
+        </div>
     </div>
-    <div if:false={hideNextButton}>
-      <lightning-button class="slds-col slds-m-around_x-small"
-                        label="Next"
-                        variant="brand"
-                        onclick={handleNextClick}
-      ></lightning-button>
-    </div>
-  </div>
 
-  <template if:true={isSpinner}>
-    <div class="slds-spinner_container" style="position: fixed">
-      <lightning-spinner
-        alternative-text="Loading"
-        variant="brand"
-        size="large"
-      ></lightning-spinner>
-    </div>
-  </template>
+    <template if:true={isSpinner}>
+        <div class="slds-spinner_container" style="position: fixed">
+            <lightning-spinner
+                    alternative-text="Loading"
+                    variant="brand"
+                    size="large"
+            ></lightning-spinner>
+        </div>
+    </template>
 </template>

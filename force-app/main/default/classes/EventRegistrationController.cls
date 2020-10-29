@@ -3,7 +3,7 @@ public without sharing class EventRegistrationController {
     public static Event__c getEvent(String eventId) {
         Event__c event = [
                 SELECT Id, Name, Early_Bird_Deadline__c, Registration_Deadline__c, RecordType.DeveloperName,
-                        Start_Time__c, End_Time__c
+                        Start_Time__c, End_Time__c, Max_Participants__c, Registrations__c
                 FROM Event__c
                 WHERE Id = :eventId
         ];
@@ -21,6 +21,22 @@ public without sharing class EventRegistrationController {
         ];
         result.put('contact', contact);
         return result;
+    }
+
+    @AuraEnabled
+    public static List<Event_Exhibitor__c> getContactIpr(String contactId, String eventId){
+        return [
+                SELECT Id, Number_of_free_tickets__c, Account__r.Name,
+                (
+                        SELECT Id
+                        FROM Event_Participations__r
+                        WHERE Status__c != 'Canceled'
+                )
+                FROM Event_Exhibitor__c
+                WHERE Contact__c = :contactId
+                AND Event_custom__c = :eventId
+                LIMIT 1
+        ];
     }
 
     @AuraEnabled
@@ -110,18 +126,18 @@ public without sharing class EventRegistrationController {
         return tickets;
     }
 
-    @AuraEnabled public static String insertRegistrationGroup(String groupName, String groupLeaderId) {
-        Event_Registration_Group__c ERGroup = new Event_Registration_Group__c();
-        List<Event_Registration_Group__c> groups = [SELECT Id FROM Event_Registration_Group__c WHERE Name = :groupName AND Contact__c = :groupLeaderId LIMIT 1];
+    @AuraEnabled public static String insertRegistrationGroup(Event_Registration_Group__c eventGroupInformation, String groupLeaderId) {
+//        Event_Registration_Group__c ERGroup = new Event_Registration_Group__c();
+//        List<Event_Registration_Group__c> groups = [SELECT Id FROM Event_Registration_Group__c WHERE Name = :groupName AND Contact__c = :groupLeaderId LIMIT 1];
 
-        if (groups.isEmpty()) {
-            ERGroup = new Event_Registration_Group__c(Name = groupName, Contact__c = groupLeaderId);
-            insert ERGroup;
-        } else {
-            ERGroup = groups[0];
+        if (eventGroupInformation.Id == null) {
+//            ERGroup = new Event_Registration_Group__c(Name = group.Name, Contact__c = groupLeaderId);
+//            insert ERGroup;
+            eventGroupInformation.Contact__c = groupLeaderId;
+            insert eventGroupInformation;
         }
 
-        Event_Registration_Sub_Group__c subGroup = new Event_Registration_Sub_Group__c(Event_Registration_Group__c = ERGroup.Id);
+        Event_Registration_Sub_Group__c subGroup = new Event_Registration_Sub_Group__c(Event_Registration_Group__c = eventGroupInformation.Id);
         insert subGroup;
         return subGroup.Id;
     }
@@ -182,6 +198,49 @@ public without sharing class EventRegistrationController {
     @AuraEnabled
     public static List<Map<String, String>> getPicklistValues(String objectName, String fieldName){
         return Utils.picklistValues(objectName, fieldName);
+    }
+
+    @AuraEnabled
+    public static Map<String, String> getEventTicketsLabels(List<String> eventTicketsIds){
+        Map<String, String> result = new Map<String, String>();
+        List<Event_Ticket__c> eventTicket = [
+                SELECT Id, Session__c, Session__r.Name, Ticket__c, Ticket__r.Name, Event_custom__c
+                FROM Event_Ticket__c
+                WHERE Id IN :eventTicketsIds
+                AND (Ticket__c != NULL OR Session__c != NULL OR Event_custom__c != NULL)
+        ];
+
+        for(Event_Ticket__c et : eventTicket){
+            if(et.Session__c != null){
+                result.put(et.Id, et.Session__r.Name);
+            }
+            if(et.Event_custom__c != null){
+                result.put(et.Id, et.Ticket__r.Name);
+            }
+        }
+
+        return result;
+    }
+
+    @AuraEnabled
+    public static List<Participant__c> existedParticipationCheck(String contactId, String eventId){
+        return [
+                SELECT Id
+                FROM Participant__c
+                WHERE Contact__c = :contactId
+                AND Event_custom__c = :eventId
+                AND Status__c != 'Canceled'
+                LIMIT 1
+        ];
+    }
+
+    @AuraEnabled
+    public static List<Event_Registration_Group__c> getRegistrationGroupById(String groupId){
+        return  [
+                SELECT Id, Name, Event_Exhibitor__c
+                FROM Event_Registration_Group__c
+                WHERE Id = :groupId
+        ];
     }
 
 //    @AuraEnabled

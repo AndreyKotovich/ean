@@ -1,12 +1,17 @@
 <template>
     <div class="slds-text-align--right">
-        <button class="slds-button slds-button_neutral" onclick={handleClickCancel}>
-            <div style=" margin-top: 2px; margin-bottom: -2px;">Cancel</div>
-        </button>
-        <button class="slds-button slds-button_brand" onclick={handleClickUpgrade}>
-            <div style=" margin-top: 2px; margin-bottom: -2px;">Upgrade</div>
-        </button>
-        <template if:true={isDoPayment}>
+        <template if:true={displayCancelButton}>
+            <button class="slds-button slds-button_neutral" onclick={handleClickCancel}>
+                <div style=" margin-top: 2px; margin-bottom: -2px;">Cancel</div>
+            </button>
+        </template>
+        <template if:true={displayUpgradeButton}>
+            <button class="slds-button slds-button_brand" onclick={handleClickUpgrade}>
+                <div style=" margin-top: 2px; margin-bottom: -2px;">Upgrade</div>
+            </button>
+        </template>
+
+        <template if:true={displayDoPaymentButton}>
             <button class="slds-button slds-button_brand" onclick={handleClickDoPayment}>
                 <div style=" margin-top: 2px; margin-bottom: -2px;">Do Payment</div>
             </button>

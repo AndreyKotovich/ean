@@ -13,16 +13,20 @@ public without sharing class GroupDetailsController {
 			Map<String, String> params = !String.isBlank(paramsString) ? (Map<String, String>) JSON.deserialize(paramsString, Map<String, String>.class) : new Map<String, String>();
 			String selectedCRType = params.containsKey('selectedCRType') ? String.valueOf(params.get('selectedCRType')) : '';
 
+			//	TEST GROUP DETAILS AS EAN STAFF (will looks like 'GroupDetailsPage' at community)
+			// selectedCRType = '';
+
 			//	FIRST PRIORITY	//	becomes from QuickAction	EAN Staff q-action on 'Contact' record
 			String contactRecordId = params.containsKey('contactRecordId') ? String.valueOf(params.get('contactRecordId')) : '';
-			system.debug('getGroupDetails settings = ' + JSON.serialize(settings));
 
 			//	SECOND PRIORITY
 			String userId = '' + UserInfo.getUserId();	//	eanStaffUserId OR communityUserId
 
 			List<User> communityUser = !String.isBlank(contactRecordId) ? [SELECT Id, ContactId, Contact.AccountId FROM User WHERE ContactId =:contactRecordId LIMIT 1]
 				: [SELECT Id, ContactId, Contact.AccountId FROM User WHERE Id =:userId LIMIT 1];
-			String communityContactId = !communityUser.isEmpty() ? '' + communityUser[0].ContactId : '';	//	Id accountId = communityUser[0].Contact.AccountId;
+
+			// String communityContactId = !communityUser.isEmpty() ? '' + communityUser[0].ContactId : '';	//	Id accountId = communityUser[0].Contact.AccountId;
+			String communityContactId = Test.isRunningTest() ? contactRecordId : (!communityUser.isEmpty() ? '' + communityUser[0].ContactId : '');
 
 			String groupIdFromParams = params.containsKey('selectedGroupId') ? String.valueOf(params.get('selectedGroupId')) : '';
 			String groupId = !String.isBlank(groupIdFromParams) ? groupIdFromParams : settings.containsKey('groupId') ? String.valueOf(settings.get('groupId')) : '';
@@ -64,7 +68,7 @@ public without sharing class GroupDetailsController {
 		// groupDetails.eventStartDateString = groupDetails.eventStartTime != null ? (groupDetails.eventStartTime).format('dd.MM.yyyy') : '';
 		// groupDetails.eventEndTimeString = groupDetails.eventEndTime != null ? (groupDetails.eventEndTime).format('HH:mm') : '';
 		// groupDetails.eventStartTimeString = groupDetails.eventStartTime != null ? (groupDetails.eventStartTime).format('HH:mm') : '';
-		groupDetails.registrationStatus = 'HARD CODED';
+		// groupDetails.registrationStatus = 'HARD CODED';
 		groupDetails.totalGroupExistingParticipants = 0;
 		groupDetails.totalGroupMaxParticipants = maxParticipants;
 
@@ -102,13 +106,13 @@ public without sharing class GroupDetailsController {
 			'result' => true,
 			'groupDetails' => groupDetails,
 			'subGroupList' => subGroupList,
-			'logList' => new List<String>(),	// DELETE
 			'displayGroupDetails' => false,
 			'displayGroupDetailsPartial' => false,
 			'displayGroupDefinition' => true,
 			'displayAccordions' => false,
 			'displayFinalCancel' => false,
 			'displayRegistrationSubmit' => true,
+			'displayAddMoreTicketsButton' => false,
 			'disabledEmails' => new List<String>(),
 			'isChangeRequestMode' => false
 		};
@@ -134,10 +138,8 @@ public without sharing class GroupDetailsController {
 
 	public static Map<String, Object> getExistingGroupDetails(String communityContactId, String groupId, String selectedCRType) {
 
-			//	DEVELOP MOMENT		//	TEST BUTTONS POSITION
-			// selectedCRType = '';
-
-		List<String> logList = new List<String>();	// DELETE
+		//	DEVELOP MOMENT		//	TEST BUTTONS POSITION
+		// selectedCRType = '';
 
 		if (String.isBlank(communityContactId) || String.isBlank(groupId)) {
 			return new Map<String, Object>{'result' => false, 'message' => 'ContactId or Group not found.'};
@@ -180,7 +182,7 @@ public without sharing class GroupDetailsController {
 		groupDetails.groupId = groupParticipations[0].Event_Registration_Sub_Group__r.Event_Registration_Group__c;
 		groupDetails.groupName = groupParticipations[0].Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name;
 		groupDetails.eventName = groupParticipations[0].Event_custom__r.Name;
-
+		groupDetails.eventId = groupParticipations[0].Event_custom__c;
 		groupDetails.eventEndTime = groupParticipations[0].Event_custom__r.End_Time__c;		//	Datetime
 		groupDetails.eventStartTime = groupParticipations[0].Event_custom__r.Start_Time__c;					//	Datetime
 		groupDetails.eventEndDateString = groupDetails.eventEndTime != null ? (groupDetails.eventEndTime).format('dd.MM.yyyy') : '';
@@ -188,7 +190,7 @@ public without sharing class GroupDetailsController {
 		groupDetails.eventEndTimeString = groupDetails.eventEndTime != null ? (groupDetails.eventEndTime).format('HH:mm') : '';
 		groupDetails.eventStartTimeString = groupDetails.eventStartTime != null ? (groupDetails.eventStartTime).format('HH:mm') : '';
 
-		groupDetails.registrationStatus = '(TBD) HARD CODED';
+		// groupDetails.registrationStatus = '(TBD) HARD CODED';
 		groupDetails.totalGroupExistingParticipants = totalGroupExistingParticipants;
 		groupDetails.totalGroupMaxParticipants = totalGroupMaxParticipants;
 
@@ -196,16 +198,14 @@ public without sharing class GroupDetailsController {
 			'result' => true,
 			'groupDetails' => groupDetails,
 			'subGroupList' => subGroupList,
-
-			'disabledEmails' => disabledEmails,	// TBD
-
-			'logList' => logList,				// delete
+			'disabledEmails' => disabledEmails,
 			'displayGroupDetails' => String.isBlank(selectedCRType),
 			'displayGroupDetailsPartial' => true,
 			// 'displayGroupDetailsPartial' => !String.isBlank(selectedCRType),
 			'displayGroupDefinition' => false,
 			'displayAccordions' => !subGroupList.isEmpty(),
 			'displayFinalCancel' => !String.isBlank(selectedCRType),
+			'displayAddMoreTicketsButton' => String.isBlank(selectedCRType),
 			'displayRegistrationSubmit' => false,
 			'isChangeRequestMode' => !String.isBlank(selectedCRType)
 		};
@@ -217,7 +217,7 @@ public without sharing class GroupDetailsController {
 			SELECT Id, Name, Participant_Email__c, Contact__c, Contact__r.Name, Contact__r.Email,
 				Event_custom__c, Event_custom__r.Name, Event_custom__r.End_Time__c, Event_custom__r.Start_Time__c,
 				Event_Registration_Sub_Group__c,
-				Event_Registration_Sub_Group__r.CreatedDate,
+				Event_Registration_Sub_Group__r.CreatedDate, Event_Registration_Sub_Group__r.Is_Locked__c,
 				Event_Registration_Sub_Group__r.Event_Registration_Group__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name,
 				Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__r.Name
 				// (SELECT Id FROM Order_Items__r LIMIT 1)	// to lock record if we have order item for participant (OLD LOGIC)
@@ -282,24 +282,27 @@ public without sharing class GroupDetailsController {
 			//	OLD
 			// subGroupParticipant.oldContactEmail = '' + participant.Contact__r.Name == SYSTEM_GROUP_CONTACT_NAME ? '' : participant.Contact__r.Email;
 
-			subGroupParticipant.newContactId = '' + subGroupParticipant.participantId;
+			// subGroupParticipant.newContactId = '' + subGroupParticipant.participantId;
+			subGroupParticipant.newContactId = '' + subGroupParticipant.oldContactId;
 			subGroupParticipant.newContactName = '' + subGroupParticipant.oldContactName;
 			subGroupParticipant.newContactEmail = '' + subGroupParticipant.oldContactEmail;
-			// subGroupParticipant.disabledToEdit = !(participant.Order_Items__r).isEmpty();
 
 			SubGroupDetailsWrap subGroupDetails = subGroupIdToDetailsWrap.containsKey('' + participant.Event_Registration_Sub_Group__c)
 				? subGroupIdToDetailsWrap.get('' + participant.Event_Registration_Sub_Group__c) : new SubGroupDetailsWrap();
 			subGroupDetails.subGroupId = '' + participant.Event_Registration_Sub_Group__c;
 
 			subGroupDetails.subGroupExistingParticipants = subGroupDetails.subGroupExistingParticipants == null ? 0 : subGroupDetails.subGroupExistingParticipants;
-			subGroupDetails.subGroupExistingParticipants += participant.Contact__r.Name == SYSTEM_GROUP_CONTACT_NAME ? 0 : 1;
-			totalGroupExistingParticipants += participant.Contact__r.Name == SYSTEM_GROUP_CONTACT_NAME ? 0 : 1;
+			subGroupDetails.subGroupExistingParticipants += participant.Contact__r.Name != SYSTEM_GROUP_CONTACT_NAME || !String.isBlank(participant.Participant_Email__c) ? 1 : 0;
+			totalGroupExistingParticipants += participant.Contact__r.Name != SYSTEM_GROUP_CONTACT_NAME || !String.isBlank(participant.Participant_Email__c) ? 1 : 0;
+			// subGroupDetails.subGroupExistingParticipants += participant.Contact__r.Name == SYSTEM_GROUP_CONTACT_NAME ? 0 : 1;
+			// totalGroupExistingParticipants += participant.Contact__r.Name == SYSTEM_GROUP_CONTACT_NAME ? 0 : 1;
 
 			subGroupDetails.subGroupMaxParticipants = subGroupDetails.subGroupMaxParticipants == null ? 1 : subGroupDetails.subGroupMaxParticipants + 1;
 			totalGroupMaxParticipants++;
 
 			subGroupDetails.createdDateString = (participant.Event_Registration_Sub_Group__r.CreatedDate).format('dd.MM.yyyy');
 			subGroupDetails.createdTimeString = (participant.Event_Registration_Sub_Group__r.CreatedDate).format('HH:mm');
+			subGroupDetails.disabledToEdit = false;
 
 			// collect data for transfer requestes and do not allow enter duplicate email
 			disabledEmails.add(subGroupParticipant.oldContactEmail);
@@ -443,7 +446,57 @@ public without sharing class GroupDetailsController {
 		return JSON.serialize(selectedParticipants);
 	}
 
+	@AuraEnabled
+	public static Map<String, Object> clickSubmitSubGroupParticipants(Map<String, Object> params) {
+		try {
+			String subGroupDetailsString = params.containsKey('subGroupDetails') ? String.valueOf(params.get('subGroupDetails')) : '';
+			system.debug('clickSubmitSubGroupParticipants');
+			system.debug('subGroupDetailsString: ' + subGroupDetailsString);
 
+			SubGroupDetailsWrap subGroupDetails = !String.isBlank(subGroupDetailsString) ? (SubGroupDetailsWrap) JSON.deserialize (subGroupDetailsString, SubGroupDetailsWrap.class) : new SubGroupDetailsWrap();
+
+			if (String.isBlank(subGroupDetails.subGroupId) || subGroupDetails.subGroupParticipantList == null || subGroupDetails.subGroupParticipantList.isEmpty())
+				return new Map<String, Object>{'result' => false, 'message' => 'Not Exists All Params. ' + subGroupDetails.subGroupId + ' / ' + subGroupDetails.subGroupParticipantList + ' / '};
+
+			List<Event_Registration_Sub_Group__c> subGroup = [SELECT Id, Name, Is_Locked__c FROM Event_Registration_Sub_Group__c WHERE Id =:subGroupDetails.subGroupId LIMIT 1];
+			if (subGroup.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => 'Sub Group Not Found. Id: ' + subGroupDetails.subGroupId};
+
+			List<Contact> undefinedParticipant = [SELECT Id FROM Contact WHERE Name =:SYSTEM_GROUP_CONTACT_NAME LIMIT 1];
+			if (subGroup.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => '"Undefined Participant" Not Found.'};
+
+			List<Participant__c> participantsToUpdate = new List<Participant__c>();
+			for (SubGroupParticipantWrap participantWrap : subGroupDetails.subGroupParticipantList) {
+
+				system.debug('participantWrap: ' + JSON.serialize(participantWrap));
+
+				Participant__c participant = new Participant__c();
+				participant.Id = participantWrap.participantId;
+				participant.Event_Registration_Sub_Group__c = subGroupDetails.subGroupId;
+				if (String.isBlank(participantWrap.newContactId) || participantWrap.newContactId == '' + undefinedParticipant[0].Id) {
+					participant.Contact__c = undefinedParticipant[0].Id;
+					participant.Participant_Email__c = participantWrap.newContactEmail;
+				} else {
+					participant.Contact__c = participantWrap.newContactId;
+					// participant.Participant_Email__c = '';
+					participant.Participant_Email__c = participantWrap.newContactEmail;
+				}
+				participantsToUpdate.add(participant);
+			}
+			update participantsToUpdate;
+			subGroup[0].Is_Locked__c = true;
+			update subGroup;
+
+			return new Map<String, Object>{
+				'result' => true,
+				'message' => 'Succesfully Submited Participants. Emails will be send.'
+			};
+
+		} catch (Exception e) { 
+			system.debug('!!! ERROR !!! : ' + e.getMessage());
+			system.debug('!!! ERROR !!! : ' + e.getStackTraceString());
+			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString()};
+		}
+	}
 
 
 	//	Group
@@ -451,6 +504,7 @@ public without sharing class GroupDetailsController {
 		@AuraEnabled public String groupId { get; set; }
 		@AuraEnabled public String groupName { get; set; }
 		@AuraEnabled public String eventName { get; set; }
+		@AuraEnabled public String eventId { get; set; }
 		@AuraEnabled public Datetime eventEndTime { get; set; }
 		@AuraEnabled public Datetime eventStartTime { get; set; }
 		@AuraEnabled public String eventEndDateString { get; set; }
@@ -458,7 +512,7 @@ public without sharing class GroupDetailsController {
 		@AuraEnabled public String eventEndTimeString { get; set; }
 		@AuraEnabled public String eventStartTimeString { get; set; }
 
-		@AuraEnabled public String registrationStatus { get; set; }
+		// @AuraEnabled public String registrationStatus { get; set; }
 		@AuraEnabled public Integer totalGroupExistingParticipants { get; set; }
 		@AuraEnabled public Integer totalGroupMaxParticipants { get; set; }
 	}

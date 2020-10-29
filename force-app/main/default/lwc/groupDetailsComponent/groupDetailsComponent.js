@@ -1,7 +1,9 @@
 import { LightningElement, api } from 'lwc';
 import { NavigationMixin } from "lightning/navigation";
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getGroupDetails from '@salesforce/apex/GroupDetailsController.getGroupDetails'
 import clickSubmitRegistrationFlow from '@salesforce/apex/GroupDetailsController.clickSubmitRegistrationFlow'
+import clickSubmitSubGroupParticipants from '@salesforce/apex/GroupDetailsController.clickSubmitSubGroupParticipants'
 
 export default class GroupDetailsComponent extends LightningElement {
 	@api recordId;				// required for mode 'My Registrations'
@@ -17,6 +19,7 @@ export default class GroupDetailsComponent extends LightningElement {
 	_isError = false;
 
 	_groupId = '';
+	_eventId = '';
 	_groupName = '';
 	_eventName = '';
 	_eventEndDateString = '';
@@ -36,6 +39,7 @@ export default class GroupDetailsComponent extends LightningElement {
 	_displayGroupDetailsCancelButton = false;
 	_displayFinalCancel = false;
 	_displayRegistrationSubmit = false;
+	_displayAddMoreTicketsButton = false;
 
 	_whereclause = '';
 	_selitem = 'empty@nomail.com';
@@ -49,8 +53,6 @@ export default class GroupDetailsComponent extends LightningElement {
 	_isChangeRequestMode = false;
 
 	_displayTransferContainer = false;
-	// _tempUniquekey1 = '';
-	// _tempUniquekey2 = '';
 	_tempParticipant = {};
 	_displayTransferFinalNextButton = false;
 	_requestedContactId = '';
@@ -80,6 +82,7 @@ export default class GroupDetailsComponent extends LightningElement {
 				this._groupId = result.groupDetails.groupId;
 				this._groupName = result.groupDetails.groupName;
 				this._eventName = result.groupDetails.eventName;
+				this._eventId = result.groupDetails.eventId;
 				this._eventEndDateString = result.groupDetails.eventEndDateString;
 				this._eventStartDateString = result.groupDetails.eventStartDateString;
 				this._eventEndTimeString = result.groupDetails.eventEndTimeString;
@@ -98,6 +101,7 @@ export default class GroupDetailsComponent extends LightningElement {
 
 				this._displayFinalCancel = result.displayFinalCancel;
 				this._displayRegistrationSubmit = result.displayRegistrationSubmit;
+				this._displayAddMoreTicketsButton = result.displayAddMoreTicketsButton;
 
 				this._subGroupList = result.subGroupList;
 				this._disabledEmails = result.disabledEmails;
@@ -121,6 +125,10 @@ export default class GroupDetailsComponent extends LightningElement {
 
 		var participantDetails = event.detail.recorddetails ? JSON.parse(event.detail.recorddetails) : null;
 		this._displayGroupDetailsCancelButton = true;
+
+		console.log('participantDetails: ', participantDetails);
+
+		if (participantDetails.originalText == participantDetails.enteredText) return;
 
 		for (var i = 0; i < this._subGroupList.length; i++) {
 			if (this._subGroupList[i].subGroupId !== subGroupId) {
@@ -148,16 +156,9 @@ export default class GroupDetailsComponent extends LightningElement {
 		if (participantDetails.enteredText != '') this.addEmailToDisabledEmails(participantDetails.enteredText);
 	}
 
-	// checkAreSubGroupsIsChanged() {
-	// 	var displayGroupDetailsCancelButton = false;
-	// 	for (var i = 0; i < this._subGroupList.length; i++) {
-	// 		if (this._subGroupList[i].enableSubmitButton == true) this._displayGroupDetailsCancelButton = 
-	// 	}
-	// }
-
-
-	handleSubmitSubGroupChanges(event) {
-		console.log('handleSubmitSubGroupChanges');
+	handleSubmitSubGroupParticipants(event) {
+		console.log('handleSubmitSubGroupParticipants');
+		this._isSpinner = true;
 		var tempUniquekey1 = event.currentTarget.dataset.id;		//	subGroupId
 		var tempSubGroupDetails = {};
 		for (var i = 0; i < this._subGroupList.length; i++) {
@@ -166,22 +167,26 @@ export default class GroupDetailsComponent extends LightningElement {
 			}
 			tempSubGroupDetails = this._subGroupList[i];
 		}
-		console.log('tempSubGroupDetails: ', tempSubGroupDetails);
 
-		clickSubmitRegistrationFlow({params: {
+		clickSubmitSubGroupParticipants({params: {
 			subGroupDetails: JSON.stringify(tempSubGroupDetails)
 			}}).then(result=>{
-				console.log('handleSubmitSubGroupChanges result: ', result);
+				console.log('handleSubmitSubGroupParticipants result: ', result);
+
+				if (result.result) {
+					this.showSuccessToast(result.message);
+				}
+				if (!result.result) {
+					this.showErrorToast(result.message);
+				}
 				this.connectedCallback();
 			})
 			.catch(error=>{
 				console.log('GroupDetails component');
-				console.log('handleSubmitSubGroupChanges Error: ' + JSON.stringify(error));
+				console.log('handleSubmitSubGroupParticipants Error: ' + JSON.stringify(error));
 				this._isError = true;
 				this._isSpinner = false;
 			})
-
-
 	}
 
 
@@ -215,6 +220,9 @@ export default class GroupDetailsComponent extends LightningElement {
 		this._requestedContactEmail = newContactDetails ? newContactDetails.enteredText !== null ? newContactDetails.enteredText : '' : '';
 		this._requestedContactName = newContactDetails ? newContactDetails.field2val : '';
 		this._displayTransferFinalNextButton = (this._requestedContactEmail != '' && this._tempParticipant.oldContactEmail !== this._requestedContactEmail);
+		if (this._requestedContactEmail !== undefined ) {
+			if (!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this._requestedContactEmail))) this._displayTransferFinalNextButton = false;
+		}
 	}
 
 	handleTransferFinalNextClick() {
@@ -280,9 +288,6 @@ export default class GroupDetailsComponent extends LightningElement {
 			this._tempParticipant = this._subGroupList[i].subGroupParticipantList[tempUniquekey2];
 		}
 
-		// this._requestedContactId = '';
-		// this._requestedContactEmail = '';
-		// this._requestedContactName = '';
 		this._requestedContactId = this._tempParticipant.newTransferDetails.crContactId;
 		this._requestedContactEmail = this._tempParticipant.newTransferDetails.crContactEmail;
 		this._requestedContactName = this._tempParticipant.newTransferDetails.crContactName;
@@ -318,8 +323,6 @@ export default class GroupDetailsComponent extends LightningElement {
 					if (this._subGroupList[i].subGroupParticipantList[i2].isNewTransferExist == true) this._displayFinalSubmitTransferButton = true;
 				}
 			}
-			console.log('222 this._displayFinalSubmitTransferButton: ', this._displayFinalSubmitTransferButton);
-
 		}
 
 	}
@@ -373,8 +376,9 @@ export default class GroupDetailsComponent extends LightningElement {
 			})
 	}
 
-	handleClickButton2() {
-		console.log('handleClickButton2');
+	handleAddMoreTicketsClick() {
+		var newURL = window.location.protocol + "//" + window.location.host + "/s/event-registration" + "?ei=" + this._eventId + "&gi=" + this._groupId;
+		window.location.replace(newURL);
 	}
 
 	handleAccordionArrowClick(event) {
@@ -385,6 +389,24 @@ export default class GroupDetailsComponent extends LightningElement {
 
 	}
 
+	showSuccessToast(msg) {
+		const evt = new ShowToastEvent({
+			title: 'Success',
+			message: msg,
+			variant: 'success',
+			mode: 'dismissable'
+		});
+		this.dispatchEvent(evt);
+	}
 
+	showErrorToast(msg) {
+		const evt = new ShowToastEvent({
+			title: 'Error',
+			message: msg,
+			variant: 'error',
+			mode: 'dismissable'
+		});
+		this.dispatchEvent(evt);
+	}
 
 }

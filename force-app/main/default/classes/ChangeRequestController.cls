@@ -21,14 +21,10 @@ public without sharing class ChangeRequestController {
 			List<User> communityUser = !String.isBlank(recordId) ? [SELECT Id, ContactId, Contact.Name, Contact.Email, Contact.AccountId FROM User WHERE ContactId =:recordId LIMIT 1]
 				: [SELECT Id, ContactId, Contact.Name, Contact.Email, Contact.AccountId FROM User WHERE Id =:userId LIMIT 1];
 
-			String communityContactId = '' + communityUser[0].ContactId;	// Id communityAccountId = communityUser[0].Contact.AccountId;
-			String communityContactName = communityUser[0].Contact.Name;
-			String communityContactEmail = communityUser[0].Contact.Email;
-			Boolean executedNotAtCommunity = userId != '' + communityUser[0].Id;
-
-			system.debug('executedNotAtCommunity= ' + executedNotAtCommunity);
-			system.debug('userId= ' + userId);
-			system.debug('communityUser[0].Id= ' + '' + communityUser[0].Id);
+			String communityContactId = !Test.isRunningTest() ? '' + communityUser[0].ContactId : recordId;
+			String communityContactName = !communityUser.isEmpty() ? communityUser[0].Contact.Name : '';
+			String communityContactEmail = !communityUser.isEmpty() ? communityUser[0].Contact.Email : '';
+			Boolean executedNotAtCommunity = !Test.isRunningTest() ? userId != '' + communityUser[0].Id : true;
 
 			List<Change_Request__c> changeRequests = [
 				SELECT Id, Name, CreatedDate, Description__c, Event_Participation__c, Event_custom__c, Event_custom__r.Name, Status__c,
@@ -55,15 +51,12 @@ public without sharing class ChangeRequestController {
 
 			return new Map<String, Object>{
 				'result' => true,
-
 				//	DEBUG
-				'userId' => userId,
+				// 'userId' => userId,
 				'communityUser' => communityUser,
 				'communityContactId' => communityContactId,
 				'communityContactName' => communityContactName,
 				'communityContactEmail' => communityContactEmail,
-				// 'changeRequests' => changeRequests,
-
 				'changeRequestsList' => changeRequestsList,
 				'displayNoRecordsMessage' => changeRequestsList.isEmpty(),
 				'displayChangeRequestsList' => !changeRequestsList.isEmpty(),
@@ -159,7 +152,6 @@ public without sharing class ChangeRequestController {
 				'selectedGroup' => JSON.serialize(selectedGroup),
 				'subGroupId' => subGroupId,
 				'participant' => participant,
-				// 'participant[0].Event_custom__c' => participant[0].Event_custom__c,
 				'result' => true,
 				'message' => 'Change Request: ' + newChangeRequest.Name + ' successfully created.'
 			};
@@ -175,9 +167,9 @@ public without sharing class ChangeRequestController {
 		try {
 
 			String selectedParticipantId = params.containsKey('selectedParticipantId') ? String.valueOf(params.get('selectedParticipantId')) : '';
-			String communityContactId = params.containsKey('communityContactId') ? String.valueOf(params.get('communityContactId')) : '';
+			String communityContactId = params.containsKey('communityContactId') ? String.valueOf(params.get('communityContactId')) : null;
 			String communityContactEmail = params.containsKey('communityContactEmail') ? String.valueOf(params.get('communityContactEmail')) : '';
-			String requestedContactId = params.containsKey('requestedContactId') ? String.valueOf(params.get('requestedContactId')) : '';
+			String requestedContactId = params.containsKey('requestedContactId') ? String.valueOf(params.get('requestedContactId')) : null;
 			String requestedContactEmail = params.containsKey('requestedContactEmail') ? String.valueOf(params.get('requestedContactEmail')) : '';
 			String crDescription = params.containsKey('crDescription') ? String.valueOf(params.get('crDescription')) : '';
 
@@ -224,8 +216,6 @@ public without sharing class ChangeRequestController {
 	@AuraEnabled
 	public static Map<String, Object> finalSubmitTransferGroup(Map<String, Object> params) {
 		try {
-			system.debug('finalSubmitTransferGroup params: ' + JSON.serialize(params));
-
 			String crDescription = params.containsKey('crDescription') ? String.valueOf(params.get('crDescription')) : '';
 			String eventparamsString = params.containsKey('eventparams') ? String.valueOf(params.get('eventparams')) : '';
 

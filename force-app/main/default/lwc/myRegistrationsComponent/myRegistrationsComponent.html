@@ -1,13 +1,5 @@
 <template>
 
-	<!-- <p>List Of My Registrations Component</p>
-	</br>
-	<p>{_contactId}</p>
-	</br>
-	<p>{_accountId}</p>
-	</br> -->
-	<!-- <p>System params: {params}</p> -->
-
 	<template if:false={_isError}>
 
 		<div class="slds-card">
@@ -22,9 +14,9 @@
 						<tr class="slds-text-title_caps" style="cursor: default;">
 							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Event Name</div></th>
 							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Type</div></th>
-							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Start Time</div></th>
-							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">End Time</div></th>
-							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Status</div></th>
+							<th style="width: 18%;" scope="col"><div class="slds-truncate" title="Draft Name">Start Time</div></th>
+							<th style="width: 18%;" scope="col"><div class="slds-truncate" title="Draft Name">End Time</div></th>
+							<th style="width: 24%;" scope="col"><div class="slds-truncate" title="Draft Name">Status</div></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -48,9 +40,9 @@
 						<tr class="slds-text-title_caps" style="cursor: default;">
 							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Event Name</div></th>
 							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Group Name</div></th>
-							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Start Time</div></th>
-							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">End Time</div></th>
-							<th style="width: 20%;" scope="col"><div class="slds-truncate" title="Draft Name">Status</div></th>
+							<th style="width: 18%;" scope="col"><div class="slds-truncate" title="Draft Name">Start Time</div></th>
+							<th style="width: 18%;" scope="col"><div class="slds-truncate" title="Draft Name">End Time</div></th>
+							<th style="width: 24%;" scope="col"><div class="slds-truncate" title="Draft Name">Status</div></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -71,11 +63,8 @@
 			<template if:true={_displayNoRegistrationMessage}>
 				<p style="text-align: center; font-size: 18px; font-weight: bold; color: #007DC6; margin-top: 25px; margin-bottom: 25px;">{_noRegistrationMessage}</p>
 			</template>
-
 		</div>
-
 	</template>
-
 
     <template if:true={_isError}>
         <div class="slds-text-heading_large slds-align_absolute-center slds-text-color_error">{_errorMessage}</div>

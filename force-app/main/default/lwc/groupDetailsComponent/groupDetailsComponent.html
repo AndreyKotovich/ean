@@ -26,22 +26,18 @@
 									<p style="font-size: 12px;">Group Name</p>
 									<p>{_groupName}</p>
 								</div>
-							</template>
-							<template if:true={_displayGroupDetails}>
-								<div class="detail-section">
-									<p style="font-size: 12px;">Registration Status</p>
-									<p>{_registrationStatus}</p>
-								</div>
-							</template>
-						</div>
-						<div>
-							<template if:true={_displayGroupDetailsPartial}>
 								<div class="detail-section">
 									<p style="font-size: 12px;">Event Name</p>
 									<p>{_eventName}</p>
 								</div>
 							</template>
+						</div>
+						<div>
 							<template if:true={_displayGroupDetails}>
+								<div class="detail-section">
+									<p style="font-size: 12px;">Event Start Time</p>
+									<p>{_eventStartDateString} {_eventStartTimeString}</p>
+								</div>
 								<div class="detail-section">
 									<p style="font-size: 12px;">Selected Participants</p>
 									<p>{_totalGroupExistingParticipants}</p>
@@ -51,8 +47,8 @@
 						<template if:true={_displayGroupDetails}>
 							<div>
 								<div class="detail-section">
-									<p style="font-size: 12px;">Event Start Time</p>
-									<p>{_eventStartDateString} {_eventStartTimeString}</p>
+									<p style="font-size: 12px;">Event End Time</p>
+									<p>{_eventEndDateString} {_eventEndTimeString}</p>
 								</div>
 								<div class="detail-section">
 									<p style="font-size: 12px;">Requested Participants</p>
@@ -60,10 +56,10 @@
 								</div>
 							</div>
 							<div>
-								<div class="detail-section">
+								<!-- <div class="detail-section">
 									<p style="font-size: 12px;">Event End Time</p>
 									<p>{_eventEndDateString} {_eventEndTimeString}</p>
-								</div>
+								</div> -->
 								<!-- <div class="detail-section">
 									<p style="font-size: 12px;">Requested Participants</p>
 									<p>{_totalGroupMaxParticipants}</p>
@@ -74,17 +70,22 @@
 
 					<div style="width: 30%; display: inline-block; vertical-align: top; padding-right: 10px;">
 						<div class="slds-text-align--right">
-							<template if:true={_displayFinalSubmitTransferButton}>
-								<button class="slds-button slds-button_brand" onclick={handleFinalSubmitTransferClick}><div style="margin-top: 2px; margin-bottom: -2px;">Submit Transfer</div></button>
-							</template>
 							<template if:true={_displayFinalCancel}>
 								<button class="slds-button slds-button_neutral" onclick={handleFinalCancel}><div style="margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
+							</template>
+							<template if:true={_displayGroupDetailsCancelButton}>
+								<button class="slds-button slds-button_neutral" onclick={connectedCallback}><div style="margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
+							</template>
+							<template if:true={_displayFinalSubmitTransferButton}>
+								<button class="slds-button slds-button_brand" onclick={handleFinalSubmitTransferClick}><div style="margin-top: 2px; margin-bottom: -2px;">Submit Transfer</div></button>
 							</template>
 							<template if:true={_displayRegistrationSubmit}>
 								<button class="slds-button slds-button_brand" onclick={handleClickSubmitRegistrationFlow}><div style=" margin-top: 2px; margin-bottom: -2px;">Submit</div></button>
 							</template>
-							<template if:true={_displayGroupDetailsCancelButton}>
-								<button class="slds-button slds-button_neutral" onclick={connectedCallback}><div style="margin-top: 2px; margin-bottom: -2px;">Cancel</div></button>
+							<template if:true={_displayAddMoreTicketsButton}>
+								<button class="slds-button slds-button_brand slds-align-bottom" onclick={handleAddMoreTicketsClick}>
+									<div style=" margin-top: 2px; margin-bottom: -2px;">Add more tickets to group</div>
+								</button>										
 							</template>
 						</div>
 					</div>
@@ -140,8 +141,8 @@
 												<!-- (TBD: SUBMIT SUBGROUP BUTTON) -->
 
 												<a style="text-decoration: underline; color: #007DC6; font-weight: bold; cursor: pointer;"
-													data-id={subGroup.subGroupId} onclick={handleSubmitSubGroupChanges}>
-													Submit Group Changes
+													data-id={subGroup.subGroupId} onclick={handleSubmitSubGroupParticipants}>
+													Submit Participants
 												</a>
 
 											</div>
@@ -159,8 +160,8 @@
 												<!-- (TBD: SUBMIT SUBGROUP BUTTON) -->
 
 												<a style="text-decoration: underline; color: #007DC6; font-weight: bold; cursor: pointer;"
-													data-id={subGroup.subGroupId} onclick={handleSubmitSubGroupChanges}>
-													Submit Group Changes
+													data-id={subGroup.subGroupId} onclick={handleSubmitSubGroupParticipants}>
+													Submit Participants
 												</a>
 
 											</div>
@@ -188,6 +189,7 @@
 														uniquekey1 = {participant.uniquekey1}
 														uniquekey2 = {participant.uniquekey2}
 														disabledvalues = {_disabledEmailsString}
+														enabledvalue = {participant.newContactEmail}
 														disabledtoedit = {subGroup.disabledToEdit}
 														onchangenewcontactemail = {handleOngroupchangecontactemail}>
 													</c-record-search>
@@ -282,7 +284,6 @@
 										</c-record-search>
 									</div>
 									<div style="display: inline-block; width: 280px; margin-left: 20px; vertical-align: bottom;">
-										<!-- {_tempParticipant.newContactName} -->
 										{_requestedContactName}
 									</div>
 
@@ -299,8 +300,6 @@
 					</template>
 				</div>
 
-
-				
 			</template>
 		</template>
 
