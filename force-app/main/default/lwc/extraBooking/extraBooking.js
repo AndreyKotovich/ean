@@ -1,7 +1,8 @@
-import {LightningElement, track, api} from 'lwc';
+import {LightningElement, track, api, wire} from 'lwc';
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { Utils } from "c/utils";
 import getExtraSessions from "@salesforce/apex/EventRegistrationController.getExtraSessions";
+import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 
 export default class ExtraBooking extends LightningElement {
     @api eanEvent = {};
@@ -29,6 +30,7 @@ export default class ExtraBooking extends LightningElement {
     @track isSpinner = true;
     @track sessionsCheckboxGroup = [];
     @track showSessions = true;
+    @track newsletterLabel = "";
 
     eventExtraSessions = []; //all extra sessions for this event
     availableExtraSession = []; //sessions which are available for the participant
@@ -36,10 +38,17 @@ export default class ExtraBooking extends LightningElement {
     _selectedSessions = [];
     _selectedServices = {};
 
+    @wire(getObjectInfo, { objectApiName: 'Contact' })
+    objInfo({ data, error }) {
+        if (data) this.newsletterLabel = data.fields.Newsletter__c.label;
+    }
+
     connectedCallback() {
-        // if (this.registrationType !== "solo") return this.handleNextClick();
+        this.hidePreviousButton = this.userInfo.isUpgrade;
 
         this.isEarlyBird = this.eanEvent.Early_Bird_Deadline__c ? Utils.deadlineCheck(this.eanEvent.Early_Bird_Deadline__c) : false;
+
+        if(!this._selectedServices.hasOwnProperty('newsletter') && this.registrationType === 'solo') this._selectedServices.newsletter = this.userInfo.contact.Newsletter__c;
 
         let promise1 = getExtraSessions({eventId: this.eanEvent.Id});
 
@@ -79,7 +88,7 @@ export default class ExtraBooking extends LightningElement {
     }
 
     handleNextClick() {
-
+console.log('handleNextClick');
         if(Utils.validateElements.call(this, '.validate-service')){
             const selectEvent = new CustomEvent("continue", {
                 detail: {
@@ -153,6 +162,16 @@ export default class ExtraBooking extends LightningElement {
             selectedExclusions.push(rec.Session__r.Mutual_Exclusion__c);
         }
 
+        if(this.userInfo.isUpgrade &&
+            this.userInfo.initiallySelectedSessions && this.userInfo.initiallySelectedSessions.length > 0){
+
+            for(let initialSelection of this.userInfo.initiallySelectedSessions){
+                let rec = this.availableExtraSession.find(obj => obj.Session__c === initialSelection.id);
+                selectedExclusions.push(rec.Session__r.Mutual_Exclusion__c);
+            }
+
+        }
+
         for(let [i, ticket] of this.availableExtraSession.entries()){
 
             const { Max_Participants__c, Registrations__c, Description__c, Name, Mutual_Exclusion__c } = ticket.Session__r;
@@ -162,9 +181,23 @@ export default class ExtraBooking extends LightningElement {
 
             let isFull = Max_Participants__c ? Registrations__c >= Max_Participants__c : false;
 
+            let isDisabled = isFull;
+
             let isChecked = !!this._selectedSessions.find(obj => obj.id === ticket.Id ); //used only during init to auto populate
 
-            let isDisabled = isFull;
+            if(this.userInfo.isUpgrade &&
+                this.userInfo.initiallySelectedSessions){
+
+                let initiallySelectedSession = this.userInfo.initiallySelectedSessions.find(obj => obj.id === ticket.Session__c);
+                if(!!initiallySelectedSession){
+                    isChecked = true;
+                    isDisabled = true;
+                    price = initiallySelectedSession.price
+                }
+
+            }
+
+            //disable mutual exclusions
             if(!isDisabled && Mutual_Exclusion__c && !isChecked){
                 isDisabled = selectedExclusions.includes(Mutual_Exclusion__c);
             }
@@ -172,6 +205,7 @@ export default class ExtraBooking extends LightningElement {
             sessionsCheckboxGroup.push({
                 elementId: 'extra-session-'+i,
                 value: ticket.Id,
+                sessionId: ticket.Session__c,
                 label: Name,
                 description: Description__c,
                 price: price,
@@ -212,9 +246,17 @@ export default class ExtraBooking extends LightningElement {
 
         for(let sessionCheckbox of this.sessionsCheckboxGroup){
             if(!sessionCheckbox.isDisabled && sessionCheckbox.isChecked){
+                //need for isUpgrade mode
+                let initialSelection = false;
+                if(this.userInfo.initiallySelectedSessions){
+                    initialSelection = !!this.userInfo.initiallySelectedSessions.find(obj => obj.id === sessionCheckbox.sessionId);
+                }
+
                 validatedSelectedSessions.push({
                     id: sessionCheckbox.value,
-                    price: sessionCheckbox.price
+                    price: sessionCheckbox.price,
+                    isInitialSelection: initialSelection, //need for isUpgrade mode
+                    sessionId: sessionCheckbox.sessionId
                 });
             }
         }
@@ -244,7 +286,9 @@ export default class ExtraBooking extends LightningElement {
     }
 
     handleChangeBR(event){
-        this._selectedServices.badgeRetrieval = event.detail.value;
+        if(!this.disableBadgeRetrieval){
+            this._selectedServices.badgeRetrieval = event.detail.value;
+        }
     }
 
     handleChangeVL(event){
@@ -268,5 +312,15 @@ export default class ExtraBooking extends LightningElement {
         }
 
         return selectedJournals;
+    }
+
+    handleChangeNewsletter(event){
+        if(!this.userInfo.contact.Newsletter__c){
+            this._selectedServices.newsletter = event.detail.checked;
+        }
+    }
+
+    get disableBadgeRetrieval(){
+        return this.userInfo.isUpgrade
     }
 }

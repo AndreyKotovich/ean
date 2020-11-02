@@ -1,0 +1,69 @@
+<apex:component controller="CallForRenewalEmailTemplateController" access="global">
+	<apex:attribute name="membershipStatus" description="Membership Status Id" type="String" assignTo="{!membershipStatusId}" required="false" access="global"/>
+
+	<html>
+		<body>
+			<!-- <apex:image id="companyLogo" url="{!imageURL}" alt="Lookup" title="Lookup Symbol"/> -->
+			<apex:outputText value="{!PrepareData}" />
+
+			<p style="margin: 0px; font-size: 11pt;">Dear {!membershipStatusRecord.Contact__r.Salutation} {!membershipStatusRecord.Contact__r.FirstName} {!membershipStatusRecord.Contact__r.LastName}</p>
+			<br/>
+			<p style="margin: 0px; font-size: 11pt;">On behalf of EAN, I would like to express our gratitude for your support throughout {!thisYearString} !</p>
+			<p style="margin: 0px; font-size: 11pt;">
+				We hope you will 
+				<span style="font-weight: bolder;">renew your membership for {!nextYearString} </span>
+				and have a chance to engage with us on a frequent basis in the upcoming year.
+			</p>
+			<br/>
+			<p style="margin: 0px; font-size: 11pt;">
+				To ensure that you benefit from all advantages, please settle your membership fee at your earliest convenience and by
+				<span style="font-weight: bolder;">DECEMBER 31, {!thisYearString}.</span>
+			</p>
+			<p style="margin: 0px; font-size: 11pt;">
+				Membership fee for {!nextYearString} for {!membershipStatusRecord.Membership__r.Name} is EUR 
+				<span style="font-weight: bolder;">{!totalRenewalFee}</span>
+			</p>
+			<p style="margin: 0px; font-size: 11pt;">{!reductionString}</p>
+			<br/>
+			<p style="margin: 0px; font-size: 11pt; font-weight: bolder;">You can renew your membership conveniently in your MyEAN profile:</p>
+			<a href="{!connumityMembershipLink}" target="_blank">{!membershipStatusRecord.Membership__r.Name}</a>
+			<p style="margin: 0px; font-size: 11pt; font-weight: bolder;">There are several payment options available.</p>
+			<br/>
+			<p style="margin: 0px; font-size: 11pt; font-weight: bolder;">
+				For your convenience, we have prepared a short instruction video of how membership renewal procedure works: 
+				<a href="{!video1Link}" target="_blank">{!video1Label}</a>
+			</p>
+			<p style="margin: 0px; font-size: 11pt; font-weight: bolder;">
+				You can also listen to some members of the EAN community who tell their EAN story: 
+				<a href="{!video2Link}" target="_blank">{!video2Label}</a>
+			</p>
+			<p style="margin: 0px; font-size: 11pt;">If you have any questions regarding your membership, please do not hesitate to contact our Head office at membership@ean.org.</p>
+			<br/>
+			<p style="margin: 0px; font-size: 11pt;">Thank you, your continued membership is essential for EAN!</p>
+			<br/>
+			<p style="margin: 0px; font-size: 11pt;">
+				I look forward to our further co-operation and to meeting you at the 
+				<a href="{!nextYearCongressLink}" target="_blank">{!nextYearCongressLabel}</a>
+			</p>
+			<br/>
+			<p style="margin: 0px; font-size: 11pt;">With best wishes,</p>
+			<br/>
+			<p style="margin: 0px; font-size: 11pt;">Elena Moro</p>
+			<p style="margin: 0px; font-size: 11pt;">EAN Secretary General</p>
+			<br/>
+			<!-- footer -->
+			<p style="margin: 0px; font-size: 9.0pt;">EAN Head office</p>
+			<p style="margin: 0px; font-size: 9.0pt;">Breite Gasse 4/7</p>
+			<p style="margin: 0px; font-size: 9.0pt;">1070 Vienna, Austria</p>
+			<p style="margin: 0px; font-size: 9.0pt;">Phone: 43 1 889 05 03</p>
+			<p style="margin: 0px; font-size: 9.0pt;">Fax: 43 1 889 05 03 13</p>
+			<p style="margin: 0px; font-size: 9.0pt;">membership@ean.org</p>
+			<p style="margin: 0px; font-size: 9.0pt;">www.ean.org</p>
+			<br/>
+			<p style="margin: 0px; font-size: 11pt; font-style: italic;">Not renewing this year? Please let us know why.</p>
+			<p style="margin: 0px; font-size: 11pt;">
+				<a href="{!surveyOnWhyNotRenewLink}" target="_blank">{!surveyOnWhyNotRenewLabel}</a>
+			</p>
+		</body>
+	</html>
+</apex:component>

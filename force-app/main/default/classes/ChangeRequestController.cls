@@ -60,7 +60,8 @@ public without sharing class ChangeRequestController {
 				'changeRequestsList' => changeRequestsList,
 				'displayNoRecordsMessage' => changeRequestsList.isEmpty(),
 				'displayChangeRequestsList' => !changeRequestsList.isEmpty(),
-				'requestsTypeListMap' => getPicklistValues(CHANGE_REQUEST_OBJECT_API_NAME, PICKLIST_FIELD_API_NAME),
+				// 'requestsTypeListMap' => getPicklistValues(CHANGE_REQUEST_OBJECT_API_NAME, PICKLIST_FIELD_API_NAME),
+				'requestsTypeListMap' => Utils.picklistValues(CHANGE_REQUEST_OBJECT_API_NAME, PICKLIST_FIELD_API_NAME),
 				'componentLabel' => executedNotAtCommunity ? 'Community User Change Requests' : 'My Change Requests',
 				'displayTopButtons' => !executedNotAtCommunity,
 				'displayBottomButtons' => executedNotAtCommunity
@@ -268,20 +269,20 @@ public without sharing class ChangeRequestController {
 	}
 
 
-	//	TODO: Move to UTILS Apex class
-	public static List<Map<String, String>> getPicklistValues(String objectName, String fieldName){
-		Schema.SObjectType s = Schema.getGlobalDescribe().get(objectName);
-		Schema.DescribeSObjectResult r = s.getDescribe();
-		Map<String,Schema.SObjectField> fields = r.fields.getMap();
-		Schema.DescribeFieldResult fieldResult = fields.get(fieldName).getDescribe();
-		List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
+	//	Moved to UTILS Apex class
+	// public static List<Map<String, String>> getPicklistValues(String objectName, String fieldName){
+	// 	Schema.SObjectType s = Schema.getGlobalDescribe().get(objectName);
+	// 	Schema.DescribeSObjectResult r = s.getDescribe();
+	// 	Map<String,Schema.SObjectField> fields = r.fields.getMap();
+	// 	Schema.DescribeFieldResult fieldResult = fields.get(fieldName).getDescribe();
+	// 	List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
 
-		List<Map<String, String>> listValues = new List<Map<String, String>>();
-		for(Schema.PicklistEntry pickListVal : ple){
-			listValues.add(new Map<String, String>{'label' => pickListVal.getLabel(), 'value' => pickListVal.getValue()});
-		}
-		return listValues;
-	}
+	// 	List<Map<String, String>> listValues = new List<Map<String, String>>();
+	// 	for(Schema.PicklistEntry pickListVal : ple){
+	// 		listValues.add(new Map<String, String>{'label' => pickListVal.getLabel(), 'value' => pickListVal.getValue()});
+	// 	}
+	// 	return listValues;
+	// }
 
 	public class ChangeRequestWrap {
 		@AuraEnabled public String crId { get; set; }

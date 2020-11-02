@@ -15,7 +15,7 @@ public without sharing class EventRegistrationController {
         Map<String, Object> result = new Map<String, Object>();
         User user = [SELECT Contact.Id FROM User WHERE Id = :UserInfo.getUserId()];
         Contact contact = [
-                SELECT Id, Residency__c
+                SELECT Id, Residency__c, Newsletter__c
                 FROM Contact
                 WHERE Id = :user.Contact.Id
         ];
@@ -68,7 +68,7 @@ public without sharing class EventRegistrationController {
             System.debug('insert participants:: ' + participants);
             insert participants;
 
-            Map<String, Decimal> sessionParticipationPriceMap = new Map<String, Decimal>();
+            Map<String, Object> sessionParticipationPriceMap = new Map<String, Object>();
             System.debug('participants.size(): ' + participants.size());
             if (participants.size() == 1) {
                 sessionParticipationPriceMap = insertSessionParticipants(selectedSession, participants[0].Id);
@@ -127,12 +127,7 @@ public without sharing class EventRegistrationController {
     }
 
     @AuraEnabled public static String insertRegistrationGroup(Event_Registration_Group__c eventGroupInformation, String groupLeaderId) {
-//        Event_Registration_Group__c ERGroup = new Event_Registration_Group__c();
-//        List<Event_Registration_Group__c> groups = [SELECT Id FROM Event_Registration_Group__c WHERE Name = :groupName AND Contact__c = :groupLeaderId LIMIT 1];
-
         if (eventGroupInformation.Id == null) {
-//            ERGroup = new Event_Registration_Group__c(Name = group.Name, Contact__c = groupLeaderId);
-//            insert ERGroup;
             eventGroupInformation.Contact__c = groupLeaderId;
             insert eventGroupInformation;
         }
@@ -148,7 +143,7 @@ public without sharing class EventRegistrationController {
                 SELECT Id, Session_Start__c, Session_End__c, Registrations__c, Max_Participants__c, (
                         SELECT Id, Price__c, Early_bird_price__c, Event_custom__c, Ticket__c, Ticket__r.Name,
                                 Ticket__r.Available_for_Memberships__c, Ticket__r.Available_for_Countries__c,
-                                Session__r.Name, Session__r.Description__c, Session__r.Mutual_Exclusion__c,
+                                Session__c, Session__r.Name, Session__r.Description__c, Session__r.Mutual_Exclusion__c,
                                 Session__r.Max_Participants__c, Session__r.Registrations__c
                         FROM Event_Tickets__r
                         WHERE Ticket__c != NULL
@@ -163,8 +158,8 @@ public without sharing class EventRegistrationController {
         ];
     }
 
-    public static Map<String, Decimal> insertSessionParticipants(List<Object> selectedSessions, String participantId) {
-        Map<String, Decimal> sessionParticipantPriceMap = new Map<String, Decimal>();
+    public static Map<String, Object> insertSessionParticipants(List<Object> selectedSessions, String participantId) {
+        Map<String, Object> sessionParticipantPriceMap = new Map<String, Object>();
         Map<String, Decimal> selectedSessionsMap = new Map<String, Decimal>();
 
         for (Integer i = 0; i < selectedSessions.size(); i++) {
@@ -189,7 +184,10 @@ public without sharing class EventRegistrationController {
         insert sessionParticipants;
 
         for (Session_Participation__c sp : sessionParticipants) {
-            sessionParticipantPriceMap.put(sp.Id, selectedSessionsMap.get(sp.Event_Ticket__c));
+            sessionParticipantPriceMap.put(sp.Id, new  Map<String, Object> {
+                'price' => selectedSessionsMap.get(sp.Event_Ticket__c),
+                'id' => sp.Session__c
+            });
         }
 
         return sessionParticipantPriceMap;
@@ -243,25 +241,90 @@ public without sharing class EventRegistrationController {
         ];
     }
 
-//    @AuraEnabled
-//    public static List<Event_Ticket__c> getSessionsTickets(String eventId) {
-//        List<Session__c> sessions = [
-//                SELECT Id, Name, Session_Start__c, Session_End__c
-//                FROM Session__c
-//                WHERE Event_custom__c = :eventId
-//                AND Session_Start__c != NULL
-//                AND Session_End__c != NULL
-//        ];
-//
-//        List<Event_Ticket__c> tickets = [
-//                SELECT Id, Price__c, Early_bird_price__c, Event_custom__c, Ticket__c, Ticket__r.Name,
-//                        Ticket__r.Available_for_Memberships__c, Ticket__r.Available_for_Countries__c
-//                FROM Event_Ticket__c
-//                WHERE Session__c IN :sessions
-//                AND Ticket__c != NULL
-//                AND (Price__c != NULL OR Early_bird_price__c != NULL)
-//        ];
-//
-//        return tickets;
-//    }
+    @AuraEnabled
+    public static Map<String, Object> updateContacts(List<Contact> contacts){
+        try{
+            System.debug('contacts: '+contacts);
+            update contacts;
+            return new Map<String, Object>{
+                    'status' => 'Success',
+                    'message' => 'Success'
+            };
+        } catch(Exception e){
+            return new Map<String, Object>{
+                    'status' => 'Error',
+                    'message' => 'You haven\'t been subscribed to the EAN newsletter. Please contact you system administrator.'
+            };
+        }
+    }
+
+    @AuraEnabled
+    public static Map<String, Object> getParticipation(String participantId){
+        Map<String, Object> participantsMap = new Map<String, Object>();
+        List<Participant__c> eventParticipants = [
+                SELECT Id, Visa_Letter__c, Event_custom__c, Contact__c, Badge_Retrieval__c
+                FROM Participant__c
+                WHERE Id = :participantId
+                AND Status__c != 'Canceled'
+        ];
+
+        if(!eventParticipants.isEmpty()){
+            participantsMap.put('eventParticipant', eventParticipants[0]);
+
+            List<Session_Participation__c> sessionParticipation = [
+                    SELECT Id, Session__c, (SELECT Id, Amount__c FROM Order_Items__r LIMIT 1)
+                    FROM Session_Participation__c
+                    WHERE Contact__c = :eventParticipants[0].Contact__c
+                    AND Event__c = :eventParticipants[0].Event_custom__c
+                    AND Status__c != 'Canceled'
+            ];
+
+            if(!sessionParticipation.isEmpty()){
+                participantsMap.put('sessionParticipation', sessionParticipation);
+            }
+        }
+        return participantsMap;
+    }
+
+    @AuraEnabled public static void updateParticipant(Participant__c participant){
+        update participant;
+    }
+
+    @AuraEnabled public static Map<String, Object> insertUpgradeData(Map<String, Object> data){
+        Savepoint sp = Database.setSavepoint();
+        try{
+            List<Object> selectedSession = data.containsKey('selectedSessions') ? (List<Object>)data.get('selectedSessions') : new List<Object>();
+            System.debug('data.get(\'participant\'): '+data.get('participant'));
+            String participantId = data.containsKey('participant') ? (String)data.get('participant') : '';
+            Map<Object,Object> generalDataObj = data.containsKey('generalData') ? (Map<Object,Object>)data.get('generalData') : new Map<Object,Object>();
+            Map<String, Object> m = new Map<String, Object>();
+            for(Object obj : generalDataObj.keySet()){
+                m.put((String)obj, generalDataObj.get(obj));
+            }
+
+            Map<String, Object> sessionParticipationPriceMap = new Map<String, Object>();
+            if (participantId != '') {
+                sessionParticipationPriceMap = insertSessionParticipants(selectedSession, participantId);
+            }
+
+            List<Order__c> order = OrderHelper.createNewOrder(new Map<String, Object>{
+                    'generalData' => m,
+                    'sessionParticipantPrice' => sessionParticipationPriceMap
+            });
+
+            return new Map<String, Object>{
+                    'status' => 'Success',
+                    'message' => 'Success',
+                    'result' => order
+            };
+        } catch(Exception e){
+            System.debug(e);
+            Database.rollback(sp);
+            return new Map<String, Object>{
+                    'status' => 'Error',
+                    'message' => e.getMessage()
+            };
+        }
+
+    }
 }

@@ -2,15 +2,15 @@ public without sharing class OrderHelper {
 
     public static List<Order__c> createNewOrder(Map<String,Object> generalData) {
         
-        System.debug('createNewOrder');
+        System.debug('createNewOrder ' + generalData);
         List<Participant__c> participants = generalData.containsKey('participants') ? 
             (List<Participant__c>)generalData.get('participants') : new List<Participant__c>();
         
         Map<String,Object> genData = generalData.containsKey('generalData') ? 
             (Map<String,Object>)generalData.get('generalData') : new Map<String,Object>();
 
-        Map<String, Decimal> sessionParticipantPrice = generalData.containsKey('sessionParticipantPrice') ?
-                (Map<String, Decimal>)generalData.get('sessionParticipantPrice') : new Map<String, Decimal>();
+        Map<String, Object> sessionParticipantPrice = generalData.containsKey('sessionParticipantPrice') ?
+                (Map<String, Object>)generalData.get('sessionParticipantPrice') : new Map<String, Object>();
         
         String contactId = (String)genData.get('contactId');
         String eventId = (String)genData.get('eventId');
@@ -18,10 +18,28 @@ public without sharing class OrderHelper {
         System.debug('createNewOrder groupId ' + groupId);
         Decimal priceTicket = (Decimal)genData.get('priceTicket');
         List<Object> journals = (List<Object>)genData.get('journals');
-//        List<Object> selectedSessions = (List<Object>)genData.get('selectedSessions');
-//        List<Event_Ticket__c> sessionParticipants = (List<Event_Ticket__c>)genData.get('sessionParticipants');
-//        System.debug('sessionParticipants: '+sessionParticipants);
+   
+        System.debug('discountInfo' + genData.containsKey('discountInfo'));
+        System.debug('discountInfo' + genData.get('discountInfo'));
+        Map<Object,Object> discountInfo = genData.containsKey('discountInfo') ? 
+            (Map<Object,Object>)genData.get('discountInfo') : new Map<Object,Object>();
+            
+        System.debug('sessions' + discountInfo.containsKey('sessions'));
+        List<DiscountHelper.SessionWrapper> sessions = discountInfo.containsKey('sessions') ?
+            (List<DiscountHelper.SessionWrapper>)JSON.deserialize(JSON.serialize(discountInfo.get('sessions')), List<DiscountHelper.SessionWrapper>.class) : 
+            new List<DiscountHelper.SessionWrapper>();
 
+        Map<Id, DiscountHelper.SessionWrapper> sessionMaps = new Map<Id, DiscountHelper.SessionWrapper>();
+        for ( DiscountHelper.SessionWrapper s: sessions) {
+            sessionMaps.put(s.id, s);
+        }
+
+        System.debug('tickets ' + discountInfo.containsKey('tickets'));
+        List<DiscountHelper.TicketWrapper> tickets = discountInfo.containsKey('tickets') ?
+            (List<DiscountHelper.TicketWrapper>)JSON.deserialize(JSON.serialize(discountInfo.get('tickets')), List<DiscountHelper.TicketWrapper>.class) : 
+            new List<DiscountHelper.TicketWrapper>();     
+
+        System.debug('tickets ' + tickets);
 
         Order__c o = new Order__c(
             Contact__c = contactId,
@@ -40,7 +58,9 @@ public without sharing class OrderHelper {
                 Order_Custom__c = o.Id,
                 Amount__c = priceTicket,
                 Quantity__c = 1,
-                Event_Participation__c = part.Id
+                Event_Participation__c = part.Id,
+                Discount__c = !tickets.isEmpty() ? tickets[0].discountId : null,
+                Discount_Amount__c = !tickets.isEmpty() && tickets[0].discountAmount != null ? (-1) * tickets[0].discountAmount : 0
             ));
         }
 
@@ -61,12 +81,18 @@ public without sharing class OrderHelper {
 
         if(!sessionParticipantPrice.isEmpty()){
 
-            for(String sessionPartId : sessionParticipantPrice.keySet()){
+            for (String sessionPartId : sessionParticipantPrice.keySet()) {
+                //price
+                // id session
+                Map<String, Object> sessionPart = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(sessionParticipantPrice.get(sessionPartId))); 
+                String sessionId = String.valueOf(sessionPart.get('id'));
                 ordItems.add( new Order_Item__c(
                         Order_Custom__c = o.Id,
-                        Amount__c = sessionParticipantPrice.get(sessionPartId),
+                        Amount__c = (Decimal)sessionPart.get('price'),
                         Quantity__c = 1,
-                        Session_Participation__c = sessionPartId
+                        Session_Participation__c = sessionPartId,
+                        Discount__c = sessionMaps.containsKey(sessionId) ? sessionMaps.get(sessionId).discountId : null,
+                        Discount_Amount__c = sessionMaps.containsKey(sessionId) && sessionMaps.get(sessionId).discountAmount != null ? (-1) * sessionMaps.get(sessionId).discountAmount : 0
                 ));
             }
 
@@ -121,7 +147,7 @@ public without sharing class OrderHelper {
                     ordItems.add( 
                         new Order_Item__c(
                             Order_Custom__c = o.Id,
-                            Amount__c =  ordPrice.get(o.Payment_Invoice__c),
+                            Amount__c =  (-1) * ordPrice.get(o.Payment_Invoice__c),
                             Quantity__c = 1
                         )
                     );  
@@ -150,7 +176,7 @@ public without sharing class OrderHelper {
             Boolean displayDoPaymentButton = false;
             if (participants[0].Order_Items__r.size() > 0 && !String.isBlank(participants[0].Order_Items__r[0].Order_Custom__c)){
                 status = participants[0].Order_Items__r[0].Order_Custom__r.Status__c;
-                if (status == 'Opened') {
+                if (status != 'Paid') {
                     displayDoPaymentButton = true;
                 }                
             }
@@ -163,7 +189,7 @@ public without sharing class OrderHelper {
                 'displayDoPaymentButton' => displayDoPaymentButton
             };
         }
-        return new Map<String, Object>{
+        return new Map<String, Object> {
             'displayCancelButton' => false,
             'displayUpgradeButton' => false,
             'displayDoPaymentButton' => false

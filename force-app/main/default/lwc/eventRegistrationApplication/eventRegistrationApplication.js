@@ -9,6 +9,10 @@ import getContactInfo from "@salesforce/apex/EventRegistrationController.getCont
 import insertEventParticipants from "@salesforce/apex/EventRegistrationController.insertEventParticipants";
 import insertRegistrationGroup from "@salesforce/apex/EventRegistrationController.insertRegistrationGroup";
 import getCountries from "@salesforce/apex/membershipApplicationController.getCountries";
+import updateContacts from "@salesforce/apex/EventRegistrationController.updateContacts";
+import getParticipation from "@salesforce/apex/EventRegistrationController.getParticipation";
+import updateParticipant from "@salesforce/apex/EventRegistrationController.updateParticipant";
+import insertUpgradeData from "@salesforce/apex/EventRegistrationController.insertUpgradeData";
 
 export default class EventRegistrationApplication extends NavigationMixin(LightningElement) {
     //TODO before participant insert check availability of participants
@@ -51,12 +55,14 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     selectedTicket = "";
     priceTicket = 0;
     ticketsAmount = 0;
+    ticketId = 0;
     /**
      * @variable userInfo - information about user which works with the application
      * @property contact - contains contact record of user
      * @property memberships - active memberships of user (List<MembershipContactAssotiation__c>)
      * */
     userInfo = {};
+    discountInfo = {};
     participants = {}; //event participants which we insert in database
     selectedSessions = []; //selected extra sessions
     selectedServices = { //selected extra services
@@ -64,6 +70,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         visaLetter: false,
         badgeRetrieval: ''
     };
+    upgradeParticipant = {}; //participant in isUpgrade mode
 
     connectedCallback() {
         for (let prop in this.steps) {
@@ -72,12 +79,13 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             }
         }
 
-        this.setCurrentStep();
+        this.detectCurrentStep();
 
         let urlParams = new URL(window.location);
         let eventId = urlParams.searchParams.get("ei");
+        let participantId = urlParams.searchParams.get("pi");
 
-        this.getInitialData(eventId)
+        this.getInitialData(eventId, participantId)
             .catch((error) => {
                 this.handleError(error);
             })
@@ -86,19 +94,24 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             });
     }
 
-    getInitialData(eventId) {
+    getInitialData(eventId, participantId) {
         let promises = [];
 
         promises.push(getEvent({eventId: eventId}));
         promises.push(getContactInfo());
         promises.push(getUserMemberships());
         promises.push(getCountries());
+        if(!!participantId){
+            promises.push(getParticipation({participantId: participantId}));
+        } else {
+            promises.push(new Promise((resolve)=>{resolve()}));
+        }
 
         return new Promise((resolve, reject) => {
             Promise.all(promises)
                 .then((results) => {
                     this.ean_event = Object.assign({}, results[0]);
-                    console.log(JSON.stringify(results[1]));
+                    console.log('11', JSON.stringify(results[1]));
                     this.userInfo = Object.assign({}, results[1]);
                     this.userInfo.memberships = [...results[2]];
 
@@ -112,9 +125,36 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                             break;
                         }
                     }
-                    console.log(JSON.stringify(this.userInfo));
+                    console.log('111',JSON.stringify(this.userInfo));
 
-                    this.steps.step1.isActive = true;
+                    this.setWizardStep('step-1');
+
+                    if(!!results[4] && results[4].eventParticipant){
+                        if(this.userInfo.contact.Id !== results[4].eventParticipant.Contact__c) throw new Error();
+
+                        this.upgradeParticipant = Object.assign({}, results[4].eventParticipant);
+                        this.userInfo.isUpgrade = true;
+                        this.selectedServices.visaLetter = results[4].eventParticipant.Visa_Letter__c;
+                        this.selectedServices.badgeRetrieval = results[4].eventParticipant.Badge_Retrieval__c;
+                        this.registrationType = 'solo';
+
+                        if(results[4].sessionParticipation && results[4].sessionParticipation.length > 0){
+                            let  initiallySelectedSessions = [];
+
+                            for(let session of results[4].sessionParticipation){
+                                initiallySelectedSessions.push({
+                                    id: session.Session__c,
+                                    price: session.Order_Items__r && session.Order_Items__r.length > 0 ? session.Order_Items__r[0].Amount__c : ''
+                                });
+                            }
+
+                            this.userInfo.initiallySelectedSessions = initiallySelectedSessions;
+                        }
+
+
+                        console.log('this.userInfo', JSON.stringify(this.userInfo));
+                        this.setWizardStep('step-3');
+                    }
 
                     resolve();
                 })
@@ -124,13 +164,24 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         });
     }
 
-    setCurrentStep() {
+    detectCurrentStep() {
         for (let prop in this.steps) {
             if (!this.steps[prop]) continue;
 
             if (this.steps[prop].isActive) {
                 this.currentStep = this.steps[prop].value;
                 break;
+            }
+        }
+    }
+
+    setWizardStep(step){
+        for (let prop in this.steps) {
+            if (this.steps[prop].value === step) {
+                this.steps[prop].isActive = true;
+                this.currentStep = this.steps[prop].value;
+            } else {
+                this.steps[prop].isActive = false;
             }
         }
     }
@@ -144,37 +195,49 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     }
 
     onSelectTicket(event) {
-        console.log(JSON.parse(JSON.stringify(event.detail)));
+        console.log('1111 ', JSON.parse(JSON.stringify(event.detail)));
         this.selectedTicket = event.detail.selectedTicket;
         this.ticketsAmount = event.detail.ticketsAmount;
         this.priceTicket = event.detail.priceTicket;
+        this.ticketId = event.detail.ticketId;
         this.onNext();
     }
 
     onExtraBooking(event) {
-        // console.log('selectedSessions: ' + JSON.stringify(event.detail.selectedSessions));
-        // console.log('selectedServices: ' + JSON.stringify(event.detail.selectedServices));
         this.selectedSessions = [...event.detail.selectedSessions];
         this.selectedServices = Object.assign({}, event.detail.selectedServices);
+        console.log('selectedServices: '+JSON.stringify(event.detail.selectedServices));
+        console.log('selectedSessions: '+JSON.stringify(event.detail.selectedSessions));
 
-        this.selections = {
-            selectedTickets : [
+        let selectedTickets = [];
+        if(!!this.selectedTicket){
+            selectedTickets = [
                 {
                     ticketId: this.selectedTicket,
                     quantity: this.registrationType === 'solo' ? 1 : this.ticketsAmount,
-                    amount: this.priceTicket
+                    amount: this.priceTicket,
+                    id: this.ticketId
                 }
-            ],
+            ];
+        }
+        this.selections = {
+            eventId: this.ean_event.Id,
+            selectedTickets,
             selectedServices: this.selectedServices,
             selectedSessions: this.selectedSessions
+        };
+
+        //skip next step is there are no selected sessions and finish registration
+        if(this.userInfo.isUpgrade && this.selectedSessions.length <= 0){
+            this.finishRegistration();
+        } else {
+            this.onNext();
         }
 
-        // console.log(JSON.parse(JSON.stringify(this.selections)));
-
-        this.onNext();
     }
 
     onSummarize(event) {
+        this.discountInfo = event.detail.discountInfo;
         this.onNext();
     }
 
@@ -192,7 +255,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             // this.steps.step2.isActive = false;
             this.finishRegistration();
         }
-        this.setCurrentStep();
+        this.detectCurrentStep();
     }
 
     onPrevious() {
@@ -206,10 +269,17 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             this.steps.step4.isActive = false;
             this.steps.step3.isActive = true;
         }
-        this.setCurrentStep();
+        this.detectCurrentStep();
     }
 
-    finishRegistration() {
+    finishRegistration(){
+        if(this.userInfo.isUpgrade){
+            this.onFinishUpgrade();
+        } else {
+            this.onFinishRegistration();
+        }
+    }
+    onFinishRegistration() {
         this.isSpinner = true;
         let participants = [];
         let call = this.registrationType !== "solo" ?
@@ -231,6 +301,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                 generalData.priceTicket = this.priceTicket;
                 generalData.contactId = this.userInfo.contact.Id;
                 generalData.journals = [...this.selectedServices.journals];
+                generalData.discountInfo = this.discountInfo;
 
                 console.log('generalData', JSON.parse(JSON.stringify(generalData)));
                 if (this.registrationType === "solo") {
@@ -263,24 +334,31 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                 }
                 console.log('participants', participants)
 
-                return insertEventParticipants({participants: participants, generalData: generalData, selectedSession: this.selectedSessions});
+                let promiseArray = [];
+                promiseArray.push(insertEventParticipants({participants: participants, generalData: generalData, selectedSession: this.selectedSessions}));
+
+                if(this.registrationType === 'solo'){
+                    let updateContact = [{sobjectType: "Contact", Id: this.userInfo.contact.Id, Newsletter__c: this.selectedServices.newsletter}];
+                    promiseArray.push(updateContacts({contacts: updateContact}));
+                } else {
+                    promiseArray.push(new Promise((resolve)=>{
+                        resolve({status: 'Success'})
+                    }));
+                }
+                return Promise.all(promiseArray);
             })
-            .then((data) => {
+            .then(([data, data2]) => {
                 this.isSpinner = false;
                 let msg = data.status !== 'Error' ? `You have successfully registered for the ${this.ean_event.Name}` : data.message;
                 this.dispatchToast(data.status, msg, data.status);
 
-                console.log('data insertEventParticipants ', data);
-                // console.log('data.result insertEventParticipants ', data.result);
-                // console.log('data.result[0] insertEventParticipants ', data.result[0]);
-                if (data.status !== 'Error') {
-                    // this[NavigationMixin.Navigate]({
-                    //     type: "comm__namedPage",
-                    //     attributes: {
-                    //         pageName: "home"
-                    //     }
-                    // });
+                console.log('data2', JSON.stringify(data2));
+                if(data2.status === 'Error'){
+                    this.dispatchToast(data2.status, data2.message, data2.status);
+                }
 
+                console.log('data insertEventParticipants ', data);
+                if (data.status !== 'Error') {
                     this[NavigationMixin.Navigate]({
                         type: 'comm__namedPage',
                         attributes: {
@@ -295,6 +373,72 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             .catch((error) => {
                 this.handleError(error);
             });
+    }
+
+    onFinishUpgrade(){
+        this.isSpinner = true;
+        let participant = {
+            Id: this.upgradeParticipant.Id,
+            Visa_Letter__c: this.selectedServices.visaLetter
+        };
+
+        let updateContact = [{sobjectType: "Contact", Id: this.userInfo.contact.Id, Newsletter__c: this.selectedServices.newsletter}];
+
+        let insertData = {}
+
+        if(this.selectedSessions.length > 0){
+            let generalData = {};
+            generalData.eventId = this.ean_event.Id;
+            generalData.contactId = this.userInfo.contact.Id;
+
+            Object.assign(insertData, {participant: this.upgradeParticipant.Id, selectedSessions:this.selectedSessions, generalData})
+            console.log('insertData', JSON.stringify(insertData));
+        }
+
+        Promise.all([
+            updateParticipant({participant: participant}),
+            updateContacts({contacts: updateContact}),
+            Object.keys(insertData).length > 0 ? insertUpgradeData({data: insertData}) : new Promise(resolve => {resolve({status: 'Success'})})
+        ])
+            .then(([res1, res2, res3])=>{
+                this.isSpinner = false;
+
+                if(res2.status === 'Error'){
+                    this.dispatchToast(res2.status, res2.message, res2.status);
+                }
+
+                let msg = res3.status !== 'Error' ? 'You have successfully upgraded your registration' : res3.message;
+                this.dispatchToast(res3.status, msg, res3.status);
+
+                if(res3.status !== 'Error'){
+
+                    if(res3.result){
+                        this[NavigationMixin.Navigate]({
+                            type: 'comm__namedPage',
+                            attributes: {
+                                pageName: 'payment-component'
+                            },
+                            state: {
+                                orderId: res3.result[0].Id
+                            }
+                        });
+                    } else {
+                        this[NavigationMixin.Navigate]({
+                            type: 'standard__recordPage',
+                            attributes: {
+                                recordId: this.upgradeParticipant.Id,
+                                actionName: 'view',
+                            },
+                        });
+                    }
+
+                }
+
+            })
+            .catch(error=>{
+                this.handleError(error);
+            })
+
     }
 
     onError(event) {

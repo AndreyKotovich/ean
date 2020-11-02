@@ -16,9 +16,6 @@ export default class SoloParticipationCommunityButtons extends NavigationMixin(L
 			.then(res => {
 				if (res && res.id && res.status) {
 					this.orderId = res.id;
-					console.log('Paid');
-					console.log(res.status === 'Paid');
-					//this.displayDoPaymentButton = res.status === 'Paid';
 					this.displayDoPaymentButton = res.displayDoPaymentButton;
 				}
 				this.eventId = res.eventId;
@@ -36,6 +33,7 @@ export default class SoloParticipationCommunityButtons extends NavigationMixin(L
 	handleClickCancel() {
 		console.log('handleClickCancel: ', this.recordId);
 	}
+
 	handleClickUpgrade() {
 		console.log('handleClickUpgrade: ', this.recordId);
 		console.log('eventId: ', this.eventId);
@@ -44,6 +42,7 @@ export default class SoloParticipationCommunityButtons extends NavigationMixin(L
 		window.location.replace(newURL);
 		console.log('must redirect');
 	}
+
 	handleClickDoPayment() {
 		console.log('handleClickDoPayment: this.recordId', this.recordId);
 		console.log('handleClickDoPayment: this.orderId', this.recordId);

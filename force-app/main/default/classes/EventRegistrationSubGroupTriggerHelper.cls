@@ -19,14 +19,12 @@ public without sharing class EventRegistrationSubGroupTriggerHelper {
                 emailActivity.Event_Participation__c = partisipant.Id;
                 emailActivity.Contact__c = partisipant.Contact__c;
                 emailActivity.Event_custom__c = partisipant.Event_custom__c;
-                emailActivity.Event_Registration_Sub_Group__c = partisipant.Event_Registration_Sub_Group__c;
                 if (partisipant.Contact__r.Name == 'Undefined Participant') {
                     emailActivity.Send_to_email__c = partisipant.Participant_Email__c;
                 } else {
                     emailActivity.Send_to_email__c = partisipant.Contact__r.Email;
                 }
-                emailActivity.Status__c = partisipant.Contact__r.Name;
-                emailActivity.Type__c = 'Sub group is closed';
+                emailActivity.Type__c = 'Sub group is submited';
                 emailActivities.add(emailActivity);
             }
             insert emailActivities;

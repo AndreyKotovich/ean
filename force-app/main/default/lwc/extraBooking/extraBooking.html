@@ -89,13 +89,12 @@
 
                             </lightning-layout-item>
 
-                            <lightning-layout-item
-                                    padding="around-small"
-                                    size="12"
-                                    large-device-size="4"
-                                    medium-device-size="6"
-                                    small-device-size="12"
-                                    flexibility="auto"
+                            <lightning-layout-item padding="around-small"
+                                                   size="12"
+                                                   large-device-size="4"
+                                                   medium-device-size="6"
+                                                   small-device-size="12"
+                                                   flexibility="auto"
                             >
                                 <lightning-combobox class="slds-m-top_x-small slds-m-bottom_x-small validate-service"
                                                     name="badge-retrieval"
@@ -105,17 +104,17 @@
                                                     options={badgeRetrievalOptions}
                                                     onchange={handleChangeBR}
                                                     required={isBadgeRequired}
+                                                    disabled={disableBadgeRetrieval}
                                 ></lightning-combobox>
 
                             </lightning-layout-item>
 
-                            <lightning-layout-item
-                                    padding="around-small"
-                                    size="12"
-                                    large-device-size="4"
-                                    medium-device-size="6"
-                                    small-device-size="12"
-                                    flexibility="auto"
+                            <lightning-layout-item padding="around-small"
+                                                   size="12"
+                                                   large-device-size="4"
+                                                   medium-device-size="6"
+                                                   small-device-size="12"
+                                                   flexibility="auto"
                             >
                                 <lightning-input class="slds-m-top_x-small slds-m-bottom_x-small"
                                                  type="checkbox"
@@ -126,9 +125,26 @@
                                 ></lightning-input>
 
                             </lightning-layout-item>
+
+                            <lightning-layout-item if:false={isGroupRegistration}
+                                                   padding="around-small"
+                                                   size="12"
+                                                   large-device-size="4"
+                                                   medium-device-size="6"
+                                                   small-device-size="12"
+                                                   flexibility="auto"
+                            >
+                                <lightning-input class="slds-m-top_x-small slds-m-bottom_x-small"
+                                                 type="checkbox"
+                                                 label={newsletterLabel}
+                                                 name="newsletter"
+                                                 onchange={handleChangeNewsletter}
+                                                 checked={_selectedServices.newsletter}
+                                                 disabled={userInfo.contact.Newsletter__c}
+                                ></lightning-input>
+                            </lightning-layout-item>
+
                         </lightning-layout>
-
-
                     </div>
                 </lightning-card>
             </lightning-layout-item>

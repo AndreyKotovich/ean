@@ -140,25 +140,29 @@ export default class SelectRegistrationType extends NavigationMixin(LightningEle
     }
 
     handleNextClick() {
-        if (
-            Utils.validateElements.call(this, "lightning-combobox, lightning-input")
-        ) {
+        if (Utils.validateElements.call(this, "lightning-combobox, lightning-input")) {
             let obj = {
                 registrationType: this._selectedRegistrationType,
                 iprInfo: this.iprInfo
             };
 
             if(this.isGroupRegistration){
+                if(this.registrationType === 'group' && !!!this._eventGroupInformation.Id){
+                    if(this._eventGroupInformation.Event_Exhibitor__c){
+                        delete this._eventGroupInformation.Event_Exhibitor__c;
+                    }
+                }
+
+                if(this.registrationType === 'ipr' && !!!this._eventGroupInformation.Id){
+                    this._eventGroupInformation.Event_Exhibitor__c = this.iprInfo.Id
+                }
+
                 obj.eventGroupInformation = this._eventGroupInformation;
+
             }
 
             const selectEvent = new CustomEvent("continue", {
                 detail: obj
-                //     {
-                //     registrationType: this._selectedRegistrationType,
-                //     groupName: this.isGroupRegistration ? this._groupName : "",
-                //     iprInfo: this.iprInfo
-                // }
             });
             this.dispatchEvent(selectEvent);
         }

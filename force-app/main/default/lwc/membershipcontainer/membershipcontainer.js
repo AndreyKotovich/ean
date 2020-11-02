@@ -70,6 +70,7 @@ export default class Membershipcontainer extends NavigationMixin(LightningElemen
             getCurrentContactMemberships()
                 .then(result=>{
                     this.currentContactMemberships = [...JSON.parse(result)['memberships']];
+                    console.log('DEVVIT 1 result: ' + result);
                     this.manageButtons(result);
                 })
                 .catch(error=> {
@@ -78,6 +79,7 @@ export default class Membershipcontainer extends NavigationMixin(LightningElemen
         }
     }
     manageButtons(result){
+        console.log('DEVVIT 2');
         let parsedResult = JSON.parse(result);
         if(parsedResult['memberships'].length === 0){
             //new

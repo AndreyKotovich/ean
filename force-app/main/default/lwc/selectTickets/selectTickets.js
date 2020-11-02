@@ -37,6 +37,7 @@ export default class SelectTickets extends LightningElement {
 
     @track isSpinner = true;
     @track ticketsRadio = [];
+    @track ticketId = 0;
     @track _priceTicket = 0;
     @track _ticketsAmount = 0;
     @track availableParticipantNumber = 0;
@@ -127,6 +128,7 @@ export default class SelectTickets extends LightningElement {
                         elementId: "individual-ticket-radio-" + i,
                         id: tickets[i].Id,
                         name: tickets[i].Ticket__r.Name,
+                        tickedId: tickets[i].Ticket__c,
                         price: price,
                         checked: this._selectedTicket === tickets[i].Id
                     });
@@ -188,9 +190,11 @@ export default class SelectTickets extends LightningElement {
                 selectedTicket = item.value;
             }
         });
-        this._priceTicket = this.ticketsRadio.find(e => {
+        let chosenTicket = this.ticketsRadio.find(e => {
             return e.id === selectedTicket;
-        }).price;
+        });
+        this._priceTicket = chosenTicket.price;
+        this.ticketId = chosenTicket.tickedId;
         console.log(selectedTicket);
         console.log(this._priceTicket);
         this._selectedTicket = selectedTicket;
@@ -211,7 +215,8 @@ export default class SelectTickets extends LightningElement {
                 detail: {
                     selectedTicket: this._selectedTicket,
                     priceTicket: this._priceTicket,
-                    ticketsAmount: this._ticketsAmount
+                    ticketsAmount: this._ticketsAmount,
+                    ticketId: this.ticketId
                 }
             });
             this.dispatchEvent(selectEvent);

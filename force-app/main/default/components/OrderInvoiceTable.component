@@ -1,0 +1,68 @@
+<apex:component id="OrderInvoiceTable" access="global" controller="OrderInvoiceTableController">
+    <apex:attribute name="order" description="Order Id for event participation" type="String" assignTo="{!orderId}" required="false" access="global"/>
+       
+     <table style="width: 100%;">
+        <thead>
+            <tr >
+                <th style="border-bottom: 1px solid #ddd;" scope="col">
+                    <div style="padding: 5px;" title="Delegate name"><b>Delegate name</b></div>
+                </th>
+                <th style="border-bottom: 1px solid #ddd;" scope="col">
+                    <div style="padding: 5px;" title="Ticket Type"><b>Ticket Type</b></div>
+                </th>
+                <th style="border-bottom: 1px solid #ddd; text-align: center;" scope="col">
+                    <div style="padding: 5px;" title="Price"><b>Price</b></div>
+                </th>
+            </tr>
+        </thead>
+        <tbody id="validate-table-tbody">
+            <apex:repeat var="OrderItem" value="{!orderItems}">
+                <tr>
+                    <td style="border-bottom: 1px solid #ddd;" data-label="Delegate name">
+                        <div style="padding: 5px;">{!OrderItem.Name}</div>
+                    </td>
+                    <td style="border-bottom: 1px solid #ddd;" data-label="Ticket Type">
+                        <div style="padding: 5px;">{!OrderItem.Name}</div>
+                    </td>
+                    <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">
+                        <div style="padding: 5px;">{!OrderItem.Total_amount__c}  &#8364;</div>
+                    </td>
+                </tr>
+            </apex:repeat>
+            <tr>
+                <td style="" data-label="Delegate name">
+                    <div style="padding: 5px;"></div>
+                </td>
+                <td style="border-bottom: 1px solid #ddd;" data-label="Ticket Type">
+                    <div style="padding: 5px;">Total</div>
+                </td>
+                <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">
+                    <div style="padding: 5px;">{!orderTotalAmount}  &#8364;</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="" data-label="Delegate name">
+                    <div style="padding: 5px;"></div>
+                </td>
+                <td style="border-bottom: 1px solid #ddd;" data-label="Ticket Type">
+                    <div style="padding: 5px;">VAT xx%</div>
+                </td>
+                <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">
+                    <div style="padding: 5px;">VAT  &#8364;</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="" data-label="Delegate name">
+                    <div style="padding: 5px;"></div>
+                </td>
+                <td style="border-bottom: 1px solid #ddd;" data-label="Ticket Type">
+                    <div style="padding: 5px;"><b>Total incl. VAT</b></div>
+                </td>
+                <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">
+                    <div style="padding: 5px;"><b>Total incl. VAT  &#8364;</b></div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</apex:component>
