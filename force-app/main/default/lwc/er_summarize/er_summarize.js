@@ -24,9 +24,15 @@ export default class ErSummarize extends LightningElement {
     @track eventId;
     @track totalAmount = 0;
     @track discountAmount = 0;
+    discountCode = '';
+    totalAmountOrg = 0;
     discountInfo = {};
     _selections = {};
     badgePicklistValues = [];
+
+    get isApplyCoupon() {
+        return Object.keys(this.discountInfo).length > 0; 
+    }
 
     connectedCallback() {
         let eventTicketsIds = [];
@@ -98,6 +104,7 @@ export default class ErSummarize extends LightningElement {
                         this.totalAmount += session.price;
                     }
                 }
+                this.totalAmountOrg = this.totalAmount;
                 console.log('ticketsTable', this.ticketsTable);
                 console.log('sessionsTable', this.sessionsTable);
                 this.isSpinner = false;
@@ -147,64 +154,71 @@ export default class ErSummarize extends LightningElement {
         );
     }
 
-    getDiscount(e) {
+    сancelDiscount(){
+        this.discountAmount = 0;
+        this.totalAmount = this.totalAmountOrg;
+        this.discountInfo = {};
+    }
+
+    getDiscount() {
         console.log('getDiscount START');
         this.discountAmount = 0;
-        if (e.keyCode === 13) {
-            this.isSpinner = true;
-            let sessionsTable = [];
-            let ticketsTable = [];
+        this.totalAmount = this.totalAmountOrg;
+        this.discountCode = this.template.querySelector('[data-id=dCode]').value;
+        this.isSpinner = true;
+        let sessionsTable = [];
+        let ticketsTable = [];
 
-            this.sessionsTable.forEach(e => {
-                sessionsTable.push({ id: e.sessionId, amount: e.amount });
-            });
-            console.log('this.ticketsTable ', JSON.parse(JSON.stringify(this.ticketsTable)));
-            this.ticketsTable.forEach(e => {
-                ticketsTable.push({ id: e.ticketId, amount: e.amount });
-            });
+        this.sessionsTable.forEach(e => {
+            sessionsTable.push({ id: e.sessionId, amount: e.amount });
+        });
+        console.log('this.ticketsTable ', JSON.parse(JSON.stringify(this.ticketsTable)));
+        this.ticketsTable.forEach(e => {
+            ticketsTable.push({ id: e.ticketId, amount: e.amount });
+        });
 
-            let generalData = {
-                eventId: this.eventId,
-                sessions: sessionsTable,
-                tickets: ticketsTable,
-                discountCode: `${e.target.value}`
-            };
+        let generalData = {
+            eventId: this.eventId,
+            sessions: sessionsTable,
+            tickets: ticketsTable,
+            discountCode: `${this.discountCode}`
+        };
 
-            console.log('generalData ', generalData);
-            getDiscountApex({ generalData: generalData })
-                .then(res => {
-                    console.log('res ', res);
-                    this.dispatchToast(res.status, res.message, res.status);
-                    if (res.status === 'Success') {
-                        this.discountInfo = res.data;
-                        if (this.discountInfo && this.discountInfo.sessions && this.discountInfo.sessions.length > 0) {
-                            this.discountInfo.sessions.forEach(e => {
-                                if (e && e.discountAmount) {
-                                    this.discountAmount -= +e.discountAmount;
-                                }
-                                
-                            });
-                        }
-                        if (this.discountInfo && this.discountInfo.tickets && this.discountInfo.tickets.length > 0) {
-                            this.discountInfo.tickets.forEach(e => {
-                                if (e && e.discountAmount) {
-                                    let tick = this.ticketsTable.find(item => `${item.ticketId}` === `${e.id}` );
-                                    let qnt = tick && tick.quantity ? tick.quantity : 1;
-                                    this.discountAmount -= +e.discountAmount * qnt;
-                                }
-                            });
-                        }
+        console.log('generalData ', generalData);
+        getDiscountApex({ generalData: generalData })
+            .then(res => {
+                console.log('res ', res);
+                this.dispatchToast(res.status, res.message, res.status);
+                if (res.status === 'Success') {
+                    this.discountInfo = res.data;
+                    if (this.discountInfo && this.discountInfo.sessions && this.discountInfo.sessions.length > 0) {
+                        this.discountInfo.sessions.forEach(e => {
+                            if (e && e.discountAmount) {
+                                this.discountAmount -= +e.discountAmount;
+                            }
+
+                        });
                     }
-                    this.totalAmount += this.discountAmount;
-                    this.isSpinner = false;
-                })
-                .catch(error => {
-                    console.log('error ', error);
-                    this.discountAmount = 0;
-                    this.dispatchToast('Error', error, 'Error');
-                    this.isSpinner = false;
-                });
-        }
+                    if (this.discountInfo && this.discountInfo.tickets && this.discountInfo.tickets.length > 0) {
+                        this.discountInfo.tickets.forEach(e => {
+                            if (e && e.discountAmount) {
+                                let tick = this.ticketsTable.find(item => `${item.ticketId}` === `${e.id}`);
+                                let qnt = tick && tick.quantity ? tick.quantity : 1;
+                                this.discountAmount -= +e.discountAmount * qnt;
+                            }
+                        });
+                    }
+                }
+                this.totalAmount = this.totalAmountOrg + this.discountAmount;
+                this.isSpinner = false;
+            })
+            .catch(error => {
+                console.log('error ', error);
+                this.discountAmount = 0;
+                this.dispatchToast('Error', error, 'Error');
+                this.isSpinner = false;
+            });
+
     }
 
     get showBadgeRetrieval() {

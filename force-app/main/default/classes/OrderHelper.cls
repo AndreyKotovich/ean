@@ -15,16 +15,12 @@ public without sharing class OrderHelper {
         String contactId = (String)genData.get('contactId');
         String eventId = (String)genData.get('eventId');
         String groupId = (String)genData.get('groupId');
-        System.debug('createNewOrder groupId ' + groupId);
+        
         Decimal priceTicket = (Decimal)genData.get('priceTicket');
-        List<Object> journals = (List<Object>)genData.get('journals');
-   
-        System.debug('discountInfo' + genData.containsKey('discountInfo'));
-        System.debug('discountInfo' + genData.get('discountInfo'));
+
         Map<Object,Object> discountInfo = genData.containsKey('discountInfo') ? 
             (Map<Object,Object>)genData.get('discountInfo') : new Map<Object,Object>();
             
-        System.debug('sessions' + discountInfo.containsKey('sessions'));
         List<DiscountHelper.SessionWrapper> sessions = discountInfo.containsKey('sessions') ?
             (List<DiscountHelper.SessionWrapper>)JSON.deserialize(JSON.serialize(discountInfo.get('sessions')), List<DiscountHelper.SessionWrapper>.class) : 
             new List<DiscountHelper.SessionWrapper>();
@@ -34,12 +30,9 @@ public without sharing class OrderHelper {
             sessionMaps.put(s.id, s);
         }
 
-        System.debug('tickets ' + discountInfo.containsKey('tickets'));
         List<DiscountHelper.TicketWrapper> tickets = discountInfo.containsKey('tickets') ?
             (List<DiscountHelper.TicketWrapper>)JSON.deserialize(JSON.serialize(discountInfo.get('tickets')), List<DiscountHelper.TicketWrapper>.class) : 
             new List<DiscountHelper.TicketWrapper>();     
-
-        System.debug('tickets ' + tickets);
 
         Order__c o = new Order__c(
             Contact__c = contactId,
@@ -64,26 +57,9 @@ public without sharing class OrderHelper {
             ));
         }
 
-        System.debug('journals: '+journals);
-        if(!journals.isEmpty()){
-
-            for(Integer i = 0; i < journals.size(); i++){
-                Map<Object, Object> obj = (Map<Object, Object>) journals[i];
-                ordItems.add( new Order_Item__c(
-                        Order_Custom__c = o.Id,
-                        Amount__c = (Decimal)obj.get('price'),
-                        Quantity__c = (Decimal)obj.get('quantity'),
-                        Product__c = (String)obj.get('productId')
-                ));
-            }
-
-        }
-
-        if(!sessionParticipantPrice.isEmpty()){
+        if(sessionParticipantPrice != null && !sessionParticipantPrice.isEmpty()){
 
             for (String sessionPartId : sessionParticipantPrice.keySet()) {
-                //price
-                // id session
                 Map<String, Object> sessionPart = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(sessionParticipantPrice.get(sessionPartId))); 
                 String sessionId = String.valueOf(sessionPart.get('id'));
                 ordItems.add( new Order_Item__c(
@@ -155,7 +131,7 @@ public without sharing class OrderHelper {
             }
             insert ordItems;
 
-            refundTransaction(orderRefunedId, orderCancelledId);
+            (orderRefunedId, orderCancelledId);
 
         } catch(Exception e) {
             System.debug('The following exception has occurred: ' + e.getMessage());
@@ -164,7 +140,7 @@ public without sharing class OrderHelper {
 
     @future(callout=true)
 	public static void refundTransaction(String orderRefunedId, String orderCancelledId) {
-        PaymentHttpRequest.refundTransaction(orderRefunedId, orderCancelledId);
+        Map<String, String> resMap = PaymentHttpRequest.refundTransaction(orderRefunedId, orderCancelledId, 0);
     }
 
     @AuraEnabled
@@ -194,5 +170,42 @@ public without sharing class OrderHelper {
             'displayUpgradeButton' => false,
             'displayDoPaymentButton' => false
         };
+    }
+
+    @AuraEnabled
+    public static List<Order__c> getOrderInfo(String Id) {
+        return [
+            SELECT Id, Status__c, Paid_Amount__c, Total_amount__c, 
+                (
+                    SELECT Id, Name__c, Amount__c, Total_amount__c, Quantity__c, Paid__c, 
+                        Discount_Amount__c, Discount__c, Refund_Amount__c 
+                    FROM Order_Items__r 
+                ) 
+            FROM Order__c 
+            WHERE Id =:Id];
+    }
+
+    @AuraEnabled
+    public static Map<String,Object> cancelOrder(Map<String,Object> generalData){
+        String orderId = String.valueOf(generalData.get('id'));
+        Decimal refundAmount = (Decimal)generalData.get('refundAmount');
+        List<Order_Item__c> oI = generalData.containsKey('oI') ?
+            (List<Order_Item__c>)JSON.deserialize(JSON.serialize(generalData.get('oI')), List<Order_Item__c>.class) :
+            new List<Order_Item__c>();
+        
+        Map<String, String> resMap = PaymentHttpRequest.refundTransaction(orderId, orderId, refundAmount);
+
+        if (resMap.get('status') == 'Success' && oI.size() > 0) {
+            try {
+                update oI;
+            }
+            catch(Exception e) {
+                return new Map<String,Object> {
+                    'status' => 'Error',
+                    'message' => e.getMessage()
+                };
+            }
+        }
+        return resMap;
     }
 }

@@ -10,6 +10,7 @@ export default class Membershipcontainer extends NavigationMixin(LightningElemen
     @track container = true;
     @track newMembershipApp = false;
     @track upgradeMembershipApp = false;
+    @track allowMembershipRenewal = false;
     currentContactMemberships;
     connectedCallback() {
         let urlParams = new URL(window.location);
@@ -106,6 +107,10 @@ export default class Membershipcontainer extends NavigationMixin(LightningElemen
         if(this.upgradeMembershipButton){
             this.template.querySelector('button[name="update-membership-button"]').removeAttribute('disabled');
         }
+        if (parsedResult.renewalSettings.displayMembershipRenewalButton) {
+            this.allowMembershipRenewal = true;
+            this.template.querySelector('button[name="membership-renewal-button"]').removeAttribute('disabled');
+        }
     }
     openNewMembershipApp(){
         if(this.newMembershipButton){
@@ -117,6 +122,18 @@ export default class Membershipcontainer extends NavigationMixin(LightningElemen
         if(this.upgradeMembershipButton){
             this.container = false;
             this.upgradeMembershipApp = true;
+        }
+    }
+    handleMembershipRenewal(){
+        console.log('handleMembershipRenewal 1');
+        if(this.allowMembershipRenewal){
+            console.log('handleMembershipRenewal 2');
+            this[NavigationMixin.Navigate]({
+                type: 'comm__namedPage',
+                attributes: {
+                    pageName: 'membership-renewal'
+                },
+            });
         }
     }
     dispatchToast(title, message, variant) {

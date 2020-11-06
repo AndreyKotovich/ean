@@ -5,8 +5,10 @@ import {Utils} from "c/utils";
 import getContactIpr from "@salesforce/apex/EventRegistrationController.getContactIpr";
 import existedParticipationCheck from "@salesforce/apex/EventRegistrationController.existedParticipationCheck";
 import getRegistrationGroupById from "@salesforce/apex/EventRegistrationController.getRegistrationGroupById";
+import getContactGroupsForEvent from "@salesforce/apex/EventRegistrationController.getContactGroupsForEvent";
 
 export default class SelectRegistrationType extends NavigationMixin(LightningElement) {
+    //TODO validation when adding participants to group Group from the Event?
     @api
     get registrationType() {
         return this._selectedRegistrationType;
@@ -35,34 +37,31 @@ export default class SelectRegistrationType extends NavigationMixin(LightningEle
     @track _selectedRegistrationType = "";
     @track groupInputLocked = false;
 
-    // _groupName = "";
     MAX_GROUP_NAME_LENGTH = 80;
     existedParticipant = [];
     _eventGroupInformation = {};
 
+    group = '';
+
     connectedCallback() {
-        // this.defineGroupName();
-
-
-
-        //GROUP id
-        //Participant id
         let promises = [
             getContactIpr({contactId: this.userInfo.contact.Id, eventId: this.eanEvent.Id}),
-            existedParticipationCheck({contactId: this.userInfo.contact.Id, eventId: this.eanEvent.Id})
+            existedParticipationCheck({contactId: this.userInfo.contact.Id, eventId: this.eanEvent.Id}),
+            getContactGroupsForEvent({contactId: this.userInfo.contact.Id, eventId: this.eanEvent.Id})
         ];
 
         let urlParams = new URL(window.location);
-        let groupId = urlParams.searchParams.get("gi");
+        this.groupId = urlParams.searchParams.get("gi");
 
-        if(!!groupId){
-            promises.push(getRegistrationGroupById({groupId: groupId}));
+        if(!!this.groupId){
+            promises.push(getRegistrationGroupById({groupId: this.groupId}));
         }
 
         Promise.all(promises)
             .then(results => {
                 let ipr = results[0];
                 let existedParticipant = results[1];
+                this.contactGroupsForEvent = [...results[2]];
 
                 this.existedParticipant = existedParticipant;
 
@@ -79,8 +78,8 @@ export default class SelectRegistrationType extends NavigationMixin(LightningEle
                         ipr[0].Account__r.Name;
                 }
 
-                if(!!groupId && results[2].length > 0){
-                    this._eventGroupInformation = Object.assign({}, results[2][0]);
+                if(!!this.groupId && results[3].length > 0){
+                    this._eventGroupInformation = Object.assign({}, results[3][0]);
                     this.groupInputLocked = true;
                 }
 
@@ -108,6 +107,7 @@ export default class SelectRegistrationType extends NavigationMixin(LightningEle
                 this.throwError({message: message});
             })
     }
+
     get registrationTypes() {
         let result = [];
 
@@ -140,7 +140,8 @@ export default class SelectRegistrationType extends NavigationMixin(LightningEle
     }
 
     handleNextClick() {
-        if (Utils.validateElements.call(this, "lightning-combobox, lightning-input")) {
+
+        if (Utils.validateElements.call(this, "lightning-combobox, lightning-input") && this.validateGroupDuplicates()) {
             let obj = {
                 registrationType: this._selectedRegistrationType,
                 iprInfo: this.iprInfo
@@ -187,7 +188,6 @@ export default class SelectRegistrationType extends NavigationMixin(LightningEle
 
     handleSelectType(event) {
         this._selectedRegistrationType = event.detail.value;
-        // this.defineGroupName();
     }
 
     existedParticipantToast(){
@@ -224,12 +224,19 @@ export default class SelectRegistrationType extends NavigationMixin(LightningEle
         return this._selectedRegistrationType === "group" || this._selectedRegistrationType === "ipr";
     }
 
-    // defineGroupName() {
-    //     if (this.isGroupRegistration && this._groupName === "") {
-    //         let urlParams = new URL(window.location);
-    //         this._groupName = !!!urlParams.searchParams.get("gn")
-    //             ? ""
-    //             : urlParams.searchParams.get("gn");
-    //     }
-    // }
+    validateGroupDuplicates(){
+        let result = true;
+
+        if(this._selectedRegistrationType === 'group' && !!!this.groupId){
+            if(!!this.contactGroupsForEvent.find(obj => obj.Name === this._eventGroupInformation.Name && !!!obj.Event_Exhibitor__c)){
+                result = confirm("There is already a group with the same name. The new group will be created.");
+            }
+        } else if(this._selectedRegistrationType === 'ipr'  && !!!this.groupId){
+            if(!!this.contactGroupsForEvent.find(obj => obj.Name === this._eventGroupInformation.Name && !!obj.Event_Exhibitor__c)){
+                result = confirm("There is already an IPR group with the same name. The new group will be created.");
+            }
+        }
+
+        return result;
+    }
 }

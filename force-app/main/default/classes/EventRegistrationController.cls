@@ -176,7 +176,7 @@ public without sharing class EventRegistrationController {
         for (Event_Ticket__c et : extraSessions) {
             Session_Participation__c sessionParticipation = new Session_Participation__c(
                     Session__c = et.Session__c, Contact__c = contact.Id, Event__c = et.Session__r.Event_custom__c,
-                    Event_Participation__c = participantId, Event_Ticket__c = et.Id);
+                    Event_Participation__c = participantId, Event_Ticket__c = et.Id, Status__c = 'Pending');
 
             sessionParticipants.add(sessionParticipation);
         }
@@ -307,6 +307,7 @@ public without sharing class EventRegistrationController {
                 sessionParticipationPriceMap = insertSessionParticipants(selectedSession, participantId);
             }
 
+            system.debug('m' + m) ;
             List<Order__c> order = OrderHelper.createNewOrder(new Map<String, Object>{
                     'generalData' => m,
                     'sessionParticipantPrice' => sessionParticipationPriceMap
@@ -326,5 +327,27 @@ public without sharing class EventRegistrationController {
             };
         }
 
+    }
+
+    @AuraEnabled public static List<Event_Registration_Group__c> getContactGroupsForEvent(String contactId, String eventId){
+        Set<Event_Registration_Group__c> contactGroupsForEvent = new Set<Event_Registration_Group__c>();
+        Map<Id, Event_Registration_Group__c> allContactGroups = new Map<Id, Event_Registration_Group__c>([
+                SELECT Id, Name, Event_Exhibitor__c
+                FROM Event_Registration_Group__c
+                WHERE Contact__c = :contactId
+        ]);
+
+        List<Participant__c> participants = [
+                SELECT Id, Event_custom__c, Event_Registration_Sub_Group__r.Event_Registration_Group__c
+                FROM Participant__c
+                WHERE Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c = :contactId
+                AND Event_custom__c = :eventId
+        ];
+
+        for(Participant__c p : participants){
+            contactGroupsForEvent.add(allContactGroups.get(p.Event_Registration_Sub_Group__r.Event_Registration_Group__c));
+        }
+
+        return new List<Event_Registration_Group__c>(contactGroupsForEvent);
     }
 }

@@ -2,7 +2,7 @@ public without sharing class EventRegistrationSubGroupTriggerHelper {
     public EventRegistrationSubGroupTriggerHelper() {
 
     }
-    public static void sendEmailIfSubGroupIsLoked(List<Event_Registration_Sub_Group__c> subGroups, Map<Id, Event_Registration_Sub_Group__c> subGroupsOldMap) {
+    public static void sendEmailSubGroupMembers(List<Event_Registration_Sub_Group__c> subGroups, Map<Id, Event_Registration_Sub_Group__c> subGroupsOldMap) {
         List<String> lockedSubGroupIds = new List<String>();
         for (Event_Registration_Sub_Group__c subGroup : subGroups) {
             if (subGroup.Is_Locked__c && subGroup.Is_Locked__c != subGroupsOldMap.get(subGroup.Id).Is_Locked__c) {

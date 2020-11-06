@@ -253,4 +253,56 @@ public class InvoicePDFGenerator {
 
         return isOk;
     }
+
+    public static void updateParticipantsStatus(List<Id> orderIds){
+        List<Order__c> ordersWithParticipationItems = [
+                SELECT Id, Status__c,
+                (
+                        SELECT Id, Session_Participation__r.Status__c, Event_Participation__r.Status__c
+                        FROM Order_Items__r
+                        WHERE Session_Participation__c != NULL
+                        OR Event_Participation__c != NULL
+                )
+                FROM Order__c
+                WHERE Id IN :orderIds
+        ];
+
+        List<Participant__c> eventParticipants = new List<Participant__c>();
+        List<Session_Participation__c> sessionParticipants = new List<Session_Participation__c>();
+
+        for(Order__c o : ordersWithParticipationItems){
+            for(Order_Item__c oi : o.Order_Items__r){
+                if(oi.Event_Participation__c != null && oi.Event_Participation__r.Status__c == 'Pending'){
+                   eventParticipants.add(new Participant__c(Id = oi.Event_Participation__c, Status__c = 'Registered'));
+                }
+                if(oi.Session_Participation__c != null && oi.Session_Participation__r.Status__c == 'Pending'){
+                    sessionParticipants.add(new Session_Participation__c(Id = oi.Session_Participation__c, Status__c = 'Registered'));
+                }
+            }
+        }
+
+        update eventParticipants;
+        update sessionParticipants;
+    }
+
+    @Future(Callout = true)
+     public static void insertEmailActivity(List<Id> orderIds) {
+         List<Order__c> orders = [
+             SELECT Id, Contact__r.Email, Event_custom__c, Type__c FROM Order__c WHERE Id IN :orderIds
+         ];
+         List<Email_Activity__c> emailActivities = new List<Email_Activity__c>();
+         for (Order__c order : orders) {
+             Email_Activity__c emailActivity = new Email_Activity__c(
+                 Contact__c = order.Contact__c,
+                 Event_Custom__c = order.Event_custom__c,
+                 Order__c = order.Id,
+                 Send_To_Email__c = order.Contact__r.Email,
+                 Type__c = order.Type__c
+             );
+             emailActivities.add(emailActivity);
+         }
+         if (emailActivities.size() > 0) {
+             insert emailActivities;
+         }
+     }
 }

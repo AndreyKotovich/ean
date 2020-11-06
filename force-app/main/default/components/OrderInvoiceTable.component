@@ -19,10 +19,11 @@
             <apex:repeat var="OrderItem" value="{!orderItems}">
                 <tr>
                     <td style="border-bottom: 1px solid #ddd;" data-label="Delegate name">
-                        <div style="padding: 5px;">{!OrderItem.Name}</div>
+                        <div style="padding: 5px;">{!OrderItem.Event_Participation__r.Contact__r.FirstName} {!OrderItem.Event_Participation__r.Contact__r.LastName}, {!OrderItem.Event_Participation__r.Contact__r.Id}</div>
                     </td>
                     <td style="border-bottom: 1px solid #ddd;" data-label="Ticket Type">
-                        <div style="padding: 5px;">{!OrderItem.Name}</div>
+                        <div style="padding: 5px; {!IF(OrderItem.Session_Participation__r.Event_Ticket__r.Ticket__r.Name!='', '', 'display: none;')}">{!OrderItem.Session_Participation__r.Event_Ticket__r.Ticket__r.Name} ticket</div>
+                        <div style="padding: 5px; {!IF(OrderItem.Session_Participation__r.Role__c!='', '', 'display: none;')}">{!OrderItem.Session_Participation__r.Role__c} session</div>
                     </td>
                     <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">
                         <div style="padding: 5px;">{!OrderItem.Total_amount__c}  &#8364;</div>

@@ -19,8 +19,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     //TODO create session participants
     //TODO participant available validation
 
-    @track errorMessage =
-        "Something went wrong, please contact your system administrator.";
+    @track errorMessage = "Something went wrong, please contact your system administrator.";
     @track isSpinner = true;
     @track isError = false;
     @track steps = {
@@ -66,7 +65,6 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     participants = {}; //event participants which we insert in database
     selectedSessions = []; //selected extra sessions
     selectedServices = { //selected extra services
-        journals: [],
         visaLetter: false,
         badgeRetrieval: ''
     };
@@ -300,7 +298,6 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                 generalData.eventId = this.ean_event.Id;
                 generalData.priceTicket = this.priceTicket;
                 generalData.contactId = this.userInfo.contact.Id;
-                generalData.journals = [...this.selectedServices.journals];
                 generalData.discountInfo = this.discountInfo;
 
                 console.log('generalData', JSON.parse(JSON.stringify(generalData)));
@@ -312,6 +309,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                         Event_custom__c: this.ean_event.Id,
                         Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
                         Visa_Letter__c: this.selectedServices.visaLetter,
+                        Status__c: 'Pending'
                     });
                 } else {
                     generalData.groupId = result;
@@ -322,7 +320,8 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                             Event_Ticket__c: generalData.selectTicket,
                             Event_Registration_Sub_Group__c: result,
                             Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
-                            Visa_Letter__c: this.selectedServices.visaLetter
+                            Visa_Letter__c: this.selectedServices.visaLetter,
+                            Status__c: 'Pending'
                         }
 
                         if(this.registrationType === 'ipr'){
@@ -388,8 +387,13 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
 
         if(this.selectedSessions.length > 0){
             let generalData = {};
+            generalData = {...generalData, ...this.userInfo};
+            generalData.selectTicket = this.selectedTicket;
             generalData.eventId = this.ean_event.Id;
+            generalData.priceTicket = this.priceTicket;
             generalData.contactId = this.userInfo.contact.Id;
+            generalData.discountInfo = this.discountInfo;
+
 
             Object.assign(insertData, {participant: this.upgradeParticipant.Id, selectedSessions:this.selectedSessions, generalData})
             console.log('insertData', JSON.stringify(insertData));

@@ -1,0 +1,12 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId">
+    <aura:attribute name="recordId" type="Id" />
+    <aura:html tag="style">
+        .slds-modal__container{
+        width: 80%;
+        max-width: 80%;
+        }
+    </aura:html>
+    <aura:if isTrue="{!v.recordId}">
+        <c:cancelOrder recordId="{!v.recordId}" oncloseQuickAction="{!c.handleCloseQuickAction}"></c:cancelOrder>
+    </aura:if>
+</aura:component>

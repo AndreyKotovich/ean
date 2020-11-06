@@ -51,21 +51,61 @@
                     </table>
 
                 </lightning-card>
+                <lightning-card>
+                    <div class="slds-form-element slds-m-around_large">
+                        <label class="slds-form-element__label" for="text-input-id-1">
+                            DISCOUNT CODE</label>
+                        <div class="slds-form-element__control">
+                            <div class="slds-grid">
 
-                <div class="slds-m-around_small">
-                    <div onkeyup={getDiscount}>
-                        <div class="slds-form-element">
-                            <label class="slds-form-element__label" for="text-input-id-1">
-                                DISCOUNT CODE</label>
-                            <div class="slds-form-element__control">
-                                <input type="text" id="text-input-id-1" placeholder="" class="slds-input" />
+                                <template if:false={isApplyCoupon}>
+                                    <div class="slds-col slds-size_11-of-12 slds-m-right_small">
+                                        <input type="text" data-id="dCode" placeholder="" class="slds-input"
+                                            value={discountCode} />
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-12"> <button
+                                            class="slds-button slds-button_brand" onclick={getDiscount}>Apply</button>
+                                    </div>
+                                </template>
+                                <template if:true={isApplyCoupon}>
+                                    <div class="slds-col slds-size_11-of-12 slds-m-right_small">
+                                        <input type="text" data-id="dCode" placeholder="" class="slds-input"
+                                            value={discountCode} disabled/>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-12"> <button
+                                            class="slds-button slds-button_destructive" onclick={сancelDiscount}>Cancel</button>
+                                    </div>
+                                </template>
+
                             </div>
                         </div>
                     </div>
-                </div>
+                    <!-- <div class="slds-m-around_small">
+                        <div onkeyup={getDiscount}>
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="text-input-id-1">
+                                    DISCOUNT CODE</label>
+                                <div class="slds-form-element__control">
+                                    <input type="text" id="text-input-id-1" placeholder="" class="slds-input" />
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                </lightning-card>
                 <div if:true={showTotalAmount}>
                     <table class="slds-table slds-table_cell-buffer">
                         <tbody>
+                            <tr class="slds-hint-parent">
+                                <td style="width: 55%">
+                                    <div class="slds-cell-wrap">Total Amount</div>
+                                </td>
+                                <td style="width: 15%">
+                                    <div class="slds-cell-wrap"></div>
+                                </td>
+                                <td style="width: 30%">
+                                    <div class="slds-cell-wrap slds-text-align--right">{totalAmountOrg}&nbsp;€</div>
+                                </td>
+                            </tr>
                             <tr class="slds-hint-parent">
                                 <td style="width: 55%">
                                     <div class="slds-cell-wrap">Discount Amount</div>
@@ -79,7 +119,7 @@
                             </tr>
                             <tr class="slds-hint-parent">
                                 <td style="width: 55%">
-                                    <div class="slds-cell-wrap">Total Amount</div>
+                                    <div class="slds-cell-wrap">Grand Total Amount</div>
                                 </td>
                                 <td style="width: 15%">
                                     <div class="slds-cell-wrap"></div>

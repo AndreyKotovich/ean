@@ -25,7 +25,7 @@
                                                value={product.value}
                                                onchange={handleSelectSession}
                                                disabled={product.isDisabled}
-                                               checked={product.isChecked}/>
+                                               checked={product.isChecked} />
 
                                         <label class="slds-checkbox__label" for={product.elementId}>
                                             <div class="slds-grid slds-gutters">
@@ -40,6 +40,9 @@
                                                         </div>
                                                         <div class="slds-col">
                                                             {product.description}
+                                                        </div>
+                                                        <div if:true={product.isFull} class="slds-col">
+                                                            <lightning-badge label="Sold out"></lightning-badge>
                                                         </div>
                                                     </div>
                                                 </span>
@@ -72,22 +75,6 @@
                     <div class="slds-p-left_x-large slds-p-right_x-large">
 
                         <lightning-layout multiple-rows="true" vertical-align="center">
-                            <lightning-layout-item if:false={isGroupRegistration}
-                                                   padding="around-small"
-                                                   size="12"
-                                                   large-device-size="12"
-                                                   medium-device-size="12"
-                                                   small-device-size="12"
-                                                   flexibility="auto"
-                            >
-                                <div class="slds-m-top_x-small slds-m-bottom_x-small">
-                                    <c-ean-journals class="slds-text-align_left"
-                                                    onselect={handleJournalSelect}
-                                                    auto-populate={selectedJournals}
-                                    ></c-ean-journals>
-                                </div>
-
-                            </lightning-layout-item>
 
                             <lightning-layout-item padding="around-small"
                                                    size="12"

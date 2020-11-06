@@ -300,20 +300,6 @@ console.log('handleNextClick');
         return this.registrationType !== 'solo';
     }
 
-    handleJournalSelect(event){
-        this._selectedServices.journals = event.detail.selectedProducts;
-    }
-
-    get selectedJournals(){
-        let selectedJournals = [];
-
-        for(let journal of this._selectedServices.journals){
-            selectedJournals.push(journal.productId);
-        }
-
-        return selectedJournals;
-    }
-
     handleChangeNewsletter(event){
         if(!this.userInfo.contact.Newsletter__c){
             this._selectedServices.newsletter = event.detail.checked;
