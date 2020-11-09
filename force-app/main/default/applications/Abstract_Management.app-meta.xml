@@ -43,6 +43,8 @@
     <tabs>standard-Contact</tabs>
     <tabs>Speaker__c</tabs>
     <tabs>Lecture__c</tabs>
+    <tabs>Reviewer__c</tabs>
+    <tabs>Abstract_Review__c</tabs>
     <tabs>Session__c</tabs>
     <tabs>Event__c</tabs>
     <uiType>Lightning</uiType>

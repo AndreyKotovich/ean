@@ -19,37 +19,6 @@
                 <processMetadataValues>
                     <name>inputDataType</name>
                     <value>
-                        <stringValue>String</stringValue>
-                    </value>
-                </processMetadataValues>
-                <processMetadataValues>
-                    <name>leftHandSideType</name>
-                    <value>
-                        <stringValue>String</stringValue>
-                    </value>
-                </processMetadataValues>
-                <processMetadataValues>
-                    <name>operatorDataType</name>
-                    <value>
-                        <stringValue>String</stringValue>
-                    </value>
-                </processMetadataValues>
-                <processMetadataValues>
-                    <name>rightHandSideType</name>
-                    <value>
-                        <stringValue>String</stringValue>
-                    </value>
-                </processMetadataValues>
-                <leftValueReference>myVariable_current.RecordType.Name</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Public Submission</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <processMetadataValues>
-                    <name>inputDataType</name>
-                    <value>
                         <stringValue>Boolean</stringValue>
                     </value>
                 </processMetadataValues>
@@ -80,10 +49,10 @@
             <connector>
                 <targetReference>myRule_1_A1</targetReference>
             </connector>
-            <label>Public Abstract</label>
+            <label>Submission By Community User</label>
         </rules>
     </decisions>
-    <interviewLabel>Set_Abstract_Submitter_Upon_Creation-1_InterviewLabel</interviewLabel>
+    <interviewLabel>Set_Abstract_Submitter_Upon_Creation-3_InterviewLabel</interviewLabel>
     <label>Set Abstract Submitter Upon Creation</label>
     <processMetadataValues>
         <name>ObjectType</name>
@@ -185,7 +154,7 @@
             </processMetadataValues>
             <field>Submitter__c</field>
             <value>
-                <elementReference>myVariable_current.OwnerId</elementReference>
+                <elementReference>myVariable_current.Owner:User.ContactId</elementReference>
             </value>
         </inputAssignments>
         <object>Abstract__c</object>

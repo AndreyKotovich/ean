@@ -204,7 +204,8 @@ export default class ErSummarize extends LightningElement {
                             if (e && e.discountAmount) {
                                 let tick = this.ticketsTable.find(item => `${item.ticketId}` === `${e.id}`);
                                 let qnt = tick && tick.quantity ? tick.quantity : 1;
-                                this.discountAmount -= +e.discountAmount * qnt;
+                                this.discountAmount -= +e.discountAmount;
+                                e.discountAmount /= qnt;
                             }
                         });
                     }

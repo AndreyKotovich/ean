@@ -1,4 +1,7 @@
 import {LightningElement, track, api} from 'lwc';
+import {NavigationMixin} from 'lightning/navigation';
+import {ShowToastEvent} from 'lightning/platformShowToastEvent';
+// APEX
 import getMemberships from '@salesforce/apex/membershipApplicationController.getMemberships';
 import getCountries from '@salesforce/apex/membershipApplicationController.getCountries';
 import updateContact from '@salesforce/apex/membershipApplicationController.updateContact';
@@ -9,12 +12,14 @@ import submitForApproval from '@salesforce/apex/membershipApplicationController.
 import deleteContentDocumentById from '@salesforce/apex/membershipApplicationController.deleteContentDocumentById'
 import generateOrder from '@salesforce/apex/OrderUtils.generateOrder'
 import attachFileToForm from '@salesforce/apex/membershipApplicationController.attachFileToForm'
-import {ShowToastEvent} from 'lightning/platformShowToastEvent';
-import {NavigationMixin} from 'lightning/navigation';
 import updateOrderItems from '@salesforce/apex/OrderUtils.updateOrderItems'
 import getExistedForm from '@salesforce/apex/membershipApplicationController.getExistedForm'
 import getContentDocuments from '@salesforce/apex/membershipApplicationController.getContentDocuments'
 import getOrderWithItems from '@salesforce/apex/membershipApplicationController.getOrderWithItems'
+// CUSTOM LABELS
+import ma_membershipDescr1 from '@salesforce/label/c.ma_membershipDescr1';
+import ma_membershipDescr2 from '@salesforce/label/c.ma_membershipDescr2';
+import ma_membershipDescr3 from '@salesforce/label/c.ma_membershipDescr3';
 
 
 export default class MembershipApplication extends NavigationMixin(LightningElement) {
@@ -25,33 +30,37 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
     @track allCountries = [];
     @track currentContactId;
     @track isForm = false;
-    form = {};
     @track paymentForm = false;
-    membershipId;
     @track formId = '';
     @track validateForm = false;
     @track firstFieldValueSet = [];
     @track secondFieldValueSet = [];
     @track contact = {};
     @track autoFillCountries = {};
-    lookupsResults = {};
     @track contactHospitals = [];
     @track contactDepartments = [];
     @track products = [];
-    orderId = '';
     @track productOptions = [];
-    selectedProducts = [];
     @track isShowProducts = false;
-    Country__mdt = [];
     @track isSpinner = true;
-    isEdit = false; // detects if "Back" button on validate screen was clicked
     @track showPillUploadedFiles = false;
     @track isReSubmit = false; // indicates if application form in Re-Submit mode.
     @track formValues = {};
-    availableMembershipsForApplying = {};
     @track uploadedFilesPills=[];
+    form = {};
+    membershipId;
+    lookupsResults = {};
+    orderId = '';
+    selectedProducts = [];
+    Country__mdt = [];
+    isEdit = false; // detects if "Back" button on validate screen was clicked
+    availableMembershipsForApplying = {};
     applicationMode = '';
-
+    label = {
+        ma_membershipDescr1,
+        ma_membershipDescr2,
+        ma_membershipDescr3
+    };
 
     connectedCallback() {
         this.checkUrlParams()
@@ -104,6 +113,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
                 console.log('this.checkUrlParams()_ERROR');
             });
     }
+
     checkUrlParams(){
         return new Promise((resolve, reject) => {
             let urlParams = new URL(window.location);
@@ -182,6 +192,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
             }
         });
     }
+
     navigateToMembershipApplicationPage(){
         this[NavigationMixin.Navigate]({
             type: 'comm__namedPage',
@@ -190,6 +201,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
             },
         });
     }
+
     getFieldSetsAndAutoCompleteForm(){
         getFieldSets()
             .then(res => {
@@ -288,6 +300,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
                 console.log('ERROR:: '+JSON.stringify(error));
             });
     }
+
     getRadioButtonLabel(initialPrice, membership, deadline){
         return new Promise((resolve, reject) => {
             let radioButtonLabel = {
@@ -320,6 +333,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
             }
         });
     }
+
     aanDiscount(){
         return new Promise((resolve, reject) => {
             let discountPercent = 0;
@@ -331,6 +345,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
             resolve(discountPercent);
         });
     }
+
     retiredDiscount(deadline, membership){
         return new Promise((resolve, reject) => {
             let discountPercent = 0;
@@ -345,9 +360,11 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
 
         });
     }
+
     onChangeMembership(event) {
         this.membershipId = event.target.title;
     }
+
     handleChangeCountry(event) {
         this.autoFillCountries[event.target.title] = event.detail.value;
         let arr = event.detail.value.split(',');
@@ -359,6 +376,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
         this.writeValueToFormAndContactVariables(arr[1], event.target.title);
         this.manageMarkup();
     }
+
     handleChange(event) {
         this.writeValueToFormAndContactVariables(event.target.value, event.target.title);
         if (event.target.title === 'AAN_Member__c' || event.target.title === 'Retired__c') {
@@ -366,6 +384,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
         }
         this.manageMarkup();
     }
+
     writeValueToFormAndContactVariables(value, title) {
             this.formValues[title] = value;
             this.fieldMap.forEach(map => {
@@ -402,6 +421,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
             errorMessage: fileErrorMessage
         };
     }
+
     handleClickNext() {
         let allFields = this.template.querySelectorAll(".input");
         let isFilled = true;
@@ -472,6 +492,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
                 });
         }
     }
+
     attachFilesToAppForm(){
         return new Promise((resolve, reject) => {
             let uploadedFilesPills = [...this.uploadedFilesPills];
@@ -494,6 +515,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
             })
         });
     }
+
     checkRetired(){
         let errorFlag = false;
         if(this.formValues['Retired__c']) {
@@ -517,6 +539,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
         }
         return errorFlag;
     }
+
     dispatchToast(title, message, variant) {
         this.dispatchEvent(
             new ShowToastEvent({
@@ -526,6 +549,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
             }),
         );
     }
+
     generateOrderItems() {
         let listOrderItems = [];
         let membershipPrice;
@@ -546,6 +570,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
         });
         return listOrderItems;
     }
+
     setProducts() {
         let productOptions = [];
         let line = 0;
@@ -570,6 +595,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
         }
         this.productOptions = [...productOptions];
     }
+
     catchSelectedProducts() {
         let selectedProducts = [];
         var checkedValues = this.template.querySelectorAll('.checkbox-product:checked');
@@ -580,6 +606,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
         });
         this.selectedProducts = [...selectedProducts];
     }
+
     handleClickPay() {
         this.isSpinner = true;
         if (!this.filesValidation().filesFlag) {
@@ -593,6 +620,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
                 .catch(()=>{console.log('this.attachFilesToAppForm()_ERROR')})
         }
     }
+
     generateOrderWithItems(){
         return new Promise((resolve, reject) => {
             if(!this.isEdit){
@@ -616,6 +644,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
             }
         })
     }
+
     handleClickBack() {
         this.openMembershipInput()
             .then(()=>{
@@ -662,6 +691,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
             resolve();
         });
     }
+
     openMembershipInput(){
         return new Promise((resolve, reject) => {
             this.validateForm = false;
@@ -670,6 +700,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
             resolve();
         });
     }
+
     navigateToPaymentPage(orderId) {
         this[NavigationMixin.Navigate]({
             type: 'comm__namedPage',
@@ -681,9 +712,11 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
             }
         });
     }
+
     get acceptedFormats() {
         return ['.pdf', '.jpg', '.jpeg', '.png', '.doc', '.docx'];
     }
+
     handleUploadFinished(event) {
         const uploadedFiles = event.detail.files;
         let uploadedFilesPills=[...this.uploadedFilesPills];
@@ -698,6 +731,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
         this.uploadedFilesPills = [...uploadedFilesPills];
         this.manageDisplayPillsSection();
     }
+
     handleRemoveFilePill(event){
         const index = event.detail.index;
         this.uploadedFilesPills.splice(index, 1);
@@ -712,6 +746,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
                 console.log('deleteContentDocumentById_ERROR: '+JSON.stringify(deleteContentDocumentById));
             });
     }
+
     manageDisplayPillsSection(){
         if(this.uploadedFilesPills.length > 0){
             this.showPillUploadedFiles = true;
@@ -720,6 +755,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
             this.showPillUploadedFiles = false;
         }
     }
+
     manageMarkup() {
         this.setSelectedMembership();
 
@@ -730,6 +766,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
         this.correspondingIndividualMembershipLOGIC();
         this.manageJournalSection();
     }
+
     fullMembershipLOGIC() {
         let currentMembership = this.getMembershipByApi('full_membership');
         let htmlMembershipElement = this.template.querySelector('input[title="' + currentMembership.Id + '"]');
@@ -748,6 +785,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
         }
         this.availableMembershipsForApplying[currentMembership.Id] = isFound;
     }
+
     fellowMembershipLOGIC() {
         let currentMembership = this.getMembershipByApi('fellow_membership');
         let htmlMembershipElement = this.template.querySelector('input[title="' + currentMembership.Id + '"]');
@@ -766,6 +804,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
         }
         this.availableMembershipsForApplying[currentMembership.Id] = isFound;
     }
+
     residentAndResearchMembershipLOGIC() {
         let currentMembership = this.getMembershipByApi('resident_and_research_membership');
         let isFound = false;
@@ -798,6 +837,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
             this.availableMembershipsForApplying[currentMembership.Id] = isFound;
         }
     }
+
     correspondingIndividualMembershipLOGIC() {
         let currentMembership = this.getMembershipByApi('corresponding_membership');
         let htmlMembershipElement = this.template.querySelector('input[title="' + currentMembership.Id + '"]');
@@ -821,6 +861,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
         }
         this.availableMembershipsForApplying[currentMembership.Id] = isFound;
     }
+
     studentMembershipLOGIC() {
         let currentMembership = this.getMembershipByApi('student_membership');
         let isFound = false;
@@ -835,6 +876,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
         this.manageMembershipEnabling(isFound, htmlMembershipElement);
         this.availableMembershipsForApplying[currentMembership.Id] = isFound;
     }
+
     manageMembershipEnabling(isFound, htmlMembershipElement){``
         if (isFound) {
             if (htmlMembershipElement.hasAttribute('disabled')) {
@@ -849,6 +891,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
             }
         }
     }
+
     getMembershipByApi(membershipApi) {
         let currentMembership = {};
         this.allAvailableMemberships.forEach(membership => {
@@ -858,6 +901,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
         });
         return currentMembership;
     }
+
     manageJournalSection(){
         let journalElements = this.template.querySelectorAll('.checkbox-product');
         if(this.selectedProducts.length > 0){
@@ -870,6 +914,7 @@ export default class MembershipApplication extends NavigationMixin(LightningElem
             }
         }
     }
+
     handleClickReSubmit(){
         this.isSpinner = true;
         if (!this.filesValidation().filesFlag) {

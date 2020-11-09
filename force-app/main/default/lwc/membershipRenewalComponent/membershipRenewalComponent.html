@@ -16,137 +16,260 @@
 			<div class="slds-grid slds-align_absolute-center">
 				<div class="slds-col slds-size_2-of-3">
 
+					
 					<lightning-card class="slds-m-around_small">
-					<div class="slds-p-left_xx-large slds-p-right_xx-large">
+						<div class="slds-p-left_xx-large slds-p-right_xx-large">
 
-						<!-- STEP 1 -->
-						<template if:true={_isStep1}>
-							<!-- <div slot="title"> -->
-							<div style="color: #007DC6; font-size: 16px; font-weight: bolder;">
-							<!-- <div class="slds-p-left_xx-large slds-p-right_xx-large" style="color: #007DC6; font-size: 16px; font-weight: bolder;"> -->
-								<div style="display: inline-block;">Please review / enter your data (STEP 1 DELETE LABEL)</div>
-								<div style="float: right;">
-									<div style="display: inline-block; margin-right: 10px;">Renewal Fee:</div>
-									<div style="display: inline-block;"><lightning-formatted-number value={_totalRenewalFee} format-style="currency" currency-code="EUR"></lightning-formatted-number></div>
+							<div>
+								<p style="color: #007DC6; font-size: 16px; font-weight: bolder;">I want to renew my</p>
+								<!-- <div class="slds-p-around_small"> -->
+								<br/>
+								<div>
+									<div class="slds-grid slds-grid_align-spread">
+										<div class="slds-col slds-size_10-of-12">
+											<div class="slds-radio">
+												<input type="radio" id="membershipRadio" checked/>
+
+												<label class="slds-radio__label" for="membershipRadio">
+													<div class="slds-grid slds-gutters">
+														<div class="slds-col" style="padding-right: 4px;"><span class="slds-radio_faux"></span></div>
+														<div class="slds-col">
+															<span>
+																<div class="slds-grid slds-grid_vertical">
+																	<div class="slds-col slds-text-color_default"><b>{_membershipName}</b></div>
+																	<div class="slds-col">
+																		<a href={_membershipURL} target="_blank" class="slds-text-link_reset">
+																		<span class="slds-text-link">{_membershipURL}</span></a>
+																	</div>
+																</div>
+															</span>
+														</div>
+													</div>
+												</label>
+											</div>
+										</div>
+
+										<div class="slds-col slds-size_2-of-12 slds-text-align_center">
+											<span class="community-text-gray">{_totalRenewalFee} €</span>
+										</div>
+
+									</div>
 								</div>
-								<!-- <div>Membership Category: {_membershipName}</div> -->
 							</div>
 
-							<!-- <div class="slds-p-left_xx-large slds-p-right_xx-large"> -->
-								<lightning-input name="category" type="text" label="Membership Category" value={_membershipName} disabled></lightning-input>
+
+
+
+							<!-- STEP 1 -->
+							<template if:true={_isStep1}>
+								<!-- <div slot="title"> -->
+								<div style="color: #007DC6; font-size: 16px; font-weight: bolder;">
+									<div style="display: inline-block;">Please review / enter your data</div>
+									<!-- <div style="float: right;">
+										<div style="display: inline-block; margin-right: 10px;">Renewal Fee:</div>
+										<div style="display: inline-block;"><lightning-formatted-number value={_totalRenewalFee} format-style="currency" currency-code="EUR"></lightning-formatted-number></div>
+									</div> -->
+								</div>
+
 								<lightning-combobox name="salutation" label="Salutation" options={_availableSalutations} onchange={handleChangeSalutation} value={_formSalutation}></lightning-combobox>
-								<lightning-input name="firstName" type="text" label="First Name" value={_formFirstName} disabled required></lightning-input>
-								<lightning-input name="lastName" type="text" label="Last Name" value={_formLastName} disabled required></lightning-input>
+								<lightning-input data-id="form-first-name" name="firstName" type="text" label="First Name" value={_formFirstName} disabled required></lightning-input>
+								<lightning-input data-id="form-last-name" name="lastName" type="text" label="Last Name" value={_formLastName} disabled required></lightning-input>
 								<lightning-input name="nominalTitle" type="text" label="Post-nominal Title(s)" onchange={handleChangeTitle} value={_formPostNominalTitle} placeholder="" max-length="255"></lightning-input>
 
 								<template if:true={_enableEditFromDateOfBirth}>
-									<lightning-input name="dateOfBirth" type="date" label="Date of birth" onchange={handleChangeDateOfBirth} value={_formDateOfBirth} placeholder="" required></lightning-input>
+									<lightning-input data-id="form-date-of-birth-a" name="dateOfBirth1" type="date" label="Date of birth" onchange={handleChangeDateOfBirth} value={_formDateOfBirth} placeholder="" required></lightning-input>
 								</template>
 								<template if:false={_enableEditFromDateOfBirth}>
-									<lightning-input name="dateOfBirth" type="date" label="Date of birth" value={_formDateOfBirth} placeholder="" disabled required></lightning-input>
+									<lightning-input data-id="form-date-of-birth-b" name="dateOfBirth2" type="date" label="Date of birth" value={_formDateOfBirth} placeholder="" disabled required></lightning-input>
 								</template>
 
-								<lightning-combobox name="gender" label="Gender" options={_availableGenders} onchange={handleChangeGender} required value={_formGender}></lightning-combobox>
-								<lightning-input name="email" type="email" label="Email" onchange={handleChangeEmail} value={_formEmail} placeholder="" max-length="80" required></lightning-input>
-								<lightning-combobox name="nationality" label="Nationality" options={_availableNationalities} onchange={handleChangeNationality} required value={_formNationality}></lightning-combobox>
-								<lightning-combobox name="country" label="Country of Residence" options={_availableCountryOfResidences} onchange={handleChangeCountry} required value={_formCountryOfResidence}></lightning-combobox>
-								<lightning-input name="street" type="text" label="Street" onchange={handleChangeStreet} value={_formStreet} placeholder="" max-length="255" required></lightning-input>
-								<lightning-input name="zipPostalCode" type="text" label="ZIP/Postal code" onchange={handleChangeZipPostalCode} value={_formZipPostalCode} placeholder="" max-length="20" required></lightning-input>
-								<lightning-input name="city" type="text" label="City" onchange={handleChangeCity} value={_formCity} placeholder="" max-length="80" required></lightning-input>
+								<lightning-combobox data-id="form-gender" name="gender" label="Gender" options={_availableGenders} onchange={handleChangeGender} required value={_formGender}></lightning-combobox>
+								<lightning-input data-id="form-email" name="email" type="email" label="Email" onchange={handleChangeEmail} value={_formEmail} placeholder="" max-length="80" required></lightning-input>
+								<lightning-combobox data-id="form-nationality" name="nationality" label="Nationality" options={_availableNationalities} onchange={handleChangeNationality} required value={_formNationality}></lightning-combobox>
+								<lightning-combobox data-id="form-country" name="country" label="Country of Residence" options={_availableCountryOfResidences} onchange={handleChangeCountry} required value={_formCountryOfResidence}></lightning-combobox>
+								<lightning-input data-id="form-street" name="street" type="text" label="Street" onchange={handleChangeStreet} value={_formStreet} placeholder="" max-length="255" required></lightning-input>
+								<lightning-input data-id="form-zip-postal-code" name="zipPostalCode" type="text" label="ZIP/Postal code" onchange={handleChangeZipPostalCode} value={_formZipPostalCode} placeholder="" max-length="20" required></lightning-input>
+								<lightning-input data-id="form-city" name="city" type="text" label="City" onchange={handleChangeCity} value={_formCity} placeholder="" max-length="80" required></lightning-input>
 								<lightning-input name="phone" type="text" label="Phone number" onchange={handleChangePhone} value={_formPhoneNumber} placeholder="" max-length="20"></lightning-input>
 
 								<br/>
-								<p>DO NOT DISPLAY Retired checkbox ???</p>
-								<lightning-input name="phone" type="checkbox" label="I am Retired" onchange={handleChangePhone} value={_formPhoneNumber} placeholder="" max-length="20"></lightning-input>
+								<lightning-input name="iamaanmember" type="checkbox" label="I am AAN Member" onchange={handleChangeIamAANMember} checked={_formIamAANMember}></lightning-input>
+								<p style="margin-left: 22px;">AAN members from outside Europe get a 10% discount on EAN membership. Members from EAN member countries get a 10% discount on AAN membership.</p>
 								<br/>
-								<p>DO NOT DISPLAY Terms and Conditions checkbox ???</p>
-								<!-- <div class="slds-grid slds-gutters slds-text-align_left slds-m-around_small"> -->
+								<lightning-input name="iamretired" type="checkbox" label="I am Retired" onchange={handleChangeIamRetired} checked={_formIamRetired}></lightning-input>
+
+								<!-- EANMR-24 -->
+								<template if:true={_allowRetiredDiscount}>
+									<p style="margin-left: 22px;">Neurologists who are retired from their professional career get a 50% discount on their EAN membership fee.</p>
+									<p style="margin-left: 22px;">(50% discount cannot be combined with other with other 50% reduction)</p>
+								</template>
+								<br/>
+
+								<br/>
+								<button name="button-next-step-one" class="slds-button slds-button_brand slds-float_right" disabled="disabled" onclick={handleClickNextButtonStep1}>Next</button>
+								<br/>
+								<br/>
+							</template>
+
+							<!-- STEP 2 -->
+							<template if:true={_isStep2}>
+								<br/>
+								<!-- Version 1 – Resident and Research Members -->
+								<template if:true={_displayLicenseIssued}>
+
+									<div class="slds-grid slds-grid_vertical">
+										<div class="slds-col">
+											<div class="slds-grid slds-grid_vertical">
+												<div class="slds-col slds-m-bottom_xx-small">
+													<div>Please complete these fields to review if you meet the following eligibility requirements:</div>
+													<ul class="slds-list_dotted" style="color: rgb(105, 105, 105);">
+														<li>You are a Resident/neurologist in training OR Research Fellow OR PhD student in Neurology</li>
+														<li>The above mentioned three groups up to a maximum of 3 years beyond their latest degree (MD, PhD) & up to a maximum of 15 years after receiving a license to practice medicine</li>
+													</ul>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="slds-box slds-box_xx-small slds-m-top_small" style="background-color: rgb(233, 234, 236)">
+										<lightning-input name="dateOfGraduation" type="date" label="Date of Graduation" onchange={handleChangeDateOfGraduation} value={_dateOfGraduation}
+											placeholder="" required field-level-help="Please indicate the actual or expected date of graduation for your most recent degree."
+											class="dateOfGraduation">
+										</lightning-input>
+										<template if:true={_displayDateOfGraduationUpdateMessage}>
+											<br/>
+											<p>Thank you for your support throughout {_currentYearString}!</p>
+											<p>If you have received your latest degree (MD or PhD) more than 3 years</p>
+											<p>ago, and/or obtained your license to practice medicine more than 15 years</p>
+											<p>ago, your membership is due for an upgrade.</p>
+											<p>Please <span style="text-decoration: underline;">upgrade to Full/Corresponding membership here</span><a href={_communityUpdateUrl}> Upgrade Membership</a>.</p>
+											<p>We hope you remain active part of EAN community!</p>
+											<br/>
+										</template>
+										<lightning-input name="licenseIssuedDate" type="date" label="License issued" onchange={handleChangeLicenseIssued} value={_licenseIssuedDate}
+											placeholder="" required field-level-help="Please indicate the actual or expected date of issue of the license to practice medicine."
+											class="licenseIssuedDate">
+										</lightning-input>
+										<br/>
+									</div>
+
+								</template>
+
+								<!-- Version 2 – Student Members -->
+								<template if:false={_displayLicenseIssued}>
+
+									<div class="slds-grid slds-grid_vertical">
+										<div class="slds-col">
+											<div class="slds-grid slds-grid_vertical">
+												<div class="slds-col slds-m-bottom_xx-small">
+													<div>Please complete this field to inform if you are still an undergraduate medical student.</div>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="slds-box slds-box_xx-small slds-m-top_small" style="background-color: rgb(233, 234, 236)">
+										<lightning-input name="dateOfGraduation" type="date" label="Date of Graduation" onchange={handleChangeDateOfGraduation} value={_dateOfGraduation}
+											placeholder="" required field-level-help="Please indicate the expected date of graduation."
+											class="dateOfGraduation">
+										</lightning-input>
+										<template if:true={_displayDateOfGraduationUpdateMessage}>
+											<br/>
+											<p>Thank you for your support throughout {_currentYearString}!</p>
+											<p>If you have already graduated, you are no longer eligible for Student membership.</p>
+											<p>Please <span style="text-decoration: underline;">upgrade to Resident & Research membership here</span><a href={_communityUpdateUrl}> Upgrade Membership</a>.</p>
+											<p>We hope you remain active part of EAN community!</p>
+										</template>
+										<br/>
+									</div>
+
+								</template>
+
+								<br/>
+								<div class="slds-align_absolute-center">
+									<div class="slds-grid slds-grid_vertical">
+										<div class="slds-col slds-align_absolute-center">
+											<lightning-file-upload label="Attachments"
+																name="fileUploader"
+																accept={acceptedFormats}
+																record-id={_currentContactId}
+																onuploadfinished={handleUploadFinished} multiple>
+											</lightning-file-upload>
+										</div>
+										<div if:true={_showPillUploadedFiles} class="slds-col slds-align_absolute-center">
+											<div title="pill-container">
+												<lightning-pill-container items={_uploadedFilesPills} onitemremove={handleRemoveFilePill} ></lightning-pill-container>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!-- Version 1 – Resident and Research Members -->
+								<template if:true={_displayLicenseIssued}>
+									<div class="slds-col slds-m-bottom_small slds-m-top_x-small">
+										<span style="color: rgb(105, 105, 105);">Please upload a confirmation of your ongoing or completed training in neurology or PhD studies in English. For eligibility criteria please see above.</span>
+									</div>
+								</template>
+								<!-- Version 2 – Student Members -->
+								<template if:false={_displayLicenseIssued}>
+									<div class="slds-col slds-m-bottom_small slds-m-top_x-small">
+										<span style="color: rgb(105, 105, 105);">Please upload a confirmation of your ongoing undergraduate studies in English/student ID to verify your student status.</span>
+									</div>
+								</template>
+								<br/>
+								<button name="button-prev-step-two" class="slds-button slds-button_neutral slds-float_left" onclick={handleClickPrevButtonStep2}>Prev</button>
+								<button name="button-next-step-two" class="slds-button slds-button_brand slds-float_right" disabled="disabled" onclick={handleClickNextButtonStep2}>Next</button>
+								<br/>
+								<br/>
+
+							</template>
+
+							<!-- STEP 3 -->
+							<template if:true={_isStep3}>
+
+                                <div class="slds-m-top_x-small slds-m-bottom_x-small">
+                                    <c-ean-journals class="slds-text-align_left" onselect={handleJournalSelect} auto-populate={_selectedJournals}></c-ean-journals>
+                                </div>
+
+								<br/>
 								<div class="slds-grid slds-text-align_left" style="margin-left: -8px;">
-									<div><lightning-input type="checkbox" label="" name="terms" required> </lightning-input></div>
+									<abbr title="required" class="slds-required">*</abbr>
+									<div><lightning-input data-id="terms-checkbox" type="checkbox" label="" name="terms" onchange={handleChangeEANTerms} checked={_agreeToEANTerms}></lightning-input></div>
+									<!-- <div><lightning-input data-id="terms-checkbox" type="checkbox" label="" name="terms" onchange={handleChangeEANTerms} checked={_agreeToEANTerms} required></lightning-input></div> -->
 									<div>
 										<p>I agree to the <a href="https://membership-application.ean.org/?module=terms" target="_blank">EAN Terms and Conditions for EAN online membership application and payment</a>.</p>
 									</div>
 								</div>
-								<br/>
-								<!-- <button name="membership-submit-button" class="slds-button slds-button_brand slds-align_absolute-center" disabled="disabled" onclick={handleClickNextButtonStep1}>Submit</button> -->
-								<button name="button-next-step-one" class="slds-button slds-button_brand slds-float_right" disabled="disabled" onclick={handleClickNextButtonStep1}>Next</button>
-								<br/>
-								<br/>
-							<!-- </div> -->
-						</template>
 
-						<!-- STEP 2 -->
-						<template if:true={_isStep2}>
-							<p>STEP 2 {_currentContactId}</p>
-							<!-- <div class="slds-p-left_xx-large slds-p-right_xx-large"> -->
-								<div class="slds-box slds-box_xx-small slds-m-left_xx-small slds-m-right_xx-small slds-m-top_small" style="background-color: rgb(233, 234, 236)">
+								<br/>
+								<br/>
+								<br/>
+								<button name="button-prev-step-three" class="slds-button slds-button_neutral slds-float_left" onclick={handleClickPrevButtonStep3}>Prev</button>
+								<button name="button-next-step-three" class="slds-button slds-button_brand slds-float_right" disabled="disabled" onclick={handleClickNextButtonStep3}>Next</button>
+								<br/>
+								<br/>
+
+								<!-- DEVELOP MOMENT -->
+								<template if:true={_displayDevelopToPaymentProcessBlock}>
+									<div class="slds-box slds-box_xx-small slds-m-top_small" style="background-color: rgb(233, 234, 236)">
+										<br/>
+											<p>--- UNDER DEVELOPMENT ---</p>
+											<p>Update Contact Information</p>
+											<p>Create new Membership Status Record</p>
+											<p>Create new Application Form Record</p>
+											<p>Associate new Membership Status with revious Membership Status</p>
+											<p>Create new Order Record with type "Renewal"</p>
+											<p>Start PAYMENT PROCESS</p>
+											<p>Trigger success payment and activate new Membership Status</p>
+											<p>Apex test coverage</p>
+											<p>--- UNDER DEVELOPMENT ---</p>
+										<br/>
+									</div>
 									<br/>
-									<template if:true={_displayDateOfGraduation}>
-										<lightning-input name="dateOfGraduation" type="date" label="Date of Graduation" onchange={handleChangeDateOfGraduation} value={_dateOfGraduation} placeholder=""
-											required title="Please indicate the actual or expected date of graduation for your most recent degree.">
-										</lightning-input>
-									</template>
-									<template if:true={_displayLicenseIssued}>
-										<lightning-input name="licenseIssuedDate" type="date" label="License issued" onchange={handleChangeLicenseIssued} value={_licenseIssuedDate} placeholder=""
-											required title="Please indicate the actual or expected date of issue of the license to practice medicine.">
-										</lightning-input>
-									</template>
-									<br/>
-								</div>
-							<!-- </div> -->
+								</template>
 
-							<!-- <div class="slds-p-left_xx-large slds-p-right_xx-large"> -->
-								<div class="slds-grid slds-grid_vertical">
-									<div class="slds-col slds-m-bottom_small slds-m-top_x-small">
-										<span style="color: rgb(105, 105, 105);">Please upload <u>your updated CV</u> and the following documents, based on your membership selection:</span>
-									</div>
-									<div class="slds-col">
-										<div class="slds-grid slds-grid_vertical">
-											<div class="slds-col slds-m-bottom_xx-small">
-												<div>EAN Resident & Research Membership application:</div>
-												<ul class="slds-list_dotted" style="color: rgb(105, 105, 105);">
-													<li>an official confirmation/certification of your ongoing training in neurology or PhD studies in English
-													</li>
-												</ul>
-											</div>
-											<div class="slds-col slds-m-bottom_xx-small">
-												<div>Student Membership:</div>
-												<ul class="slds-list_dotted" style="color: rgb(105, 105, 105);">
-													<li>a cover letter detailing your important achievements and a list of publications (WHAT TEXT ?)
-													</li>
-												</ul>
-											</div>
-										</div>
-									</div>
-								</div>
-							<!-- </div> -->
+							</template>
 
-							<div class="slds-align_absolute-center">
-								<div class="slds-grid slds-grid_vertical">
-									<div class="slds-col slds-align_absolute-center">
-										<lightning-file-upload label="Attachments"
-															   name="fileUploader"
-															   accept={acceptedFormats}
-															   record-id={_currentContactId}
-															   onuploadfinished={handleUploadFinished} multiple>
-										</lightning-file-upload>
-									</div>
-									<div if:true={_showPillUploadedFiles} class="slds-col slds-align_absolute-center">
-										<div title="pill-container">
-											<lightning-pill-container items={_uploadedFilesPills} onitemremove={handleRemoveFilePill} ></lightning-pill-container>
-										</div>
-									</div>
-								</div>
-							</div>
-
-						</template>
-
-						<!-- STEP 3 -->
-						<template if:true={_isStep3}>
-							<p>STEP 3</p>
-						</template>
-
-					</div>
+						</div>
 					</lightning-card>
 				</div>
 			</div>

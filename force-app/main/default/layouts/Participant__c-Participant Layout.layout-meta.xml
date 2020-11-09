@@ -7,7 +7,7 @@
         <label>Information</label>
         <layoutColumns>
             <layoutItems>
-                <behavior>Edit</behavior>
+                <behavior>Required</behavior>
                 <field>Event_custom__c</field>
             </layoutItems>
             <layoutItems>
@@ -53,6 +53,10 @@
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>Visa_Letter__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Event_Exhibitor__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
@@ -111,13 +115,10 @@
     <quickActionList/>
     <relatedLists>
         <fields>NAME</fields>
-        <fields>Service__c.NAME</fields>
-        <relatedList>Service_Selection__c.Event_Participation__c</relatedList>
-    </relatedLists>
-    <relatedLists>
-        <fields>NAME</fields>
         <fields>Ticket__c</fields>
         <fields>Amount__c</fields>
+        <fields>Order_Custom__c</fields>
+        <fields>Paid__c</fields>
         <relatedList>Order_Item__c.Event_Participation__c</relatedList>
     </relatedLists>
     <relatedLists>
@@ -127,7 +128,14 @@
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
+        <fields>Status__c</fields>
+        <fields>CREATED_DATE</fields>
+        <fields>CREATEDBY_USER</fields>
         <relatedList>Change_Request__c.Event_Participation__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>Email_Activity__c.Event_Participation__c</relatedList>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>

@@ -21,12 +21,18 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Description__c</field>
+                <field>Event_Custom__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>Event_Participation__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Event_Registration_Group__c</field>
+            </layoutItems>
+        </layoutColumns>
+        <layoutColumns>
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>TransferFromContact__c</field>
@@ -49,17 +55,7 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Event_Registration_Group__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>Event_custom__c</field>
-            </layoutItems>
-        </layoutColumns>
-        <layoutColumns>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>OwnerId</field>
+                <field>Description__c</field>
             </layoutItems>
         </layoutColumns>
         <style>TwoColumnsTopToBottom</style>
@@ -74,11 +70,15 @@
                 <behavior>Readonly</behavior>
                 <field>CreatedById</field>
             </layoutItems>
-        </layoutColumns>
-        <layoutColumns>
             <layoutItems>
                 <behavior>Readonly</behavior>
                 <field>LastModifiedById</field>
+            </layoutItems>
+        </layoutColumns>
+        <layoutColumns>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>OwnerId</field>
             </layoutItems>
         </layoutColumns>
         <style>TwoColumnsTopToBottom</style>
@@ -105,7 +105,12 @@
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
-        <relatedList>Email_activity__c.Change_Request__c</relatedList>
+        <fields>Email_Sent__c</fields>
+        <fields>Contact__c</fields>
+        <fields>Event_Custom__c</fields>
+        <fields>Event_Participation__c</fields>
+        <fields>Send_To_Email__c</fields>
+        <relatedList>Email_Activity__c.Change_Request__c</relatedList>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>

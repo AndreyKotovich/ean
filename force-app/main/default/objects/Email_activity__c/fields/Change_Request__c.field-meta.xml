@@ -5,7 +5,6 @@
     <externalId>false</externalId>
     <label>Change Request</label>
     <referenceTo>Change_Request__c</referenceTo>
-    <relationshipLabel>Email activities</relationshipLabel>
     <relationshipName>Email_activities</relationshipName>
     <required>false</required>
     <trackTrending>false</trackTrending>

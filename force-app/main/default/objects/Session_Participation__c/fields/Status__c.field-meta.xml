@@ -11,14 +11,24 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>Registered</fullName>
+                <fullName>Pending</fullName>
                 <default>true</default>
+                <label>Pending</label>
+            </value>
+            <value>
+                <fullName>Registered</fullName>
+                <default>false</default>
                 <label>Registered</label>
             </value>
             <value>
                 <fullName>Participated</fullName>
                 <default>false</default>
                 <label>Participated</label>
+            </value>
+            <value>
+                <fullName>Canceled</fullName>
+                <default>false</default>
+                <label>Canceled</label>
             </value>
         </valueSetDefinition>
     </valueSet>

@@ -16,19 +16,27 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Service__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
                 <field>Ticket__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Readonly</behavior>
-                <field>DiscountPercent__c</field>
+                <field>Discount_Info__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Readonly</behavior>
                 <field>Promo_Code__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Event_custom__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Session__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Country_Price__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns/>

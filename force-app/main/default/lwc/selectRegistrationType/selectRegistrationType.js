@@ -227,13 +227,11 @@ export default class SelectRegistrationType extends NavigationMixin(LightningEle
     validateGroupDuplicates(){
         let result = true;
 
-        if(this._selectedRegistrationType === 'group' && !!!this.groupId){
+        if((this._selectedRegistrationType === 'group' || this._selectedRegistrationType === 'ipr') && !!!this.groupId){
             if(!!this.contactGroupsForEvent.find(obj => obj.Name === this._eventGroupInformation.Name && !!!obj.Event_Exhibitor__c)){
-                result = confirm("There is already a group with the same name. The new group will be created.");
-            }
-        } else if(this._selectedRegistrationType === 'ipr'  && !!!this.groupId){
-            if(!!this.contactGroupsForEvent.find(obj => obj.Name === this._eventGroupInformation.Name && !!obj.Event_Exhibitor__c)){
-                result = confirm("There is already an IPR group with the same name. The new group will be created.");
+                result = confirm("You already registered a group with this name. If you want to create a new group click OK.\n" +
+                    "\n" +
+                    "If you want to add participants to your existing group, go to the My Registrations tab. ");
             }
         }
 

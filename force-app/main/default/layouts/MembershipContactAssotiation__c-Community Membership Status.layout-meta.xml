@@ -24,6 +24,10 @@
                 <behavior>Edit</behavior>
                 <field>Application_form__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Next_Membership_Status__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
@@ -59,6 +63,10 @@
             <sortOrder>0</sortOrder>
         </platformActionListItems>
     </platformActionList>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>MembershipContactAssotiation__c.Next_Membership_Status__c</relatedList>
+    </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>
     <showInteractionLogPanel>false</showInteractionLogPanel>

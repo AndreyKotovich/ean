@@ -4,9 +4,10 @@
     <externalId>false</externalId>
     <label>Membership</label>
     <referenceTo>Membership__c</referenceTo>
+    <relationshipLabel>Membership Status</relationshipLabel>
     <relationshipName>MembershipContactAssotiations</relationshipName>
     <relationshipOrder>1</relationshipOrder>
-    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <reparentableMasterDetail>true</reparentableMasterDetail>
     <trackTrending>false</trackTrending>
     <type>MasterDetail</type>
     <writeRequiresMasterRead>false</writeRequiresMasterRead>

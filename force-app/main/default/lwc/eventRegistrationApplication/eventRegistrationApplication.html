@@ -50,8 +50,19 @@
                         price-ticket={priceTicket}
                         tickets-amount={ticketsAmount}
                         ticket-id={ticketId}
+                        group-individual-tickets={participantsInitialization}
                 >
                 </c-select-tickets>
+            </template>
+
+            <template if:true={steps.step2_2.isActive}>
+                <c-er_participants-initialization
+                        oncontinue={onParticipantInitialization}
+                        onprevious={onPrevious}
+                        onerror={onError}
+                        participants-initialization={participantsInitialization}
+                >
+                </c-er_participants-initialization>
             </template>
 
             <template if:true={steps.step3.isActive}>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Event_Exhibitor__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Link to Event Exhibitor record. Filled in if the current participant is a result of IPR event registration.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Link to Event Exhibitor record. Filled in if the current participant is a result of IPR event registration.</inlineHelpText>
+    <label>Event Exhibitor</label>
+    <referenceTo>Event_Exhibitor__c</referenceTo>
+    <relationshipLabel>Event Participations</relationshipLabel>
+    <relationshipName>Event_Participations</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

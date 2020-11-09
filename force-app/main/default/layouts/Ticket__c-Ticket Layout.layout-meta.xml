@@ -72,7 +72,7 @@
     <relatedLists>
         <fields>NAME</fields>
         <fields>Promo_Code__c</fields>
-        <fields>DiscountPercent__c</fields>
+        <fields>Discount_Info__c</fields>
         <fields>Discount__c</fields>
         <relatedList>DiscountItem__c.Ticket__c</relatedList>
     </relatedLists>

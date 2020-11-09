@@ -9,6 +9,10 @@
     <columns>Title__c</columns>
     <columns>Stage__c</columns>
     <columns>Status__c</columns>
+    <columns>Submitter__c</columns>
+    <columns>Image_1_ID__c</columns>
+    <columns>Image_2_ID__c</columns>
+    <columns>Image_3_ID__c</columns>
     <filterScope>Everything</filterScope>
     <filters>
         <field>RECORDTYPE</field>

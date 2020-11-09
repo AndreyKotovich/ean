@@ -117,6 +117,10 @@
         <sortField>Role__c</sortField>
         <sortOrder>Asc</sortOrder>
     </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>Event_Exhibitor__c.Account__c</relatedList>
+    </relatedLists>
     <relatedObjects>ParentId</relatedObjects>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>

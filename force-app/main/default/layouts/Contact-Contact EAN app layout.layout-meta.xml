@@ -401,24 +401,19 @@
             <sortOrder>5</sortOrder>
         </platformActionListItems>
         <platformActionListItems>
-            <actionName>Contact.Invite_Abstract_Submission</actionName>
-            <actionType>QuickAction</actionType>
-            <sortOrder>6</sortOrder>
-        </platformActionListItems>
-        <platformActionListItems>
             <actionName>Delete</actionName>
             <actionType>StandardButton</actionType>
-            <sortOrder>7</sortOrder>
+            <sortOrder>6</sortOrder>
         </platformActionListItems>
         <platformActionListItems>
             <actionName>DisableCustomerPortal</actionName>
             <actionType>StandardButton</actionType>
-            <sortOrder>8</sortOrder>
+            <sortOrder>7</sortOrder>
         </platformActionListItems>
         <platformActionListItems>
             <actionName>NewTask</actionName>
             <actionType>QuickAction</actionType>
-            <sortOrder>9</sortOrder>
+            <sortOrder>8</sortOrder>
         </platformActionListItems>
     </platformActionList>
     <quickActionList>
@@ -467,10 +462,12 @@
         </relatedContentItems>
     </relatedContent>
     <relatedLists>
+        <fields>NAME</fields>
         <fields>Membership__c.NAME</fields>
         <fields>IsActive__c</fields>
         <fields>Assignment_date__c</fields>
         <fields>Expiration_date__c</fields>
+        <fields>Next_Membership_Status__c</fields>
         <relatedList>MembershipContactAssotiation__c.Contact__c</relatedList>
         <sortField>Expiration_date__c</sortField>
         <sortOrder>Desc</sortOrder>
@@ -484,7 +481,7 @@
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
-        <fields>Event_custom__c</fields>
+        <fields>Event__c.NAME</fields>
         <fields>Status__c</fields>
         <fields>Session__c</fields>
         <fields>Join_Time__c</fields>
@@ -500,7 +497,7 @@
         <relatedList>Session_Participation__c.Contact__c</relatedList>
     </relatedLists>
     <relatedLists>
-        <fields>Lecture__c</fields>
+        <fields>Lecture__c.NAME</fields>
         <relatedList>Speaker__c.Contact__c</relatedList>
     </relatedLists>
     <relatedLists>
@@ -518,10 +515,15 @@
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
+        <fields>Invoice_Number__c</fields>
+        <fields>Event_custom__c</fields>
         <fields>Total_amount__c</fields>
         <fields>Status__c</fields>
         <fields>Paid_Amount__c</fields>
+        <fields>CREATED_DATE</fields>
         <relatedList>Order__c.Contact__c</relatedList>
+        <sortField>CREATED_DATE</sortField>
+        <sortOrder>Desc</sortOrder>
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
@@ -541,7 +543,15 @@
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
+        <fields>Status__c</fields>
+        <fields>Type__c</fields>
+        <fields>Event_Custom__c</fields>
+        <fields>Event_Registration_Group__c</fields>
+        <fields>Event_Participation__c</fields>
+        <fields>CREATED_DATE</fields>
         <relatedList>Change_Request__c.Contact__c</relatedList>
+        <sortField>CREATED_DATE</sortField>
+        <sortOrder>Desc</sortOrder>
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
@@ -565,15 +575,19 @@
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
-        <relatedList>Email_activity__c.Contact__c</relatedList>
+        <relatedList>Email_Activity__c.Contact__c</relatedList>
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
-        <relatedList>Email_activity__c.TransferFromContact__c</relatedList>
+        <relatedList>Event_Exhibitor__c.Contact__c</relatedList>
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
-        <relatedList>Email_activity__c.TransferToContact__c</relatedList>
+        <relatedList>Reviewer__c.Contact__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>Abstract_Author__c.Contact__c</relatedList>
     </relatedLists>
     <relatedObjects>AccountId</relatedObjects>
     <showEmailCheckbox>false</showEmailCheckbox>

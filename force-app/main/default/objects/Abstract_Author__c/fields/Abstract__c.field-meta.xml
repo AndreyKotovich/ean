@@ -6,7 +6,7 @@
     <referenceTo>Abstract__c</referenceTo>
     <relationshipLabel>Authors</relationshipLabel>
     <relationshipName>Abstract_Authors</relationshipName>
-    <relationshipOrder>1</relationshipOrder>
+    <relationshipOrder>0</relationshipOrder>
     <reparentableMasterDetail>false</reparentableMasterDetail>
     <trackTrending>false</trackTrending>
     <type>MasterDetail</type>

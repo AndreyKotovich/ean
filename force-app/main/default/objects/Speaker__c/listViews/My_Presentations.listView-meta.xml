@@ -4,6 +4,6 @@
     <columns>NAME</columns>
     <columns>Presenter__c</columns>
     <columns>Lecture__c</columns>
-    <filterScope>Everything</filterScope>
+    <filterScope>Mine</filterScope>
     <label>My Presentations</label>
 </ListView>

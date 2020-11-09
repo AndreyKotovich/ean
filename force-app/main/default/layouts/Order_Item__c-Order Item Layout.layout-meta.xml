@@ -60,11 +60,19 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Service_Selection__c</field>
+                <field>Session_Participation__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Session_Participation__c</field>
+                <field>Discount_Amount__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Refund_Amount__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>Name__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns/>

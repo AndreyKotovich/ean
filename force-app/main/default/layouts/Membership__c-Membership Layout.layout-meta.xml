@@ -41,6 +41,10 @@
                 <behavior>Edit</behavior>
                 <field>External_Id_group__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>isForUpdateMembershipApplication__c</field>
+            </layoutItems>
         </layoutColumns>
         <style>TwoColumnsTopToBottom</style>
     </layoutSections>

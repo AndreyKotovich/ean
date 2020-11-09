@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Submit_Rating_Validation</fullName>
+    <active>true</active>
+    <errorConditionFormula>ISPICKVAL(Stage__c, &quot;Submitted&quot;)  &amp;&amp; ISPICKVAL(Grading__c,&quot;&quot;)</errorConditionFormula>
+    <errorMessage>You can only submit this review after rating it. Please first rate this abstract.</errorMessage>
+</ValidationRule>

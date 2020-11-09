@@ -23,10 +23,6 @@
                 <behavior>Edit</behavior>
                 <field>New_Presenter_Email__c</field>
             </layoutItems>
-            <layoutItems>
-                <behavior>Readonly</behavior>
-                <field>Number_of_Presentations__c</field>
-            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>

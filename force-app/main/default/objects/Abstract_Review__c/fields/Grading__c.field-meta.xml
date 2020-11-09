@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Grading__c</fullName>
+    <externalId>false</externalId>
+    <label>Grading</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>1 - excellent</fullName>
+                <default>false</default>
+                <label>1 - excellent</label>
+            </value>
+            <value>
+                <fullName>2 - good</fullName>
+                <default>false</default>
+                <label>2 - good</label>
+            </value>
+            <value>
+                <fullName>3 - average</fullName>
+                <default>false</default>
+                <label>3 - average</label>
+            </value>
+            <value>
+                <fullName>4 - fair</fullName>
+                <default>false</default>
+                <label>4 - fair</label>
+            </value>
+            <value>
+                <fullName>5 - bad</fullName>
+                <default>false</default>
+                <label>5 - bad</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

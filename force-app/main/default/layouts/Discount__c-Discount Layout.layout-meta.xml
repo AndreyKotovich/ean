@@ -13,7 +13,7 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>DiscountPercent__c</field>
+                <field>Discount_Amount__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
@@ -26,6 +26,10 @@
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>EndDate__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Discount_Type__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
@@ -68,7 +72,6 @@
     <relatedLists>
         <fields>NAME</fields>
         <fields>Ticket__c</fields>
-        <fields>Service__c</fields>
         <relatedList>DiscountItem__c.Discount__c</relatedList>
     </relatedLists>
     <relatedLists>

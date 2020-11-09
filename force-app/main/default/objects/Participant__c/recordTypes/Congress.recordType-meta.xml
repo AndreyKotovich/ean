@@ -132,6 +132,10 @@
             <default>false</default>
         </values>
         <values>
+            <fullName>Pending</fullName>
+            <default>false</default>
+        </values>
+        <values>
             <fullName>Registered</fullName>
             <default>false</default>
         </values>

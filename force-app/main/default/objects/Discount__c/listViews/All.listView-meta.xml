@@ -3,7 +3,8 @@
     <fullName>All</fullName>
     <columns>NAME</columns>
     <columns>PromoCode__c</columns>
-    <columns>DiscountPercent__c</columns>
+    <columns>Discount_Amount__c</columns>
+    <columns>Discount_Type__c</columns>
     <columns>StartDate__c</columns>
     <columns>EndDate__c</columns>
     <filterScope>Everything</filterScope>

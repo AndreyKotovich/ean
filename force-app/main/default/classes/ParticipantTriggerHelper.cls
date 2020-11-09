@@ -1,6 +1,7 @@
 public with sharing class ParticipantTriggerHelper {
+
     public ParticipantTriggerHelper() {
-    
+
     }
     public static void soloParticipantRegistration(List<String> soloParticipantIds) {
         List<Participant__c> participants = [

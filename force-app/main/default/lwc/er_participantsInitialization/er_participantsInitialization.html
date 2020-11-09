@@ -1,0 +1,66 @@
+<!-- Participant Initialization -->
+<template>
+    <div class="slds-card__body slds-p-around_medium">
+        <lightning-layout horizontal-align="center" multiple-rows="true">
+            <lightning-layout-item padding="around-small"
+                                   size="12"
+                                   large-device-size="6"
+                                   medium-device-size="6"
+                                   small-device-size="12"
+                                   flexibility="auto"
+            >
+                <c-record-search listfields="Id,Name,Email"
+                                 objectname="Contact"
+                                 searchfield="Email"
+                                 whereclause=""
+                                 limitrecords=5
+                                 placeholder="Enter email to search Contacts"
+                                 inputtype="email"
+                                 enteredtext=""
+                                 existingrecordid=""
+                                 disabledvalues=""
+                                 disabledtoedit="false"
+                                 onchangenewcontactemail={handleSelectEmail}
+                ></c-record-search>
+
+            </lightning-layout-item>
+
+            <lightning-layout-item padding="around-small"
+                                   size="12"
+                                   large-device-size="6"
+                                   medium-device-size="6"
+                                   small-device-size="12"
+                                   flexibility="auto"
+            ></lightning-layout-item>
+        </lightning-layout>
+    </div>
+
+    <div class="slds-card__footer slds-grid slds-align--absolute-center">
+        <div if:false={hidePreviousButton}>
+            <lightning-button
+                    class="slds-col slds-m-around_x-small"
+                    label="Previous"
+                    variant="neutral"
+                    onclick={handlePreviousClick}
+            ></lightning-button>
+        </div>
+        <div if:false={hideNextButton}>
+            <lightning-button
+                    class="slds-col slds-m-around_x-small"
+                    label="Next"
+                    variant="brand"
+                    onclick={handleNextClick}
+            ></lightning-button>
+        </div>
+    </div>
+
+    <template if:true={isSpinner}>
+        <div class="slds-spinner_container" style="position: fixed">
+            <lightning-spinner
+                    alternative-text="Loading"
+                    variant="brand"
+                    size="large"
+            ></lightning-spinner>
+        </div>
+    </template>
+</template>

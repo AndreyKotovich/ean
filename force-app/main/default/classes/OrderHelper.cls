@@ -131,7 +131,7 @@ public without sharing class OrderHelper {
             }
             insert ordItems;
 
-            (orderRefunedId, orderCancelledId);
+            refundTransaction(orderRefunedId, orderCancelledId);
 
         } catch(Exception e) {
             System.debug('The following exception has occurred: ' + e.getMessage());
@@ -192,7 +192,7 @@ public without sharing class OrderHelper {
         List<Order_Item__c> oI = generalData.containsKey('oI') ?
             (List<Order_Item__c>)JSON.deserialize(JSON.serialize(generalData.get('oI')), List<Order_Item__c>.class) :
             new List<Order_Item__c>();
-        
+
         Map<String, String> resMap = PaymentHttpRequest.refundTransaction(orderId, orderId, refundAmount);
 
         if (resMap.get('status') == 'Success' && oI.size() > 0) {

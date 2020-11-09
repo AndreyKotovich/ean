@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Do_Call_For_Renewal__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Used in trigger to create &apos;Email Activity&apos;. After processing will be unchecked.</description>
+    <externalId>false</externalId>
+    <label>Do Call For Renewal</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

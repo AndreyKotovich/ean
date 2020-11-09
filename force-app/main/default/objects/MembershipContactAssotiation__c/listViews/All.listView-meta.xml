@@ -2,8 +2,15 @@
 <ListView xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>All</fullName>
     <columns>NAME</columns>
-    <columns>tx_efnsusr_type_name__c</columns>
+    <columns>Membership__c</columns>
     <columns>Contact__c</columns>
+    <columns>IsActive__c</columns>
+    <columns>Expiration_date__c</columns>
+    <columns>Do_Call_For_Renewal__c</columns>
+    <columns>Email_Activity__c</columns>
+    <columns>Last_Call_For_Renewal_Date__c</columns>
+    <columns>Next_Membership_Status__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
+    <language>en_US</language>
 </ListView>

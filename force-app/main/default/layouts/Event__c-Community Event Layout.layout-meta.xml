@@ -38,6 +38,14 @@
                 <behavior>Edit</behavior>
                 <field>Abstract_Submission_Deadline__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Max_Participants__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>Registrations__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
@@ -95,6 +103,14 @@
     <relatedLists>
         <fields>NAME</fields>
         <relatedList>Session__c.Event_custom__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>Event_Exhibitor__c.Event_custom__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>DiscountItem__c.Event_custom__c</relatedList>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>

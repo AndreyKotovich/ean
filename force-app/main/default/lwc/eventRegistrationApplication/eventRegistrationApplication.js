@@ -393,8 +393,8 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             generalData.priceTicket = this.priceTicket;
             generalData.contactId = this.userInfo.contact.Id;
             generalData.discountInfo = this.discountInfo;
-
-
+        
+        
             Object.assign(insertData, {participant: this.upgradeParticipant.Id, selectedSessions:this.selectedSessions, generalData})
             console.log('insertData', JSON.stringify(insertData));
         }

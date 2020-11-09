@@ -2,7 +2,7 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Total_amount__c</fullName>
     <externalId>false</externalId>
-    <formula>Quantity__c *  Amount__c</formula>
+    <formula>(Quantity__c *  Amount__c) + Discount_Amount__c</formula>
     <label>Total amount</label>
     <precision>18</precision>
     <required>false</required>

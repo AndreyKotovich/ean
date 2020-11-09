@@ -4,6 +4,7 @@
     <externalId>false</externalId>
     <label>Lecture</label>
     <referenceTo>Lecture__c</referenceTo>
+    <relationshipLabel>Lecture Presentations</relationshipLabel>
     <relationshipName>Speakers</relationshipName>
     <relationshipOrder>0</relationshipOrder>
     <reparentableMasterDetail>false</reparentableMasterDetail>

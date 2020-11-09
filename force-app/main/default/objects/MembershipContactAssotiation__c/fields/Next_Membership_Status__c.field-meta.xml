@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Next_Membership_Status__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Renewed &apos;Membership Status&apos; for the next year (used in list view to filter renewed statuses)</description>
+    <externalId>false</externalId>
+    <label>Next Membership Status</label>
+    <referenceTo>MembershipContactAssotiation__c</referenceTo>
+    <relationshipLabel>Previous Membership Status</relationshipLabel>
+    <relationshipName>Next_Membership_Status</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

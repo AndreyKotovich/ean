@@ -74,10 +74,7 @@
         <style>CustomLinks</style>
     </layoutSections>
     <relatedLists>
-        <fields>Abstract__c.NAME</fields>
-        <fields>Abstract__c.Title__c</fields>
-        <fields>Abstract__c.Event__c</fields>
-        <fields>Abstract__c.Type__c</fields>
+        <fields>Abstract__c</fields>
         <relatedList>Abstract_Author__c.Author__c</relatedList>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>

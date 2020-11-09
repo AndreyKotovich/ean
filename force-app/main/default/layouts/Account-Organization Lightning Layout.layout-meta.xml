@@ -282,6 +282,10 @@
     <relatedLists>
         <relatedList>RelatedFileList</relatedList>
     </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>Event_Exhibitor__c.Account__c</relatedList>
+    </relatedLists>
     <relatedObjects>ParentId</relatedObjects>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>true</showHighlightsPanel>

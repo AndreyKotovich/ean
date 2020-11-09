@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Country_Price__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Used only at Membership Renewal process to define total renewal fee. Based on membership category and country of residence.</description>
+    <externalId>false</externalId>
+    <label>Country Price</label>
+    <referenceTo>Country_Price__c</referenceTo>
+    <relationshipLabel>Renewal Discount Item</relationshipLabel>
+    <relationshipName>Renewal_Discount_Item</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

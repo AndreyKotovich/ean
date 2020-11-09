@@ -23,6 +23,38 @@
                 <behavior>Edit</behavior>
                 <field>Submitter__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Abstract_Topic__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>Image1__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Presenter_First_Name__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Presenter_Last_Name__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Presenter_Department__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Presenter_Country__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Presenter_Email__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Presenter_City__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
@@ -43,6 +75,29 @@
             </layoutItems>
         </layoutColumns>
         <style>TwoColumnsTopToBottom</style>
+    </layoutSections>
+    <layoutSections>
+        <customLabel>true</customLabel>
+        <detailHeading>true</detailHeading>
+        <editHeading>true</editHeading>
+        <label>Grading</label>
+        <layoutColumns>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>Average_Grade__c</field>
+            </layoutItems>
+        </layoutColumns>
+        <layoutColumns>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>Assigned_Reviewers__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>COUNT_Abstract_Reviews__c</field>
+            </layoutItems>
+        </layoutColumns>
+        <style>TwoColumnsLeftToRight</style>
     </layoutSections>
     <layoutSections>
         <customLabel>true</customLabel>
@@ -151,11 +206,23 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
+                <field>Image_1_Caption__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
                 <field>Image_2_Location__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
+                <field>Image_2_Caption__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
                 <field>Image_3_Location__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Image_3_Caption__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
@@ -165,11 +232,23 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
+                <field>Image_1_ID__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
                 <field>Image_2__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
+                <field>Image_2_ID__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
                 <field>Image_3__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Image_3_ID__c</field>
             </layoutItems>
         </layoutColumns>
         <style>TwoColumnsLeftToRight</style>
@@ -327,8 +406,7 @@
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
-        <fields>Author__c.NAME</fields>
-        <fields>Author__c.Contact__c</fields>
+        <fields>Author__c</fields>
         <relatedList>Abstract_Author__c.Abstract__c</relatedList>
     </relatedLists>
     <relatedLists>
@@ -336,6 +414,13 @@
     </relatedLists>
     <relatedLists>
         <relatedList>RelatedEntityHistoryList</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <fields>Grade__c</fields>
+        <fields>Stage__c</fields>
+        <fields>Reviewer__c.Contact__c</fields>
+        <relatedList>Abstract_Review__c.Abstract__c</relatedList>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>

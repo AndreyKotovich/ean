@@ -34,7 +34,6 @@
     <tabs>standard-Account</tabs>
     <tabs>Order__c</tabs>
     <tabs>Ticket__c</tabs>
-    <tabs>Service__c</tabs>
     <tabs>Discount__c</tabs>
     <tabs>Transfer_Request__c</tabs>
     <tabs>Event_Registration_Group__c</tabs>
@@ -44,9 +43,12 @@
     <tabs>Abstract__c</tabs>
     <tabs>Change_Request__c</tabs>
     <tabs>Session_Speaker__c</tabs>
-    <tabs>Email_activity__c</tabs>
+    <tabs>Email_Activity__c</tabs>
     <tabs>Speaker__c</tabs>
     <tabs>Lecture__c</tabs>
+    <tabs>Reviewer__c</tabs>
+    <tabs>DiscountItem__c</tabs>
+    <tabs>Abstract_Review__c</tabs>
     <uiType>Lightning</uiType>
     <utilityBar>Event_Registration_UtilityBar</utilityBar>
 </CustomApplication>

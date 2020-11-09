@@ -1,4 +1,7 @@
 import { LightningElement, track, api, wire } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { NavigationMixin } from 'lightning/navigation';
+//APEX
 import getMemberships from '@salesforce/apex/membershipApplicationController.getMemberships';
 import getCountries from '@salesforce/apex/membershipApplicationController.getCountries';
 import updateContact from '@salesforce/apex/membershipApplicationController.updateContact';
@@ -8,15 +11,18 @@ import getDeadline from '@salesforce/apex/membershipApplicationController.getDea
 import generateOrder from '@salesforce/apex/OrderUtils.generateOrder'
 import deleteContentDocumentById from '@salesforce/apex/membershipApplicationController.deleteContentDocumentById'
 import attachFileToForm from '@salesforce/apex/membershipApplicationController.attachFileToForm'
-import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import { NavigationMixin } from 'lightning/navigation';
 import updateOrderItems from '@salesforce/apex/OrderUtils.updateOrderItems'
 import getExistedForm from '@salesforce/apex/membershipApplicationController.getExistedForm'
 import getContentDocuments from '@salesforce/apex/membershipApplicationController.getContentDocuments'
 import getOrderWithItems from '@salesforce/apex/membershipApplicationController.getOrderWithItems'
+// CUSTOM LABELS
+import ma_membershipDescr1 from '@salesforce/label/c.ma_membershipDescr1';
+import ma_membershipDescr2 from '@salesforce/label/c.ma_membershipDescr2';
+import ma_membershipDescr3 from '@salesforce/label/c.ma_membershipDescr3';
 
 
 export default class UpdateMembershipApplication extends NavigationMixin(LightningElement) {
+    @api contactMemberships = [];
     @track region = '';
     @track allAvailableMemberships = [];
     @track radioButtonsLabels = [];
@@ -24,7 +30,6 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
     @track allCountries = [];
     @track currentContactId;
     @track isForm = false;
-    form = {};
     @track paymentForm = false;
     @track membershipId;
     @track formId = '';
@@ -33,23 +38,28 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
     @track secondFieldValueSet = {};
     @track contact = {};
     @track autoFillCountries = {};
-    lookupsResults = {};
     @track contactHospitals;
     @track contactDepartments;
     @track products = [];
-    orderId = '';
     @track productOptions = [];
-    selectedProducts = [];
     @track isShowProducts = false;
-    @api contactMemberships = [];
     @track isSpinner = true;
-    Country__mdt = [];
-    isEdit = false; // detects if "Back" button on validate screen was clicked
     @track showPillUploadedFiles = false;
     @track formValues = {};
+    @track uploadedFilesPills=[];
+    form = {};
+    lookupsResults = {};
+    orderId = '';
+    selectedProducts = [];
+    Country__mdt = [];
+    isEdit = false; // detects if "Back" button on validate screen was clicked
     availableMembershipsForApplying = {};
     applicationMode = '';
-
+    label = {
+        ma_membershipDescr1,
+        ma_membershipDescr2,
+        ma_membershipDescr3
+    };
 
     connectedCallback() {
         this.checkUrlParams()
@@ -243,6 +253,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
         });
         return resultObject;
     }
+
     handleCountryPrices() {
         this.isSpinner = true;
         getDeadline()
@@ -359,6 +370,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
             }
         });
     }
+
     aanDiscount(){
         return new Promise((resolve, reject) => {
             let discountPercent = 0;
@@ -370,6 +382,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
             resolve(discountPercent);
         });
     }
+
     retiredDiscount(deadline, membership){
         return new Promise((resolve, reject) => {
             let discountPercent = 0;
@@ -384,9 +397,11 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
 
         });
     }
+
     onChangeMembership(event) {
         this.membershipId = event.target.title;
     }
+
     handleChangeCountry(event) {
         this.autoFillCountries[event.target.title] = event.detail.value;
         let arr = event.detail.value.split(',');
@@ -398,6 +413,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
         this.writeValueToFormAndContactVariables(arr[1], event.target.title);
         this.manageMarkup();
     }
+
     handleChange(event) {
         this.writeValueToFormAndContactVariables(event.target.value, event.target.title);
         if (event.target.title === 'AAN_Member__c' || event.target.title === 'Retired__c') {
@@ -405,6 +421,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
         }
         this.manageMarkup();
     }
+
     writeValueToFormAndContactVariables(value, title) {
         this.formValues[title] = value;
         this.fieldMap.forEach(map => {
@@ -413,6 +430,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
             }
         });
     }
+
     handleClickNext() {
         let allFields = this.template.querySelectorAll(".input");
         let isFilled = true;
@@ -589,6 +607,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
         });
         return listOrderItems;
     }
+
     setProducts(){
         let productOptions = [];
         let line = 0;
@@ -613,6 +632,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
         }
         this.productOptions = [...productOptions];
     }
+
     catchSelectedProducts(){
         let selectedProducts = [];
         var checkedValues = this.template.querySelectorAll('.checkbox-product:checked');
@@ -623,6 +643,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
         });
         this.selectedProducts = [...selectedProducts];
     }
+
     handleClickPay() {
         this.isSpinner = true;
         if (!this.filesValidation().filesFlag) {
@@ -636,6 +657,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
                 .catch(()=>{console.log('this.attachFilesToAppForm()_ERROR')})
         }
     }
+
     generateOrderWithItems(){
         return new Promise((resolve, reject) => {
             if(!this.isEdit){
@@ -659,6 +681,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
             }
         })
     }
+
     handleClickBack() {
         this.openMembershipInput()
             .then(()=>{
@@ -744,9 +767,6 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
         return ['.pdf', '.jpg', '.jpeg', '.png', '.doc', '.docx'];
     }
 
-    @track uploadedFilesPills=[];
-
-
     handleUploadFinished(event) {
         const uploadedFiles = event.detail.files;
         let uploadedFilesPills=[...this.uploadedFilesPills];
@@ -807,6 +827,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
         }
         this.manageJournalSection();
     }
+
     associateIndividualMembershipExist(){
         let currentMembership = this.getMembershipByApi('associate_individual_membership');
         let membershipToEnable=[];
@@ -825,6 +846,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
                 console.log('associateIndividualMembershipExist_ERROR: '+JSON.stringify(error));
             })
     }
+
     fullMembershipExist(){
         let currentMembership = this.getMembershipByApi('full_membership');
         let membershipToEnable=[];
@@ -837,6 +859,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
                 console.log('studentMembershipExist_ERROR: '+JSON.stringify(error));
             })
     }
+
     residentAndResearchMembershipExist(){
         let currentMembership = this.getMembershipByApi('resident_and_research_membership');
         let membershipToEnable=[];
@@ -853,6 +876,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
                 console.log('residentAndResearchMembershipExist_ERROR: '+JSON.stringify(error));
             })
     }
+
     studentMembershipExist(){
         let currentMembership = this.getMembershipByApi('student_membership');
         let membershipToEnable=[];
@@ -865,6 +889,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
                 console.log('studentMembershipExist_ERROR: '+JSON.stringify(error));
             })
     }
+
     disableEnableMemberships(currentMembership, membershipToEnable){
         return new Promise((resolve, reject) => {
             try{
@@ -886,6 +911,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
             }
         });
     }
+
     getMembershipByApi(membershipApi) {
         let currentMembership = {};
         this.allAvailableMemberships.forEach(membership => {
@@ -928,6 +954,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
             this.availableMembershipsForApplying[currentMembership.Id] = isFound;
         }
     }
+
     fullMembershipLOGIC() {
         let currentMembership = this.getMembershipByApi('full_membership');
         let htmlMembershipElement = this.template.querySelector('input[title="' + currentMembership.Id + '"]');
@@ -946,6 +973,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
         }
         this.availableMembershipsForApplying[currentMembership.Id] = isFound;
     }
+
     fellowMembershipLOGIC() {
         let currentMembership = this.getMembershipByApi('fellow_membership');
         let htmlMembershipElement = this.template.querySelector('input[title="' + currentMembership.Id + '"]');
@@ -964,6 +992,7 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
         }
         this.availableMembershipsForApplying[currentMembership.Id] = isFound;
     }
+
     correspondingIndividualMembershipLOGIC() {
         let currentMembership = this.getMembershipByApi('corresponding_membership');
         let htmlMembershipElement = this.template.querySelector('input[title="' + currentMembership.Id + '"]');

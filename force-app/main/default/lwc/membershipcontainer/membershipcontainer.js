@@ -71,7 +71,6 @@ export default class Membershipcontainer extends NavigationMixin(LightningElemen
             getCurrentContactMemberships()
                 .then(result=>{
                     this.currentContactMemberships = [...JSON.parse(result)['memberships']];
-                    console.log('DEVVIT 1 result: ' + result);
                     this.manageButtons(result);
                 })
                 .catch(error=> {
@@ -80,7 +79,6 @@ export default class Membershipcontainer extends NavigationMixin(LightningElemen
         }
     }
     manageButtons(result){
-        console.log('DEVVIT 2');
         let parsedResult = JSON.parse(result);
         if(parsedResult['memberships'].length === 0){
             //new
@@ -101,15 +99,26 @@ export default class Membershipcontainer extends NavigationMixin(LightningElemen
                 }
             });
         }
-        if(this.newMembershipButton){
-            this.template.querySelector('button[name="new-membership-button"]').removeAttribute('disabled');
-        }
-        if(this.upgradeMembershipButton){
-            this.template.querySelector('button[name="update-membership-button"]').removeAttribute('disabled');
-        }
+        //  part of 'Membership Renewal'
         if (parsedResult.renewalSettings.displayMembershipRenewalButton) {
             this.allowMembershipRenewal = true;
             this.template.querySelector('button[name="membership-renewal-button"]').removeAttribute('disabled');
+        }
+
+        if(this.newMembershipButton){
+            this.template.querySelector('button[name="new-membership-button"]').removeAttribute('disabled');
+        }
+
+        if(this.upgradeMembershipButton){
+            this.template.querySelector('button[name="update-membership-button"]').removeAttribute('disabled');
+
+            //  part of 'Membership Renewal'
+            let urlParams = new URL(window.location);
+            let membershipStatusId = urlParams.searchParams.get("re");
+            console.log('Membershipcontainer membershipStatusId: ', membershipStatusId);
+            if (membershipStatusId) {
+                this.openUpdateMembershipApp();
+            }
         }
     }
     openNewMembershipApp(){

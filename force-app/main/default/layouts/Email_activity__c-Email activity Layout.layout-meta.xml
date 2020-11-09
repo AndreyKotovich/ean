@@ -16,7 +16,7 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Email_sent__c</field>
+                <field>Email_Sent__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
@@ -24,35 +24,27 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Status__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
                 <field>Type__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>TransferFromEmail__c</field>
+                <field>Event_Custom__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>TransferToEmail__c</field>
+                <field>Event_Participation__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Event_custom__c</field>
+                <field>Send_To_Email__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>Event_Registration_Group__c</field>
+                <field>Membership_Status__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>TransferFromContact__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>TransferToContact__c</field>
+                <field>Order__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
@@ -91,6 +83,10 @@
         <layoutColumns/>
         <style>CustomLinks</style>
     </layoutSections>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>MembershipContactAssotiation__c.Email_Activity__c</relatedList>
+    </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>
     <showInteractionLogPanel>false</showInteractionLogPanel>

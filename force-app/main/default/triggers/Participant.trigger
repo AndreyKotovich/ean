@@ -9,8 +9,12 @@ trigger Participant on Participant__c (after insert) {
                 groupParticipantIds.add(participant.Id);
             }
         }
-        ParticipantTriggerHelper.soloParticipantRegistration(soloParticipantIds);
-        ParticipantTriggerHelper.groupParticipantRegistration(groupParticipantIds);
+        if(soloParticipantIds.size() > 0) {
+            ParticipantTriggerHelper.soloParticipantRegistration(soloParticipantIds);
+        }
+        if (groupParticipantIds.size() > 0) {
+            ParticipantTriggerHelper.groupParticipantRegistration(groupParticipantIds);
+        }
     }
 
 }

@@ -186,10 +186,16 @@
     <tabs>Abstract__c</tabs>
     <tabs>Change_Request__c</tabs>
     <tabs>Session_Speaker__c</tabs>
-    <tabs>Email_activity__c</tabs>
+    <tabs>Email_Activity__c</tabs>
     <tabs>Speaker__c</tabs>
     <tabs>Lecture__c</tabs>
+    <tabs>Reviewer__c</tabs>
+    <tabs>DiscountItem__c</tabs>
+    <tabs>Abstract_Review__c</tabs>
     <workspaceConfig>
+        <mappings>
+            <tab>Abstract_Review__c</tab>
+        </mappings>
         <mappings>
             <tab>Abstract__c</tab>
         </mappings>
@@ -200,7 +206,10 @@
             <tab>Change_Request__c</tab>
         </mappings>
         <mappings>
-            <tab>Email_activity__c</tab>
+            <tab>DiscountItem__c</tab>
+        </mappings>
+        <mappings>
+            <tab>Email_Activity__c</tab>
         </mappings>
         <mappings>
             <tab>Event_Registration_Group__c</tab>
@@ -213,6 +222,9 @@
         </mappings>
         <mappings>
             <tab>Presenter__c</tab>
+        </mappings>
+        <mappings>
+            <tab>Reviewer__c</tab>
         </mappings>
         <mappings>
             <tab>Session_Speaker__c</tab>

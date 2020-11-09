@@ -61,8 +61,12 @@
                     <value>1440</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Avg Abstract Rating by Topic</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
                     <name>reportName</name>
-                    <value>Active_Members_lLe</value>
+                    <value>Submitted_FG4</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>showRefreshButton</name>

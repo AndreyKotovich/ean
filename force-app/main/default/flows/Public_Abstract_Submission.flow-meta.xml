@@ -3,7 +3,7 @@
     <assignments>
         <name>AssignAbstractValues</name>
         <label>AssignAbstractValues</label>
-        <locationX>628</locationX>
+        <locationX>662</locationX>
         <locationY>526</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Event__c</assignToReference>
@@ -94,6 +94,213 @@
             <operator>Assign</operator>
             <value>
                 <elementReference>Tournament_Clinical</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Disclosure__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Disclosure</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Submitter__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$User.ContactId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Topics__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Topics</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Review_Abstract</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>AssignAbstractValues_0</name>
+        <label>AssignAbstractValues</label>
+        <locationX>639</locationX>
+        <locationY>745</locationY>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Event__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>SelectedEvent</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Type</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Conclusion__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Conclusion</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Introduction__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Introduction</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Methods__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Methods</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Title__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Title</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Results__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Results</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Bursary__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Bursary</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Authors_consent__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>AuthorConsentCheckbox</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Originality__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>OriginalityCheckbox</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Copyright__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>CopyrightCheckbox</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Disclosure__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Disclosure</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Submitter__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$User.ContactId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Topics__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Topics</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Review_Abstract</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>AssignAbstractValues_0_0</name>
+        <label>AssignAbstractValues</label>
+        <locationX>501</locationX>
+        <locationY>745</locationY>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Event__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>SelectedEvent</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Type</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Conclusion__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Conclusion</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Introduction__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Introduction</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Methods__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Methods</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Title__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Title</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Results__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Results</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Authors_consent__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>AuthorConsentCheckbox</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Originality__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>OriginalityCheckbox</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Copyright__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>CopyrightCheckbox</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -295,12 +502,58 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Checkboxes_Null</name>
+        <label>Checkboxes = Null</label>
+        <locationX>500</locationX>
+        <locationY>522</locationY>
+        <defaultConnector>
+            <targetReference>AssignAbstractValues</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>All Boxes Visible</defaultConnectorLabel>
+        <rules>
+            <name>RRFS_Member_and_Oral</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Bursary</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>Tournament_Basic</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>Tournament_Clinical</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <connector>
+                <targetReference>AssignAbstractValues_0_0</targetReference>
+            </connector>
+            <label>All Boxes = Null</label>
+        </rules>
+        <rules>
+            <name>Tournament_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Tournament_Basic</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>Tournament_Clinical</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <connector>
+                <targetReference>AssignAbstractValues_0</targetReference>
+            </connector>
+            <label>Tournament = Null</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>CheckSubmissionDeadline</name>
         <label>CheckSubmissionDeadline</label>
         <locationX>378</locationX>
         <locationY>186</locationY>
         <defaultConnector>
-            <targetReference>Select_Event_Screen</targetReference>
+            <targetReference>Deadline_passed_screen</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Deadline Passed</defaultConnectorLabel>
         <rules>
@@ -314,7 +567,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Fill_Abstract_Screen</targetReference>
+                <targetReference>GetMembershipStatus</targetReference>
             </connector>
             <label>Deadline Not Passed</label>
         </rules>
@@ -546,8 +799,8 @@
     <recordLookups>
         <name>GetEvent</name>
         <label>GetEvent</label>
-        <locationX>391</locationX>
-        <locationY>506</locationY>
+        <locationX>386</locationX>
+        <locationY>539</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>CheckSubmissionDeadline</targetReference>
@@ -563,6 +816,28 @@
         <object>Event__c</object>
         <queriedFields>Id</queriedFields>
         <queriedFields>Abstract_Submission_Deadline__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>GetMembershipStatus</name>
+        <label>GetMembershipStatus</label>
+        <locationX>567</locationX>
+        <locationY>184</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Fill_Abstract_Screen</targetReference>
+        </connector>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$User.ContactId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Contact</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Membership_Status__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordUpdates>
@@ -846,6 +1121,22 @@
         <showHeader>true</showHeader>
     </screens>
     <screens>
+        <name>Deadline_passed_screen</name>
+        <label>Deadline passed screen</label>
+        <locationX>278</locationX>
+        <locationY>269</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>DeadlinePassedText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;The abstract submission deadline for this event has already passed.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
         <name>DraftSuccessMessage</name>
         <label>DraftSuccessMessage</label>
         <locationX>2186</locationX>
@@ -865,12 +1156,12 @@
         <name>Fill_Abstract_Screen</name>
         <label>Fill Abstract Screen</label>
         <locationX>509</locationX>
-        <locationY>339</locationY>
+        <locationY>346</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>AssignAbstractValues</targetReference>
+            <targetReference>Checkboxes_Null</targetReference>
         </connector>
         <fields>
             <name>Type</name>
@@ -883,6 +1174,9 @@
         <fields>
             <name>Tournament_Basic</name>
             <dataType>Boolean</dataType>
+            <defaultValue>
+                <booleanValue>false</booleanValue>
+            </defaultValue>
             <fieldText>I wish to participate in the Tournament Basic</fieldText>
             <fieldType>InputField</fieldType>
             <isRequired>true</isRequired>
@@ -891,7 +1185,7 @@
                 <formulaExpression>NOT({!Tournament_Basic}=true &amp;&amp; {!Tournament_Clinical}=true)</formulaExpression>
             </validationRule>
             <visibilityRule>
-                <conditionLogic>or</conditionLogic>
+                <conditionLogic>(1 OR 2) AND 3</conditionLogic>
                 <conditions>
                     <leftValueReference>Type</leftValueReference>
                     <operator>EqualTo</operator>
@@ -906,11 +1200,21 @@
                         <stringValue>Onsite oral</stringValue>
                     </rightValue>
                 </conditions>
+                <conditions>
+                    <leftValueReference>GetMembershipStatus.Membership_Status__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>EAN Resident and Research Member</stringValue>
+                    </rightValue>
+                </conditions>
             </visibilityRule>
         </fields>
         <fields>
             <name>Tournament_Clinical</name>
             <dataType>Boolean</dataType>
+            <defaultValue>
+                <booleanValue>false</booleanValue>
+            </defaultValue>
             <fieldText>I wish to participate in the Tournament Clinical</fieldText>
             <fieldType>InputField</fieldType>
             <isRequired>true</isRequired>
@@ -919,7 +1223,7 @@
                 <formulaExpression>NOT({!Tournament_Clinical}=true &amp;&amp; {!Tournament_Basic}=true)</formulaExpression>
             </validationRule>
             <visibilityRule>
-                <conditionLogic>or</conditionLogic>
+                <conditionLogic>(1 OR 2) AND 3</conditionLogic>
                 <conditions>
                     <leftValueReference>Type</leftValueReference>
                     <operator>EqualTo</operator>
@@ -934,14 +1238,34 @@
                         <stringValue>Virtual oral</stringValue>
                     </rightValue>
                 </conditions>
+                <conditions>
+                    <leftValueReference>GetMembershipStatus.Membership_Status__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>EAN Resident and Research Member</stringValue>
+                    </rightValue>
+                </conditions>
             </visibilityRule>
         </fields>
         <fields>
             <name>Bursary</name>
             <dataType>Boolean</dataType>
+            <defaultValue>
+                <booleanValue>false</booleanValue>
+            </defaultValue>
             <fieldText>I wish to apply for a bursary for the EAN Congress</fieldText>
             <fieldType>InputField</fieldType>
             <isRequired>true</isRequired>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>GetMembershipStatus.Membership_Status__c</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>EAN Resident and Research Member</stringValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
         </fields>
         <fields>
             <name>Title</name>
@@ -1026,7 +1350,7 @@
         </fields>
         <fields>
             <name>ConfirmationDisplay</name>
-            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-family: var(--lwc-fontFamily,&amp;quot;Salesforce Sans&amp;quot;, Arial, sans-serif); font-size: var(--lwc-fontSize3,0.8125rem); background-color: var(--lwc-colorBackgroundInput,rgb(255, 255, 255)); color: rgb(0, 0, 0);&quot;&gt;It is required to confirm the authors consent, originality and copyright of the abstract before submitting it.&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: var(--lwc-fontFamily,&amp;quot;Salesforce Sans&amp;quot;, Arial, sans-serif); font-size: var(--lwc-fontSize3,0.8125rem); background-color: var(--lwc-colorBackgroundInput,rgb(255, 255, 255)); color: rgb(255, 0, 0);&quot;&gt;﻿&lt;/span&gt;&lt;/p&gt;&lt;p&gt;By checking following boxes, ...&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;color: rgb(0, 0, 0); background-color: var(--lwc-colorBackgroundInput,rgb(255, 255, 255)); font-size: var(--lwc-fontSize3,0.8125rem); font-family: var(--lwc-fontFamily,&amp;quot;Salesforce Sans&amp;quot;, Arial, sans-serif);&quot;&gt;It is required to confirm the authors consent, originality and copyright of the abstract before submitting it.&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0); background-color: var(--lwc-colorBackgroundInput,rgb(255, 255, 255)); font-size: var(--lwc-fontSize3,0.8125rem); font-family: var(--lwc-fontFamily,&amp;quot;Salesforce Sans&amp;quot;, Arial, sans-serif);&quot;&gt;﻿&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;color: rgb(255, 0, 0);&quot;&gt;*&lt;/b&gt;&lt;b&gt; By checking following boxes, ...&lt;/b&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <fields>
@@ -1142,14 +1466,33 @@
     <screens>
         <name>Select_Event_Screen</name>
         <label>Select Event Screen</label>
-        <locationX>186</locationX>
-        <locationY>362</locationY>
-        <allowBack>false</allowBack>
-        <allowFinish>true</allowFinish>
+        <locationX>115</locationX>
+        <locationY>360</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
         <connector>
             <targetReference>GetEvent</targetReference>
         </connector>
+        <fields>
+            <name>Header1</name>
+            <extensionName>dhfpi:lwcFlowHeaderWithProgress</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>currentStage</name>
+                <value>
+                    <elementReference>$Flow.CurrentStage</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>stages</name>
+                <value>
+                    <elementReference>$Flow.ActiveStages</elementReference>
+                </value>
+            </inputParameters>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
         <fields>
             <name>Select_Event</name>
             <choiceReferences>EventChoice</choiceReferences>
@@ -1158,7 +1501,38 @@
             <fieldType>DropdownBox</fieldType>
             <isRequired>true</isRequired>
         </fields>
-        <showFooter>true</showFooter>
+        <fields>
+            <name>Progress1</name>
+            <extensionName>dhfpi:lwcFlowFooterWithProgress</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>currentStage</name>
+                <value>
+                    <elementReference>$Flow.CurrentStage</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>stages</name>
+                <value>
+                    <elementReference>$Flow.ActiveStages</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>nextLabel</name>
+                <value>
+                    <stringValue>Confirm</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>fontSize</name>
+                <value>
+                    <stringValue>11</stringValue>
+                </value>
+            </inputParameters>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <showFooter>false</showFooter>
         <showHeader>true</showHeader>
     </screens>
     <screens>
@@ -1288,9 +1662,7 @@
         <fields>
             <name>Image_1_Location</name>
             <choiceReferences>ImageLocationPicklistChoice</choiceReferences>
-            <choiceReferences>ImageLocationDefaultChoice</choiceReferences>
             <dataType>String</dataType>
-            <defaultSelectedChoiceReference>ImageLocationDefaultChoice</defaultSelectedChoiceReference>
             <fieldText>1. Add image to section:</fieldText>
             <fieldType>DropdownBox</fieldType>
             <isRequired>true</isRequired>
@@ -1335,9 +1707,7 @@
         <fields>
             <name>Image_2_Location</name>
             <choiceReferences>ImageLocationPicklistChoice</choiceReferences>
-            <choiceReferences>ImageLocationDefaultChoice</choiceReferences>
             <dataType>String</dataType>
-            <defaultSelectedChoiceReference>ImageLocationDefaultChoice</defaultSelectedChoiceReference>
             <fieldText>2. Add image to section:</fieldText>
             <fieldType>DropdownBox</fieldType>
             <isRequired>true</isRequired>
@@ -1382,9 +1752,7 @@
         <fields>
             <name>Image_3_Location</name>
             <choiceReferences>ImageLocationPicklistChoice</choiceReferences>
-            <choiceReferences>ImageLocationDefaultChoice</choiceReferences>
             <dataType>String</dataType>
-            <defaultSelectedChoiceReference>ImageLocationDefaultChoice</defaultSelectedChoiceReference>
             <fieldText>3. Add image to section:</fieldText>
             <fieldType>DropdownBox</fieldType>
             <isRequired>true</isRequired>
@@ -1397,6 +1765,24 @@
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
     </screens>
+    <stages>
+        <name>Add_Files</name>
+        <isActive>true</isActive>
+        <label>Add Files</label>
+        <stageOrder>20</stageOrder>
+    </stages>
+    <stages>
+        <name>Fill_Abstract</name>
+        <isActive>true</isActive>
+        <label>Fill Abstract</label>
+        <stageOrder>10</stageOrder>
+    </stages>
+    <stages>
+        <name>Select_Event_Stage</name>
+        <isActive>true</isActive>
+        <label>Select Event</label>
+        <stageOrder>1</stageOrder>
+    </stages>
     <start>
         <locationX>50</locationX>
         <locationY>49</locationY>
@@ -1404,7 +1790,7 @@
             <targetReference>Select_Event_Screen</targetReference>
         </connector>
     </start>
-    <status>Active</status>
+    <status>Draft</status>
     <variables>
         <name>AbstractAuthor</name>
         <dataType>SObject</dataType>
@@ -1449,6 +1835,14 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>totalStages</name>
+        <dataType>Number</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
     </variables>
     <variables>
         <name>UploadedFiles</name>

@@ -4,10 +4,6 @@
     <category>individual</category>
     <deployed>false</deployed>
     <description>asd</description>
-    <join>
-        <outerJoin>false</outerJoin>
-        <relationship>Service_Selections__r</relationship>
-    </join>
     <label>Event Participants</label>
     <sections>
         <columns>
@@ -161,43 +157,5 @@
             <table>Participant__c</table>
         </columns>
         <masterLabel>Event Participations</masterLabel>
-    </sections>
-    <sections>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
-            <field>Id</field>
-            <table>Participant__c.Service_Selections__r</table>
-        </columns>
-        <columns>
-            <checkedByDefault>true</checkedByDefault>
-            <field>Name</field>
-            <table>Participant__c.Service_Selections__r</table>
-        </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
-            <field>CreatedDate</field>
-            <table>Participant__c.Service_Selections__r</table>
-        </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
-            <field>CreatedBy</field>
-            <table>Participant__c.Service_Selections__r</table>
-        </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
-            <field>LastModifiedDate</field>
-            <table>Participant__c.Service_Selections__r</table>
-        </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
-            <field>LastModifiedBy</field>
-            <table>Participant__c.Service_Selections__r</table>
-        </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
-            <field>Service__c</field>
-            <table>Participant__c.Service_Selections__r</table>
-        </columns>
-        <masterLabel>Service Selections</masterLabel>
     </sections>
 </ReportType>

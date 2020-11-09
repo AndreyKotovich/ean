@@ -153,13 +153,13 @@
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
     <externalSharingModel>Private</externalSharingModel>
-    <label>Email activity</label>
+    <label>Email Activity</label>
     <nameField>
         <displayFormat>EA-{0000000}</displayFormat>
-        <label>Email activity Name</label>
+        <label>Email Activity Name</label>
         <type>AutoNumber</type>
     </nameField>
-    <pluralLabel>Email activities</pluralLabel>
+    <pluralLabel>Email Activities</pluralLabel>
     <searchLayouts/>
     <sharingModel>ReadWrite</sharingModel>
     <visibility>Public</visibility>

@@ -16,7 +16,7 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Required</behavior>
-                <field>Presenter__c</field>
+                <field>Contact__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns/>
@@ -54,7 +54,7 @@
     <platformActionList>
         <actionListContext>Record</actionListContext>
         <platformActionListItems>
-            <actionName>Speaker__c.Submit_Presentation_Abstract</actionName>
+            <actionName>Speaker__c.Submit_Invited_Abstract</actionName>
             <actionType>QuickAction</actionType>
             <sortOrder>0</sortOrder>
         </platformActionListItems>

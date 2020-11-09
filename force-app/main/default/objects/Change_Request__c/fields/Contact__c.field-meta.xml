@@ -6,7 +6,7 @@
     <externalId>false</externalId>
     <label>Community Contact</label>
     <referenceTo>Contact</referenceTo>
-    <relationshipLabel>Change Requests (Contact)</relationshipLabel>
+    <relationshipLabel>Change Requests</relationshipLabel>
     <relationshipName>Change_Requests</relationshipName>
     <required>false</required>
     <trackTrending>false</trackTrending>

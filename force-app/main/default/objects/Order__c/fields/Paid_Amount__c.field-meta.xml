@@ -7,7 +7,7 @@
     <summaryFilterItems>
         <field>Transaction__c.Status__c</field>
         <operation>equals</operation>
-        <value>Success</value>
+        <value>Success, Refund</value>
     </summaryFilterItems>
     <summaryForeignKey>Transaction__c.Order_Custom__c</summaryForeignKey>
     <summaryOperation>sum</summaryOperation>

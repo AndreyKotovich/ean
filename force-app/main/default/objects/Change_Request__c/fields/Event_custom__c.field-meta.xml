@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Event_custom__c</fullName>
+    <fullName>Event_Custom__c</fullName>
     <deleteConstraint>SetNull</deleteConstraint>
     <externalId>false</externalId>
-    <label>Event custom</label>
+    <label>Event Custom</label>
     <referenceTo>Event__c</referenceTo>
     <relationshipLabel>Change Requests</relationshipLabel>
     <relationshipName>Change_Requests</relationshipName>
