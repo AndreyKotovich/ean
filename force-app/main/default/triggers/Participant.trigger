@@ -15,6 +15,6 @@ trigger Participant on Participant__c (after insert) {
         if (groupParticipantIds.size() > 0) {
             ParticipantTriggerHelper.groupParticipantRegistration(groupParticipantIds);
         }
+        ParticipantTriggerHelper.getQRcodes();
     }
-
 }

@@ -43,7 +43,21 @@ public without sharing class OrderUtils {
     }
     @AuraEnabled public static String determineSuccessScreen(String orderId){
         String result = 'ORDER';
-        List<Application_form__c> appForms = [SELECT Id FROM Application_form__c WHERE Order__c = :orderId];
+
+        List<Application_form__c> appForms = [
+            SELECT Id, Order__c, Order__r.Type__c, Membership__c, Membership__r.Name
+            FROM Application_form__c
+            WHERE Order__c = :orderId
+            LIMIT 1
+        ];
+
+        if (appForms.isEmpty()) return result;
+
+        //  part of 'Membership Renewal'
+        if (appForms[0].Order__c != null && appForms[0].Membership__c != null && appForms[0].Order__r.Type__c == 'Renewal' && appForms[0].Membership__r.Name != 'Student Membership') return result;
+
+        //  old logic
+        // List<Application_form__c> appForms = [SELECT Id FROM Application_form__c WHERE Order__c = :orderId];
         if(!appForms.isEmpty()){
             result+='_WITH_APP_FORM';
         }

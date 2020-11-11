@@ -2,18 +2,16 @@
 <template>
     <lightning-layout horizontal-align="center">
         <lightning-layout-item padding="around-small"
-                               size="12"
-                               large-device-size="4"
-                               medium-device-size="6"
-                               small-device-size="12"
+                               size={componentSize.size}
+                               large-device-size={componentSize.largeDeviceSize}
+                               medium-device-size={componentSize.mediumDeviceSize}
+                               small-device-size={componentSize.smallDeviceSize}
                                flexibility="auto"
         >
             <div class="slds-card__body">
                 <lightning-card>
-                    <div slot="title">Tickets:</div>
-                    <div
-                            class="slds-p-left_x-large slds-p-right_x-large slds-p-top_x-large"
-                    >
+                    <div if:false={markupSettings.hideHeader} slot="title">Tickets:</div>
+                    <div class="slds-p-left_x-large slds-p-right_x-large slds-p-top_x-large">
                         <div for:each={ticketsRadio} for:item="radioItem" key={key}>
                             <div
                                     class="slds-grid slds-grid_align-spread slds-p-bottom_x-large"
@@ -23,7 +21,7 @@
                                         <input type="radio"
                                                id={radioItem.elementId}
                                                value={radioItem.id}
-                                               name="individual-ticket-radio"
+                                               name={userInfo.contact.Id}
                                                class="input-ticket-radio"
                                                checked={radioItem.checked}
                                         />
@@ -33,9 +31,9 @@
                                                     <span class="slds-radio_faux"></span>
                                                 </div>
                                                 <div class="slds-col">
-                          <span class="slds-form-element__label">
-                            <span>{radioItem.name}</span>
-                          </span>
+                                                  <span class="slds-form-element__label">
+                                                    <span>{radioItem.name}</span>
+                                                  </span>
                                                 </div>
                                             </div>
                                         </label>
@@ -56,6 +54,24 @@
                                              max={availableParticipantNumber}
                                              min="1"
                             ></lightning-input>
+
+                            <lightning-input type="checkbox"
+                                             label="Add individual tickets"
+                                             onchange={handleAddIndividualTickets}
+                                             checked={_groupIndividualTickets.isPartInit}
+                            ></lightning-input>
+
+                            <lightning-input if:true={_groupIndividualTickets.isPartInit}
+                                             type="number"
+                                             name="individual-ticket-amount"
+                                             label="Individual ticket amount"
+                                             placeholder="Type ticket amount"
+                                             onchange={handleSelectIndividualTicketsAmount}
+                                             value={_groupIndividualTickets.participantsAmount}
+                                             max={availableParticipantNumber}
+                                             min="1"
+                            ></lightning-input>
+
                         </template>
                     </div>
                 </lightning-card>
@@ -64,16 +80,16 @@
     </lightning-layout>
 
     <div class="slds-card__footer slds-grid slds-align--absolute-center">
-        <div if:false={hidePreviousButton}>
+        <div if:false={markupSettings.hidePreviousButton}>
             <lightning-button class="slds-col slds-m-around_x-small"
                               label="Previous"
                               variant="neutral"
                               onclick={handlePreviousClick}
             ></lightning-button>
         </div>
-        <div if:false={hideNextButton}>
+        <div if:false={markupSettings.hideNextButton}>
             <lightning-button class="slds-col slds-m-around_x-small"
-                              label="Next"
+                              label={markupSettings.nextButtonLabel}
                               variant="brand"
                               onclick={handleNextClick}
             ></lightning-button>

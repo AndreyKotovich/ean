@@ -39,7 +39,8 @@ public without sharing class OrderHelper {
             Status__c = 'Opened',
             Event_custom__c = eventId,
             Purchase_Type__c = 'New',
-            Event_Registration_Sub_Group__c = groupId
+            Event_Registration_Sub_Group__c = groupId,
+            Type__c = 'Event registration'
         );
         System.debug('createNewOrder o ' + o);
         insert o;
@@ -103,6 +104,7 @@ public without sharing class OrderHelper {
                     new Order__c(
                         Payment_Invoice__c = o.Id,
                         Contact__c = o.Contact__c,
+                        Type__c = o.Type__c,
                         Status__c = 'Cancelled',
                         Event_custom__c = o.Event_custom__c,
                         Purchase_Type__c = 'New',
@@ -196,10 +198,43 @@ public without sharing class OrderHelper {
         Map<String, String> resMap = PaymentHttpRequest.refundTransaction(orderId, orderId, refundAmount);
 
         if (resMap.get('status') == 'Success' && oI.size() > 0) {
+            Savepoint sp = Database.setSavepoint(); 
             try {
                 update oI;
+                
+                Set<String> oIs = new Set<String>();
+                for (Order_Item__c o : oI) {
+                    if (o.Refund_Amount__c > 0) {
+                        oIs.add(o.Id);
+                    }
+                }
+
+                List<Order_Item__c> orderItems = [
+                    SELECT Id, Refund_Amount__c, Event_Participation__c, Session_Participation__c 
+                    FROM Order_Item__c
+                    WHERE Id IN: oIs
+                ];
+
+                List<Participant__c> part = new List<Participant__c>();
+                List<Session_Participation__c> sPart = new List<Session_Participation__c>();
+
+                for (Order_Item__c o : orderItems) {
+                    if (o.Refund_Amount__c > 0) {
+                        if (!String.isBlank(o.Event_Participation__c)) {
+                            part.add( new Participant__c(Id = o.Event_Participation__c, Status__c = 'Canceled'));
+                        }
+
+                        if (!String.isBlank(o.Session_Participation__c)) {
+                            sPart.add( new Session_Participation__c(Id = o.Session_Participation__c, Status__c = 'Canceled'));
+                        }
+                    }
+                }
+
+                update part;
+                update sPart;
             }
             catch(Exception e) {
+                Database.rollback(sp);
                 return new Map<String,Object> {
                     'status' => 'Error',
                     'message' => e.getMessage()

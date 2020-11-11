@@ -8,6 +8,20 @@ export default class SelectTickets extends LightningElement {
     @api userInfo = {};
     @api registrationType = "";
 
+    @api markupSettings = {
+        hidePreviousButton: false,
+        nextButtonLabel: 'Next',
+        hideNextButton: false,
+        hideHeader: false
+    }
+
+    @api componentSize = {
+        size: 12,
+        largeDeviceSize: 4,
+        mediumDeviceSize: 6,
+        smallDeviceSize: 12
+    }
+
     @api
     get selectedTicket() {
         return this._selectedTicket;
@@ -35,15 +49,23 @@ export default class SelectTickets extends LightningElement {
         this._ticketsAmount = value;
     }
 
+    @api
+    get groupIndividualTickets(){
+        return this._groupIndividualTickets;
+    }
+    set groupIndividualTickets(value){
+        this._groupIndividualTickets = Object.assign({}, value);
+    }
+
     @track isSpinner = true;
     @track ticketsRadio = [];
     @track ticketId = 0;
     @track _priceTicket = 0;
     @track _ticketsAmount = 0;
     @track availableParticipantNumber = 0;
+    @track _groupIndividualTickets = {};
 
-    hideNextButton = false;
-    hidePreviousButton = false;
+    // hideNextButton = false;
     allEventTickets = [];
     individualTickets = [];
     groupTickets = [];
@@ -52,7 +74,9 @@ export default class SelectTickets extends LightningElement {
     iprRegisteredParticipants = 0;
 
     connectedCallback() {
-        this.iprRegisteredParticipants = this.userInfo.iprInfo.participantAmount;
+        if(this.userInfo.iprInfo && this.userInfo.iprInfo.participantAmount){
+            this.iprRegisteredParticipants = this.userInfo.iprInfo.participantAmount;
+        }
 
         if (this.eanEvent.Max_Participants__c) {
             this.availableParticipantNumber = this.eanEvent.Max_Participants__c - this.eanEvent.Registrations__c;
@@ -63,6 +87,7 @@ export default class SelectTickets extends LightningElement {
         ];
         Promise.all(promises)
             .then((results) => {
+                console.log('results: '+JSON.stringify(results));
                 this.allEventTickets = [...results[0]];
 
                 //ticket visibility rules
@@ -146,6 +171,10 @@ export default class SelectTickets extends LightningElement {
 
                 this.ticketsRadio = [...ticketsRadio];
 
+                if(this.ticketsRadio.length === 0){
+                    this.dispatchEvent(new CustomEvent("ticketsnotfound", {}));
+                }
+
                 this.isSpinner = false;
             })
             .catch((error) => {
@@ -211,12 +240,19 @@ export default class SelectTickets extends LightningElement {
         this.getSelectedTickets();
 
         if (this.nextClickValidation()) {
+            let eventTicket = this.allEventTickets.find(obj => obj.Id === this._selectedTicket);
+            console.log('eventTicket'+JSON.stringify(eventTicket));
+            // console.log('eventTicket'+JSON.stringify(eventTicket));
+            console.log('eventTicket'+JSON.stringify(this._selectedTicket));
+
             const selectEvent = new CustomEvent("continue", {
                 detail: {
                     selectedTicket: this._selectedTicket,
                     priceTicket: this._priceTicket,
                     ticketsAmount: this._ticketsAmount,
-                    ticketId: this.ticketId
+                    ticketId: this.ticketId,
+                    ticketName: !!eventTicket ? eventTicket.Ticket__r.Name : '',
+                    groupIndividualTickets: this._groupIndividualTickets
                 }
             });
             this.dispatchEvent(selectEvent);
@@ -235,6 +271,15 @@ export default class SelectTickets extends LightningElement {
         if (!Utils.validateElements.call(this, 'lightning-input')) {
             result = false;
             errorMessage = "Check your input";
+        }
+
+        if(result && this.isGroupRegistration){
+            console.log(this._ticketsAmount, this._groupIndividualTickets.participantsAmount, this.availableParticipantNumber);
+            result = parseInt(this._ticketsAmount) + parseInt(this._groupIndividualTickets.participantsAmount) <= this.availableParticipantNumber;
+            console.log(result);
+            if(!result){
+                errorMessage = "You have selected too many participants";
+            }
         }
 
         if (!result) this.dispatchToast("Error", errorMessage, "error");
@@ -260,7 +305,7 @@ export default class SelectTickets extends LightningElement {
     }
 
     get isGroupRegistration() {
-        return this.registrationType !== "solo";
+        return this.registrationType === "group" || this.registrationType === "ipr";
     }
 
     handleSelectTicketsAmount(event) {
@@ -289,6 +334,16 @@ export default class SelectTickets extends LightningElement {
         }
 
         return str;
+    }
+
+    handleAddIndividualTickets(event){
+        console.log('handleAddIndividualTickets', event.detail.checked);
+        this._groupIndividualTickets.isPartInit = event.detail.checked;
+    }
+
+    handleSelectIndividualTicketsAmount(event){
+        console.log('handleSelectIndividualTicketsAmount', event.detail.value);
+        this._groupIndividualTickets.participantsAmount = event.detail.value;
     }
 
 }

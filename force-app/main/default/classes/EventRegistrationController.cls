@@ -11,13 +11,19 @@ public without sharing class EventRegistrationController {
     }
 
     @AuraEnabled
-    public static Map<String, Object> getContactInfo() {
+    public static Map<String, Object> getContactInfo(String contactId) {
         Map<String, Object> result = new Map<String, Object>();
-        User user = [SELECT Contact.Id FROM User WHERE Id = :UserInfo.getUserId()];
+        User user = new User();
+
+        if(contactId == null){
+            user = [SELECT Contact.Id FROM User WHERE Id = :UserInfo.getUserId()];
+            contactId = user.Contact.Id;
+        }
+
         Contact contact = [
                 SELECT Id, Residency__c, Newsletter__c
                 FROM Contact
-                WHERE Id = :user.Contact.Id
+                WHERE Id = :contactId
         ];
         result.put('contact', contact);
         return result;
@@ -170,7 +176,7 @@ public without sharing class EventRegistrationController {
         List<Event_Ticket__c> extraSessions = [SELECT Id, Session__c, Session__r.Event_custom__c FROM Event_Ticket__c WHERE Id IN :selectedSessionsMap.keySet()];
         List<Session_Participation__c> sessionParticipants = new List<Session_Participation__c>();
 
-        Map<String, Object> contactInfo = getContactInfo();
+        Map<String, Object> contactInfo = getContactInfo(null);
         Contact contact = (Contact) contactInfo.get('contact');
 
         for (Event_Ticket__c et : extraSessions) {

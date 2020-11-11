@@ -1,9 +1,11 @@
 import { LightningElement } from 'lwc';
+import { NavigationMixin } from 'lightning/navigation';
 import getPreparedData from '@salesforce/apex/MembershipRenewalController.getPreparedData';
 import recalculateRenewalFee from '@salesforce/apex/MembershipRenewalController.recalculateRenewalFee';
 import deleteContentDocumentById from '@salesforce/apex/MembershipRenewalController.deleteContentDocumentById'
+import submitRenewal from '@salesforce/apex/MembershipRenewalController.submitRenewal'
 
-export default class MembershipRenewalComponent extends LightningElement {
+export default class MembershipRenewalComponent extends NavigationMixin(LightningElement) {
 	_errorMessage = 'Something went wrong, please contact your system administrator.';
 	_noRenewalMessage = 'You have no available memberships to renewal.'
 	_isSpinner = true;
@@ -81,10 +83,19 @@ export default class MembershipRenewalComponent extends LightningElement {
 	renderedCallback() {
 		// this.validateEnableNextButtonStep1();
 		if (this._isStep1) this.validateEnableNextButtonStep1();
-		if (this._isStep1 && this._enableNextButtonStep1) this.template.querySelector('button[name="button-next-step-one"]').removeAttribute('disabled');
-		if (this._isStep2 && this._enableNextButtonStep2) this.template.querySelector('button[name="button-next-step-two"]').removeAttribute('disabled');
+		if (this._isStep1 && this._enableNextButtonStep1) {
+			let buttonNextStepOne = this.template.querySelector('button[name="button-next-step-one"]');
+			if (buttonNextStepOne) buttonNextStepOne.removeAttribute('disabled');
+		}
+		if (this._isStep2 && this._enableNextButtonStep2) {
+			let buttonNextStepTwo = this.template.querySelector('button[name="button-next-step-two"]');
+			if (buttonNextStepTwo) buttonNextStepTwo.removeAttribute('disabled');
+		}
 		if (this._isStep2) this.validateEnableNextButtonStep2();
-		if (this._isStep3 && this._enableNextButtonStep3) this.template.querySelector('button[name="button-next-step-three"]').removeAttribute('disabled');
+		if (this._isStep3 && this._enableNextButtonStep3) {
+			let buttonNextStepThree = this.template.querySelector('button[name="button-next-step-three"]');
+			if (buttonNextStepThree) buttonNextStepThree.removeAttribute('disabled');
+		}
 	}
 
 	connectedCallback() {
@@ -266,7 +277,8 @@ export default class MembershipRenewalComponent extends LightningElement {
 	handleChangeCountry(event) {
 		this._enableNextButtonStep1 = false;
 		this._formCountryOfResidence = event.target.value;
-		this.template.querySelector('button[name="button-next-step-one"]').setAttribute('disabled');
+		let buttonNextStepOne = this.template.querySelector('button[name="button-next-step-one"]');
+		if (buttonNextStepOne) buttonNextStepOne.setAttribute('disabled');
 		this._isSpinner = true;
 
 		recalculateRenewalFee({params: {
@@ -308,7 +320,6 @@ export default class MembershipRenewalComponent extends LightningElement {
 		if (this._formIamRetired && this._allowRetiredDiscount) discountMultiplier = discountMultiplier - 0.5;
 		this._totalRenewalFee = this._renewalFee * discountMultiplier;
 	}
-
 
 	validateEnableNextButtonStep1() {
 		this.setCustomValidityStep1();
@@ -492,7 +503,7 @@ export default class MembershipRenewalComponent extends LightningElement {
 		this._isStep3 = true;
 	}
 
-    handleJournalSelect(event){
+	handleJournalSelect(event){
 		let journals = event.detail.selectedProducts;
 		console.log('handleJournalSelect journals: ', journals);
 
@@ -502,8 +513,7 @@ export default class MembershipRenewalComponent extends LightningElement {
 		}
 		this._selectedJournals = selectedJournals;
 		console.log('handleJournalSelect this._selectedJournals: ', this._selectedJournals);
-    }
-
+	}
 
 	handleClickPrevButtonStep3() {
 		this._isStep2 = true;
@@ -527,6 +537,71 @@ export default class MembershipRenewalComponent extends LightningElement {
 	handleClickNextButtonStep3() {
 		if (this._enableNextButtonStep3 == false) return;
 		this._displayDevelopToPaymentProcessBlock = true;	//	DEVELOP MOMENT
+
+		console.log('handleClickNextButtonStep3 uploadedFilesPillsString: ', JSON.stringify(this._uploadedFilesPills));
+		console.log('handleClickNextButtonStep3 selectedJournalsString: ', JSON.stringify(this._selectedJournals));
+
+		this._isSpinner = true;
+
+		submitRenewal({params: {
+			membershipId: this._membershipId,
+			membershipName: this._membershipName,
+			membershipStatusId: this._membershipStatusId,
+			currentContactId: this._currentContactId,
+			formSalutation: this._formSalutation,
+			formFirstName: this._formFirstName,
+			formLastName: this._formLastName,
+			formPostNominalTitle: this._formPostNominalTitle,
+			formDateOfBirth: this._formDateOfBirth,
+			formGender: this._formGender,
+			formEmail: this._formEmail,
+			formNationality: this._formNationality,
+			formCountryOfResidence: this._formCountryOfResidence,
+			formStreet: this._formStreet,
+			formZipPostalCode: this._formZipPostalCode,
+			formCity: this._formCity,
+			formPhoneNumber: this._formPhoneNumber,
+			formIamAANMember: this._formIamAANMember,
+			formIamRetired: this._formIamRetired,
+			formProfession: this._formProfession,
+			dateOfGraduation: this._dateOfGraduation,
+			licenseIssuedDate: this._licenseIssuedDate,
+			uploadedFilesPillsString: JSON.stringify(this._uploadedFilesPills),
+			totalRenewalFee: this._totalRenewalFee,
+			selectedJournalsString: JSON.stringify(this._selectedJournals),
+
+			}}).then(result=>{
+				this._isSpinner = false;
+				console.log('result: ', result);
+
+				if (!result.result) {
+					console.log('handleClickNextButtonStep3 BAD result: ', result);
+					this._isError = true;
+					return;
+				}
+				this._isError = false;
+				console.log('GOOD result.orderId: ', result.orderId);
+				this.navigateToPaymentPage(result.orderId);
+			})
+			.catch(error=>{
+				console.log('MembershipRenewalComponent error: ', error);
+				console.log('handleClickNextButtonStep3 Error: ' + JSON.stringify(error));
+				this._isError = true;
+				this._isSpinner = false;
+			})
 	}
 
+	navigateToPaymentPage(orderId) {
+		console.log('navigateToPaymentPage orderId: ', orderId);
+		this[NavigationMixin.Navigate]({
+			type: 'comm__namedPage',
+			attributes: {
+				pageName: 'payment-component'
+			},
+			state: {
+				orderId: orderId
+			}
+		});
+	}
+	
 }

@@ -1,24 +1,25 @@
 <!-- Participant Initialization -->
 <template>
     <div class="slds-card__body slds-p-around_medium">
-        <lightning-layout horizontal-align="center" multiple-rows="true">
+        <lightning-layout vertical-align="center" multiple-rows="true" for:each={_participantsInitialization.initializedParticipants} for:item="participant" for:index="index" key={key}>
             <lightning-layout-item padding="around-small"
                                    size="12"
-                                   large-device-size="6"
-                                   medium-device-size="6"
+                                   large-device-size="4"
+                                   medium-device-size="4"
                                    small-device-size="12"
                                    flexibility="auto"
             >
-                <c-record-search listfields="Id,Name,Email"
+                <c-record-search data-index={index}
+                                 listfields="Id,Name,Email"
                                  objectname="Contact"
                                  searchfield="Email"
                                  whereclause=""
                                  limitrecords=5
                                  placeholder="Enter email to search Contacts"
                                  inputtype="email"
-                                 enteredtext=""
+                                 enteredtext={participant.contact.Email}
                                  existingrecordid=""
-                                 disabledvalues=""
+                                 disabledvalues={usedEmailsString}
                                  disabledtoedit="false"
                                  onchangenewcontactemail={handleSelectEmail}
                 ></c-record-search>
@@ -31,7 +32,28 @@
                                    medium-device-size="6"
                                    small-device-size="12"
                                    flexibility="auto"
-            ></lightning-layout-item>
+            >
+                <div if:true={participant.foundContact}>
+                    <c-select-tickets data-index={index}
+                                      oncontinue={onSelectTicket}
+                                      onerror={handleSelectTicketError}
+                                      onticketsnotfound={handleTicketsNotFound}
+                                      user-info={participant.userInfo}
+                                      ean-event={eanEvent}
+                                      registration-type="solo"
+                                      markup-settings={selectTicketMarkupSettings}
+                                      component-size={selectTicketSize}
+
+                    ></c-select-tickets>
+<!--                    oncontinue={}-->
+<!--                    onerror={}-->
+                </div>
+                <div if:true={participant.showPill}>
+                    <lightning-pill label={participant.pillLabel} data-index={index} onremove={handleRemoveTicket}>
+                        <lightning-icon icon-name="custom:custom45" variant="circle" alternative-text="Ticket"></lightning-icon>
+                    </lightning-pill>
+                </div>
+            </lightning-layout-item>
         </lightning-layout>
     </div>
 

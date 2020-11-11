@@ -77,4 +77,16 @@ public with sharing class ParticipantTriggerHelper {
         }
         insert emailActivities;
     }
+    public static void getQRcodes() {
+        List<CronTrigger> cts = [SELECT Id, CronJobDetail.Name                                 
+                                FROM CronTrigger
+                                WHERE State = 'WAITING'];
+        List<String> waitingJobNames = new List<String>();
+        for (CronTrigger ct :cts) {
+            waitingJobNames.add(ct.CronJobDetail.Name);
+        }
+        if (waitingJobNames.contains('get QR codes') == false) {
+            System.scheduleBatch(new QRcodeBatch(), 'get QR codes', 2, 70);
+        }
+    }
 }

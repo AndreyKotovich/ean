@@ -101,6 +101,7 @@ export default class Membershipcontainer extends NavigationMixin(LightningElemen
         }
         //  part of 'Membership Renewal'
         if (parsedResult.renewalSettings.displayMembershipRenewalButton) {
+            console.log('parsedResult: ', parsedResult);
             this.allowMembershipRenewal = true;
             this.template.querySelector('button[name="membership-renewal-button"]').removeAttribute('disabled');
         }
@@ -134,9 +135,7 @@ export default class Membershipcontainer extends NavigationMixin(LightningElemen
         }
     }
     handleMembershipRenewal(){
-        console.log('handleMembershipRenewal 1');
         if(this.allowMembershipRenewal){
-            console.log('handleMembershipRenewal 2');
             this[NavigationMixin.Navigate]({
                 type: 'comm__namedPage',
                 attributes: {

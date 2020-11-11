@@ -18,7 +18,6 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     //TODO before participant insert check availability of participants
     //TODO create session participants
     //TODO participant available validation
-
     @track errorMessage = "Something went wrong, please contact your system administrator.";
     @track isSpinner = true;
     @track isError = false;
@@ -31,6 +30,11 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         step2: {
             label: "Ticket selection",
             value: "step-2",
+            isActive: false
+        },
+        step2_2:{
+            label: "Participants Initialization",
+            value: "step-2_2",
             isActive: false
         },
         step3: {
@@ -49,7 +53,6 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     @track ean_event = {};
 
     registrationType = ""; //type of registration which user selected
-    // groupName = ""; //name of group in case group registration
     eventGroupInformation = {}; //information about group during group registration
     selectedTicket = "";
     priceTicket = 0;
@@ -69,13 +72,14 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         badgeRetrieval: ''
     };
     upgradeParticipant = {}; //participant in isUpgrade mode
+    participantsInitialization={
+        isPartInit: false,
+        participantsAmount: 0,
+        initializedParticipants: []
+    }
 
     connectedCallback() {
-        for (let prop in this.steps) {
-            if (this.steps[prop]) {
-                this.progressIndicatorSteps.push(this.steps[prop]);
-            }
-        }
+        this.updateProgressBar();
 
         this.detectCurrentStep();
 
@@ -92,11 +96,22 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             });
     }
 
+    updateProgressBar(){
+        let progressIndicatorSteps = [];
+        for (let prop in this.steps) {
+            if(prop === 'step2_2' && (!!!this.registrationType || this.registrationType === 'solo')) continue;
+            if (this.steps[prop]) {
+                progressIndicatorSteps.push(this.steps[prop]);
+            }
+        }
+        this.progressIndicatorSteps = [...progressIndicatorSteps];
+    }
+
     getInitialData(eventId, participantId) {
         let promises = [];
 
         promises.push(getEvent({eventId: eventId}));
-        promises.push(getContactInfo());
+        promises.push(getContactInfo({contactId: null}));
         promises.push(getUserMemberships());
         promises.push(getCountries());
         if(!!participantId){
@@ -188,7 +203,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         this.registrationType = event.detail.registrationType;
         this.eventGroupInformation = Object.assign({}, event.detail.eventGroupInformation);
         this.userInfo.iprInfo = event.detail.iprInfo;
-        // console.log(this.registrationType, this.groupName);
+        this.updateProgressBar();
         this.onNext();
     }
 
@@ -198,6 +213,13 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         this.ticketsAmount = event.detail.ticketsAmount;
         this.priceTicket = event.detail.priceTicket;
         this.ticketId = event.detail.ticketId;
+        console.log('event.detail.groupIndividualTickets', JSON.stringify(event.detail.groupIndividualTickets));
+        this.participantsInitialization = event.detail.groupIndividualTickets;
+        this.onNext();
+    }
+
+    onParticipantInitialization(event){
+        this.participantsInitialization = event.detail.participantsInitialization;
         this.onNext();
     }
 
@@ -245,6 +267,13 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             this.steps.step2.isActive = true;
         } else if (this.steps.step2.isActive) {
             this.steps.step2.isActive = false;
+            if(this.participantsInitialization.isPartInit){
+                this.steps.step2_2.isActive = true;
+            } else {
+                this.steps.step3.isActive = true;
+            }
+        } else if (this.steps.step2_2.isActive){
+            this.steps.step2_2.isActive = false;
             this.steps.step3.isActive = true;
         } else if (this.steps.step3.isActive) {
             this.steps.step3.isActive = false;
@@ -260,9 +289,16 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         if (this.steps.step2.isActive) {
             this.steps.step2.isActive = false;
             this.steps.step1.isActive = true;
+        } else if (this.steps.step2_2.isActive) {
+            this.steps.step2_2.isActive = false;
+            this.steps.step2.isActive = true;
         } else if (this.steps.step3.isActive) {
             this.steps.step3.isActive = false;
-            this.steps.step2.isActive = true;
+            if(this.participantsInitialization.isPartInit){
+                this.steps.step2_2.isActive = true;
+            } else {
+                this.steps.step2.isActive = true;
+            }
         } else if (this.steps.step4.isActive) {
             this.steps.step4.isActive = false;
             this.steps.step3.isActive = true;
@@ -393,8 +429,8 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             generalData.priceTicket = this.priceTicket;
             generalData.contactId = this.userInfo.contact.Id;
             generalData.discountInfo = this.discountInfo;
-        
-        
+
+
             Object.assign(insertData, {participant: this.upgradeParticipant.Id, selectedSessions:this.selectedSessions, generalData})
             console.log('insertData', JSON.stringify(insertData));
         }
