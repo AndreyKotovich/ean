@@ -78,7 +78,6 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 	//	STEP 3
 	_selectedJournals = [];
 	_agreeToEANTerms = false;
-	_displayDevelopToPaymentProcessBlock = false;	//	DEVELOP MOMENT
 
 	renderedCallback() {
 		// this.validateEnableNextButtonStep1();
@@ -441,8 +440,6 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 		this.validateDateOfGraduation();
 		if (!this._isError
 			&& this._isValidDateOfGraduation
-			// && (!this._displayDateOfGraduation || (this._dateOfGraduation && this._dateOfGraduation >= this._minimumDateOfGraduation))
-			// && (!this._displayDateOfGraduation || this._dateOfGraduation)
 			&& (!this._displayLicenseIssued || this._licenseIssuedDate)
 			&& this._showPillUploadedFiles) {
 
@@ -479,7 +476,6 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 
 		if (this._dateOfGraduation && this._dateOfGraduation < this._minimumDateOfGraduation) customValidityMessage = this._dateOfGraduationErrorMessage;
 
-		// if (customValidityMessage !== '') { this._displayDateOfGraduationUpdateMessage = true; } else { this._displayDateOfGraduationUpdateMessage = false; }
 		this._displayDateOfGraduationUpdateMessage = customValidityMessage !== '';
 
 		if (!this._dateOfGraduation) customValidityMessage = 'Complete this field.';
@@ -505,22 +501,23 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 
 	handleJournalSelect(event){
 		let journals = event.detail.selectedProducts;
-		console.log('handleJournalSelect journals: ', journals);
 
 		let selectedJournals = [];
 		for (let journal of journals) {
 			selectedJournals.push({journalProductId: journal.productId, journalPrice: journal.price});
 		}
 		this._selectedJournals = selectedJournals;
-		console.log('handleJournalSelect this._selectedJournals: ', this._selectedJournals);
 	}
 
 	handleClickPrevButtonStep3() {
-		this._isStep2 = true;
 		this._isStep3 = false;
-
-		this._displayDevelopToPaymentProcessBlock = false;	//	DEVELOP MOMENT
+		if (this._enableGraduationAndLicenseStep == true) {
+			this._isStep2 = true;
+		} else {
+			this._isStep1 = true;
+		}
 	}
+
 
 	handleChangeEANTerms(event) {
 		this._agreeToEANTerms = event.target.checked;
@@ -536,7 +533,6 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 
 	handleClickNextButtonStep3() {
 		if (this._enableNextButtonStep3 == false) return;
-		this._displayDevelopToPaymentProcessBlock = true;	//	DEVELOP MOMENT
 
 		console.log('handleClickNextButtonStep3 uploadedFilesPillsString: ', JSON.stringify(this._uploadedFilesPills));
 		console.log('handleClickNextButtonStep3 selectedJournalsString: ', JSON.stringify(this._selectedJournals));
@@ -547,6 +543,7 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 			membershipId: this._membershipId,
 			membershipName: this._membershipName,
 			membershipStatusId: this._membershipStatusId,
+			applicationFormId: this._applicationFormId,
 			currentContactId: this._currentContactId,
 			formSalutation: this._formSalutation,
 			formFirstName: this._formFirstName,
@@ -572,15 +569,12 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 
 			}}).then(result=>{
 				this._isSpinner = false;
-				console.log('result: ', result);
 
 				if (!result.result) {
-					console.log('handleClickNextButtonStep3 BAD result: ', result);
 					this._isError = true;
 					return;
 				}
 				this._isError = false;
-				console.log('GOOD result.orderId: ', result.orderId);
 				this.navigateToPaymentPage(result.orderId);
 			})
 			.catch(error=>{

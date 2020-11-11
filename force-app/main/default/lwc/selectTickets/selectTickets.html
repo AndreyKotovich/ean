@@ -52,11 +52,12 @@
                                              onchange={handleSelectTicketsAmount}
                                              value={ticketsAmount}
                                              max={availableParticipantNumber}
-                                             min="1"
+                                             min={minGroupRegTicketAmount}
                             ></lightning-input>
 
                             <lightning-input type="checkbox"
                                              label="Add individual tickets"
+                                             class="slds-m-top_small slds-m-bottom_small"
                                              onchange={handleAddIndividualTickets}
                                              checked={_groupIndividualTickets.isPartInit}
                             ></lightning-input>
@@ -64,11 +65,11 @@
                             <lightning-input if:true={_groupIndividualTickets.isPartInit}
                                              type="number"
                                              name="individual-ticket-amount"
-                                             label="Individual ticket amount"
+                                             label={individualTicketAmountLabel}
                                              placeholder="Type ticket amount"
                                              onchange={handleSelectIndividualTicketsAmount}
                                              value={_groupIndividualTickets.participantsAmount}
-                                             max={availableParticipantNumber}
+                                             max={maxIndividualTicketsAmount}
                                              min="1"
                             ></lightning-input>
 

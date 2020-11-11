@@ -1,17 +1,28 @@
 public without sharing class MembershipRenewalController {
 
+	public final static String FELLOW_EAN_MEMBERSHIP = 'Fellow of EAN (FEAN) Membership';
+	public final static String FULL_MEMBERSHIP = 'Full Membership';
+	public final static String CORRESPONDING_MEMBERSHIP = 'Corresponding Membership';
+	public final static String RR_MEMBERSHIP = 'Resident and Research Membership';
+	public final static String STUDENT_MEMBERSHIP = 'Student Membership';
+
 	public final static List<String> ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT = new List<String>{'B', 'C', 'D', 'E', 'F', ''};
 	public final static List<String> ALLOWED_REGIONS_TO_GET_RETIRED_DISCOUNT = new List<String>{'A', 'C'};		//	EANMR-4 David at 05/11/2020
-	public final static List<String> ALLOWED_MEMBERS_TO_GET_RETIRED_DISCOUNT = new List<String>{'Full Membership', 'Corresponding Membership', 'Fellow of EAN (FEAN) Membership'};
+	public final static List<String> ALLOWED_MEMBERS_TO_GET_RETIRED_DISCOUNT = new List<String>{FULL_MEMBERSHIP, CORRESPONDING_MEMBERSHIP, FELLOW_EAN_MEMBERSHIP};
 
 	//	SUPPORTED_MEMBERSHIP_CATEGORIES_BY_PRIORITY (all other categories are not allow to be renewed)
 	public final static List<String> MEMBERSHIP_CATEGORIES_BY_PRIORITY = new List<String>{
-		'Fellow of EAN (FEAN) Membership',
-		'Full Membership',
-		'Corresponding Membership',
-		'Resident and Research Membership',
-		'Student Membership'
+		FELLOW_EAN_MEMBERSHIP,
+		FULL_MEMBERSHIP,
+		CORRESPONDING_MEMBERSHIP,
+		RR_MEMBERSHIP,
+		STUDENT_MEMBERSHIP
 	};
+
+	public final static String FORM_STATUS_FOR_STUDENT_MEMBERSHIP = 'Submitted';
+	public final static String FORM_STATUS_FOR_NOT_STUDENT_MEMBERSHIP = 'Approved';
+
+	public final static String SKIP_ATTACH_FILES_LIKE = 'Certificate_%';
 
 	@AuraEnabled
 	public static Map<String, Object> getPreparedData() {
@@ -26,7 +37,7 @@ public without sharing class MembershipRenewalController {
 					Contact__r.Email, Contact__r.Nationality__c, Contact__r.Residency__c,
 					Contact__r.MailingStreet, Contact__r.MailingPostalCode, Contact__r.MailingCity,
 					Contact__r.Phone, Contact__r.Expected_Date_Of_Graduation__c, Contact__r.License_issued__c,
-					Contact__r.AAN_Member__c, Contact__r.Retired__c, Contact__r.Profession__c
+					Contact__r.AAN_Member__c, Contact__r.Retired__c, Contact__r.Profession__c, Renewal_Application_Form__c
 				FROM MembershipContactAssotiation__c
 				WHERE Contact__c =:currentUser[0].ContactId
 				// AND Application_form__c != null
@@ -60,12 +71,12 @@ public without sharing class MembershipRenewalController {
 			Decimal renewalFee = calculateRenewalFee(membershipRegion, membershipStatus.Membership__c);
 
 			//	EANMR-15, EANMR-16
-			Boolean displayDateOfGraduation = membershipStatus.Membership__r.Name == 'Resident and Research Membership' || membershipStatus.Membership__r.Name == 'Student Membership';
-			Boolean displayLicenseIssued = membershipStatus.Membership__r.Name == 'Resident and Research Membership';
+			Boolean displayDateOfGraduation = membershipStatus.Membership__r.Name == RR_MEMBERSHIP || membershipStatus.Membership__r.Name == STUDENT_MEMBERSHIP;
+			Boolean displayLicenseIssued = membershipStatus.Membership__r.Name == RR_MEMBERSHIP;
 			Boolean enableGraduationAndLicenseStep = (displayDateOfGraduation || displayLicenseIssued);
 			Date now = System.now().date();
-			Date minimumDateOfGraduation = membershipStatus.Membership__r.Name == 'Resident and Research Membership' ? now.addYears(-3)
-				: membershipStatus.Membership__r.Name == 'Student Membership' ? now.addDays(1) : now;
+			Date minimumDateOfGraduation = membershipStatus.Membership__r.Name == RR_MEMBERSHIP ? now.addYears(-3)
+				: membershipStatus.Membership__r.Name == STUDENT_MEMBERSHIP ? now.addDays(1) : now;
 
 			String currentYearString = System.now().format('YYYY');
 			String nextYearString = System.now().addYears(1).format('YYYY');
@@ -146,8 +157,13 @@ public without sharing class MembershipRenewalController {
 			Boolean alreadyExistMembershipStatusForNextYear = false;
 
 			for (MembershipContactAssotiation__c contactsMembership : contactsMemberships) {
+
+				if (contactsMembership.Renewal_Application_Form__c != null) {
+					alreadyExistMembershipStatusForNextYear = true;
+					break;
+				}
+
 				Integer membershipIndex = MEMBERSHIP_CATEGORIES_BY_PRIORITY.indexOf(contactsMembership.Membership__r.Name);
-				
 				if (membershipIndex < 0) continue;
 
 				//  priority 0: exist for next year
@@ -254,6 +270,7 @@ public without sharing class MembershipRenewalController {
 			String membershipId = params.containsKey('membershipId') ? String.valueOf(params.get('membershipId')) : '';
 			String membershipName = params.containsKey('membershipName') ? String.valueOf(params.get('membershipName')) : '';
 			String membershipStatusId = params.containsKey('membershipStatusId') ? String.valueOf(params.get('membershipStatusId')) : '';
+			String oldApplicationFormId = params.containsKey('applicationFormId') ? String.valueOf(params.get('applicationFormId')) : '';
 
 			String currentContactId = params.containsKey('currentContactId') ? String.valueOf(params.get('currentContactId')) : '';
 			String formSalutation = params.containsKey('formSalutation') ? String.valueOf(params.get('formSalutation')) : '';
@@ -288,7 +305,9 @@ public without sharing class MembershipRenewalController {
 			Id generatedOrderId = generateOrder(membershipId, totalRenewalFee, selectedJournals, currentContactId);
 
 			List<MembershipContactAssotiation__c> prevMembershipStatus = [
-				SELECT Id, Assignment_date__c, Next_Membership_Status__c, Role__c
+				SELECT Id, Assignment_date__c,
+					// Next_Membership_Status__c,
+					Role__c
 				FROM MembershipContactAssotiation__c
 				WHERE Id =:membershipStatusId
 				AND IsActive__c = true
@@ -312,6 +331,13 @@ public without sharing class MembershipRenewalController {
 				Expected_Date_Of_Graduation__c = dateOfGraduation, License_issued__c = licenseIssuedDate
 			);
 
+			Datetime now = System.now();
+			// Datetime thisYearStart = Datetime.newInstance(now.yearGMT(), 1, 1, 0, 0, 0);
+			Datetime thisYearStart = Datetime.newInstance(now.year(), 1, 1, 0, 0, 0);
+			// Datetime thisYearStart = Datetime.newInstanceGmt(now.yearGMT(), 1, 1, 0, 0, 0);
+			Datetime nextYearStart = thisYearStart.addYears(1);
+			Datetime nextYearEnd = thisYearStart.addYears(2).addMinutes(-1);
+
 			//	insert new Application_form__c
 			Application_form__c newApplicationForm = new Application_form__c(
 				Salutation__c = formSalutation, First_name__c = formFirstName, Last_name__c = formLastName,
@@ -320,40 +346,41 @@ public without sharing class MembershipRenewalController {
 				City__c = formCity, Phone_number__c = formPhoneNumber, Profession__c = formProfession,
 				Expected_Date_Of_Graduation__c = dateOfGraduation, License_issued__c = licenseIssuedDate,
 				Order__c = generatedOrderId, Contact__c = currentContactId,
-				Form_Status__c = membershipName == 'Student Membership' ? 'Submitted' : 'Approved',
+				Form_Status__c = membershipName == STUDENT_MEMBERSHIP ? FORM_STATUS_FOR_STUDENT_MEMBERSHIP : FORM_STATUS_FOR_NOT_STUDENT_MEMBERSHIP,
 				Nationality__c = formNationality, Residency__c = formCountryOfResidence, Membership__c = membershipId,
-				AAN_Member__c = formIamAANMember, Retired__c = formIamRetired
+				AAN_Member__c = formIamAANMember, Retired__c = formIamRetired,
+				Role_in_department__c = prevMembershipStatus[0].Role__c,
+				Renewal_Start_Date__c = nextYearStart, Renewal_End_date__c = nextYearEnd
 			);
 			insert newApplicationForm;
-			attachFilesToForm(uploadedFilesPills, currentContactId, newApplicationForm.Id);
+
+			if (membershipName == STUDENT_MEMBERSHIP || membershipName == RR_MEMBERSHIP) {
+				attachFilesToForm(uploadedFilesPills, currentContactId, newApplicationForm.Id);
+			} else {
+				attachFilesFromPreviousForm(oldApplicationFormId, newApplicationForm.Id);
+			}
 
 			String lockResultString = '';
 
-			if (membershipName == 'Student Membership') {
+			if (membershipName == STUDENT_MEMBERSHIP) {
 				submitForApproval('' + newApplicationForm.Id);
 			} else {
 				Approval.LockResult lockResult = Approval.lock(newApplicationForm.Id, false);
 				lockResultString = JSON.serialize(lockResult);
 			}
 
+			// MembershipContactAssotiation__c newMembershipStatus = new MembershipContactAssotiation__c(
+			// 	Application_form__c = newApplicationForm.Id,
+			// 	Assignment_date__c = prevMembershipStatus[0].Assignment_date__c,
+			// 	Contact__c = currentContactId,
+			// 	Expiration_date__c = nextYearEnd,
+			// 	Membership__c = membershipId,
+			// 	Role__c = prevMembershipStatus[0].Role__c
+			// );
+			// insert newMembershipStatus;
 
-			Datetime now = System.now();
-			// Datetime thisYearStart = Datetime.newInstance(now.yearGMT(), 1, 1, 0, 0, 0);
-			Datetime thisYearStart = Datetime.newInstance(now.year(), 1, 1, 0, 0, 0);
-			// Datetime thisYearStart = Datetime.newInstanceGmt(now.yearGMT(), 1, 1, 0, 0, 0);
-			Datetime nextYearEnd = thisYearStart.addYears(2).addMinutes(-1);
-
-			MembershipContactAssotiation__c newMembershipStatus = new MembershipContactAssotiation__c(
-				Application_form__c = newApplicationForm.Id,
-				// Assignment_date__c = now.Date(),
-				Assignment_date__c = prevMembershipStatus[0].Assignment_date__c,
-				Contact__c = currentContactId,
-				Expiration_date__c = nextYearEnd,
-				Membership__c = membershipId,
-				Role__c = prevMembershipStatus[0].Role__c
-			);
-			insert newMembershipStatus;
-			update new MembershipContactAssotiation__c(Id = membershipStatusId, Next_Membership_Status__c = newMembershipStatus.Id);
+			// update new MembershipContactAssotiation__c(Id = membershipStatusId, Next_Membership_Status__c = newMembershipStatus.Id);
+			update new MembershipContactAssotiation__c(Id = membershipStatusId, Renewal_Application_Form__c = newApplicationForm.Id);
 
 			return new Map<String, Object>{
 				'lockResultString' => lockResultString,
@@ -439,7 +466,8 @@ public without sharing class MembershipRenewalController {
 		Approval.ProcessResult result = Approval.process(req1);
 	}
 
-	public static void attachFilesToForm(List<Map <String, String>> uploadedFilesPills, String currentContactId, Id applicationFormId) {
+	//	used for RR_MEMBERSHIP and STUDENT_MEMBERSHIP
+	public static void attachFilesToForm(List<Map <String, String>> uploadedFilesPills, String currentContactId, Id newApplicationFormId) {
 
 		Set<Id> documentIdList = new Set<Id>();
 		for (Map <String, String> uploadedFilePill : uploadedFilesPills) {
@@ -460,7 +488,32 @@ public without sharing class MembershipRenewalController {
 			processedDocumentIdList.add(existingLink.ContentDocumentId);
 
 			existingLink.Id = null;
-			existingLink.LinkedEntityId = applicationFormId;
+			existingLink.LinkedEntityId = newApplicationFormId;
+			linksToInsert.add(existingLink);
+		}
+
+		if (!linksToInsert.isEmpty()) insert linksToInsert;
+	}
+
+	//	used for FELLOW_EAN_MEMBERSHIP and FULL_MEMBERSHIP and CORRESPONDING_MEMBERSHIP
+	public static void attachFilesFromPreviousForm(String oldApplicationFormId, Id newApplicationFormId) {
+		if (String.isBlank(oldApplicationFormId) || newApplicationFormId == null) return;
+
+		List<ContentDocumentLink> existingLinks = [
+			SELECT Id, LinkedEntityId, Visibility, ContentDocumentId, ShareType
+			FROM ContentDocumentLink
+			WHERE LinkedEntityId =:oldApplicationFormId
+			AND (NOT ContentDocument.Title LIKE :SKIP_ATTACH_FILES_LIKE)
+		];
+
+		List<ContentDocumentLink> linksToInsert = new List<ContentDocumentLink>();
+		Set<Id> processedDocumentIdList = new Set<Id>();
+		for (ContentDocumentLink existingLink : existingLinks) {
+			if (processedDocumentIdList.contains(existingLink.ContentDocumentId)) continue;
+			processedDocumentIdList.add(existingLink.ContentDocumentId);
+
+			existingLink.Id = null;
+			existingLink.LinkedEntityId = newApplicationFormId;
 			linksToInsert.add(existingLink);
 		}
 

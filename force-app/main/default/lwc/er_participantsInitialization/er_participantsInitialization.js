@@ -1,5 +1,6 @@
 import { api, LightningElement, track } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import {Utils} from "c/utils";
 // APEX
 import getContactInfo from "@salesforce/apex/EventRegistrationController.getContactInfo";
 import getCountries from "@salesforce/apex/membershipApplicationController.getCountries";
@@ -7,11 +8,9 @@ import getContactMemberships from "@salesforce/apex/Utils.getContactMemberships"
 
 
 
-//TODO validation every lookup must be filled
-//TODO validation every lookup must be selected with a ticket
 //TODO change group to solo, additional screen appears
-//TODO if empty input hide the ticket cmp
 //TODO prev cmp  styles
+//TODO generate participants
 export default class ErParticipantsInitialization extends LightningElement {
     // obj = {
     //     isPartInit: true,
@@ -240,12 +239,59 @@ export default class ErParticipantsInitialization extends LightningElement {
     }
 
     handleNextClick() {
-        const selectEvent = new CustomEvent("continue", {
-            detail: {
-                participantsInitialization: this._participantsInitialization
+        if(this.nextClickValidation()){
+            const selectEvent = new CustomEvent("continue", {
+                detail: {
+                    participantsInitialization: this._participantsInitialization
+                }
+            });
+            this.dispatchEvent(selectEvent);
+        }
+    }
+
+    nextClickValidation(){
+        let result = true;
+        let participantsWithTickets = [];
+        let message = '';
+
+        for(let initializedParticipant of this._participantsInitialization.initializedParticipants){
+
+            if(initializedParticipant.contact.Email){
+                if(!Utils.emailValidationRegex(initializedParticipant.contact.Email)){
+                    result = false;
+                    message = 'Check your input, only emails available';
+                    break;
+                }
+            } else {
+                result = false;
+                message = 'Complete all fields';
+                break;
             }
-        });
-        this.dispatchEvent(selectEvent);
+
+            if(!!initializedParticipant.selectedTicket && !!initializedParticipant.ticketId && !!initializedParticipant.priceTicket){
+                participantsWithTickets.push(initializedParticipant);
+            }
+
+        }
+
+        if(!result){
+            this.dispatchToast('Error', message, 'error');
+        }
+
+        //cut unfilled participants
+        if(result && participantsWithTickets.length !== this._participantsInitialization.initializedParticipants.length){
+
+            if(confirm('Participants without tickets are found, they will be removed')){
+                result = true;
+                this._participantsInitialization.initializedParticipants = [...participantsWithTickets];
+                this._participantsInitialization.participantsAmount = participantsWithTickets.length;
+            } else {
+                result = false;
+            }
+
+        }
+
+        return result;
     }
 
     throwError(error) {

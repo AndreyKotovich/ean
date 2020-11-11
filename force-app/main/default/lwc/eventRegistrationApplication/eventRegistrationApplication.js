@@ -229,17 +229,46 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         console.log('selectedServices: '+JSON.stringify(event.detail.selectedServices));
         console.log('selectedSessions: '+JSON.stringify(event.detail.selectedSessions));
 
+        //prep data for er_summarize component
         let selectedTickets = [];
         if(!!this.selectedTicket){
-            selectedTickets = [
+            selectedTickets.push(
                 {
                     ticketId: this.selectedTicket,
                     quantity: this.registrationType === 'solo' ? 1 : this.ticketsAmount,
                     amount: this.priceTicket,
                     id: this.ticketId
                 }
-            ];
+            );
         }
+
+        if(this.registrationType === 'group' || this.registrationType === 'ipr' && this.participantsInitialization.isPartInit){
+            let uniqTickets = {};
+
+
+            for(let participant of this.participantsInitialization.initializedParticipants){
+
+                if(uniqTickets[participant.selectedTicket] &&
+                    uniqTickets[participant.selectedTicket].amount === participant.priceTicket &&
+                    uniqTickets[participant.selectedTicket].id === participant.ticketId){
+
+                    uniqTickets[participant.selectedTicket].quantity++;
+
+                } else {
+                    uniqTickets[participant.selectedTicket] = {
+                        ticketId: participant.selectedTicket,
+                        quantity: 1,
+                        amount: participant.priceTicket,
+                        id: participant.ticketId
+                    };
+                }
+            }
+
+            selectedTickets = selectedTickets.concat(Object.values(uniqTickets));
+        }
+
+
+
         this.selections = {
             eventId: this.ean_event.Id,
             selectedTickets,
@@ -365,6 +394,19 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                         }
 
                         participants.push(obj);
+                    }
+
+                    for(let participant of this.participantsInitialization.initializedParticipants){
+                        participants.push({
+                            sobjectType: "Participant__c",
+                            Event_custom__c: this.ean_event.Id,
+                            Event_Ticket__c: participant.selectedTicket,
+                            Event_Registration_Sub_Group__c: result,
+                            Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
+                            Visa_Letter__c: this.selectedServices.visaLetter,
+                            Status__c: 'Pending',
+                            Contact__c: participant.contact.Id ? participant.contact.Id : ''
+                        });
                     }
                 }
                 console.log('participants', participants)

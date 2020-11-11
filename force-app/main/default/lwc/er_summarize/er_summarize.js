@@ -13,6 +13,7 @@ export default class ErSummarize extends LightningElement {
     set selections(value) {
         this._selections = Object.assign({}, value);
     }
+    @api eanEvent = {};
 
     @track hasTickets = false;
     @track hasSessions = false;
@@ -34,7 +35,16 @@ export default class ErSummarize extends LightningElement {
         return Object.keys(this.discountInfo).length > 0; 
     }
 
+    get options() {
+
+        return [
+            { label: 'Ross', value: 'option1' },
+            { label: 'Rachel', value: 'option2' },
+        ];
+    }
+
     connectedCallback() {
+        console.log('eanEvent ' , this.eanEvent);
         let eventTicketsIds = [];
         if (this._selections.selectedTickets && this._selections.selectedTickets.length > 0) {
             this.hasTickets = true;

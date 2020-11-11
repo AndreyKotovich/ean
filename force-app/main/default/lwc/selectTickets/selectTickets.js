@@ -275,7 +275,7 @@ export default class SelectTickets extends LightningElement {
 
         if(result && this.isGroupRegistration){
             console.log(this._ticketsAmount, this._groupIndividualTickets.participantsAmount, this.availableParticipantNumber);
-            result = parseInt(this._ticketsAmount) + parseInt(this._groupIndividualTickets.participantsAmount) <= this.availableParticipantNumber;
+            result = parseInt(this._ticketsAmount) + parseInt(this._groupIndividualTickets.participantsAmount) <= this.maxIndividualTicketsAmount;
             console.log(result);
             if(!result){
                 errorMessage = "You have selected too many participants";
@@ -346,4 +346,29 @@ export default class SelectTickets extends LightningElement {
         this._groupIndividualTickets.participantsAmount = event.detail.value;
     }
 
+    get minGroupRegTicketAmount() {
+        let res = 1;
+        if(this._groupIndividualTickets.isPartInit) res = 0;
+        return res;
+    }
+
+    get maxIndividualTicketsAmount() {
+        let res = null;
+
+        if(this.eanEvent.Max_Participants__c){
+            res = this.eanEvent.Max_Participants__c - this.eanEvent.Registrations__c;
+        }
+
+        return res;
+    }
+
+    get individualTicketAmountLabel(){
+        let str = 'Individual ticket amount'
+
+        if(!!this.maxIndividualTicketsAmount){
+            str += ' (max. ' + this.maxIndividualTicketsAmount + ' available)';
+        }
+
+        return str;
+    }
 }

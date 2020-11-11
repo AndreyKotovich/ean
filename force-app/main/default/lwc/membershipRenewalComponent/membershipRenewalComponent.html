@@ -57,18 +57,11 @@
 								</div>
 							</div>
 
-
-
-
 							<!-- STEP 1 -->
 							<template if:true={_isStep1}>
 								<!-- <div slot="title"> -->
 								<div style="color: #007DC6; font-size: 16px; font-weight: bolder;">
 									<div style="display: inline-block;">Please review / enter your data</div>
-									<!-- <div style="float: right;">
-										<div style="display: inline-block; margin-right: 10px;">Renewal Fee:</div>
-										<div style="display: inline-block;"><lightning-formatted-number value={_totalRenewalFee} format-style="currency" currency-code="EUR"></lightning-formatted-number></div>
-									</div> -->
 								</div>
 
 								<lightning-combobox name="salutation" label="Salutation" options={_availableSalutations} onchange={handleChangeSalutation} value={_formSalutation}></lightning-combobox>
@@ -247,25 +240,6 @@
 								<button name="button-next-step-three" class="slds-button slds-button_brand slds-float_right" disabled="disabled" onclick={handleClickNextButtonStep3}>Next</button>
 								<br/>
 								<br/>
-
-								<!-- DEVELOP MOMENT -->
-								<template if:true={_displayDevelopToPaymentProcessBlock}>
-									<div class="slds-box slds-box_xx-small slds-m-top_small" style="background-color: rgb(233, 234, 236)">
-										<br/>
-											<p>--- UNDER DEVELOPMENT ---</p>
-											<p>Update Contact Information</p>
-											<p>Create new Membership Status Record</p>
-											<p>Create new Application Form Record</p>
-											<p>Associate new Membership Status with revious Membership Status</p>
-											<p>Create new Order Record with type "Renewal"</p>
-											<p>Start PAYMENT PROCESS</p>
-											<p>Trigger success payment and activate new Membership Status</p>
-											<p>Apex test coverage</p>
-											<p>--- UNDER DEVELOPMENT ---</p>
-										<br/>
-									</div>
-									<br/>
-								</template>
 
 							</template>
 
