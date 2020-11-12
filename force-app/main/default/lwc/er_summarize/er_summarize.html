@@ -51,36 +51,39 @@
                     </table>
 
                 </lightning-card>
-                <lightning-card>
-                    <div class="slds-form-element slds-m-around_large">
-                        <label class="slds-form-element__label" for="text-input-id-1">
-                            DISCOUNT CODE</label>
-                        <div class="slds-form-element__control">
-                            <div class="slds-grid">
+                <template if:true={isDiscount}>
+                    <lightning-card>
+                        <div class="slds-form-element slds-m-around_large">
+                            <label class="slds-form-element__label" for="text-input-id-1">
+                                DISCOUNT CODE</label>
+                            <div class="slds-form-element__control">
+                                <div class="slds-grid">
 
-                                <template if:false={isApplyCoupon}>
-                                    <div class="slds-col slds-size_11-of-12 slds-m-right_small">
-                                        <input type="text" data-id="dCode" placeholder="" class="slds-input"
-                                            value={discountCode} />
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-12"> <button
-                                            class="slds-button slds-button_brand" onclick={getDiscount}>Apply</button>
-                                    </div>
-                                </template>
-                                <template if:true={isApplyCoupon}>
-                                    <div class="slds-col slds-size_11-of-12 slds-m-right_small">
-                                        <input type="text" data-id="dCode" placeholder="" class="slds-input"
-                                            value={discountCode} disabled/>
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-12"> <button
-                                            class="slds-button slds-button_destructive" onclick={сancelDiscount}>Cancel</button>
-                                    </div>
-                                </template>
+                                    <template if:false={isApplyCoupon}>
+                                        <div class="slds-col slds-size_11-of-12 slds-m-right_small">
+                                            <input type="text" data-id="dCode" placeholder="" class="slds-input"
+                                                value={discountCode} />
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-12"> <button
+                                                class="slds-button slds-button_brand"
+                                                onclick={getDiscount}>Apply</button>
+                                        </div>
+                                    </template>
+                                    <template if:true={isApplyCoupon}>
+                                        <div class="slds-col slds-size_11-of-12 slds-m-right_small">
+                                            <input type="text" data-id="dCode" placeholder="" class="slds-input"
+                                                value={discountCode} disabled />
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-12"> <button
+                                                class="slds-button slds-button_destructive"
+                                                onclick={сancelDiscount}>Cancel</button>
+                                        </div>
+                                    </template>
 
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- <div class="slds-m-around_small">
+                        <!-- <div class="slds-m-around_small">
                         <div onkeyup={getDiscount}>
                             <div class="slds-form-element">
                                 <label class="slds-form-element__label" for="text-input-id-1">
@@ -91,7 +94,8 @@
                             </div>
                         </div>
                     </div> -->
-                </lightning-card>
+                    </lightning-card>
+                </template>
                 <div if:true={showTotalAmount}>
                     <table class="slds-table slds-table_cell-buffer">
                         <tbody>
@@ -138,7 +142,22 @@
                     <lightning-badge if:true={showNewsletter} label="Newsletter"></lightning-badge>
                 </div>
             </div>
+            <template if:true={isDates}>
+                <lightning-card>
+                    <div class="slds-form-elemen slds-m-left_large">
+                        <div class="slds-grid">
+                            <div class="slds-col slds-m-left_medium">
+                                <lightning-dual-listbox name="Dates of visit" label="Dates of visit"
+                                    source-label="Available" selected-label="Selected" field-level-help="Dates of visit"
+                                    size=10 options={options} onchange={handleChangeDates} class='list'>
+                                </lightning-dual-listbox>
+                            </div>
+                        </div>
+                    </div>
+                </lightning-card>
+            </template>
         </lightning-layout-item>
+
     </lightning-layout>
 
     <div class="slds-card__footer slds-grid slds-align--absolute-center">

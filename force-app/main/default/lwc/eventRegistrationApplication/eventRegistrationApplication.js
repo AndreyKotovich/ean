@@ -58,6 +58,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     priceTicket = 0;
     ticketsAmount = 0;
     ticketId = 0;
+    eventParticipantConf = 0;
     /**
      * @variable userInfo - information about user which works with the application
      * @property contact - contains contact record of user
@@ -65,6 +66,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
      * */
     userInfo = {};
     discountInfo = {};
+    selectedDates = [];
     participants = {}; //event participants which we insert in database
     selectedSessions = []; //selected extra sessions
     selectedServices = { //selected extra services
@@ -143,6 +145,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                     this.setWizardStep('step-1');
 
                     if(!!results[4] && results[4].eventParticipant){
+                        this.eventParticipantConf = results[4].eventParticipantConf;
                         if(this.userInfo.contact.Id !== results[4].eventParticipant.Contact__c) throw new Error();
 
                         this.upgradeParticipant = Object.assign({}, results[4].eventParticipant);
@@ -232,14 +235,25 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         //prep data for er_summarize component
         let selectedTickets = [];
         if(!!this.selectedTicket){
-            selectedTickets.push(
-                {
-                    ticketId: this.selectedTicket,
-                    quantity: this.registrationType === 'solo' ? 1 : this.ticketsAmount,
-                    amount: this.priceTicket,
-                    id: this.ticketId
-                }
-            );
+            if(this.registrationType === 'solo'){
+                selectedTickets.push(
+                    {
+                        ticketId: this.selectedTicket,
+                        quantity: 1,
+                        amount: this.priceTicket,
+                        id: this.ticketId
+                    }
+                );
+            } else if(this.isGroupRegType && !!this.ticketsAmount) {
+                selectedTickets.push(
+                    {
+                        ticketId: this.selectedTicket,
+                        quantity: this.ticketsAmount,
+                        amount: this.priceTicket,
+                        id: this.ticketId
+                    }
+                );
+            }
         }
 
         if(this.registrationType === 'group' || this.registrationType === 'ipr' && this.participantsInitialization.isPartInit){
@@ -273,12 +287,15 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             eventId: this.ean_event.Id,
             selectedTickets,
             selectedServices: this.selectedServices,
-            selectedSessions: this.selectedSessions
+            selectedSessions: this.selectedSessions,
+            registrationType: this.registrationType,
+            isUpgrade: this.userInfo && this.userInfo.isUpgrade,
+            eventParticipantConf: this.eventParticipantConf
         };
 
         //skip next step is there are no selected sessions and finish registration
-        if(this.userInfo.isUpgrade && this.selectedSessions.length <= 0){
-            this.finishRegistration();
+        if( /*this.userInfo.isUpgrade && */ this.selectedSessions.length === 0 && this.eventParticipantConf > 0){
+             this.finishRegistration();
         } else {
             this.onNext();
         }
@@ -287,6 +304,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
 
     onSummarize(event) {
         this.discountInfo = event.detail.discountInfo;
+        this.selectedDates = event.detail.selectedDates;
         this.onNext();
     }
 
@@ -296,7 +314,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             this.steps.step2.isActive = true;
         } else if (this.steps.step2.isActive) {
             this.steps.step2.isActive = false;
-            if(this.participantsInitialization.isPartInit){
+            if(this.participantsInitialization.isPartInit && this.isGroupRegType){
                 this.steps.step2_2.isActive = true;
             } else {
                 this.steps.step3.isActive = true;
@@ -323,7 +341,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             this.steps.step2.isActive = true;
         } else if (this.steps.step3.isActive) {
             this.steps.step3.isActive = false;
-            if(this.participantsInitialization.isPartInit){
+            if(this.participantsInitialization.isPartInit && this.isGroupRegType){
                 this.steps.step2_2.isActive = true;
             } else {
                 this.steps.step2.isActive = true;
@@ -342,6 +360,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             this.onFinishRegistration();
         }
     }
+
     onFinishRegistration() {
         this.isSpinner = true;
         let participants = [];
@@ -364,17 +383,24 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                 generalData.priceTicket = this.priceTicket;
                 generalData.contactId = this.userInfo.contact.Id;
                 generalData.discountInfo = this.discountInfo;
+                generalData.selectedDates = this.selectedDates;
 
                 console.log('generalData', JSON.parse(JSON.stringify(generalData)));
+
+                let participantPriceArr = [];
+
                 if (this.registrationType === "solo") {
-                    participants.push({
-                        sobjectType: "Participant__c",
-                        Contact__c: this.userInfo.contact.Id,
-                        Event_Ticket__c: generalData.selectTicket,
-                        Event_custom__c: this.ean_event.Id,
-                        Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
-                        Visa_Letter__c: this.selectedServices.visaLetter,
-                        Status__c: 'Pending'
+                    participantPriceArr.push({
+                        participant: {
+                            sobjectType: "Participant__c",
+                            Contact__c: this.userInfo.contact.Id,
+                            Event_Ticket__c: generalData.selectTicket,
+                            Event_custom__c: this.ean_event.Id,
+                            Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
+                            Visa_Letter__c: this.selectedServices.visaLetter,
+                            Status__c: 'Pending'
+                        },
+                        price: this.priceTicket
                     });
                 } else {
                     generalData.groupId = result;
@@ -393,26 +419,32 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                             obj.Event_Exhibitor__c = this.userInfo.iprInfo.Id
                         }
 
-                        participants.push(obj);
+                        participantPriceArr.push({
+                            participant: obj,
+                            price: this.priceTicket
+                        });
                     }
 
                     for(let participant of this.participantsInitialization.initializedParticipants){
-                        participants.push({
-                            sobjectType: "Participant__c",
-                            Event_custom__c: this.ean_event.Id,
-                            Event_Ticket__c: participant.selectedTicket,
-                            Event_Registration_Sub_Group__c: result,
-                            Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
-                            Visa_Letter__c: this.selectedServices.visaLetter,
-                            Status__c: 'Pending',
-                            Contact__c: participant.contact.Id ? participant.contact.Id : ''
+                        participantPriceArr.push({
+                            participant: {
+                                sobjectType: "Participant__c",
+                                Event_custom__c: this.ean_event.Id,
+                                Event_Ticket__c: participant.selectedTicket,
+                                Event_Registration_Sub_Group__c: result,
+                                Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
+                                Visa_Letter__c: this.selectedServices.visaLetter,
+                                Status__c: 'Pending',
+                                Contact__c: participant.contact.Id ? participant.contact.Id : ''
+                            },
+                            price: participant.priceTicket
                         });
                     }
                 }
-                console.log('participants', participants)
+                console.log('participantPriceArr', participantPriceArr)
 
                 let promiseArray = [];
-                promiseArray.push(insertEventParticipants({participants: participants, generalData: generalData, selectedSession: this.selectedSessions}));
+                promiseArray.push(insertEventParticipants({participantPriceMap: participantPriceArr, generalData: generalData, selectedSession: this.selectedSessions}));
 
                 if(this.registrationType === 'solo'){
                     let updateContact = [{sobjectType: "Contact", Id: this.userInfo.contact.Id, Newsletter__c: this.selectedServices.newsletter}];
@@ -463,7 +495,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
 
         let insertData = {}
 
-        if(this.selectedSessions.length > 0){
+        //if(this.selectedSessions.length > 0){
             let generalData = {};
             generalData = {...generalData, ...this.userInfo};
             generalData.selectTicket = this.selectedTicket;
@@ -471,11 +503,11 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             generalData.priceTicket = this.priceTicket;
             generalData.contactId = this.userInfo.contact.Id;
             generalData.discountInfo = this.discountInfo;
-
+            generalData.selectedDates = this.selectedDates;
 
             Object.assign(insertData, {participant: this.upgradeParticipant.Id, selectedSessions:this.selectedSessions, generalData})
             console.log('insertData', JSON.stringify(insertData));
-        }
+        //}
 
         Promise.all([
             updateParticipant({participant: participant}),
@@ -494,7 +526,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
 
                 if(res3.status !== 'Error'){
 
-                    if(res3.result){
+                    if(res3.result && this.selectedSessions.length > 0){
                         this[NavigationMixin.Navigate]({
                             type: 'comm__namedPage',
                             attributes: {
@@ -556,5 +588,9 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                 variant: variant
             })
         );
+    }
+
+    get isGroupRegType(){
+        return this.registrationType === 'group' || this.registrationType === 'ipr';
     }
 }

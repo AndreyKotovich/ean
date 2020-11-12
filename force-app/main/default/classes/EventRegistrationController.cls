@@ -46,10 +46,16 @@ public without sharing class EventRegistrationController {
     }
 
     @AuraEnabled
-    public static Map<String, Object> insertEventParticipants(List<Participant__c> participants, Map<String, Object> generalData, List<Object> selectedSession) {
+    public static Map<String, Object> insertEventParticipants(List<Map<String, Object>> participantPriceMap, Map<String, Object> generalData, List<Object> selectedSession) {
         Savepoint sp = Database.setSavepoint();
         try {
-            System.debug('participants:: ' + participants);
+            List<Participant__c> participants = new List<Participant__c>();
+
+            for(Integer i = 0; i<participantPriceMap.size(); i++){
+                Participant__c p = (Participant__c)JSON.deserialize(JSON.serialize(participantPriceMap[i].get('participant')), Participant__c.class);
+                participantPriceMap[i].put('participant', p);
+                participants.add((Participant__c)participantPriceMap[i].get('participant'));
+            }
 
             Contact undefinedContact = getUndefinedParticipant();
             Id congressRTId = Schema.SObjectType.Participant__c.getRecordTypeInfosByDeveloperName().get('Congress').getRecordTypeId();
@@ -73,6 +79,17 @@ public without sharing class EventRegistrationController {
 
             System.debug('insert participants:: ' + participants);
             insert participants;
+            System.debug('participantPriceMap:: ' + participantPriceMap);
+
+
+            if (generalData.containsKey('selectedDates')) {
+                List<Date> selectedDates = (List<Date>) JSON.deserialize( JSON.serialize(generalData.get('selectedDates')), List<Date>.class);
+                List<Event_participation_configuration__c> epc = new List<Event_participation_configuration__c>();
+                for (Date d: selectedDates) {
+                    epc.add(new Event_participation_configuration__c(Event_Participation__c = participants[0].Id, Date_of_visit__c = d));
+                }
+                insert epc;
+            }
 
             Map<String, Object> sessionParticipationPriceMap = new Map<String, Object>();
             System.debug('participants.size(): ' + participants.size());
@@ -85,7 +102,7 @@ public without sharing class EventRegistrationController {
             //Create order
             List<Order__c> order = OrderHelper.createNewOrder(new Map<String, Object>{
                     'generalData' => generalData,
-                    'participants' => participants,
+                    'participantsPrice' => participantPriceMap,
                     'sessionParticipantPrice' => sessionParticipationPriceMap
             });
 
@@ -96,6 +113,7 @@ public without sharing class EventRegistrationController {
             };
         } catch (Exception e) {
             Database.rollback(sp);
+            System.debug('ERROR: '+e);
             return new Map<String, Object>{
                     'status' => 'Error',
                     'message' => e.getMessage()
@@ -268,15 +286,15 @@ public without sharing class EventRegistrationController {
     public static Map<String, Object> getParticipation(String participantId){
         Map<String, Object> participantsMap = new Map<String, Object>();
         List<Participant__c> eventParticipants = [
-                SELECT Id, Visa_Letter__c, Event_custom__c, Contact__c, Badge_Retrieval__c
+                SELECT Id, Visa_Letter__c, Event_custom__c, Contact__c, Badge_Retrieval__c,
+                    (SELECT Id FROM Event_participation_configurations__r)
                 FROM Participant__c
                 WHERE Id = :participantId
                 AND Status__c != 'Canceled'
         ];
 
         if(!eventParticipants.isEmpty()){
-            participantsMap.put('eventParticipant', eventParticipants[0]);
-
+            
             List<Session_Participation__c> sessionParticipation = [
                     SELECT Id, Session__c, (SELECT Id, Amount__c FROM Order_Items__r LIMIT 1)
                     FROM Session_Participation__c
@@ -311,6 +329,16 @@ public without sharing class EventRegistrationController {
             Map<String, Object> sessionParticipationPriceMap = new Map<String, Object>();
             if (participantId != '') {
                 sessionParticipationPriceMap = insertSessionParticipants(selectedSession, participantId);
+
+                if (generalDataObj.containsKey('selectedDates')) {
+                    List<Date> selectedDates = (List<Date>) JSON.deserialize( JSON.serialize(generalDataObj.get('selectedDates')), List<Date>.class);
+                    List<Event_participation_configuration__c> epc = new List<Event_participation_configuration__c>();
+                    for (Date d: selectedDates) {
+                        epc.add(new Event_participation_configuration__c(Event_Participation__c = participantId, Date_of_visit__c = d));
+                    }
+                    insert epc;
+                }
+
             }
 
             system.debug('m' + m) ;

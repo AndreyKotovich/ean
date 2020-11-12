@@ -25,26 +25,47 @@ export default class ErSummarize extends LightningElement {
     @track eventId;
     @track totalAmount = 0;
     @track discountAmount = 0;
+    isSolo = false;
+    isUpgrade = false;
+    isDiscount = false;
     discountCode = '';
     totalAmountOrg = 0;
     discountInfo = {};
     _selections = {};
     badgePicklistValues = [];
-
+    @track _selectedDates = [];
     get isApplyCoupon() {
-        return Object.keys(this.discountInfo).length > 0; 
+        return Object.keys(this.discountInfo).length > 0;
     }
 
     get options() {
+        let formatDateLabel = function (date) {
+            let publishDate = new Date(date);
+            return `${publishDate.getMonth() + 1}/${publishDate.getDate()}/${publishDate.getFullYear()}`;
+        };
 
-        return [
-            { label: 'Ross', value: 'option1' },
-            { label: 'Rachel', value: 'option2' },
-        ];
+        let formatDateValue = function (date) {
+            let publishDate = new Date(date);
+            return `${publishDate.getFullYear()}-${publishDate.getMonth() + 1}-${publishDate.getDate()}`;
+        };
+
+        let getDaysArray = function (start, end) {
+            let arr = [];
+            //arr.push({ label: 'All', value: 'All'});
+            for (let dt = new Date(Date.parse(start)); dt <= Date.parse(end); dt.setDate(dt.getDate() + 1)) {
+                arr.push({ label: formatDateLabel(dt), value: formatDateValue(dt) });
+            }
+            return arr;
+        };
+
+        return getDaysArray(this.eanEvent.Start_Time__c, this.eanEvent.End_Time__c);
+    }
+
+    get selectedDates() {
+        return this._selectedDates.length > 0 ? this._selectedDates : [];
     }
 
     connectedCallback() {
-        console.log('eanEvent ' , this.eanEvent);
         let eventTicketsIds = [];
         if (this._selections.selectedTickets && this._selections.selectedTickets.length > 0) {
             this.hasTickets = true;
@@ -62,6 +83,11 @@ export default class ErSummarize extends LightningElement {
             }
         }
 
+        console.log('this._selections', JSON.parse(JSON.stringify(this._selections)));
+        this.isSolo = this._selections.registrationType && this._selections.registrationType === 'solo';
+        this.isUpgrade = this._selections.isUpgrade;
+        this.isDates = this.isSolo && (!this._selections.eventParticipantConf || this._selections.eventParticipantConf === 0);
+        this.isDiscount = this.hasTickets || this.hasSessions;
         this.eventId = this._selections.eventId;
 
         let promises = [
@@ -142,7 +168,10 @@ export default class ErSummarize extends LightningElement {
 
     handleNextClick() {
         const selectEvent = new CustomEvent("continue", {
-            detail: { discountInfo: this.discountInfo }
+            detail: {
+                discountInfo: this.discountInfo,
+                selectedDates: this.selectedDates
+            }
         });
         this.dispatchEvent(selectEvent);
     }
@@ -164,7 +193,7 @@ export default class ErSummarize extends LightningElement {
         );
     }
 
-    сancelDiscount(){
+    сancelDiscount() {
         this.discountAmount = 0;
         this.totalAmount = this.totalAmountOrg;
         this.discountInfo = {};
@@ -267,4 +296,14 @@ export default class ErSummarize extends LightningElement {
         return this.hasTickets || this.hasSessions;
     }
 
+    handleChangeDates(e) {
+        // if (e.detail.value === 'All') {
+        //     this._selectedDates = this.options.find(e => {  if (e.value !== 'All') { return e.value; } });
+        // }
+        // else {
+        this._selectedDates = e.detail.value;
+        // }
+        console.log('this._selectedDates', this._selectedDates);
+        console.log('this._selectedDates', JSON.parse(JSON.stringify(this._selectedDates)));
+    }
 }
