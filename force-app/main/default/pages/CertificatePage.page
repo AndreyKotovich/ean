@@ -36,7 +36,7 @@
             </div>
             <div style="height: 1.6cm;">
                 <div style="display: {!IF(isFellowMembership,'none;','block;')}">
-                    holds {!membershipName}
+                    Is {!membershipName}
                 </div>
                 <div style="display: {!IF(isFellowMembership,'block;','none;')}">
                     is awarded Fellow
@@ -59,7 +59,8 @@
         </div>
         <div style="margin-left: 1.4cm;">
             <div style="height: 1.65cm;">
-                <span>Vienna, {!currentDate}</span>
+                <!-- <span>Vienna, {!currentDate}</span> -->
+                <span>{!membershipDurationString}</span>
             </div>
             <div>
                 <div style="display: inline-block;">
@@ -79,8 +80,8 @@
                         <img src="{!$Resource.EANCertificate_President_Signatures}" style="width: 4cm;"/>
                     </div>
                     <span>
-<!--                        {!presidentName}-->
-                        Prof. Claudio Bassetti
+                       {!presidentName}
+                        <!-- Prof. Claudio Bassetti -->
                     </span>
                     <br/>
                     <span>

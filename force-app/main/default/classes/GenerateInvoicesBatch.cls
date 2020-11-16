@@ -12,7 +12,7 @@ public class GenerateInvoicesBatch implements Database.Batchable<SObject>, Datab
         log.Message__c = '';
 
         return Database.getQueryLocator(
-                'SELECT Id, Name, Invoice_Number__c, Purchase_Type__c FROM Order__c WHERE Status__c = \'Paid\' ORDER BY CreatedDate ASC'
+                'SELECT Id, Name, Invoice_Number__c, Purchase_Type__c, Type__c FROM Order__c WHERE Status__c = \'Paid\' ORDER BY CreatedDate ASC'
         );
     }
     public void execute(Database.BatchableContext bc, List<Order__c> orders) {

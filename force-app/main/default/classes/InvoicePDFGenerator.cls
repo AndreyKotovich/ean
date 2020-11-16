@@ -11,7 +11,7 @@ public class InvoicePDFGenerator {
         List<BCC_email__mdt> bccEmail = [SELECT Id, Email__c FROM BCC_email__mdt LIMIT 1];
         // Collect Orders
         orders = [
-                SELECT Id, Name, Contact__r.Email, Contact__r.MailingAddress, Invoice_Number__c, Purchase_Type__c,
+                SELECT Id, Name, Contact__r.Email, Contact__r.MailingAddress, Invoice_Number__c, Purchase_Type__c, Type__c,
                 (SELECT Id, Product__c, Membership__c FROM Order_Items__r), (SELECT Id, Name FROM Applications_Forms__r ORDER BY CreatedDate DESC)
                 FROM Order__c
                 WHERE Id IN :orderIds AND Contact__c != null AND Contact__r.Email != null
@@ -175,6 +175,14 @@ public class InvoicePDFGenerator {
 
         for (Order__c o : orders) {
             if (o.Invoice_Number__c == null || !o.Invoice_Number__c.contains('EIMF')) {
+
+                //  part of 'Membership Renewal'
+                if (o.Type__c == 'Renewal') {
+                    newOrdersREIMF.add(o);
+                    continue;
+                }
+
+                //  old logic
 //                if (o.Purchase_Type__c == 'Update') {
 //                    newOrdersREIMF.add(o);
 //                } else {
@@ -242,7 +250,8 @@ public class InvoicePDFGenerator {
             Messaging.SingleEmailMessage errorEmail = new Messaging.SingleEmailMessage();
             errorEmail.setSubject('New Invoice Number creation error');
             String[] emailIds = new String[]{
-                    'ezhi.sarosek@succraft.com'
+                    // 'ezhi.sarosek@succraft.com'
+                    'vitaly.serebrekov@succraft.com'
             };
             errorEmail.setToAddresses(emailIds);
             errorEmail.setPlainTextBody('Error Description: \n Message:' + e.getMessage() + '\n Line Number: ' + e.getLineNumber() + '\n Stack Trace: ' + e.getStackTraceString());

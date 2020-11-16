@@ -79,6 +79,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         participantsAmount: 0,
         initializedParticipants: []
     }
+    participantRole = '';
 
     connectedCallback() {
         this.updateProgressBar();
@@ -218,6 +219,8 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         this.ticketId = event.detail.ticketId;
         console.log('event.detail.groupIndividualTickets', JSON.stringify(event.detail.groupIndividualTickets));
         this.participantsInitialization = event.detail.groupIndividualTickets;
+        this.participantRole = event.detail.participantRole;
+        this.userInfo = event.detail.userInfo;
         this.onNext();
     }
 
@@ -398,7 +401,8 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                             Event_custom__c: this.ean_event.Id,
                             Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
                             Visa_Letter__c: this.selectedServices.visaLetter,
-                            Status__c: 'Pending'
+                            Status__c: 'Pending',
+                            Role__c: this.participantRole
                         },
                         price: this.priceTicket
                     });
@@ -412,7 +416,8 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                             Event_Registration_Sub_Group__c: result,
                             Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
                             Visa_Letter__c: this.selectedServices.visaLetter,
-                            Status__c: 'Pending'
+                            Status__c: 'Pending',
+                            Role__c: this.participantRole
                         }
 
                         if(this.registrationType === 'ipr'){
@@ -435,7 +440,8 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                                 Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
                                 Visa_Letter__c: this.selectedServices.visaLetter,
                                 Status__c: 'Pending',
-                                Contact__c: participant.contact.Id ? participant.contact.Id : ''
+                                Contact__c: participant.contact.Id ? participant.contact.Id : '',
+                                Role__c: participant.participantRole
                             },
                             price: participant.priceTicket
                         });

@@ -70,7 +70,7 @@ export default class Membershipcontainer extends NavigationMixin(LightningElemen
         } else {
             getCurrentContactMemberships()
                 .then(result=>{
-                    console.log('getCurrentContactMemberships result: ', result);
+                    // console.log('getCurrentContactMemberships result: ', result);
                     this.currentContactMemberships = [...JSON.parse(result)['memberships']];
                     this.manageButtons(result);
                 })
@@ -102,7 +102,7 @@ export default class Membershipcontainer extends NavigationMixin(LightningElemen
         }
         //  part of 'Membership Renewal'
         if (parsedResult.renewalSettings.displayMembershipRenewalButton) {
-            console.log('parsedResult: ', parsedResult);
+            // console.log('parsedResult: ', parsedResult);
             this.allowMembershipRenewal = true;
             this.template.querySelector('button[name="membership-renewal-button"]').removeAttribute('disabled');
         }

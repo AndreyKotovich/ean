@@ -6,32 +6,7 @@ import getContactInfo from "@salesforce/apex/EventRegistrationController.getCont
 import getCountries from "@salesforce/apex/membershipApplicationController.getCountries";
 import getContactMemberships from "@salesforce/apex/Utils.getContactMemberships";
 
-
-
-//TODO change group to solo, additional screen appears
-//TODO prev cmp  styles
-//TODO generate participants
 export default class ErParticipantsInitialization extends LightningElement {
-    // obj = {
-    //     isPartInit: true,
-    //     initializedParticipants: [
-    //         {
-    //             foundContact: false,
-    //             contact: {
-    //                 // Contact
-    //             },
-    //             ticket: {
-    //                 // Ticket__c
-    //             },
-    //             eventTicket: {
-    //                 // Event_Ticket__c
-    //             },
-    //             price: '100500'
-    //         }
-    //     ]
-    //
-    // }
-
     @api
     get participantsInitialization(){
         return this._participantsInitialization;
@@ -63,12 +38,6 @@ export default class ErParticipantsInitialization extends LightningElement {
     }
 
     connectedCallback() {
-
-        console.log('participantsAmount '+this._participantsInitialization.participantsAmount);
-        console.log('length '+this._participantsInitialization.initializedParticipants.length);
-        console.log('array diff', this._participantsInitialization.participantsAmount < this._participantsInitialization.initializedParticipants.length);
-
-
         if(this._participantsInitialization.participantsAmount > this._participantsInitialization.initializedParticipants.length){
             let arrayDifference = this._participantsInitialization.participantsAmount - this._participantsInitialization.initializedParticipants.length;
             let arr = [];
@@ -98,84 +67,66 @@ export default class ErParticipantsInitialization extends LightningElement {
                 this.throwError({message: message});
             })
 
-        console.log('this._participantsInitialization', JSON.stringify(this._participantsInitialization));
-
         this.isSpinner = false;
     }
 
     handleSelectEmail(event){
-        // let delay = 1000;
-        // window.clearTimeout(this.delayTimeout);
-        // this.delayTimeout = setTimeout(() => {
+        let recordDetails = JSON.parse(event.detail.recorddetails);
+        let index = event.target.dataset.index;
+        this._participantsInitialization.initializedParticipants[index].contact.Id =  recordDetails.id ? recordDetails.id : '';
+        this._participantsInitialization.initializedParticipants[index].contact.Email =  recordDetails.enteredText ? recordDetails.enteredText : '';
 
-            let recordDetails = JSON.parse(event.detail.recorddetails);
-            console.log('recordDetails', recordDetails);
-            let index = event.target.dataset.index;
-            this._participantsInitialization.initializedParticipants[index].contact.Id =  recordDetails.id ? recordDetails.id : '';
-            this._participantsInitialization.initializedParticipants[index].contact.Email =  recordDetails.enteredText ? recordDetails.enteredText : '';
+        if(!recordDetails.id){
+            this._participantsInitialization.initializedParticipants[index].showPill = false;
+            this._participantsInitialization.initializedParticipants[index].foundContact = false;
+            this._participantsInitialization.initializedParticipants[index].selectedTicket = '';
+            this._participantsInitialization.initializedParticipants[index].participantRole = '';
+            this._participantsInitialization.initializedParticipants[index].ticketId = '';
+            this._participantsInitialization.initializedParticipants[index].priceTicket = '';
+            this._participantsInitialization.initializedParticipants[index].ticketName = '';
+            this._participantsInitialization.initializedParticipants[index].pillLabel = '';
+        }
 
-            if(!recordDetails.id){
-                this._participantsInitialization.initializedParticipants[index].showPill = false;
-                this._participantsInitialization.initializedParticipants[index].foundContact = false;
-                this._participantsInitialization.initializedParticipants[index].selectedTicket = '';
-                this._participantsInitialization.initializedParticipants[index].ticketId = '';
-                this._participantsInitialization.initializedParticipants[index].priceTicket = '';
-                this._participantsInitialization.initializedParticipants[index].ticketName = '';
-                this._participantsInitialization.initializedParticipants[index].pillLabel = '';
-            }
+        let usedEmails = [];
 
-            let usedEmails = [];
+        for(let participant of this._participantsInitialization.initializedParticipants){
+            if(participant.contact && participant.contact.Email && !!participant.contact.Email) usedEmails.push(participant.contact.Email);
+        }
 
-            for(let participant of this._participantsInitialization.initializedParticipants){
-                if(participant.contact && participant.contact.Email && !!participant.contact.Email) usedEmails.push(participant.contact.Email);
-            }
+        this.usedEmails = usedEmails;
 
-            this.usedEmails = usedEmails;
+        if(!!this._participantsInitialization.initializedParticipants[index].contact.Id){
+            Promise.all([
+                getContactInfo({contactId: this._participantsInitialization.initializedParticipants[index].contact.Id}),
+                getContactMemberships({contactId: this._participantsInitialization.initializedParticipants[index].contact.Id})
+            ])
+                .then(results => {
+                    if(results[0].contact && results[0].contact.Id){
+                        this._participantsInitialization.initializedParticipants[index].foundContact = true;
+                        this._participantsInitialization.initializedParticipants[index].userInfo = results[0];
+                    }
+                    if(results[1] && this._participantsInitialization.initializedParticipants[index].foundContact){
+                        this._participantsInitialization.initializedParticipants[index].userInfo.memberships = results[1];
+                    }
 
-            if(!!this._participantsInitialization.initializedParticipants[index].contact.Id){
-                //do callout
-                Promise.all([
-                    getContactInfo({contactId: this._participantsInitialization.initializedParticipants[index].contact.Id}),
-                    getContactMemberships({contactId: this._participantsInitialization.initializedParticipants[index].contact.Id})
-                ])
-                    .then(results => {
-                        console.log('results', JSON.stringify(results));
-                        if(results[0].contact && results[0].contact.Id){
-                            this._participantsInitialization.initializedParticipants[index].foundContact = true;
-                            this._participantsInitialization.initializedParticipants[index].userInfo = results[0];
-                        }
-                        if(results[1] && this._participantsInitialization.initializedParticipants[index].foundContact){
-                            this._participantsInitialization.initializedParticipants[index].userInfo.memberships = results[1];
-                        }
+                    if(this._participantsInitialization.initializedParticipants[index].foundContact){
 
-                        if(this._participantsInitialization.initializedParticipants[index].foundContact){
-
-                            for (let country of this.allCountriesAndRegions) {
-                                if (country.Country__c === this._participantsInitialization.initializedParticipants[index].userInfo.contact.Residency__c) {
-                                    this._participantsInitialization.initializedParticipants[index].userInfo.countyRegion = country.Region__c;
-                                    break;
-                                }
+                        for (let country of this.allCountriesAndRegions) {
+                            if (country.Country__c === this._participantsInitialization.initializedParticipants[index].userInfo.contact.Residency__c) {
+                                this._participantsInitialization.initializedParticipants[index].userInfo.countyRegion = country.Region__c;
+                                break;
                             }
-
                         }
 
-                        console.log('contact ', this._participantsInitialization.initializedParticipants[index]);
-
-                    })
-                    .catch(error => {
-                        console.log('error', error);
-                    })
-            }
-
-            //IF CONTACT WASN'T FOUND LOGIC
-            //here
-            //here
-
-        // }, delay);
+                    }
+                })
+                .catch(error => {
+                    console.log('error', error);
+                })
+        }
     }
 
     onSelectTicket(event){
-        console.log(JSON.stringify(event.detail));
         let index = event.target.dataset.index;
         this._participantsInitialization.initializedParticipants[index].selectedTicket = event.detail.selectedTicket;
         this._participantsInitialization.initializedParticipants[index].ticketId = event.detail.ticketId;
@@ -184,6 +135,7 @@ export default class ErParticipantsInitialization extends LightningElement {
         this._participantsInitialization.initializedParticipants[index].pillLabel = event.detail.ticketName + ' - ' + event.detail.priceTicket + ' €';
         this._participantsInitialization.initializedParticipants[index].showPill = true;
         this._participantsInitialization.initializedParticipants[index].foundContact = false; //TODO remane foundContact
+        this._participantsInitialization.initializedParticipants[index].participantRole = event.detail.participantRole;
     }
 
     get usedEmailsString(){
@@ -191,28 +143,15 @@ export default class ErParticipantsInitialization extends LightningElement {
     }
 
     handleRemoveTicket(event){
-        try{
-
-            let index = event.target.dataset.index;
-            console.log('handleRemoveTicket', index);
-            console.log('this._participantsInitialization.initializedParticipants', JSON.stringify(this._participantsInitialization.initializedParticipants[index]));
-            console.log(this._participantsInitialization.initializedParticipants[index]);
-
-            // let temp = this._participantsInitialization.initializedParticipants[index];
-
-            this._participantsInitialization.initializedParticipants[index].showPill = false;
-            console.log('after showPill');
-            this._participantsInitialization.initializedParticipants[index].foundContact = true; //TODO remane foundContact
-            this._participantsInitialization.initializedParticipants[index].selectedTicket = '';
-            this._participantsInitialization.initializedParticipants[index].ticketId = '';
-            this._participantsInitialization.initializedParticipants[index].priceTicket = '';
-            this._participantsInitialization.initializedParticipants[index].ticketName = '';
-            this._participantsInitialization.initializedParticipants[index].pillLabel = '';
-
-        } catch (e){
-            console.log('err', JSON.stringify(e));
-            console.log('err', JSON.stringify(e.message));
-        }
+        let index = event.target.dataset.index;
+        this._participantsInitialization.initializedParticipants[index].showPill = false;
+        this._participantsInitialization.initializedParticipants[index].foundContact = true; //TODO remane foundContact
+        this._participantsInitialization.initializedParticipants[index].selectedTicket = '';
+        this._participantsInitialization.initializedParticipants[index].ticketId = '';
+        this._participantsInitialization.initializedParticipants[index].priceTicket = '';
+        this._participantsInitialization.initializedParticipants[index].ticketName = '';
+        this._participantsInitialization.initializedParticipants[index].pillLabel = '';
+        this._participantsInitialization.initializedParticipants[index].participantRole = '';
 
     }
 
@@ -225,11 +164,7 @@ export default class ErParticipantsInitialization extends LightningElement {
         let index = event.target.dataset.index;
         this._participantsInitialization.initializedParticipants[index].showPill = false;
         this._participantsInitialization.initializedParticipants[index].foundContact = false;
-
-        //TODO process not found
     }
-
-
 
     handlePreviousClick() {
         const selectEvent = new CustomEvent("previous", {
@@ -268,7 +203,7 @@ export default class ErParticipantsInitialization extends LightningElement {
                 break;
             }
 
-            if(!!initializedParticipant.selectedTicket && !!initializedParticipant.ticketId && !!initializedParticipant.priceTicket){
+            if(!!initializedParticipant.selectedTicket && !!initializedParticipant.ticketId){
                 participantsWithTickets.push(initializedParticipant);
             }
 

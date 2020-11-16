@@ -2,6 +2,8 @@ public with sharing class AssignMembershipHelper {
     public static void assignMembership(List<Application_form__c> updatedForms){
         List<MembershipContactAssotiation__c> mca = new List<MembershipContactAssotiation__c>();
         Date expDate;
+        Datetime startDateTime; //  part of 'Membership Renewal'
+        Datetime expDateTime;   //  part of 'Membership Renewal'
         for(Application_form__c af:updatedForms){
             if(!Test.isRunningTest()){
                 if(Date.today().month() >= 10){
@@ -9,11 +11,21 @@ public with sharing class AssignMembershipHelper {
                 }else{
                     expDate = Date.newInstance(Date.today().year(),12,31);
                 }
+
+                //  part of 'Membership Renewal'
+                expDateTime = af.Renewal_End_Date__c;
+                startDateTime = af.Renewal_Start_Date__c;
+
             } else {
                 expDate = Date.newInstance(Date.today().year()+1,12,31);
             }
             if(af.Form_Status__c == 'Approved'){
-                mca.add(new MembershipContactAssotiation__c(Contact__c = af.Contact__c, Membership__c = af.Membership__c, Application_form__c = af.Id, Expiration_date__c = expDate, Assignment_date__c = Date.today()));
+                mca.add(new MembershipContactAssotiation__c(
+                    Contact__c = af.Contact__c, Membership__c = af.Membership__c, Application_form__c = af.Id,
+                    Start_Date__c = startDateTime != null ? startDateTime : Date.today(),   //  part of 'Membership Renewal'
+                    Expiration_date__c = expDateTime != null ? expDateTime : expDate,       //  changed for 'Membership Renewal'
+                    Assignment_date__c = Date.today())
+                );
             }
         }
         if(!mca.isEmpty()){

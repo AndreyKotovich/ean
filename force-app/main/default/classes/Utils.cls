@@ -1,3 +1,4 @@
+// public without sharing class Utils {
 public with sharing class Utils {
 
     @AuraEnabled
@@ -41,6 +42,9 @@ public with sharing class Utils {
         return values;
     }
 
+    public static void insertSObjectsWithoutSharing(List<SObject> sbojects) {
+        insert sbojects;
+    }
 
     //  TEMPORARY DEPRECATED (by Vitaly Serebrakov)
 

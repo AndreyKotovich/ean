@@ -1,39 +1,33 @@
 <!-- Select Tickets -->
 <template>
     <lightning-layout horizontal-align="center">
-        <lightning-layout-item padding="around-small"
-                               size={componentSize.size}
-                               large-device-size={componentSize.largeDeviceSize}
-                               medium-device-size={componentSize.mediumDeviceSize}
-                               small-device-size={componentSize.smallDeviceSize}
-                               flexibility="auto"
-        >
+        <lightning-layout-item padding="around-small" size={componentSize.size}
+            large-device-size={componentSize.largeDeviceSize} medium-device-size={componentSize.mediumDeviceSize}
+            small-device-size={componentSize.smallDeviceSize} flexibility="auto">
             <div class="slds-card__body">
                 <lightning-card>
+
                     <div if:false={markupSettings.hideHeader} slot="title">Tickets:</div>
-                    <div class="slds-p-left_x-large slds-p-right_x-large slds-p-top_x-large">
+
+                    <div if:false={isGroupRegistration}
+                        class="slds-p-left_x-large slds-p-right_x-large slds-p-top_x-large">
                         <div for:each={ticketsRadio} for:item="radioItem" key={key}>
-                            <div
-                                    class="slds-grid slds-grid_align-spread slds-p-bottom_x-large"
-                            >
+                            <div class="slds-grid slds-grid_align-spread slds-p-bottom_small">
                                 <div class="slds-col slds-size_10-of-12">
                                     <div class="slds-radio">
-                                        <input type="radio"
-                                               id={radioItem.elementId}
-                                               value={radioItem.id}
-                                               name={userInfo.contact.Id}
-                                               class="input-ticket-radio"
-                                               checked={radioItem.checked}
-                                        />
+                                        <input type="radio" id={radioItem.elementId} value={radioItem.id}
+                                            name={userInfo.contact.Id} class="input-ticket-radio"
+                                            checked={radioItem.checked} 
+                                            onclick={handleSelectTicket} />
                                         <label class="slds-radio__label" for={radioItem.elementId}>
                                             <div class="slds-grid slds-gutters">
                                                 <div class="slds-col">
                                                     <span class="slds-radio_faux"></span>
                                                 </div>
                                                 <div class="slds-col">
-                                                  <span class="slds-form-element__label">
-                                                    <span>{radioItem.name}</span>
-                                                  </span>
+                                                    <span class="slds-form-element__label">
+                                                        <span>{radioItem.name}</span>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </label>
@@ -43,37 +37,76 @@
                                     <span class="community-text-gray">{radioItem.price} €</span>
                                 </div>
                             </div>
+                            <template if:true={radioItem.checked}>
+
+                                <div class="slds-grid slds-m-left_large" if:true={radioItem.isTickets}>
+                                    <div class="slds-col">
+                                        <fieldset class="slds-form-element">
+                                            <legend class="slds-form-element__legend slds-form-element__label">
+                                                Participation</legend>
+                                            <template for:each={radioItem.tickets} for:item="tick" key={key}>
+                                                <div class="slds-form-element__control" key={tick.Id}>
+                                                    <span class="slds-radio">
+                                                        <input type="radio" data-session={radioItem.id} id={tick.Id}
+                                                            data-price={tick.price} data-id={tick.Id} value={tick.Id}
+                                                            name="default" checked={tick.isChecked}
+                                                            onclick={handleSelectCategory} />
+                                                        <label class="slds-radio__label" for={tick.Id}>
+                                                            <span class="slds-radio_faux"></span>
+                                                            <span class="slds-form-element__label">
+                                                                {tick.Participation__c}
+                                                                {tick.price} &nbsp;€</span>
+                                                        </label>
+                                                    </span>
+                                                </div>
+                                            </template>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            </template>
+                            <div class='slds-p-bottom_large'></div>
                         </div>
                         <template if:true={isGroupRegistration}>
-                            <lightning-input type="number"
-                                             name="ticket-amount"
-                                             label={inputLabel}
-                                             placeholder="Type ticket amount"
-                                             onchange={handleSelectTicketsAmount}
-                                             value={ticketsAmount}
-                                             max={availableParticipantNumber}
-                                             min={minGroupRegTicketAmount}
-                            ></lightning-input>
+                            <input type="number" class="slds-input" />
+                            <lightning-input type="number" name="ticket-amount" label={inputLabel}
+                                placeholder="Type ticket amount" onchange={handleSelectTicketsAmount}
+                                value={ticketsAmount} max={availableParticipantNumber} min={minGroupRegTicketAmount}
+                                required={isTicketAmountRequired}></lightning-input>
 
-                            <lightning-input type="checkbox"
-                                             label="Add individual tickets"
-                                             class="slds-m-top_small slds-m-bottom_small"
-                                             onchange={handleAddIndividualTickets}
-                                             checked={_groupIndividualTickets.isPartInit}
-                            ></lightning-input>
+                            <lightning-input type="checkbox" label="Add individual tickets"
+                                class="slds-m-top_small slds-m-bottom_small" onchange={handleAddIndividualTickets}
+                                checked={_groupIndividualTickets.isPartInit}></lightning-input>
 
-                            <lightning-input if:true={_groupIndividualTickets.isPartInit}
-                                             type="number"
-                                             name="individual-ticket-amount"
-                                             label={individualTicketAmountLabel}
-                                             placeholder="Type ticket amount"
-                                             onchange={handleSelectIndividualTicketsAmount}
-                                             value={_groupIndividualTickets.participantsAmount}
-                                             max={maxIndividualTicketsAmount}
-                                             min="1"
-                            ></lightning-input>
+                            <lightning-input if:true={_groupIndividualTickets.isPartInit} type="number"
+                                name="individual-ticket-amount" label={individualTicketAmountLabel}
+                                placeholder="Type ticket amount" onchange={handleSelectIndividualTicketsAmount}
+                                value={_groupIndividualTickets.participantsAmount} max={maxParticipantsAvailable}
+                                min="1" required></lightning-input>
 
                         </template>
+                    </div>
+
+                    <!--                    IPR GROUP-->
+                    <div if:true={isGroupRegistration}
+                        class="slds-p-left_x-large slds-p-right_x-large slds-p-top_x-large">
+                        <div for:each={groupIPRTicketsMarkupArr} for:item="ticket" key={key}>
+                            <lightning-layout multiple-rows="true" vertical-align="center">
+                                <lightning-layout-item padding="around-small" size="12" large-device-size="6"
+                                    medium-device-size="6" small-device-size="6">{ticket.name}</lightning-layout-item>
+                                <lightning-layout-item padding="around-small" size="12" large-device-size="2"
+                                    medium-device-size="2" small-device-size="6">{ticket.price} €
+                                </lightning-layout-item>
+                                <lightning-layout-item padding="around-small" size="12" large-device-size="2"
+                                    medium-device-size="6" small-device-size="2">
+                                    <input type="number" class="slds-input" value={ticket.quantity} min="0"
+                                        max={availableParticipantNumber} data-ticket-id={ticket.tickedId}
+                                        data-event-ticket-id={ticket.eventTicketId} />
+                                </lightning-layout-item>
+                                <lightning-layout-item padding="around-small" size="12" large-device-size="2"
+                                    medium-device-size="2" small-device-size="6">{ticket.freeTicketsAvailable} Free
+                                    Available</lightning-layout-item>
+                            </lightning-layout>
+                        </div>
                     </div>
                 </lightning-card>
             </div>
@@ -82,28 +115,18 @@
 
     <div class="slds-card__footer slds-grid slds-align--absolute-center">
         <div if:false={markupSettings.hidePreviousButton}>
-            <lightning-button class="slds-col slds-m-around_x-small"
-                              label="Previous"
-                              variant="neutral"
-                              onclick={handlePreviousClick}
-            ></lightning-button>
+            <lightning-button class="slds-col slds-m-around_x-small" label="Previous" variant="neutral"
+                onclick={handlePreviousClick}></lightning-button>
         </div>
         <div if:false={markupSettings.hideNextButton}>
-            <lightning-button class="slds-col slds-m-around_x-small"
-                              label={markupSettings.nextButtonLabel}
-                              variant="brand"
-                              onclick={handleNextClick}
-            ></lightning-button>
+            <lightning-button class="slds-col slds-m-around_x-small" label={markupSettings.nextButtonLabel}
+                variant="brand" onclick={handleNextClick}></lightning-button>
         </div>
     </div>
 
     <template if:true={isSpinner}>
         <div class="slds-spinner_container" style="position: fixed">
-            <lightning-spinner
-                    alternative-text="Loading"
-                    variant="brand"
-                    size="large"
-            ></lightning-spinner>
+            <lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
         </div>
     </template>
 </template>

@@ -41,33 +41,41 @@
                                                             </span>
                                                         </div>
                                                     </div>
-                                                    <div class="slds-grid" if:true={product.isTicketGroup}>
-                                                        <div class="slds-col">
-                                                            <fieldset class="slds-form-element">
-                                                                <legend
-                                                                    class="slds-form-element__legend slds-form-element__label">
-                                                                    Participation</legend>
-                                                                <template for:each={product.ticketGroup} for:item="tick"
-                                                                    key={key}>
-                                                                    <div class="slds-form-element__control"
-                                                                        key={tick.Id}>
-                                                                        <span class="slds-radio">
-                                                                            <input type="radio" id={tick.Id}
-                                                                                value={tick.Id} name="default"
-                                                                                checked="" />
-                                                                            <label class="slds-radio__label"
-                                                                                for={tick.Id}>
-                                                                                <span class="slds-radio_faux"></span>
-                                                                                <span
-                                                                                    class="slds-form-element__label">{tick.Participation__c}
-                                                                                    {tick.Price__c} &nbsp; €</span>
-                                                                            </label>
-                                                                        </span>
-                                                                    </div>
-                                                                </template>
-                                                            </fieldset>
+                                                    <template if:true={product.isChecked}>
+                                                        <div class="slds-grid" if:true={product.isTicketGroup}>
+                                                            <div class="slds-col">
+                                                                <fieldset class="slds-form-element">
+                                                                    <legend
+                                                                        class="slds-form-element__legend slds-form-element__label">
+                                                                        Participation</legend>
+                                                                    <template for:each={product.ticketGroup}
+                                                                        for:item="tick" key={key}>
+                                                                        <div class="slds-form-element__control"
+                                                                            key={tick.Id}>
+                                                                            <span class="slds-radio">
+                                                                                <input type="radio" data-session={product.value} id={tick.Id}
+                                                                                    data-price={tick.price}
+                                                                                    data-id={tick.Id}
+                                                                                    value={tick.Id} name="default"
+                                                                                    checked={tick.isChecked} 
+                                                                                    onclick={handleSelectCategory} 
+                                                                                    />
+                                                                                <label class="slds-radio__label"
+                                                                                    for={tick.Id}>
+                                                                                    <span
+                                                                                        class="slds-radio_faux"></span>
+                                                                                    <span
+                                                                                        class="slds-form-element__label">
+                                                                                        {tick.Participation__c}
+                                                                                        {tick.price} &nbsp;€</span>
+                                                                                </label>
+                                                                            </span>
+                                                                        </div>
+                                                                    </template>
+                                                                </fieldset>
+                                                            </div>
                                                         </div>
-                                                    </div>
+                                                    </template>
                                                 </div>
                                             </div>
                                         </label>

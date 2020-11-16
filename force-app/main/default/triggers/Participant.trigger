@@ -1,4 +1,5 @@
-trigger Participant on Participant__c (after insert) {
+trigger Participant on Participant__c (after insert, before insert, before update) {
+    
     if (Trigger.isAfter && Trigger.isInsert) {
         List<String> soloParticipantIds = new List<String>();
         List<String> groupParticipantIds = new List<String>();
@@ -15,6 +16,12 @@ trigger Participant on Participant__c (after insert) {
         if (groupParticipantIds.size() > 0) {
             ParticipantTriggerHelper.groupParticipantRegistration(groupParticipantIds);
         }
-        ParticipantTriggerHelper.getQRcodes();
+        ParticipantTriggerHelper.createBadges(Trigger.new);
+    }
+    if (Trigger.isBefore && Trigger.isInsert) {
+        ParticipantTriggerHelper.processNewParticipants(Trigger.new);
+    }
+    if (Trigger.isBefore && Trigger.isUpdate) {
+        ParticipantTriggerHelper.checkQRCode(Trigger.newMap, Trigger.oldMap);
     }
 }

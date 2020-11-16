@@ -1,11 +1,21 @@
-import {api, LightningElement, track} from "lwc";
-import {ShowToastEvent} from "lightning/platformShowToastEvent";
-import {Utils} from "c/utils";
+import { api, LightningElement, track } from "lwc";
+import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import { Utils } from "c/utils";
 import getEventTickets from "@salesforce/apex/EventRegistrationController.getEventTickets";
+import getEventPersonaInfo from "@salesforce/apex/EventRegistrationController.getEventPersonaInfo";
+import getIPRFreeTicketsInfo from "@salesforce/apex/EventRegistrationController.getIPRFreeTicketsInfo";
 
 export default class SelectTickets extends LightningElement {
     @api eanEvent = {};
-    @api userInfo = {};
+    @api
+    get userInfo() {
+        return this._userInfo;
+    }
+
+    set userInfo(value) {
+        this._userInfo = JSON.parse(JSON.stringify(value));
+    }
+
     @api registrationType = "";
 
     @api markupSettings = {
@@ -50,15 +60,16 @@ export default class SelectTickets extends LightningElement {
     }
 
     @api
-    get groupIndividualTickets(){
+    get groupIndividualTickets() {
         return this._groupIndividualTickets;
     }
-    set groupIndividualTickets(value){
+    set groupIndividualTickets(value) {
         this._groupIndividualTickets = Object.assign({}, value);
     }
 
     @track isSpinner = true;
-    @track ticketsRadio = [];
+    @track ticketsRadio = []; // array with info for markup in solo registration
+    @track groupIPRTicketsMarkupArr = []; // array with info for markup in group/IPR registration
     @track ticketId = 0;
     @track _priceTicket = 0;
     @track _ticketsAmount = 0;
@@ -72,10 +83,15 @@ export default class SelectTickets extends LightningElement {
     iprTickets = [];
     _selectedTicket = "";
     iprRegisteredParticipants = 0;
+    _userInfo = {};
 
     connectedCallback() {
-        if(this.userInfo.iprInfo && this.userInfo.iprInfo.participantAmount){
-            this.iprRegisteredParticipants = this.userInfo.iprInfo.participantAmount;
+        if (this.isGroupRegistration) {
+            this.componentSize.largeDeviceSize = 6;
+        }
+        console.log('_userInfo', JSON.stringify(this._userInfo));
+        if (this._userInfo.iprInfo && this._userInfo.iprInfo.participantAmount) {
+            this.iprRegisteredParticipants = this._userInfo.iprInfo.participantAmount;
         }
 
         if (this.eanEvent.Max_Participants__c) {
@@ -83,67 +99,146 @@ export default class SelectTickets extends LightningElement {
         }
 
         let promises = [
-            getEventTickets({eventId: this.eanEvent.Id})
+            getEventTickets({ eventId: this.eanEvent.Id }),
+            getEventPersonaInfo({ eventId: this.eanEvent.Id, contactId: this._userInfo.contact.Id })
         ];
+
+        if (this._userInfo.iprInfo && this._userInfo.iprInfo.isIPR) {
+            promises.push(getIPRFreeTicketsInfo({ exhibitorId: this._userInfo.iprInfo.Id }));
+        } else {
+            promises.push(new Promise((resolve) => { resolve([]) }));
+        }
+
         Promise.all(promises)
             .then((results) => {
-                console.log('results: '+JSON.stringify(results));
+                console.log('results: ' + JSON.stringify(results));
                 this.allEventTickets = [...results[0]];
+                this._userInfo.contactEventPersonaRoles = [...results[1]];
 
-                //ticket visibility rules
-                for (let ticket of this.allEventTickets) {
-                    const {
-                        Is_Group_only__c,
-                        Is_IPR_only__c,
-                        Available_for_Countries__c,
-                        Available_for_Memberships__c
-                    } = ticket.Ticket__r;
-
-                    if (this.registrationType === "solo") {
-                        if (Is_Group_only__c || Is_IPR_only__c) continue;
-
-                        if (
-                            !Available_for_Countries__c ||
-                            !Available_for_Countries__c.includes(this.userInfo.countyRegion)
-                        )
-                            continue;
-
-                        if (!Available_for_Memberships__c) {
-                            this.individualTickets.push(ticket);
-                        } else {
-                            for (let membership of this.userInfo.memberships) {
-                                if (
-                                    Available_for_Memberships__c.includes(
-                                        membership.Membership__r.API__c
-                                    )
-                                ) {
-                                    this.individualTickets.push(ticket);
-                                    break;
-                                }
-                            }
-                        }
-                    } else if (this.registrationType === "group") {
-                        if (!Is_Group_only__c) continue;
-                        this.groupTickets.push(ticket);
-                    } else if (this.registrationType === "ipr") {
-                        if (!Is_IPR_only__c) continue;
-                        this.iprTickets.push(ticket);
-                    }
+                if (this._userInfo.iprInfo && this._userInfo.iprInfo.isIPR) {
+                    this._userInfo.iprInfo.freeTicketsInfo = results[2];
                 }
 
-                console.log("iprTickets: " + JSON.stringify(this.iprTickets));
+                return this.sortTicketsByRegType();
+            })
+            .then(() => {
+                return this.markupTicketCompilation();
+            })
+            .catch((error) => {
+                this.isSpinner = false;
+                let message = "";
+                if (error.body) {
+                    if (error.body.message) {
+                        message = error.body.message;
+                    }
+                }
+                this.throwError({ message: message });
+            })
+            .finally(() => {
+                this.isSpinner = false;
+            })
+    }
 
-                //radio compilation
-                let ticketsRadio = [];
+    sortTicketsByRegType() {
+        new Promise((resolve) => {
+            let ticketArr = [];
 
-                let foundSelected = false;
-                let tickets =
-                    this.registrationType === "solo"
-                        ? this.individualTickets
-                        : this.registrationType === "group"
+            for (let ticket of this.allEventTickets) {
+                const {
+                    Is_Group_only__c,
+                    Is_IPR_only__c,
+                    Available_for_Countries__c,
+                    Available_for_Memberships__c,
+                    Available_for_Personas__c
+                } = ticket.Ticket__r;
+
+                if (this.registrationType === "solo") {
+                    ticket.price = this.getTicketPrice(ticket);
+                    ticket.isChecked = ticket.Participation__c && ticket.Participation__c === "Onsite";
+                    if (Is_Group_only__c || Is_IPR_only__c) continue;
+
+                    if (!this.isTicketAvailableForPersona(ticket.Ticket__r)) {
+                        continue;
+                    } else {
+                        if (!!Available_for_Personas__c) {
+                            ticketArr.push(ticket);
+                            // this.individualTickets.push(ticket);
+                            continue;
+                        }
+                    }
+
+                    if (!Available_for_Countries__c || !Available_for_Countries__c.includes(this._userInfo.countyRegion)) continue;
+
+                    if (!Available_for_Memberships__c) {
+                        ticketArr.push(ticket);
+                        // this.individualTickets.push(ticket);
+                    } else {
+                        for (let membership of this._userInfo.memberships) {
+                            if (
+                                Available_for_Memberships__c.includes(
+                                    membership.Membership__r.API__c
+                                )
+                            ) {
+                                ticketArr.push(ticket);
+                                // this.individualTickets.push(ticket);
+                                break;
+                            }
+                        }
+                    }
+
+                } else if (this.registrationType === "group") {
+                    if (!Is_Group_only__c) continue;
+                    this.groupTickets.push(ticket);
+                } else if (this.registrationType === "ipr") {
+                    if (!Is_IPR_only__c) continue;
+                    this.iprTickets.push(ticket);
+                }
+            }
+
+            let ticketGroup = [];
+            for (let tick of ticketArr) {
+                let tik = ticketGroup.find(e => { return e.Id === tick.Ticket__c; });
+                if (!tik) {
+                    ticketGroup.push({ Id: tick.Ticket__c, tickets: [tick] });
+                } else {
+                    tik.tickets.push(tick);
+                }
+            }
+            console.log('ticketGroup ', ticketGroup);
+            ticketGroup.forEach(e => {
+                let tik = e.tickets.find(el => { return el.Participation__c === "Onsite"; });
+                let tick = Object.assign({}, tik || e.tickets[0]);
+                tick.tickets = e.tickets.length > 1 ? e.tickets : [];
+                this.individualTickets.push(tick);
+            });
+
+            console.log("iprTickets: " + JSON.stringify(this.iprTickets));
+            resolve();
+        });
+    }
+
+    handleSelectTicket(event) {
+        this.ticketsRadio.forEach(e => {
+            e.checked = false;
+            if (e.id === event.target.value) {
+                e.checked = true;
+            }
+        });
+    }
+
+    markupTicketCompilation() {
+        new Promise((resolve) => {
+            let ticketsRadio = [];
+
+            let foundSelected = false;
+            let tickets =
+                this.registrationType === "solo"
+                    ? this.individualTickets
+                    : this.registrationType === "group"
                         ? this.groupTickets
                         : this.iprTickets;
 
+            if (this.registrationType === "solo") {
                 for (let i = 0; i < tickets.length; i++) {
                     let price = this.getTicketPrice(tickets[i]);
 
@@ -155,7 +250,9 @@ export default class SelectTickets extends LightningElement {
                         name: tickets[i].Ticket__r.Name,
                         tickedId: tickets[i].Ticket__c,
                         price: price,
-                        checked: this._selectedTicket === tickets[i].Id
+                        checked: this._selectedTicket === tickets[i].Id,
+                        tickets: tickets[i].tickets,
+                        isTickets: tickets[i].tickets.length > 1
                     });
 
                     if (this._selectedTicket === tickets[i].Id) {
@@ -171,23 +268,58 @@ export default class SelectTickets extends LightningElement {
 
                 this.ticketsRadio = [...ticketsRadio];
 
-                if(this.ticketsRadio.length === 0){
+                if (this.ticketsRadio.length === 0) {
                     this.dispatchEvent(new CustomEvent("ticketsnotfound", {}));
                 }
+            } else {
+                //group IPR logic
+                let ticketsArray = [];
 
-                this.isSpinner = false;
-            })
-            .catch((error) => {
-                this.isSpinner = false;
-                let message = "";
-                if (error.body) {
-                    if (error.body.message) {
-                        message = error.body.message;
-                    }
+                for (let i = 0; i < tickets.length; i++) {
+                    let price = this.getTicketPrice(tickets[i]);
+                    if (price === undefined) continue;
+
+                    let freeTicketInfo = this._userInfo.iprInfo.freeTicketsInfo.find(obj => obj.eventTicketId === tickets[i].Id);
+                    console.log('freeTicketInfo', JSON.stringify(freeTicketInfo));
+
+                    ticketsArray.push({
+                        eventTicketId: tickets[i].Id,
+                        name: tickets[i].Ticket__r.Name,
+                        tickedId: tickets[i].Ticket__c,
+                        price: price,
+                        quantity: 0, //TODO autoComplete
+                        freeTicketsAvailable: !!freeTicketInfo ? freeTicketInfo.freeTicketsAmount - freeTicketInfo.freeTicketsAmountUsed : 0
+                    });
                 }
-                this.throwError({message: message});
-            });
+
+                this.groupIPRTicketsMarkupArr = ticketsArray;
+            }
+
+            resolve();
+        })
     }
+
+    isTicketAvailableForPersona(ticket) {
+        let result = false;
+
+        if (!!!ticket.Available_for_Personas__c) result = true;
+
+        if (!result && ticket.Available_for_Personas__c && this._userInfo.contactEventPersonaRoles) {
+            console.log('inside');
+            console.log('inside', ticket.Available_for_Personas__c);
+            console.log('inside2', this._userInfo.contactEventPersonaRoles);
+
+            for (let role of this._userInfo.contactEventPersonaRoles) {
+                if (ticket.Available_for_Personas__c.includes(role)) {
+                    result = true;
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
 
     earlyBirdCheck() {
         let isEarlyBird = false;
@@ -241,9 +373,29 @@ export default class SelectTickets extends LightningElement {
 
         if (this.nextClickValidation()) {
             let eventTicket = this.allEventTickets.find(obj => obj.Id === this._selectedTicket);
-            console.log('eventTicket'+JSON.stringify(eventTicket));
-            // console.log('eventTicket'+JSON.stringify(eventTicket));
-            console.log('eventTicket'+JSON.stringify(this._selectedTicket));
+
+            let participantRole = '';
+
+            if (this.registrationType === 'group') {
+                participantRole = 'Group_Participant';
+            } else if (this.registrationType === 'ipr') {
+                participantRole = 'Exhibitor_Sponsor_IPR';
+            } else if (this.registrationType === 'solo') {
+                participantRole = 'Individual_Participant';
+            }
+
+            if (this.registrationType === 'solo' && !!eventTicket.Ticket__r.Available_for_Personas__c) {
+                participantRole = 'Individual Participant';
+                for (let role of this._userInfo.contactEventPersonaRoles) {
+                    if (eventTicket.Ticket__r.Available_for_Personas__c.includes(role)) {
+                        if (role === 'Press') participantRole = 'Press';
+                        if (role === 'Invited_Person') participantRole = 'Invited_Persons';
+                        if (role === 'Grant_Winner') participantRole = 'Scholarship_Bursaries';
+                        if (role === 'Speaker') participantRole = 'Invited_Speaker';
+                        break;
+                    }
+                }
+            }
 
             const selectEvent = new CustomEvent("continue", {
                 detail: {
@@ -251,8 +403,10 @@ export default class SelectTickets extends LightningElement {
                     priceTicket: this._priceTicket,
                     ticketsAmount: this._ticketsAmount,
                     ticketId: this.ticketId,
+                    participantRole: participantRole,
                     ticketName: !!eventTicket ? eventTicket.Ticket__r.Name : '',
-                    groupIndividualTickets: this._groupIndividualTickets
+                    groupIndividualTickets: this._groupIndividualTickets,
+                    userInfo: this._userInfo
                 }
             });
             this.dispatchEvent(selectEvent);
@@ -273,11 +427,11 @@ export default class SelectTickets extends LightningElement {
             errorMessage = "Check your input";
         }
 
-        if(result && this.isGroupRegistration){
-            console.log(this._ticketsAmount, this._groupIndividualTickets.participantsAmount, this.availableParticipantNumber);
-            result = parseInt(this._ticketsAmount) + parseInt(this._groupIndividualTickets.participantsAmount) <= this.maxIndividualTicketsAmount;
-            console.log(result);
-            if(!result){
+        if (result && this.isGroupRegistration && !!this.maxParticipantsAvailable) {
+            let ticketAmount = !!this._ticketsAmount ? parseInt(this._ticketsAmount) : 0;
+            let individualTicketAmount = this._groupIndividualTickets.participantsAmount ? parseInt(this._groupIndividualTickets.participantsAmount) : 0;
+            result = ticketAmount + individualTicketAmount <= this.maxParticipantsAvailable;
+            if (!result) {
                 errorMessage = "You have selected too many participants";
             }
         }
@@ -319,14 +473,14 @@ export default class SelectTickets extends LightningElement {
 
             if (this.eanEvent.Max_Participants__c) {
                 this.availableParticipantNumber =
-                    this.availableParticipantNumber > this.userInfo.iprInfo.ticketAmount - this.iprRegisteredParticipants ?
-                        this.userInfo.iprInfo.ticketAmount - this.iprRegisteredParticipants : this.availableParticipantNumber
+                    this.availableParticipantNumber > this._userInfo.iprInfo.ticketAmount - this.iprRegisteredParticipants ?
+                        this._userInfo.iprInfo.ticketAmount - this.iprRegisteredParticipants : this.availableParticipantNumber
             } else {
-                this.availableParticipantNumber = this.userInfo.iprInfo.ticketAmount - this.iprRegisteredParticipants;
+                this.availableParticipantNumber = this._userInfo.iprInfo.ticketAmount - this.iprRegisteredParticipants;
             }
             str += ' (max. ' + this.availableParticipantNumber + ' available)';
         } else if (this.registrationType === "group") {
-            if(this.eanEvent.Max_Participants__c){
+            if (this.eanEvent.Max_Participants__c) {
                 str += ' (max. ' + this.availableParticipantNumber + ' available)';
             } else {
                 this.availableParticipantNumber = null;
@@ -336,39 +490,43 @@ export default class SelectTickets extends LightningElement {
         return str;
     }
 
-    handleAddIndividualTickets(event){
+    handleAddIndividualTickets(event) {
         console.log('handleAddIndividualTickets', event.detail.checked);
         this._groupIndividualTickets.isPartInit = event.detail.checked;
     }
 
-    handleSelectIndividualTicketsAmount(event){
+    handleSelectIndividualTicketsAmount(event) {
         console.log('handleSelectIndividualTicketsAmount', event.detail.value);
         this._groupIndividualTickets.participantsAmount = event.detail.value;
     }
 
     get minGroupRegTicketAmount() {
         let res = 1;
-        if(this._groupIndividualTickets.isPartInit) res = 0;
+        if (this._groupIndividualTickets.isPartInit) res = 0;
         return res;
     }
 
-    get maxIndividualTicketsAmount() {
+    get maxParticipantsAvailable() {
         let res = null;
 
-        if(this.eanEvent.Max_Participants__c){
+        if (this.eanEvent.Max_Participants__c) {
             res = this.eanEvent.Max_Participants__c - this.eanEvent.Registrations__c;
         }
 
         return res;
     }
 
-    get individualTicketAmountLabel(){
+    get individualTicketAmountLabel() {
         let str = 'Individual ticket amount'
 
-        if(!!this.maxIndividualTicketsAmount){
-            str += ' (max. ' + this.maxIndividualTicketsAmount + ' available)';
+        if (!!this.maxParticipantsAvailable) {
+            str += ' (max. ' + this.maxParticipantsAvailable + ' available)';
         }
 
         return str;
+    }
+
+    get isTicketAmountRequired() {
+        return !this._groupIndividualTickets.isPartInit
     }
 }

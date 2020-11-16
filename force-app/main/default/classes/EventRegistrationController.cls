@@ -128,17 +128,10 @@ public without sharing class EventRegistrationController {
     @AuraEnabled
     public static List<Event_Ticket__c> getEventTickets(String eventId) {
         List<Event_Ticket__c> tickets = [
-                SELECT Id,
-                        Price__c,
-                        Early_bird_price__c,
-                        Event_custom__c,
-                        Ticket__c,
-                        Ticket__r.Name,
-                        Ticket__r.Available_for_Memberships__c,
-                        Ticket__r.Available_for_Countries__c,
-                        Ticket__r.Available_for_Personas__c,
-                        Ticket__r.Is_Group_only__c,
-                        Ticket__r.Is_IPR_only__c
+                SELECT Id, Price__c, Early_bird_price__c, Event_custom__c, Ticket__c, Ticket__r.Name,
+                        Ticket__r.Available_for_Memberships__c, Ticket__r.Available_for_Countries__c,
+                        Ticket__r.Available_for_Personas__c, Ticket__r.Is_Group_only__c, 
+                        Ticket__r.Is_IPR_only__c, Participation__c
                 FROM Event_Ticket__c
                 WHERE
                 Event_custom__c = :eventId
@@ -168,7 +161,7 @@ public without sharing class EventRegistrationController {
                         SELECT Id, Price__c, Early_bird_price__c, Event_custom__c, Ticket__c, Ticket__r.Name,
                                 Ticket__r.Available_for_Memberships__c, Ticket__r.Available_for_Countries__c,
                                 Session__c, Session__r.Name, Session__r.Description__c, Session__r.Mutual_Exclusion__c,
-                                Session__r.Max_Participants__c, Session__r.Registrations__c
+                                Session__r.Max_Participants__c, Session__r.Registrations__c, Participation__c
                         FROM Event_Tickets__r
                         WHERE Ticket__c != NULL
                         AND (Price__c != NULL OR Early_bird_price__c != NULL)
@@ -294,7 +287,9 @@ public without sharing class EventRegistrationController {
         ];
 
         if(!eventParticipants.isEmpty()){
-            
+            participantsMap.put('eventParticipant', eventParticipants[0]);
+            participantsMap.put('eventParticipantConf', eventParticipants[0].Event_participation_configurations__r.size());
+
             List<Session_Participation__c> sessionParticipation = [
                     SELECT Id, Session__c, (SELECT Id, Amount__c FROM Order_Items__r LIMIT 1)
                     FROM Session_Participation__c
@@ -384,4 +379,51 @@ public without sharing class EventRegistrationController {
 
         return new List<Event_Registration_Group__c>(contactGroupsForEvent);
     }
+
+    @AuraEnabled public static List<String> getEventPersonaInfo(String eventId, String contactId){
+        List<String> roles  = new List<String>();
+        List<Event_Persona__c> eventPersonas = [SELECT Id, RecordType.Name, RecordType.DeveloperName FROM Event_Persona__c WHERE Event_custom__c = :eventId AND Contact__c = :contactId];
+
+        for(Event_Persona__c ep : eventPersonas){
+            roles.add(ep.RecordType.DeveloperName);
+        }
+
+        List<Speaker__c> speaker = [
+                SELECT Id
+                FROM Speaker__c
+                WHERE Contact__c = :contactId
+                AND Lecture__r.Session__r.Event_custom__c = :eventId
+                AND Eligible_for_Speaker_Ticket__c = TRUE
+        ];
+
+        if(!speaker.isEmpty()){
+            roles.add('Speaker');
+        }
+
+        return roles;
+    }
+
+    @AuraEnabled public static List<Map<String, Object>> getIPRFreeTicketsInfo(String exhibitorId){
+        List<AggregateResult> eventTicketParticipantsAmount = [SELECT COUNT(Id), Event_Ticket__c FROM Participant__c WHERE Event_Exhibitor__c = :exhibitorId GROUP BY Event_Ticket__c];
+        List<Exhibitor_Free_Ticket__c> exhibitorFreeTickets = [SELECT Id, Event_Ticket__c, Number__c FROM Exhibitor_Free_Ticket__c WHERE Event_Exhibitor__c = :exhibitorId];
+
+        List<Map<String, Object>> result = new List<Map<String, Object>>();
+
+        for(AggregateResult ag : eventTicketParticipantsAmount){
+            Map<String, Object> resultMap = new Map<String, Object>();
+            resultMap.put('eventTicketId', ag.get('Event_Ticket__c'));
+            resultMap.put('freeTicketsAmountUsed', ag.get('expr0'));
+
+            for(Exhibitor_Free_Ticket__c freeTick : exhibitorFreeTickets){
+                if(freeTick.Event_Ticket__c == (Id)ag.get('Event_Ticket__c')){
+                    resultMap.put('freeTicketsAmount', freeTick.Number__c);
+                }
+            }
+
+            result.add(resultMap);
+        }
+
+        return result;
+    }
+
 }

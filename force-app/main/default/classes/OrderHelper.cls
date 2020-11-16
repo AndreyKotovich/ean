@@ -3,8 +3,8 @@ public without sharing class OrderHelper {
     public static List<Order__c> createNewOrder(Map<String,Object> generalData) {
         
         System.debug('createNewOrder ' + generalData);
-        List<Participant__c> participants = generalData.containsKey('participants') ? 
-            (List<Participant__c>)generalData.get('participants') : new List<Participant__c>();
+        List<Map<String, Object>> participantsPrice = generalData.containsKey('participantsPrice') ?
+                (List<Map<String, Object>>)generalData.get('participantsPrice') : new List<Map<String, Object>>();
         
         Map<String,Object> genData = generalData.containsKey('generalData') ? 
             (Map<String,Object>)generalData.get('generalData') : new Map<String,Object>();
@@ -47,16 +47,18 @@ public without sharing class OrderHelper {
 
         List<Order_Item__c> ordItems = new List<Order_Item__c>();
 
-        for(Participant__c part : participants) {
+        for(Integer i = 0; i < participantsPrice.size(); i++) {
             ordItems.add( new Order_Item__c(
                 Order_Custom__c = o.Id,
-                Amount__c = priceTicket,
+                Amount__c = (Decimal)participantsPrice[i].get('price'),
                 Quantity__c = 1,
-                Event_Participation__c = part.Id,
+                Event_Participation__c = (Id)((Participant__c)participantsPrice[i].get('participant')).get('Id'),
                 Discount__c = !tickets.isEmpty() ? tickets[0].discountId : null,
                 Discount_Amount__c = !tickets.isEmpty() && tickets[0].discountAmount != null ? (-1) * tickets[0].discountAmount : 0
             ));
         }
+
+        System.debug('ordItems: '+ordItems);
 
         if(sessionParticipantPrice != null && !sessionParticipantPrice.isEmpty()){
 

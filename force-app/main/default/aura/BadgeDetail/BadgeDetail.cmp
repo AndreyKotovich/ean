@@ -1,0 +1,102 @@
+<aura:component>
+
+  <aura:attribute name="page" type="Object"/>
+  <aura:attribute name="badge" type="Object"/>
+  <aura:attribute name="labelClass" type="String"/>
+  <aura:attribute name="footerLines" type="List"/>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+  <div class="badge_wrapper">
+
+    <!-- HEADER -->
+    <div class="badge_header">
+      <aura:iteration items="1,2" var="item">
+        <div class="badge_header_col background_firm-gradient">
+
+          <div class="badge_header_title_wrapper">
+            <div class="badge_header_title font-color_white">ean<br/>congress</div>
+            <div class="badge_header_place">{!v.page.city}<br/>{!v.page.year}</div>
+          </div>
+
+          <div class="badge_header_subtitle_wrapper">
+            <div class="badge_header_content_wrapper">
+              <div class="badge_header_content font-color_white">{!v.page.count}<sup>{!v.page.countPostfix}</sup>&nbsp;{!v.page.name}</div>
+              <div class="badge_header_content font-color_white">{!v.page.date}</div>
+            </div>
+            <img class="badge_header_logo_wrapper" src="{!$Resource.BadgeDetail + '/ean_logo.png'}"/>
+          </div>
+
+        </div>
+      </aura:iteration>
+    </div>
+
+    <!-- BODY -->
+    <div class="badge_body">
+      <aura:iteration items="1,2" var="item">
+         <div class="badge_body_col background-color_white">
+
+          <aura:if isTrue="{!not(empty(v.badge.firstName))}">
+            <div class="badge_body_title font-color_dark">{!v.badge.firstName}</div>
+          </aura:if>
+
+          <aura:if isTrue="{!not(empty(v.badge.lastName))}">
+            <div class="badge_body_title font-color_dark">{!v.badge.lastName}</div>
+          </aura:if>
+
+          <aura:if isTrue="{!not(empty(v.badge.company))}">
+            <div class="badge_body_title font-color_dark">{!v.badge.company}</div>
+          </aura:if>
+
+          <aura:if isTrue="{!and(not(empty(v.badge.city)), not(empty(v.badge.country)))}">
+            <div class="badge_body_subtitle font-color_dark">{!v.badge.city},&nbsp;{!v.badge.country}</div>
+          </aura:if>
+
+          <aura:if isTrue="{!not(empty(v.badge.label))}">
+            <div class="{!v.labelClass}">{!v.badge.label}</div>
+          </aura:if>
+
+        </div>
+      </aura:iteration>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="badge_footer_wrapper">
+      <aura:iteration items="1,2" var="item">
+        <div class="badge_footer_col">
+
+          <div class="badge_body_code">
+            <aura:if isTrue="{!not(empty(v.badge.barcode))}">
+              <img class="badge_body_bar" src="{!v.badge.barcode}"/>
+            </aura:if>
+            <aura:if isTrue="{!not(empty(v.badge.qrcode))}">
+              <div class="badge_body_qr_wrapper">
+                <img class="badge_body_qr" src="{!v.badge.qrcode}"/>
+              </div>
+            </aura:if>
+          </div>
+
+          <aura:iteration items="{!v.footerLines}" var="line">
+            <div class="{!line.lineClass}">
+              <div class="{!line.labelClass}">{!line.label}</div>
+            </div>
+          </aura:iteration>
+
+        </div>
+      </aura:iteration>
+    </div>
+
+    
+    <!-- CUTLINE -->
+    <div class="badge_cutline_wrapper">
+      <aura:iteration items="1,2" var="item">
+        <div class="badge_cutline_col">
+          <div class="badge_cutline_circle_left"></div>
+          <div class="badge_cutline_circle_right"></div>
+          <img class="badge_cutline_center" src="{!$Resource.BadgeDetail + '/cutline_center.svg'}"/>
+        </div>
+      </aura:iteration>
+    </div>
+
+  </div>
+
+</aura:component>

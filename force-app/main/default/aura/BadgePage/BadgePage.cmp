@@ -1,0 +1,83 @@
+<aura:component access="global">
+
+  <aura:attribute name="page" type="Object"/>
+  <aura:attribute name="badge" type="Object"/>
+
+  <div class="page_wrapper">
+    <div class="page_info_wrapper">
+
+      <!-- TITLE -->
+      <div class="page_title_wrapper">
+        <div class="page_title">ean<br/>congress</div>
+        <div class="page_place">{!v.page.city}<br/>{!v.page.year}</div>
+      </div>
+
+      <!-- SUBTITLE -->
+      <div class="page_subtitle_wrapper">
+        <div class="page_subtitle">Welcome to the {!v.page.count}<sup>{!v.page.countPostfix}</sup> EAN Congress!</div>
+        <div class="page_line page_line-full"></div>
+      </div>
+
+      <div class="page_row">
+        <div class="page_col">
+
+          <!-- WiFi -->
+          <div class="page_row">
+            <div class="page_col-addapteve">
+              <div class="page_subtitle">Free WiFi access</div>
+              <div class="page_content">Network: <span class="font-color_accent">{!v.page.wiFiName}</span><br/>Supported by {!v.page.wiFiSupportedBy}</div>
+              <div class="page_line"></div>
+            </div>
+            <div class="page_col-addapteve">
+              <img class="badge_image_wifi" src="{!$Resource.BadgeDetail + '/wifi.svg'}"/>
+            </div>
+          </div>
+
+          <!-- APP -->
+          <div class="page_row">
+            <div class="page_col-addapteve">
+              <div class="page_subtitle">EAN Congress App</div>
+              <div class="page_content">Available for iOs and Android<br/>Supported by {!v.page.appSupportedBy}</div>
+              <div class="page_line"></div>
+            </div>
+            <div class="page_col-addapteve">
+              <div class="page_apps">
+                <div class="page_ean_app">
+                  <img class="page_ean_logo" src="{!$Resource.BadgeDetail + '/ean_logo_1.png'}"/>
+                  <div class="page_ean_label">{!v.page.appName}<span>{!v.page.appNumber}</span></div>
+                </div>
+                <div class="page_store">
+                  <img class="page_store_button" src="{!$Resource.BadgeDetail + '/google_button.svg'}"/>
+                  <img class="page_store_button" src="{!$Resource.BadgeDetail + '/apple_button.svg'}"/>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CERTIFICATE -->
+          <div class="page_subtitle">CME certificate</div>
+          <div class="page_content">Once evaluation of the sessions attended is complete, participants can obtain a CME Certificate via the online registration platform. Evaluation is possible in the EAN Congress App and on {!v.page.certificateLink}.</div>
+
+        </div>
+        <div class="page_col">
+
+          <!-- SCAN -->
+          <div class="page_subtitle">Scan your badge</div>
+          <div class="page_content">By allowing your badge to be scanned by exhibitors you agree to share your contact details with them.</div>
+
+          <div class="page_line"></div>
+          <div class="page_content">You have booked the<br/>following additional tickets</div>
+          <ul class="page_ul">
+            <aura:iteration items="{!v.page.bookedTickets}" var="item">
+              <li class="page_li">{!item}</li>
+            </aura:iteration>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <c:BadgeDetail page="{!v.page}" badge="{!v.badge}"/>
+  </div>
+
+</aura:component>

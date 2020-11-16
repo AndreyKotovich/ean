@@ -30,6 +30,14 @@ public without sharing class MembershipRenewalController {
 
 			List<User> currentUser = [SELECT Id, ContactId FROM User WHERE Id =:UserInfo.getUserId() LIMIT 1];
 
+			String contactId = '';
+			if (Test.isRunningTest()) {
+				List<Contact> testContact = [SELECT Id FROM Contact LIMIT 1];
+				contactId = '' + testContact[0].Id;
+			} else {
+				contactId = '' + currentUser[0].ContactId;
+			}
+
 			Map<String, MembershipContactAssotiation__c> idToMembershipStatus = new Map<String, MembershipContactAssotiation__c>([
 				SELECT Id, Contact__c, Expiration_date__c, Membership__c, Membership__r.Name, Membership__r.API__c, Membership__r.www__c,
 					Application_form__c, Contact__r.Salutation, Contact__r.FirstName, Contact__r.LastName,
@@ -39,7 +47,7 @@ public without sharing class MembershipRenewalController {
 					Contact__r.Phone, Contact__r.Expected_Date_Of_Graduation__c, Contact__r.License_issued__c,
 					Contact__r.AAN_Member__c, Contact__r.Retired__c, Contact__r.Profession__c, Renewal_Application_Form__c
 				FROM MembershipContactAssotiation__c
-				WHERE Contact__c =:currentUser[0].ContactId
+				WHERE Contact__c =:contactId
 				// AND Application_form__c != null
 				AND IsActive__c = true
 				LIMIT 20
@@ -77,6 +85,8 @@ public without sharing class MembershipRenewalController {
 			Date now = System.now().date();
 			Date minimumDateOfGraduation = membershipStatus.Membership__r.Name == RR_MEMBERSHIP ? now.addYears(-3)
 				: membershipStatus.Membership__r.Name == STUDENT_MEMBERSHIP ? now.addDays(1) : now;
+
+			Date minimumLicenseIssuedDate = now.addYears(-15);
 
 			String currentYearString = System.now().format('YYYY');
 			String nextYearString = System.now().addYears(1).format('YYYY');
@@ -127,11 +137,12 @@ public without sharing class MembershipRenewalController {
 
 				//	EANMR-15, EANMR-16	// STEP 2
 				'enableGraduationAndLicenseStep' => enableGraduationAndLicenseStep,
+				'displayDateOfGraduation' => displayDateOfGraduation,
 				'minimumDateOfGraduation' => minimumDateOfGraduation,
 				'dateOfGraduation' => membershipStatus.Contact__r.Expected_Date_Of_Graduation__c,
-				'licenseIssuedDate' => membershipStatus.Contact__r.License_issued__c,
-				'displayDateOfGraduation' => displayDateOfGraduation,
-				'displayLicenseIssued' => displayLicenseIssued
+				'displayLicenseIssued' => displayLicenseIssued,
+				'minimumLicenseIssuedDate' => minimumLicenseIssuedDate,
+				'licenseIssuedDate' => membershipStatus.Contact__r.License_issued__c
 			};
 
 
@@ -350,7 +361,7 @@ public without sharing class MembershipRenewalController {
 				Nationality__c = formNationality, Residency__c = formCountryOfResidence, Membership__c = membershipId,
 				AAN_Member__c = formIamAANMember, Retired__c = formIamRetired,
 				Role_in_department__c = prevMembershipStatus[0].Role__c,
-				Renewal_Start_Date__c = nextYearStart, Renewal_End_date__c = nextYearEnd
+				Renewal_Start_Date__c = nextYearStart, Renewal_End_Date__c = nextYearEnd
 			);
 			insert newApplicationForm;
 
@@ -360,32 +371,22 @@ public without sharing class MembershipRenewalController {
 				attachFilesFromPreviousForm(oldApplicationFormId, newApplicationForm.Id);
 			}
 
-			String lockResultString = '';
+			String approvalResultString = '';
 
 			if (membershipName == STUDENT_MEMBERSHIP) {
-				submitForApproval('' + newApplicationForm.Id);
+				approvalResultString = submitForApproval('' + newApplicationForm.Id);
 			} else {
 				Approval.LockResult lockResult = Approval.lock(newApplicationForm.Id, false);
-				lockResultString = JSON.serialize(lockResult);
+				approvalResultString = JSON.serialize(lockResult);
 			}
 
-			// MembershipContactAssotiation__c newMembershipStatus = new MembershipContactAssotiation__c(
-			// 	Application_form__c = newApplicationForm.Id,
-			// 	Assignment_date__c = prevMembershipStatus[0].Assignment_date__c,
-			// 	Contact__c = currentContactId,
-			// 	Expiration_date__c = nextYearEnd,
-			// 	Membership__c = membershipId,
-			// 	Role__c = prevMembershipStatus[0].Role__c
-			// );
-			// insert newMembershipStatus;
-
-			// update new MembershipContactAssotiation__c(Id = membershipStatusId, Next_Membership_Status__c = newMembershipStatus.Id);
 			update new MembershipContactAssotiation__c(Id = membershipStatusId, Renewal_Application_Form__c = newApplicationForm.Id);
 
 			return new Map<String, Object>{
-				'lockResultString' => lockResultString,
+				'approvalResultString' => approvalResultString,
 				'result' => true,
-				'orderId' => generatedOrderId
+				'orderId' => generatedOrderId,
+				'grandTotalRenewalFee' => grandTotalRenewalFee
 			};
 
 		} catch (Exception e) {
@@ -399,6 +400,8 @@ public without sharing class MembershipRenewalController {
 		@AuraEnabled public String journalProductId { get; set; }
 		@AuraEnabled public String journalPrice { get; set; }
 	}
+
+	public static Decimal grandTotalRenewalFee = 0;
 
 	public static Id generateOrder(String membershipId, Decimal totalRenewalFee, List<JournalWrap> selectedJournals, String currentContactId) {
 
@@ -424,6 +427,8 @@ public without sharing class MembershipRenewalController {
 			Type__c = 'Renewal'
 		);
 		insert newOrder;
+
+		grandTotalRenewalFee = totalRenewalFee + journalsPrices;
 
 		List<Order_Item__c> orderItems = new List<Order_Item__c>();
 		orderItems.add(new Order_Item__c(
@@ -458,12 +463,20 @@ public without sharing class MembershipRenewalController {
 		return newOrder.Id;
 	}
 
-	public static void submitForApproval(String formId) {
-		String userId = UserInfo.getUserId();
-		Approval.ProcessSubmitRequest req1 = new Approval.ProcessSubmitRequest();
-		req1.setObjectId(formId);
-		req1.setSubmitterId(userId);
-		Approval.ProcessResult result = Approval.process(req1);
+	public static String submitForApproval(String formId) {
+		String methodMessage = 'Success';
+		try {
+			String userId = UserInfo.getUserId();
+			Approval.ProcessSubmitRequest req1 = new Approval.ProcessSubmitRequest();
+			req1.setObjectId(formId);
+			req1.setSubmitterId(userId);
+			Approval.ProcessResult result = Approval.process(req1);
+		} catch (Exception e) {
+			methodMessage = 'Error Message: ' + e.getMessage() + ' StackTrace: ' + e.getStackTraceString();
+			system.debug('MembershipRenewalController [submitForApproval] Error: ' + e.getMessage());
+			system.debug('MembershipRenewalController [submitForApproval] StackTrace: ' + e.getStackTraceString());
+		}
+		return methodMessage;
 	}
 
 	//	used for RR_MEMBERSHIP and STUDENT_MEMBERSHIP

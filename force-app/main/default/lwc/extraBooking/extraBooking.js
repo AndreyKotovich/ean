@@ -131,11 +131,13 @@ export default class ExtraBooking extends LightningElement {
             for (let ticket of session.Event_Tickets__r) {
                 if (session.Id !== ticket.Session__c) continue;
                 const { Available_for_Countries__c, Available_for_Memberships__c } = ticket.Ticket__r;
-                if (ticket.Participation__c === "Onsite") {
+                if (ticket.Participation__c && ticket.Participation__c === "Onsite") {
                     ticketCur = Object.assign({}, ticket);
+                    ticket.isChecked = true;
                 }
                 if (!Available_for_Countries__c || !Available_for_Countries__c.includes(this.userInfo.countyRegion))
                     continue;
+                    ticket.price = this.isEarlyBird ? ticket.Early_bird_price__c : ticket.Price__c;
                 if (!Available_for_Memberships__c) {
                     ticketGroup.push(ticket);
                 } else {
@@ -165,76 +167,76 @@ export default class ExtraBooking extends LightningElement {
     }
 
     generateCheckboxGroup() {
-        try{
-        let sessionsCheckboxGroup = [];
-        let selectedExclusions = [];
-        console.log('availableExtraSession ' , this.availableExtraSession );
-        for (let session of this._selectedSessions) {
-            let rec = this.availableExtraSession.find(obj => obj.Id === session.id);
-            selectedExclusions.push(rec.Session__r.Mutual_Exclusion__c);
-        }
-
-        if (this.userInfo.isUpgrade &&
-            this.userInfo.initiallySelectedSessions && this.userInfo.initiallySelectedSessions.length > 0) {
-
-            for (let initialSelection of this.userInfo.initiallySelectedSessions) {
-                let rec = this.availableExtraSession.find(obj => obj.Session__c === initialSelection.id);
+        try {
+            let sessionsCheckboxGroup = [];
+            let selectedExclusions = [];
+            console.log('availableExtraSession ' , this.availableExtraSession );
+            for (let session of this._selectedSessions) {
+                let rec = this.availableExtraSession.find(obj => obj.Id === session.id);
                 selectedExclusions.push(rec.Session__r.Mutual_Exclusion__c);
             }
 
-        }
-
-        for (let [i, ticket] of this.availableExtraSession.entries()) {
-
-            const { Max_Participants__c, Registrations__c, Description__c, Name, Mutual_Exclusion__c } = ticket.Session__r;
-
-            let price = this.isEarlyBird ? ticket.Early_bird_price__c : ticket.Price__c;
-            if (price === undefined) continue;
-
-            let isFull = Max_Participants__c ? Registrations__c >= Max_Participants__c : false;
-
-            let isDisabled = isFull;
-
-            let isChecked = !!this._selectedSessions.find(obj => obj.id === ticket.Id); //used only during init to auto populate
-
             if (this.userInfo.isUpgrade &&
-                this.userInfo.initiallySelectedSessions) {
+                this.userInfo.initiallySelectedSessions && this.userInfo.initiallySelectedSessions.length > 0) {
 
-                let initiallySelectedSession = this.userInfo.initiallySelectedSessions.find(obj => obj.id === ticket.Session__c);
-                if (!!initiallySelectedSession) {
-                    isChecked = true;
-                    isDisabled = true;
-                    price = initiallySelectedSession.price
+                for (let initialSelection of this.userInfo.initiallySelectedSessions) {
+                    let rec = this.availableExtraSession.find(obj => obj.Session__c === initialSelection.id);
+                    selectedExclusions.push(rec.Session__r.Mutual_Exclusion__c);
                 }
 
             }
 
-            //disable mutual exclusions
-            if (!isDisabled && Mutual_Exclusion__c && !isChecked) {
-                isDisabled = selectedExclusions.includes(Mutual_Exclusion__c);
+            for (let [i, ticket] of this.availableExtraSession.entries()) {
+
+                const { Max_Participants__c, Registrations__c, Description__c, Name, Mutual_Exclusion__c } = ticket.Session__r;
+
+                let price = this.isEarlyBird ? ticket.Early_bird_price__c : ticket.Price__c;
+                if (price === undefined) continue;
+
+                let isFull = Max_Participants__c ? Registrations__c >= Max_Participants__c : false;
+
+                let isDisabled = isFull;
+
+                let isChecked = !!this._selectedSessions.find(obj => obj.id === ticket.Id); //used only during init to auto populate
+
+                if (this.userInfo.isUpgrade &&
+                    this.userInfo.initiallySelectedSessions) {
+
+                    let initiallySelectedSession = this.userInfo.initiallySelectedSessions.find(obj => obj.id === ticket.Session__c);
+                    if (!!initiallySelectedSession) {
+                        isChecked = true;
+                        isDisabled = true;
+                        price = initiallySelectedSession.price;
+                    }
+
+                }
+
+                //disable mutual exclusions
+                if (!isDisabled && Mutual_Exclusion__c && !isChecked) {
+                    isDisabled = selectedExclusions.includes(Mutual_Exclusion__c);
+                }
+
+                sessionsCheckboxGroup.push({
+                    elementId: `extra-session-${i}`,
+                    value: ticket.Id,
+                    sessionId: ticket.Session__c,
+                    label: Name,
+                    description: Description__c,
+                    price: price,
+                    exclusion: Mutual_Exclusion__c ? Mutual_Exclusion__c : "",
+                    isDisabled,
+                    isFull,
+                    isChecked,
+                    ticketGroup: ticket.ticketGroup,
+                    isTicketGroup:  ticket.ticketGroup.length > 0
+                });
             }
 
-            sessionsCheckboxGroup.push({
-                elementId: `extra-session-${i}`,
-                value: ticket.Id,
-                sessionId: ticket.Session__c,
-                label: Name,
-                description: Description__c,
-                price: price,
-                exclusion: Mutual_Exclusion__c ? Mutual_Exclusion__c : "",
-                isDisabled,
-                isFull,
-                isChecked,
-                ticketGroup: ticket.ticketGroup,
-                isTicketGroup:  ticket.ticketGroup.length > 0
-            });
+            this.sessionsCheckboxGroup = [...sessionsCheckboxGroup];
         }
-
-        this.sessionsCheckboxGroup = [...sessionsCheckboxGroup];
-    }
-    catch (e) {
-        console.log(' catch EEEE ', e);
-    }
+        catch (e) {
+            console.log(' catch EEEE ', e);
+        }
     }
 
     handleSelectSession(event) {
@@ -259,6 +261,21 @@ export default class ExtraBooking extends LightningElement {
         }
     }
 
+    handleSelectCategory(event) {
+        let sessionId = event.target.dataset.session;
+        console.log('sessionId ', sessionId);
+        for (let checkbox of this.sessionsCheckboxGroup) {
+            console.log('checkbox.value ', checkbox.value);
+            if( checkbox.value === sessionId) {
+                for (let ticket of checkbox.ticketGroup){
+                    ticket.isChecked = ticket.Id === event.target.dataset.id;
+                }
+                checkbox.price = event.target.dataset.price;
+                console.log('checkbox ' , JSON.parse(JSON.stringify(checkbox)));
+            }
+        }
+    }
+
     getSelectedSessions() {
         let validatedSelectedSessions = [];
 
@@ -269,13 +286,26 @@ export default class ExtraBooking extends LightningElement {
                 if (this.userInfo.initiallySelectedSessions) {
                     initialSelection = !!this.userInfo.initiallySelectedSessions.find(obj => obj.id === sessionCheckbox.sessionId);
                 }
-
-                validatedSelectedSessions.push({
-                    id: sessionCheckbox.value,
-                    price: sessionCheckbox.price,
-                    isInitialSelection: initialSelection, //need for isUpgrade mode
-                    sessionId: sessionCheckbox.sessionId
-                });
+                if (sessionCheckbox.ticketGroup.length > 1) {
+                    for (let ticket of sessionCheckbox.ticketGroup) {
+                        if (ticket.isChecked) {
+                            validatedSelectedSessions.push({
+                                id: ticket.Id,
+                                price: ticket.price,
+                                isInitialSelection: initialSelection, //need for isUpgrade mode
+                                sessionId: ticket.Session__c
+                            });
+                        }
+                    }
+                }
+                else {
+                    validatedSelectedSessions.push({
+                        id: sessionCheckbox.value,
+                        price: sessionCheckbox.price,
+                        isInitialSelection: initialSelection, //need for isUpgrade mode
+                        sessionId: sessionCheckbox.sessionId
+                    });
+                }
             }
         }
 

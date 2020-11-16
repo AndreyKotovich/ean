@@ -60,6 +60,7 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 
 	//	EANMR-15, EANMR-16	// STEP 2
 	_enableGraduationAndLicenseStep = false;
+	_minimumLicenseIssuedDate;
 	_minimumDateOfGraduation;
 	_dateOfGraduation;
 	_licenseIssuedDate;
@@ -67,10 +68,12 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 	_displayLicenseIssued = false;
 
 	_isValidDateOfGraduation = false;
+	_isValidLicenseIssuedDate = false;
 	_dateOfGraduationErrorMessage = 'Will Be Defined In Callback';
+	_licenseIssuedDateErrorMessage = 'License issued must be in future OR not longer than TODAY MINUS 15 YEARS';
 
 	_displayDateOfGraduationUpdateMessage = false;
-
+	_displayLicenseIssuedDateUpdateMessage = false;	// not used (perhaps will be used in future, like '_displayDateOfGraduationUpdateMessage')
 
 	_uploadedFilesPills = [];
 	_showPillUploadedFiles = false;
@@ -78,6 +81,7 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 	//	STEP 3
 	_selectedJournals = [];
 	_agreeToEANTerms = false;
+	_displayTotalZeroBlock = false;	//	generally is used for 'Student Membership'
 
 	renderedCallback() {
 		// this.validateEnableNextButtonStep1();
@@ -102,10 +106,11 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 		this._isStep1 = false;
 
 		getPreparedData().then(result=>{
-				console.log('result: ', result);
+				// console.log('result: ', result);
 				this._isSpinner = false;
 
 				if (!result.result) {
+					console.log('result: ', result);
 					this._isError = true;
 					return;
 				}
@@ -175,6 +180,7 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 				//	EANMR-15, EANMR-16	// STEP 2
 				this._enableGraduationAndLicenseStep = result.enableGraduationAndLicenseStep;
 				this._minimumDateOfGraduation = result.minimumDateOfGraduation;
+				this._minimumLicenseIssuedDate = result.minimumLicenseIssuedDate;
 				this._dateOfGraduation = result.dateOfGraduation;
 				this._licenseIssuedDate = result.licenseIssuedDate;
 				this._displayDateOfGraduation = result.displayDateOfGraduation;
@@ -313,7 +319,6 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 	}
 
 	applyAANandRetiredDiscounts() {
-		console.log('applyAANandRetiredDiscounts');
 		let discountMultiplier = 1;
 		if (this._formIamAANMember && this._allowAANMemberDiscount) discountMultiplier = discountMultiplier - 0.1;
 		if (this._formIamRetired && this._allowRetiredDiscount) discountMultiplier = discountMultiplier - 0.5;
@@ -440,7 +445,7 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 		this.validateDateOfGraduation();
 		if (!this._isError
 			&& this._isValidDateOfGraduation
-			&& (!this._displayLicenseIssued || this._licenseIssuedDate)
+			&& this._isValidLicenseIssuedDate
 			&& this._showPillUploadedFiles) {
 
 			this._enableNextButtonStep2 = true;
@@ -453,16 +458,27 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 	}
 
 	validateLicenseIssued() {
-		if (!this._displayLicenseIssued) return;
+		if (!this._displayLicenseIssued) {
+			this._isValidLicenseIssuedDate = true;
+			return;
+		}
 
 		let licenseIssuedDate = this.template.querySelector('.licenseIssuedDate');
+		this._isValidLicenseIssuedDate = true;
 		let customValidityMessage = '';
+
+		if (this._licenseIssuedDate && this._licenseIssuedDate < this._minimumLicenseIssuedDate) customValidityMessage = this._licenseIssuedDateErrorMessage;
+
+		this._displayLicenseIssuedDateUpdateMessage = customValidityMessage !== '';
+
 		if (!this._licenseIssuedDate) customValidityMessage = 'Complete this field.';
+		if (customValidityMessage !== '') this._isValidLicenseIssuedDate = false;
 		if (licenseIssuedDate) {
 			licenseIssuedDate.setCustomValidity(customValidityMessage);
 			licenseIssuedDate.reportValidity();
 		}
 	}
+
 
 	validateDateOfGraduation() {
 		if (!this._displayDateOfGraduation) {
@@ -533,10 +549,6 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 
 	handleClickNextButtonStep3() {
 		if (this._enableNextButtonStep3 == false) return;
-
-		console.log('handleClickNextButtonStep3 uploadedFilesPillsString: ', JSON.stringify(this._uploadedFilesPills));
-		console.log('handleClickNextButtonStep3 selectedJournalsString: ', JSON.stringify(this._selectedJournals));
-
 		this._isSpinner = true;
 
 		submitRenewal({params: {
@@ -575,7 +587,12 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 					return;
 				}
 				this._isError = false;
-				this.navigateToPaymentPage(result.orderId);
+
+				if (result.grandTotalRenewalFee == 0) {
+					this._displayTotalZeroBlock = true;
+				} else {
+					this.navigateToPaymentPage(result.orderId);
+				}
 			})
 			.catch(error=>{
 				console.log('MembershipRenewalComponent error: ', error);

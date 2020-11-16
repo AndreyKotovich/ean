@@ -1,4 +1,4 @@
-public with sharing class ParticipantTriggerHelper {
+public without sharing class ParticipantTriggerHelper {
 
     public ParticipantTriggerHelper() {
 
@@ -77,16 +77,142 @@ public with sharing class ParticipantTriggerHelper {
         }
         insert emailActivities;
     }
-    public static void getQRcodes() {
-        List<CronTrigger> cts = [SELECT Id, CronJobDetail.Name                                 
-                                FROM CronTrigger
-                                WHERE State = 'WAITING'];
-        List<String> waitingJobNames = new List<String>();
-        for (CronTrigger ct :cts) {
-            waitingJobNames.add(ct.CronJobDetail.Name);
+
+    public static void checkQRCode(Map<Id, Participant__c> newParticipantsMap, Map<Id, Participant__c> oldParticipantsMap) {
+        String statusCanceled = 'Canceled';
+        String statusRegistered = 'Registered';
+        String undefinedParticipant = 'Undefined Participant';
+        Map<ID, Participant__c> participantsMap = new Map<ID, Participant__c>([
+            SELECT Id, Name, Event_Registration_Sub_Group__r.Is_Locked__c, Contact__r.Name FROM Participant__c WHERE Id IN :newParticipantsMap.keySet()
+        ]);
+        Map<String, Participant__c> deleteQRCodeParticipantsMap = new Map<String, Participant__c>();
+        Map<String, Participant__c> refreshQRCodeParticipantsMap = new Map<String, Participant__c>();
+        for (Participant__c participant : newParticipantsMap.values()) {
+            if (participant.Status__c == statusCanceled && oldParticipantsMap.get(participant.Id).Status__c != participant.Status__c) {
+                //Participant status changed to canceled
+                deleteQRCodeParticipantsMap.put(participant.Id, participant); 
+            } else if (participant.Status__c == statusRegistered
+            && participant.Contact__c != oldParticipantsMap.get(participant.Id).Contact__c) {
+                if (String.isBlank(participant.Event_Registration_Sub_Group__c)) {
+                    //Solo participant with status registered changed contact
+                    refreshQRCodeParticipantsMap.put(participant.Id, participant);
+                } else if (participantsMap.get(participant.Id).Event_Registration_Sub_Group__r.Is_Locked__c) {
+                    //Group participant with status registered changed contact
+                    refreshQRCodeParticipantsMap.put(participant.Id, participant); 
+                }                
+            } else if (participant.Status__c == statusRegistered
+            && oldParticipantsMap.get(participant.Id).Status__c != participant.Status__c
+            && String.isBlank(participant.Event_Registration_Sub_Group__c)
+            ) {
+                //Solo participant status changed to registered
+                refreshQRCodeParticipantsMap.put(participant.Id, participant); 
+            } else if (participant.Status__c == statusRegistered
+            && participant.Participant_Email__c != oldParticipantsMap.get(participant.Id).Participant_Email__c
+            && participantsMap.get(participant.Id).Contact__r.Name == undefinedParticipant
+            ) {
+                if (participantsMap.get(participant.Id).Event_Registration_Sub_Group__r.Is_Locked__c) {
+                    //Undefined group participant with status registered changed participant email
+                    refreshQRCodeParticipantsMap.put(participant.Id, participant); 
+                }
+            } else if (participant.QR_Code_needed__c == true
+                    && participant.QR_Code_needed__c != oldParticipantsMap.get(participant.Id).QR_Code_needed__c) {
+                    refreshQRCodeParticipantsMap.put(participant.Id, participant);
+            }
         }
-        if (waitingJobNames.contains('get QR codes') == false) {
-            System.scheduleBatch(new QRcodeBatch(), 'get QR codes', 2, 70);
+        if (deleteQRCodeParticipantsMap.size() > 0) {
+            processDeleteQRCodeParticipants(deleteQRCodeParticipantsMap);
+        }
+        if (refreshQRCodeParticipantsMap.size() > 0) {
+            processDeleteQRCodeParticipants(refreshQRCodeParticipantsMap);
+            processRefreshQRCodeParticipants(refreshQRCodeParticipantsMap);
+        }
+    }
+
+    public static void processDeleteQRCodeParticipants(Map<String, Participant__c> participantsMap) {
+        List<ContentDocumentLink> conDocLinks = [
+            SELECT Id, ContentDocumentId FROM ContentDocumentLink WHERE LinkedEntityId IN :participantsMap.keySet()
+        ];
+        List<String> contentDocumentIds = new List<String>();
+        for (ContentDocumentLink conDocLink : conDocLinks) {
+            contentDocumentIds.add(conDocLink.ContentDocumentId);
+        }
+        List<ContentDocument> contentDocuments = [
+            SELECT Id FROM ContentDocument WHERE Id IN :contentDocumentIds AND Title LIKE 'QR code%'
+        ];
+        if (contentDocuments.size() > 0) {
+            delete contentDocuments;
+        }
+        List<Event_Badge__c> badges = [
+            SELECT Id FROM Event_Badge__c WHERE Event_Participation__c IN :participantsMap.keySet()
+        ];
+        if (badges.size() > 0) {
+            delete badges;
+        }
+    }
+
+    public static void processRefreshQRCodeParticipants(Map<String, Participant__c> refreshQRCodeParticipantsMap) {
+        List<Event_Badge__c> badges = new List<Event_Badge__c>();
+        for (String participantId : refreshQRCodeParticipantsMap.keySet()) {
+            refreshQRCodeParticipantsMap.get(participantId).QR_Code_needed__c = true;
+            Event_Badge__c badge = new Event_Badge__c();
+            badge.Event_Participation__c = participantId;
+            badges.add(badge);
+        }
+        if (badges.size() > 0) {
+            insert badges;
+        }
+        try {
+            startQRcodeBatch();
+        } catch (Exception error) {
+            System.debug(error);
+        }
+    }
+
+    public static void processNewParticipants(List<Participant__c> newParticipants) {
+        String statusRegistered = 'Registered';
+        for (Participant__c newParticipant : newParticipants) {
+            if (newParticipant.Status__c == statusRegistered && String.isBlank(newParticipant.Event_Registration_Sub_Group__c)) {
+                newParticipant.QR_Code_needed__c = true;
+            }
+        }
+    }
+
+    public static void createBadges(List<Participant__c> newParticipants) {
+        List<Event_Badge__c> badges = new List<Event_Badge__c>();
+        for (Participant__c newParticipant : newParticipants) {
+            if (newParticipant.QR_Code_needed__c == true) {
+                Event_Badge__c badge = new Event_Badge__c();
+                badge.Event_Participation__c = newParticipant.Id;
+                badges.add(badge);
+            }
+        }
+        if(badges.size() > 0) {
+            insert badges;
+            try {
+                startQRcodeBatch();
+            } catch (Exception error) {
+                System.debug(error);
+            }
+        }        
+    }
+
+    public static void startQRcodeBatch() {
+        String jobName = 'get QR codes';
+        List<CronTrigger> waitingJobs = [SELECT Id, CronJobDetail.Name, NextFireTime, State
+                                FROM CronTrigger
+                                WHERE CronJobDetail.Name = :jobName];
+        Boolean isBatchWorking = false;
+        for (CronTrigger waitingJob : waitingJobs) {
+            if (waitingJob.NextFireTime < System.now().addMinutes(3) 
+            && waitingJob.NextFireTime > System.now().addSeconds(-30)
+            && waitingJob.CronJobDetail.Name == jobName){
+                isBatchWorking = true;
+            } else if (waitingJob.CronJobDetail.Name == jobName){
+                System.abortJob(waitingJob.Id);
+            }
+        }
+        if (isBatchWorking == false) {
+            System.scheduleBatch(new QRcodeBatch(), jobName, 2, 70);
         }
     }
 }

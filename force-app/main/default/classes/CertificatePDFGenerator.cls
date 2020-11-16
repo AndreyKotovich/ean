@@ -80,6 +80,10 @@ public class CertificatePDFGenerator {
                             SharingPrivacy = 'N',
                             ContentLocation = 'S'
                     );
+
+                    //  required for Membership Renewal
+                    if (!Test.isRunningTest()) newCertificate.NetworkId = ConnectApi.Communities.getCommunities().communities[0].Id;
+
                     newCertificates.add(newCertificate);
                     a.certificate = newCertificate;
                     fileContactMap.put(newCertificate.Title, a.mStatus.Contact__c);
@@ -228,7 +232,8 @@ public class CertificatePDFGenerator {
         Messaging.SingleEmailMessage errorEmail = new Messaging.SingleEmailMessage();
         errorEmail.setSubject('New Certificate sending error');
         String[] emailIds = new String[]{
-                'ilya.litovchik@succraft.com'
+                // 'ilya.litovchik@succraft.com'
+                'vitaly.serebrekov@succraft.com'
         };
         errorEmail.setToAddresses(emailIds);
         errorEmail.setPlainTextBody('Error Description: \n Message:' + e.getMessage() + '\n Line Number: ' + e.getLineNumber() + '\n Stack Trace: ' + e.getStackTraceString());

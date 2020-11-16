@@ -1,0 +1,33 @@
+<template>
+
+	<template if:true={_isError}>
+		<div class="slds-text-heading_large slds-align_absolute-center slds-text-color_error">{_errorMessage}</div>
+	</template>
+
+	<template if:false={_isError}>
+		<template if:true={_displayComponent}>
+			<lightning-card>
+				<h3 slot="title">
+					My Certificates
+				</h3>
+				<template for:each={_certificateDetailsList} for:item="certificate">
+					<div key={certificate.documentId}>
+						<div>
+							<div style="display: inline-block; margin-left: 20px;">
+								{certificate.certificateTitle}
+							</div>
+							<div style="display: inline-block; margin-left: 20px;">
+								<a href={certificate.certificatePreviewUrl} target="_blank">Preview</a>
+							</div>
+							<div style="display: inline-block; margin-left: 20px;">
+								<a href={certificate.certificateDowloadUrl} target="_blank">Download</a>
+							</div>
+						</div>
+					</div>
+				</template>
+			</lightning-card>
+		</template>
+
+	</template>
+
+</template>
