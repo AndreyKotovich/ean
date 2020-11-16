@@ -2,13 +2,8 @@
 <template>
     <div class="slds-card__body">
         <lightning-layout multiple-rows="true">
-            <lightning-layout-item if:true={showSessions}
-                                   padding="around-small"
-                                   size="12"
-                                   large-device-size="12"
-                                   medium-device-size="12"
-                                   small-device-size="12"
-                                   flexibility="auto">
+            <lightning-layout-item if:true={showSessions} padding="around-small" size="12" large-device-size="12"
+                medium-device-size="12" small-device-size="12" flexibility="auto">
                 <lightning-card>
                     <div slot="title">Additional Sessions</div>
                     <div class="slds-p-left_x-large slds-p-right_x-large slds-p-top_x-large">
@@ -17,15 +12,10 @@
                             <div class="slds-grid slds-wrap">
                                 <div class="slds-col slds-size_10-of-12">
                                     <div class="slds-checkbox">
-                                        <input type="checkbox"
-                                               id={product.elementId}
-                                               data-name="extra-session"
-                                               data-exclusion={product.exclusion}
-                                               name="options"
-                                               value={product.value}
-                                               onchange={handleSelectSession}
-                                               disabled={product.isDisabled}
-                                               checked={product.isChecked} />
+                                        <input type="checkbox" id={product.elementId} data-name="extra-session"
+                                            data-exclusion={product.exclusion} name="options" value={product.value}
+                                            onchange={handleSelectSession} disabled={product.isDisabled}
+                                            checked={product.isChecked} />
 
                                         <label class="slds-checkbox__label" for={product.elementId}>
                                             <div class="slds-grid slds-gutters">
@@ -33,23 +23,54 @@
                                                     <span class="slds-checkbox_faux"></span>
                                                 </div>
                                                 <div class="slds-col">
-                                                <span class="slds-form-element__label">
-                                                    <div class="slds-grid slds-grid_vertical">
+                                                    <div class="slds-grid">
                                                         <div class="slds-col">
-                                                            <b>{product.label}</b>
-                                                        </div>
-                                                        <div class="slds-col">
-                                                            {product.description}
-                                                        </div>
-                                                        <div if:true={product.isFull} class="slds-col">
-                                                            <lightning-badge label="Sold out"></lightning-badge>
+                                                            <span class="slds-form-element__label">
+                                                                <div class="slds-grid slds-grid_vertical">
+                                                                    <div class="slds-col">
+                                                                        <b>{product.label}</b>
+                                                                    </div>
+                                                                    <div class="slds-col">
+                                                                        {product.description}
+                                                                    </div>
+                                                                    <div if:true={product.isFull} class="slds-col">
+                                                                        <lightning-badge label="Sold out">
+                                                                        </lightning-badge>
+                                                                    </div>
+                                                                </div>
+                                                            </span>
                                                         </div>
                                                     </div>
-                                                </span>
+                                                    <div class="slds-grid" if:true={product.isTicketGroup}>
+                                                        <div class="slds-col">
+                                                            <fieldset class="slds-form-element">
+                                                                <legend
+                                                                    class="slds-form-element__legend slds-form-element__label">
+                                                                    Participation</legend>
+                                                                <template for:each={product.ticketGroup} for:item="tick"
+                                                                    key={key}>
+                                                                    <div class="slds-form-element__control"
+                                                                        key={tick.Id}>
+                                                                        <span class="slds-radio">
+                                                                            <input type="radio" id={tick.Id}
+                                                                                value={tick.Id} name="default"
+                                                                                checked="" />
+                                                                            <label class="slds-radio__label"
+                                                                                for={tick.Id}>
+                                                                                <span class="slds-radio_faux"></span>
+                                                                                <span
+                                                                                    class="slds-form-element__label">{tick.Participation__c}
+                                                                                    {tick.Price__c} &nbsp; €</span>
+                                                                            </label>
+                                                                        </span>
+                                                                    </div>
+                                                                </template>
+                                                            </fieldset>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </label>
-
                                     </div>
                                 </div>
                                 <div class="slds-col slds-size_2-of-12 slds-text-align_center">
@@ -62,73 +83,38 @@
                 </lightning-card>
             </lightning-layout-item>
 
-            <lightning-layout-item
-                    padding="around-small"
-                    size="12"
-                    large-device-size="12"
-                    medium-device-size="12"
-                    small-device-size="12"
-                    flexibility="auto"
-            >
+            <lightning-layout-item padding="around-small" size="12" large-device-size="12" medium-device-size="12"
+                small-device-size="12" flexibility="auto">
                 <lightning-card>
                     <div slot="title">Additional Services</div>
                     <div class="slds-p-left_x-large slds-p-right_x-large">
 
                         <lightning-layout multiple-rows="true" vertical-align="center">
 
-                            <lightning-layout-item padding="around-small"
-                                                   size="12"
-                                                   large-device-size="4"
-                                                   medium-device-size="6"
-                                                   small-device-size="12"
-                                                   flexibility="auto"
-                            >
+                            <lightning-layout-item padding="around-small" size="12" large-device-size="4"
+                                medium-device-size="6" small-device-size="12" flexibility="auto">
                                 <lightning-combobox class="slds-m-top_x-small slds-m-bottom_x-small validate-service"
-                                                    name="badge-retrieval"
-                                                    label="Badge Retrieval"
-                                                    value={_selectedServices.badgeRetrieval}
-                                                    placeholder="Select Badge Retrieval"
-                                                    options={badgeRetrievalOptions}
-                                                    onchange={handleChangeBR}
-                                                    required={isBadgeRequired}
-                                                    disabled={disableBadgeRetrieval}
-                                ></lightning-combobox>
+                                    name="badge-retrieval" label="Badge Retrieval"
+                                    value={_selectedServices.badgeRetrieval} placeholder="Select Badge Retrieval"
+                                    options={badgeRetrievalOptions} onchange={handleChangeBR} required={isBadgeRequired}
+                                    disabled={disableBadgeRetrieval}></lightning-combobox>
 
                             </lightning-layout-item>
 
-                            <lightning-layout-item padding="around-small"
-                                                   size="12"
-                                                   large-device-size="4"
-                                                   medium-device-size="6"
-                                                   small-device-size="12"
-                                                   flexibility="auto"
-                            >
-                                <lightning-input class="slds-m-top_x-small slds-m-bottom_x-small"
-                                                 type="checkbox"
-                                                 label="Visa letter"
-                                                 name="visa-letter"
-                                                 onchange={handleChangeVL}
-                                                 checked={_selectedServices.visaLetter}
-                                ></lightning-input>
+                            <lightning-layout-item padding="around-small" size="12" large-device-size="4"
+                                medium-device-size="6" small-device-size="12" flexibility="auto">
+                                <lightning-input class="slds-m-top_x-small slds-m-bottom_x-small" type="checkbox"
+                                    label="Visa letter" name="visa-letter" onchange={handleChangeVL}
+                                    checked={_selectedServices.visaLetter}></lightning-input>
 
                             </lightning-layout-item>
 
-                            <lightning-layout-item if:false={isGroupRegistration}
-                                                   padding="around-small"
-                                                   size="12"
-                                                   large-device-size="4"
-                                                   medium-device-size="6"
-                                                   small-device-size="12"
-                                                   flexibility="auto"
-                            >
-                                <lightning-input class="slds-m-top_x-small slds-m-bottom_x-small"
-                                                 type="checkbox"
-                                                 label={newsletterLabel}
-                                                 name="newsletter"
-                                                 onchange={handleChangeNewsletter}
-                                                 checked={_selectedServices.newsletter}
-                                                 disabled={userInfo.contact.Newsletter__c}
-                                ></lightning-input>
+                            <lightning-layout-item if:false={isGroupRegistration} padding="around-small" size="12"
+                                large-device-size="4" medium-device-size="6" small-device-size="12" flexibility="auto">
+                                <lightning-input class="slds-m-top_x-small slds-m-bottom_x-small" type="checkbox"
+                                    label={newsletterLabel} name="newsletter" onchange={handleChangeNewsletter}
+                                    checked={_selectedServices.newsletter} disabled={userInfo.contact.Newsletter__c}>
+                                </lightning-input>
                             </lightning-layout-item>
 
                         </lightning-layout>
@@ -141,30 +127,18 @@
 
     <div class="slds-card__footer slds-grid slds-align--absolute-center">
         <div if:false={hidePreviousButton}>
-            <lightning-button
-                    class="slds-col slds-m-around_x-small"
-                    label="Previous"
-                    variant="neutral"
-                    onclick={handlePreviousClick}
-            ></lightning-button>
+            <lightning-button class="slds-col slds-m-around_x-small" label="Previous" variant="neutral"
+                onclick={handlePreviousClick}></lightning-button>
         </div>
         <div if:false={hideNextButton}>
-            <lightning-button
-                    class="slds-col slds-m-around_x-small"
-                    label="Next"
-                    variant="brand"
-                    onclick={handleNextClick}
-            ></lightning-button>
+            <lightning-button class="slds-col slds-m-around_x-small" label="Next" variant="brand"
+                onclick={handleNextClick}></lightning-button>
         </div>
     </div>
 
     <template if:true={isSpinner}>
         <div class="slds-spinner_container" style="position: fixed">
-            <lightning-spinner
-                    alternative-text="Loading"
-                    variant="brand"
-                    size="large"
-            ></lightning-spinner>
+            <lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
         </div>
     </template>
 </template>

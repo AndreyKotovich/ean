@@ -1,4 +1,4 @@
-import {LightningElement, track, api, wire} from 'lwc';
+import { LightningElement, track, api, wire } from 'lwc';
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { Utils } from "c/utils";
 import getExtraSessions from "@salesforce/apex/EventRegistrationController.getExtraSessions";
@@ -18,10 +18,10 @@ export default class ExtraBooking extends LightningElement {
     }
 
     @api
-    get selectedServices(){
+    get selectedServices() {
         return this._selectedServices;
     }
-    set selectedServices(value){
+    set selectedServices(value) {
         this._selectedServices = Object.assign({}, value);
     }
 
@@ -48,19 +48,19 @@ export default class ExtraBooking extends LightningElement {
 
         this.isEarlyBird = this.eanEvent.Early_Bird_Deadline__c ? Utils.deadlineCheck(this.eanEvent.Early_Bird_Deadline__c) : false;
 
-        if(!this._selectedServices.hasOwnProperty('newsletter') && this.registrationType === 'solo') this._selectedServices.newsletter = this.userInfo.contact.Newsletter__c;
+        if (!this._selectedServices.hasOwnProperty('newsletter') && this.registrationType === 'solo') this._selectedServices.newsletter = this.userInfo.contact.Newsletter__c;
 
-        let promise1 = getExtraSessions({eventId: this.eanEvent.Id});
+        let promise1 = getExtraSessions({ eventId: this.eanEvent.Id });
 
         Promise.all([promise1])
-            .then(results =>{
+            .then(results => {
                 this.eventExtraSessions = results[0];
-
-                if(Object.keys(results[0]).length === 0 && results[0].constructor === Object){
+                console.log('this.eventExtraSessions', this.eventExtraSessions)
+                if (Object.keys(results[0]).length === 0 && results[0].constructor === Object) {
                     // this.handleNextClick();
                     this.showSessions = false;
                 } else {
-                    if(this.registrationType !== 'solo'){
+                    if (this.registrationType !== 'solo') {
                         this.showSessions = false;
                     } else {
                         this.parseSessionsAndPrice();
@@ -71,12 +71,12 @@ export default class ExtraBooking extends LightningElement {
             .catch(error => {
                 this.isSpinner = false;
                 let message = '';
-                if(error.body){
-                    if(error.body.message){
+                if (error.body) {
+                    if (error.body.message) {
                         message = error.body.message;
                     }
                 }
-                this.throwError({message: message});
+                this.throwError({ message: message });
             })
     }
 
@@ -88,8 +88,8 @@ export default class ExtraBooking extends LightningElement {
     }
 
     handleNextClick() {
-console.log('handleNextClick');
-        if(Utils.validateElements.call(this, '.validate-service')){
+        console.log('handleNextClick');
+        if (Utils.validateElements.call(this, '.validate-service')) {
             const selectEvent = new CustomEvent("continue", {
                 detail: {
                     selectedSessions: this.getSelectedSessions(),
@@ -120,76 +120,88 @@ console.log('handleNextClick');
         );
     }
 
-    parseSessionsAndPrice(){
+    parseSessionsAndPrice() {
+//try{
+        for (let session of this.eventExtraSessions) {
 
-        for(let session of this.eventExtraSessions){
-
-            if(!session.Event_Tickets__r) continue;
-
+            if (!session.Event_Tickets__r) continue;
+            console.log('session', session);
+            let ticketCur = {};
+            let ticketGroup = [];
             for (let ticket of session.Event_Tickets__r) {
-
-                if(session.Id !== ticket.Session__c) continue;
-
+                if (session.Id !== ticket.Session__c) continue;
                 const { Available_for_Countries__c, Available_for_Memberships__c } = ticket.Ticket__r;
-
+                if (ticket.Participation__c === "Onsite") {
+                    ticketCur = Object.assign({}, ticket);
+                }
                 if (!Available_for_Countries__c || !Available_for_Countries__c.includes(this.userInfo.countyRegion))
                     continue;
-
                 if (!Available_for_Memberships__c) {
-                    this.availableExtraSession.push(ticket);
+                    ticketGroup.push(ticket);
                 } else {
-
                     for (let membership of this.userInfo.memberships) {
                         if (Available_for_Memberships__c.includes(membership.Membership__r.API__c)) {
-                            this.availableExtraSession.push(ticket);
+                            ticketGroup.push(ticket);
                             break;
                         }
                     }
-
                 }
-            }
-        }
 
-        this.generateCheckboxGroup()
+            }
+            
+            if (Object.keys(ticketCur).length === 0) {
+                ticketCur = Object.assign({}, session.Event_Tickets__r[0]);
+            }
+            ticketCur.ticketGroup = ticketGroup.length > 1 ? ticketGroup : [];
+            console.log('ticketCur ' , ticketCur);
+            this.availableExtraSession.push(ticketCur);
+        }
+    // }
+    // catch(e) {
+    //     console.log('catch ', e);
+    // }
+        console.log('this.generateCheckboxGroup ');
+        this.generateCheckboxGroup();
     }
 
-    generateCheckboxGroup(){
+    generateCheckboxGroup() {
+        try{
         let sessionsCheckboxGroup = [];
         let selectedExclusions = [];
-
-        for(let session of this._selectedSessions){
+        console.log('availableExtraSession ' , this.availableExtraSession );
+        for (let session of this._selectedSessions) {
             let rec = this.availableExtraSession.find(obj => obj.Id === session.id);
             selectedExclusions.push(rec.Session__r.Mutual_Exclusion__c);
         }
 
-        if(this.userInfo.isUpgrade &&
-            this.userInfo.initiallySelectedSessions && this.userInfo.initiallySelectedSessions.length > 0){
+        if (this.userInfo.isUpgrade &&
+            this.userInfo.initiallySelectedSessions && this.userInfo.initiallySelectedSessions.length > 0) {
 
-            for(let initialSelection of this.userInfo.initiallySelectedSessions){
+            for (let initialSelection of this.userInfo.initiallySelectedSessions) {
                 let rec = this.availableExtraSession.find(obj => obj.Session__c === initialSelection.id);
                 selectedExclusions.push(rec.Session__r.Mutual_Exclusion__c);
             }
 
         }
 
-        for(let [i, ticket] of this.availableExtraSession.entries()){
+        for (let [i, ticket] of this.availableExtraSession.entries()) {
 
             const { Max_Participants__c, Registrations__c, Description__c, Name, Mutual_Exclusion__c } = ticket.Session__r;
 
             let price = this.isEarlyBird ? ticket.Early_bird_price__c : ticket.Price__c;
-            if(price === undefined) continue;
+            if (price === undefined) continue;
 
             let isFull = Max_Participants__c ? Registrations__c >= Max_Participants__c : false;
 
             let isDisabled = isFull;
 
-            let isChecked = !!this._selectedSessions.find(obj => obj.id === ticket.Id ); //used only during init to auto populate
+            let isChecked = !!this._selectedSessions.find(obj => obj.id === ticket.Id); //used only during init to auto populate
 
-            if(this.userInfo.isUpgrade &&
-                this.userInfo.initiallySelectedSessions){
+            if (this.userInfo.isUpgrade &&
+                this.userInfo.initiallySelectedSessions) {
 
                 let initiallySelectedSession = this.userInfo.initiallySelectedSessions.find(obj => obj.id === ticket.Session__c);
-                if(!!initiallySelectedSession){
+                if (!!initiallySelectedSession) {
                     isChecked = true;
                     isDisabled = true;
                     price = initiallySelectedSession.price
@@ -198,12 +210,12 @@ console.log('handleNextClick');
             }
 
             //disable mutual exclusions
-            if(!isDisabled && Mutual_Exclusion__c && !isChecked){
+            if (!isDisabled && Mutual_Exclusion__c && !isChecked) {
                 isDisabled = selectedExclusions.includes(Mutual_Exclusion__c);
             }
 
             sessionsCheckboxGroup.push({
-                elementId: 'extra-session-'+i,
+                elementId: `extra-session-${i}`,
                 value: ticket.Id,
                 sessionId: ticket.Session__c,
                 label: Name,
@@ -212,43 +224,49 @@ console.log('handleNextClick');
                 exclusion: Mutual_Exclusion__c ? Mutual_Exclusion__c : "",
                 isDisabled,
                 isFull,
-                isChecked
+                isChecked,
+                ticketGroup: ticket.ticketGroup,
+                isTicketGroup:  ticket.ticketGroup.length > 0
             });
         }
 
         this.sessionsCheckboxGroup = [...sessionsCheckboxGroup];
     }
+    catch (e) {
+        console.log(' catch EEEE ', e);
+    }
+    }
 
-    handleSelectSession(event){
+    handleSelectSession(event) {
         let exclusion = event.target.dataset.exclusion;
 
         let validation = true;
 
-        for(let checkbox of this.sessionsCheckboxGroup){
-            if(checkbox.value === event.target.value && checkbox.isDisabled) validation = false;
+        for (let checkbox of this.sessionsCheckboxGroup) {
+            if (checkbox.value === event.target.value && checkbox.isDisabled) validation = false;
         }
 
-        if(validation){
+        if (validation) {
             let disabledFlag = event.target.checked;
 
-            for(let checkbox of this.sessionsCheckboxGroup){
-                if(checkbox.value === event.target.value && !checkbox.isFull) checkbox.isChecked = event.target.checked;
+            for (let checkbox of this.sessionsCheckboxGroup) {
+                if (checkbox.value === event.target.value && !checkbox.isFull) checkbox.isChecked = event.target.checked;
 
-                if(exclusion === '' || checkbox.exclusion !== exclusion || checkbox.value === event.target.value || checkbox.isFull) continue;
+                if (exclusion === '' || checkbox.exclusion !== exclusion || checkbox.value === event.target.value || checkbox.isFull) continue;
 
                 checkbox.isDisabled = disabledFlag;
             }
         }
     }
 
-    getSelectedSessions(){
+    getSelectedSessions() {
         let validatedSelectedSessions = [];
 
-        for(let sessionCheckbox of this.sessionsCheckboxGroup){
-            if(!sessionCheckbox.isDisabled && sessionCheckbox.isChecked){
+        for (let sessionCheckbox of this.sessionsCheckboxGroup) {
+            if (!sessionCheckbox.isDisabled && sessionCheckbox.isChecked) {
                 //need for isUpgrade mode
                 let initialSelection = false;
-                if(this.userInfo.initiallySelectedSessions){
+                if (this.userInfo.initiallySelectedSessions) {
                     initialSelection = !!this.userInfo.initiallySelectedSessions.find(obj => obj.id === sessionCheckbox.sessionId);
                 }
 
@@ -265,15 +283,15 @@ console.log('handleNextClick');
         return validatedSelectedSessions;
     }
 
-    get badgeRetrievalOptions(){
+    get badgeRetrievalOptions() {
         let options = [];
         let eventStartDay = Date.parse(this.eanEvent.Start_Time__c);
         let dateNow = new Date();
         dateNow.setDate(dateNow.getDate() + 10);
 
         //TODO picklist
-        if(dateNow.getTime() <= eventStartDay){
-            options.push({ label: 'Pre-print by EAN', value: 'pre_print'});
+        if (dateNow.getTime() <= eventStartDay) {
+            options.push({ label: 'Pre-print by EAN', value: 'pre_print' });
         }
 
         options.push({ label: 'Onsite print', value: 'onsite' });
@@ -281,32 +299,32 @@ console.log('handleNextClick');
         return options
     }
 
-    get isBadgeRequired(){
+    get isBadgeRequired() {
         return this.eanEvent.RecordType.DeveloperName === 'Congress';
     }
 
-    handleChangeBR(event){
-        if(!this.disableBadgeRetrieval){
+    handleChangeBR(event) {
+        if (!this.disableBadgeRetrieval) {
             this._selectedServices.badgeRetrieval = event.detail.value;
         }
     }
 
-    handleChangeVL(event){
+    handleChangeVL(event) {
         this._selectedServices.visaLetter = event.detail.checked;
         console.log(JSON.stringify(this._selectedServices));
     }
 
-    get isGroupRegistration(){
+    get isGroupRegistration() {
         return this.registrationType !== 'solo';
     }
 
-    handleChangeNewsletter(event){
-        if(!this.userInfo.contact.Newsletter__c){
+    handleChangeNewsletter(event) {
+        if (!this.userInfo.contact.Newsletter__c) {
             this._selectedServices.newsletter = event.detail.checked;
         }
     }
 
-    get disableBadgeRetrieval(){
+    get disableBadgeRetrieval() {
         return this.userInfo.isUpgrade
     }
 }
