@@ -8,6 +8,7 @@ export default class ExtraBooking extends LightningElement {
     @api eanEvent = {};
     @api userInfo = {};
     @api registrationType = "";
+    @api selectedTickets = [];
 
     @api
     get selectedSessions() {
@@ -121,7 +122,7 @@ export default class ExtraBooking extends LightningElement {
     }
 
     parseSessionsAndPrice() {
-//try{
+        //try{
         for (let session of this.eventExtraSessions) {
 
             if (!session.Event_Tickets__r) continue;
@@ -131,13 +132,23 @@ export default class ExtraBooking extends LightningElement {
             for (let ticket of session.Event_Tickets__r) {
                 if (session.Id !== ticket.Session__c) continue;
                 const { Available_for_Countries__c, Available_for_Memberships__c } = ticket.Ticket__r;
-                if (ticket.Participation__c && ticket.Participation__c === "Onsite") {
+
+                if (!Available_for_Countries__c || !Available_for_Countries__c.includes(this.userInfo.countyRegion))
+                    continue;
+                ticket.price = this.isEarlyBird ? ticket.Early_bird_price__c : ticket.Price__c;
+                
+                if (this.userInfo.isUpgrade && this.userInfo.initiallySelectedSessions &&
+                    this.userInfo.initiallySelectedSessions.length > 0) {
+                    let rec = this.userInfo.initiallySelectedSessions.find(obj => obj.id === session.Id);
+                    if (rec && (rec.price === ticket.Early_bird_price__c || rec.price === ticket.Price__c)) {
+                        ticketCur = Object.assign({}, ticket);
+                        ticket.isChecked = true;
+                    }
+                } else if (ticket.Participation__c && ticket.Participation__c === "Onsite") {
                     ticketCur = Object.assign({}, ticket);
                     ticket.isChecked = true;
                 }
-                if (!Available_for_Countries__c || !Available_for_Countries__c.includes(this.userInfo.countyRegion))
-                    continue;
-                    ticket.price = this.isEarlyBird ? ticket.Early_bird_price__c : ticket.Price__c;
+
                 if (!Available_for_Memberships__c) {
                     ticketGroup.push(ticket);
                 } else {
@@ -150,18 +161,18 @@ export default class ExtraBooking extends LightningElement {
                 }
 
             }
-            
+
             if (Object.keys(ticketCur).length === 0) {
                 ticketCur = Object.assign({}, session.Event_Tickets__r[0]);
             }
             ticketCur.ticketGroup = ticketGroup.length > 1 ? ticketGroup : [];
-            console.log('ticketCur ' , ticketCur);
+            console.log('ticketCur ', ticketCur);
             this.availableExtraSession.push(ticketCur);
         }
-    // }
-    // catch(e) {
-    //     console.log('catch ', e);
-    // }
+        // }
+        // catch(e) {
+        //     console.log('catch ', e);
+        // }
         console.log('this.generateCheckboxGroup ');
         this.generateCheckboxGroup();
     }
@@ -170,7 +181,7 @@ export default class ExtraBooking extends LightningElement {
         try {
             let sessionsCheckboxGroup = [];
             let selectedExclusions = [];
-            console.log('availableExtraSession ' , this.availableExtraSession );
+            console.log('availableExtraSession ', this.availableExtraSession);
             for (let session of this._selectedSessions) {
                 let rec = this.availableExtraSession.find(obj => obj.Id === session.id);
                 selectedExclusions.push(rec.Session__r.Mutual_Exclusion__c);
@@ -228,7 +239,7 @@ export default class ExtraBooking extends LightningElement {
                     isFull,
                     isChecked,
                     ticketGroup: ticket.ticketGroup,
-                    isTicketGroup:  ticket.ticketGroup.length > 0
+                    isTicketGroup: ticket.ticketGroup.length > 0
                 });
             }
 
@@ -266,12 +277,12 @@ export default class ExtraBooking extends LightningElement {
         console.log('sessionId ', sessionId);
         for (let checkbox of this.sessionsCheckboxGroup) {
             console.log('checkbox.value ', checkbox.value);
-            if( checkbox.value === sessionId) {
-                for (let ticket of checkbox.ticketGroup){
+            if (checkbox.value === sessionId) {
+                for (let ticket of checkbox.ticketGroup) {
                     ticket.isChecked = ticket.Id === event.target.dataset.id;
                 }
                 checkbox.price = event.target.dataset.price;
-                console.log('checkbox ' , JSON.parse(JSON.stringify(checkbox)));
+                console.log('checkbox ', JSON.parse(JSON.stringify(checkbox)));
             }
         }
     }
@@ -340,8 +351,10 @@ export default class ExtraBooking extends LightningElement {
     }
 
     handleChangeVL(event) {
-        this._selectedServices.visaLetter = event.detail.checked;
-        console.log(JSON.stringify(this._selectedServices));
+        if (!this.disableVisaLetter) {
+            this._selectedServices.visaLetter = event.detail.checked;
+            console.log(JSON.stringify(this._selectedServices));
+        }
     }
 
     get isGroupRegistration() {
@@ -355,6 +368,46 @@ export default class ExtraBooking extends LightningElement {
     }
 
     get disableBadgeRetrieval() {
-        return this.userInfo.isUpgrade
+        return this.userInfo.isUpgrade || !this.showOnsiteServices;
+    }
+
+    get disableVisaLetter() {
+        return !this.showOnsiteServices;
+    }
+
+    get showOnsiteServices() {
+        let result = true;
+        if (this.selectedTickets.length > 0) {
+
+            for (let ticket of this.selectedTickets) {
+                if (ticket.type) {
+                    result = ticket.type.toLowerCase() === 'onsite';
+                }
+
+                if (!result) break;
+            }
+
+        }
+
+        return result;
+    }
+
+    get badgeRetrievalTooltip() {
+        let result = '';
+
+        if (!this.showOnsiteServices) {
+            result = 'Available only for onsite tickets.';
+        }
+
+        return result;
+    }
+    get visaLetterTooltip() {
+        let result = '';
+
+        if (!this.showOnsiteServices) {
+            result = 'Available only for onsite tickets.';
+        }
+
+        return result;
     }
 }

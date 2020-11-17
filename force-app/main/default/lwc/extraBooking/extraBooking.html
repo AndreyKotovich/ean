@@ -9,7 +9,7 @@
                     <div class="slds-p-left_x-large slds-p-right_x-large slds-p-top_x-large">
 
                         <div for:each={sessionsCheckboxGroup} for:item="product" key={key}>
-                            <div class="slds-grid slds-wrap">
+                            <div class="slds-grid slds-wrap slds-p-bottom_small">
                                 <div class="slds-col slds-size_10-of-12">
                                     <div class="slds-checkbox">
                                         <input type="checkbox" id={product.elementId} data-name="extra-session"
@@ -42,7 +42,7 @@
                                                         </div>
                                                     </div>
                                                     <template if:true={product.isChecked}>
-                                                        <div class="slds-grid" if:true={product.isTicketGroup}>
+                                                        <div class="slds-grid slds-m-left_large" if:true={product.isTicketGroup}>
                                                             <div class="slds-col">
                                                                 <fieldset class="slds-form-element">
                                                                     <legend
@@ -56,6 +56,7 @@
                                                                                 <input type="radio" data-session={product.value} id={tick.Id}
                                                                                     data-price={tick.price}
                                                                                     data-id={tick.Id}
+                                                                                    disabled={product.isDisabled}
                                                                                     value={tick.Id} name="default"
                                                                                     checked={tick.isChecked} 
                                                                                     onclick={handleSelectCategory} 
@@ -105,7 +106,7 @@
                                     name="badge-retrieval" label="Badge Retrieval"
                                     value={_selectedServices.badgeRetrieval} placeholder="Select Badge Retrieval"
                                     options={badgeRetrievalOptions} onchange={handleChangeBR} required={isBadgeRequired}
-                                    disabled={disableBadgeRetrieval}></lightning-combobox>
+                                    disabled={disableBadgeRetrieval} field-level-help={badgeRetrievalTooltip}></lightning-combobox>
 
                             </lightning-layout-item>
 
@@ -113,7 +114,7 @@
                                 medium-device-size="6" small-device-size="12" flexibility="auto">
                                 <lightning-input class="slds-m-top_x-small slds-m-bottom_x-small" type="checkbox"
                                     label="Visa letter" name="visa-letter" onchange={handleChangeVL}
-                                    checked={_selectedServices.visaLetter}></lightning-input>
+                                    checked={_selectedServices.visaLetter} disabled={disableVisaLetter} field-level-help={visaLetterTooltip}></lightning-input>
 
                             </lightning-layout-item>
 

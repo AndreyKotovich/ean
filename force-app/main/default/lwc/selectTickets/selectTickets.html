@@ -47,7 +47,7 @@
                                             <template for:each={radioItem.tickets} for:item="tick" key={key}>
                                                 <div class="slds-form-element__control" key={tick.Id}>
                                                     <span class="slds-radio">
-                                                        <input type="radio" data-session={radioItem.id} id={tick.Id}
+                                                        <input type="radio" data-ticket={radioItem.id} id={tick.Id}
                                                             data-price={tick.price} data-id={tick.Id} value={tick.Id}
                                                             name="default" checked={tick.isChecked}
                                                             onclick={handleSelectCategory} />

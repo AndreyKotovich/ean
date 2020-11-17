@@ -226,6 +226,23 @@ export default class SelectTickets extends LightningElement {
         });
     }
 
+    handleSelectCategory(event) {
+        let ticketId = event.target.dataset.ticket;
+        console.log('ticketId ', ticketId);
+        for (let ticket of this.ticketsRadio) {
+
+            console.log('ticket.Id ', ticket.id);
+            if (ticket.id === ticketId) {
+                for (let t of ticket.tickets) {
+                    t.isChecked = t.Id === event.target.dataset.id;
+                }
+                ticket.id = event.target.dataset.id;
+                ticket.price = +event.target.dataset.price;
+                console.log('ticket ' , JSON.parse(JSON.stringify(ticket)));
+            }
+        }
+    }
+
     markupTicketCompilation() {
         new Promise((resolve) => {
             let ticketsRadio = [];
@@ -351,9 +368,12 @@ export default class SelectTickets extends LightningElement {
                 selectedTicket = item.value;
             }
         });
+
+        console.log('selectedTicket ' , selectedTicket);
         let chosenTicket = this.ticketsRadio.find(e => {
             return e.id === selectedTicket;
         });
+        console.log('chosenTicket ' , chosenTicket);
         this._priceTicket = chosenTicket.price;
         this.ticketId = chosenTicket.tickedId;
         console.log(selectedTicket);
@@ -474,7 +494,7 @@ export default class SelectTickets extends LightningElement {
             if (this.eanEvent.Max_Participants__c) {
                 this.availableParticipantNumber =
                     this.availableParticipantNumber > this._userInfo.iprInfo.ticketAmount - this.iprRegisteredParticipants ?
-                        this._userInfo.iprInfo.ticketAmount - this.iprRegisteredParticipants : this.availableParticipantNumber
+                        this._userInfo.iprInfo.ticketAmount - this.iprRegisteredParticipants : this.availableParticipantNumber;
             } else {
                 this.availableParticipantNumber = this._userInfo.iprInfo.ticketAmount - this.iprRegisteredParticipants;
             }
@@ -527,6 +547,6 @@ export default class SelectTickets extends LightningElement {
     }
 
     get isTicketAmountRequired() {
-        return !this._groupIndividualTickets.isPartInit
+        return !this._groupIndividualTickets.isPartInit;
     }
 }
