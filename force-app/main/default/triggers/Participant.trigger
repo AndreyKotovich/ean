@@ -18,9 +18,9 @@ trigger Participant on Participant__c (after insert, before insert, before updat
         if(soloParticipantIds.size() > 0) {
             ParticipantTriggerHelper.soloParticipantRegistration(soloParticipantIds);
         }
-        if (groupParticipantIds.size() > 0) {
-            ParticipantTriggerHelper.groupParticipantRegistration(groupParticipantIds);
-        }
+        // if (groupParticipantIds.size() > 0) {
+        //     ParticipantTriggerHelper.groupParticipantRegistration(groupParticipantIds);
+        // }
     }
     if (Trigger.isBefore && Trigger.isInsert) {
         ParticipantTriggerHelper.processNewParticipants(Trigger.new);

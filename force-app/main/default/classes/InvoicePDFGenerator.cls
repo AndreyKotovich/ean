@@ -294,24 +294,23 @@ public class InvoicePDFGenerator {
         update sessionParticipants;
     }
 
-    @Future(Callout = true)
-     public static void insertEmailActivity(List<Id> orderIds) {
-         List<Order__c> orders = [
-             SELECT Id, Contact__r.Email, Event_custom__c, Type__c FROM Order__c WHERE Id IN :orderIds
-         ];
-         List<Email_Activity__c> emailActivities = new List<Email_Activity__c>();
-         for (Order__c order : orders) {
-             Email_Activity__c emailActivity = new Email_Activity__c(
-                 Contact__c = order.Contact__c,
-                 Event_Custom__c = order.Event_custom__c,
-                 Order__c = order.Id,
-                 Send_To_Email__c = order.Contact__r.Email,
-                 Type__c = order.Type__c
-             );
-             emailActivities.add(emailActivity);
-         }
-         if (emailActivities.size() > 0) {
-             insert emailActivities;
-         }
-     }
+    public static void insertEmailActivity(List<Id> orderIds) {
+        List<Order__c> orders = [
+            SELECT Id, Contact__r.Email, Event_custom__c, Type__c FROM Order__c WHERE Id IN :orderIds
+        ];
+        List<Email_Activity__c> emailActivities = new List<Email_Activity__c>();
+        for (Order__c order : orders) {
+            Email_Activity__c emailActivity = new Email_Activity__c(
+                Contact__c = order.Contact__c,
+                Event_Custom__c = order.Event_custom__c,
+                Order__c = order.Id,
+                Send_To_Email__c = order.Contact__r.Email,
+                Type__c = order.Type__c
+            );
+            emailActivities.add(emailActivity);
+        }
+        if (emailActivities.size() > 0) {
+            insert emailActivities;
+        }
+    }
 }

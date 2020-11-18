@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Presentation_Type__c</fullName>
+    <externalId>false</externalId>
+    <label>Presentation Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>oral invited</fullName>
+                <default>false</default>
+                <label>oral invited</label>
+            </value>
+            <value>
+                <fullName>eposter</fullName>
+                <default>false</default>
+                <label>eposter</label>
+            </value>
+            <value>
+                <fullName>oral industry</fullName>
+                <default>false</default>
+                <label>oral industry</label>
+            </value>
+            <value>
+                <fullName>epresentation</fullName>
+                <default>false</default>
+                <label>epresentation</label>
+            </value>
+            <value>
+                <fullName>poster on demand</fullName>
+                <default>false</default>
+                <label>poster on demand</label>
+            </value>
+            <value>
+                <fullName>oral abstract</fullName>
+                <default>false</default>
+                <label>oral abstract</label>
+            </value>
+            <value>
+                <fullName>live</fullName>
+                <default>false</default>
+                <label>live</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

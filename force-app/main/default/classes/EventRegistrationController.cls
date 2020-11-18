@@ -441,4 +441,58 @@ public without sharing class EventRegistrationController {
         return emailsList;
     }
 
+    @AuraEnabled public static void sendInvoiceToGroupLeader(List<String> orderIds) {
+        List<Order__c> orders = [
+            SELECT Id, Contact__r.Email, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Id, Event_custom__c
+            FROM Order__c
+            WHERE Id IN :orderIds
+        ];
+        Map<String, List<Order__c>> ordersToGroupIdsMap = new Map<String, List<Order__c>>();
+        for (Order__c order : orders) {
+            if (String.isNotBlank(order.Event_Registration_Sub_Group__c)) {
+                if (!ordersToGroupIdsMap.containsKey(order.Event_Registration_Sub_Group__r.Event_Registration_Group__c)){
+                    ordersToGroupIdsMap.put(order.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Id, new List<Order__c>());
+                }
+                ordersToGroupIdsMap.get(order.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Id).add(order);
+            }
+        }
+        Map<Id, Event_Registration_Group__c> eventGroupsMap = new Map<Id, Event_Registration_Group__c>([
+            SELECT Id, (SELECT Id FROM Event_Registration_Sub_Groups__r)
+            FROM Event_Registration_Group__c 
+            WHERE Id IN :ordersToGroupIdsMap.keySet()
+        ]);
+        List<Order__c> groupCreatedOrders = new List<Order__c>();
+        List<Order__c> groupAddedParticipantsOrders = new List<Order__c>();
+        for (Order__c order : orders) {
+            if (eventGroupsMap.get(order.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Id).Event_Registration_Sub_Groups__r.size() == 1) {
+                groupCreatedOrders.add(order);
+            } else if (eventGroupsMap.get(order.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Id).Event_Registration_Sub_Groups__r.size() > 1) {
+                groupAddedParticipantsOrders.add(order);
+            }
+        }
+        List<Email_Activity__c> emailActivities = new List<Email_Activity__c>();
+        for (Order__c order : groupCreatedOrders) {
+            Email_Activity__c emailActivity = new Email_Activity__c(
+                Contact__c = order.Contact__c,
+                Event_Custom__c = order.Event_custom__c,
+                Order__c = order.Id,
+                Send_To_Email__c = order.Contact__r.Email,
+                Type__c = 'Group registration success'
+            );
+            emailActivities.add(emailActivity);
+        }
+        for (Order__c order : groupAddedParticipantsOrders) {
+            Email_Activity__c emailActivity = new Email_Activity__c(
+                Contact__c = order.Contact__c,
+                Event_Custom__c = order.Event_custom__c,
+                Order__c = order.Id,
+                Send_To_Email__c = order.Contact__r.Email,
+                Type__c = 'Group participants added'
+            );
+            emailActivities.add(emailActivity);
+        }
+        if (emailActivities.size() > 0) {
+            insert emailActivities;
+        }
+    }
 }

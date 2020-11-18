@@ -4,6 +4,7 @@
     <externalId>false</externalId>
     <label>Payment Method</label>
     <required>false</required>
+    <trackHistory>true</trackHistory>
     <trackTrending>false</trackTrending>
     <type>Picklist</type>
     <valueSet>
@@ -24,6 +25,11 @@
                 <fullName>Bank Transfer</fullName>
                 <default>false</default>
                 <label>Bank Transfer</label>
+            </value>
+            <value>
+                <fullName>Onsite</fullName>
+                <default>false</default>
+                <label>Onsite</label>
             </value>
         </valueSetDefinition>
     </valueSet>

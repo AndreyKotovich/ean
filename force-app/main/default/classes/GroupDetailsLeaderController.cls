@@ -58,6 +58,7 @@ public without sharing class GroupDetailsLeaderController {
 				'groupDetails' => groupDetails,
 				'subGroupList' => subGroupList,
 				'disabledEmails' => disabledEmails,
+				'disabledEmailsThisGroup' => disabledEmailsThisGroup,
 				'displayAccordions' => !subGroupList.isEmpty(),
 				'displayAddMoreTicketsButton' => true
 			};
@@ -76,6 +77,7 @@ public without sharing class GroupDetailsLeaderController {
 	public static List<String> orderedSubGroupIds = new List<String>();
 	public static Map<String, SubGroupDetailsWrap> subGroupIdToDetailsWrap = new Map<String, SubGroupDetailsWrap>();
 	public static List<SubGroupDetailsWrap> subGroupList = new List<SubGroupDetailsWrap>();
+	public static Set<String> disabledEmailsThisGroup = new Set<String>();
 
 	public static void getGroupParticipants(String contactRecordId, String groupId) {
 		Id g2mRT = Schema.SObjectType.Participant__c.getRecordTypeInfosByDeveloperName().get('G2M').getRecordTypeId();
@@ -93,7 +95,8 @@ public without sharing class GroupDetailsLeaderController {
 			AND Event_Registration_Sub_Group__r.Event_Registration_Group__c =:groupId
 			AND Contact__c != null
 			AND Event_custom__c != null
-			ORDER BY Event_Registration_Sub_Group__r.CreatedDate, LastModifiedDate DESC
+			// ORDER BY Event_Registration_Sub_Group__r.CreatedDate, Invitation_Status_In_Group__c DESC NULLS LAST
+			ORDER BY Event_Registration_Sub_Group__r.CreatedDate, Invitation_Status_In_Group__c DESC NULLS LAST, Participant_Email__c DESC NULLS LAST
 		];
 	}
 
@@ -112,15 +115,34 @@ public without sharing class GroupDetailsLeaderController {
 			subGroupParticipant.newContactName = '' + subGroupParticipant.oldContactName;
 			subGroupParticipant.newContactEmail = '' + subGroupParticipant.oldContactEmail;
 
+			if (!String.isBlank(subGroupParticipant.oldContactEmail)) disabledEmailsThisGroup.add(subGroupParticipant.oldContactEmail);
+
 			Boolean isDraftStatus = String.isBlank(participant.Invitation_Status_In_Group__c) || participant.Invitation_Status_In_Group__c == 'Draft';
-			subGroupParticipant.displayAddButton = isDraftStatus && !String.isBlank(subGroupParticipant.oldContactName);
-			subGroupParticipant.displayInviteButton = isDraftStatus && String.isBlank(subGroupParticipant.oldContactName) && !String.isBlank(subGroupParticipant.oldContactEmail);
-			subGroupParticipant.displaySaveDraftButton = false;
-			subGroupParticipant.isDraftStatus = isDraftStatus;	// ???
+			ParticipantButtonsWrap buttonsSettings = new ParticipantButtonsWrap();
+			buttonsSettings.enableAddInviteButtons = true;
+			buttonsSettings.displayAddButton = isDraftStatus && !String.isBlank(subGroupParticipant.oldContactName);
+			buttonsSettings.displayInviteButton = isDraftStatus && String.isBlank(subGroupParticipant.oldContactName) && !String.isBlank(subGroupParticipant.oldContactEmail);
+			buttonsSettings.displaySaveDraftButton = false;
+			buttonsSettings.isDraftStatus = isDraftStatus;	// ???
+			buttonsSettings.isInvited = participant.Invitation_Status_In_Group__c == 'Invited';
+			buttonsSettings.isConfirmed = participant.Invitation_Status_In_Group__c == 'Confirmed';
+
+			subGroupParticipant.buttonsSettings = buttonsSettings;
+			subGroupParticipant.buttonsSettingsInitial = buttonsSettings;
+
+			// @AuraEnabled public ParticipantButtonsWrap buttonsSettings { get; set; }
+			// @AuraEnabled public ParticipantButtonsWrap buttonsSettingsInitial { get; set; }
+
+
+
+			// subGroupParticipant.displayAddButton = isDraftStatus && !String.isBlank(subGroupParticipant.oldContactName);
+			// subGroupParticipant.displayInviteButton = isDraftStatus && String.isBlank(subGroupParticipant.oldContactName) && !String.isBlank(subGroupParticipant.oldContactEmail);
+			// subGroupParticipant.displaySaveDraftButton = false;
+			// subGroupParticipant.isDraftStatus = isDraftStatus;	// ???
 			subGroupParticipant.invitationStatusInGroup = participant.Invitation_Status_In_Group__c;	//	develop moment
 
-			subGroupParticipant.isInvited = participant.Invitation_Status_In_Group__c == 'Invited';
-			subGroupParticipant.isConfirmed = participant.Invitation_Status_In_Group__c == 'Confirmed';
+			// subGroupParticipant.isInvited = participant.Invitation_Status_In_Group__c == 'Invited';
+			// subGroupParticipant.isConfirmed = participant.Invitation_Status_In_Group__c == 'Confirmed';
 
 			subGroupParticipant.disabledToEdit = !isDraftStatus;
 
@@ -173,24 +195,52 @@ public without sharing class GroupDetailsLeaderController {
 
 			//	define titles on Accordions
 			subGroupDetails.accordionIsExpanded = true;
-			if (orderSubGroupIdToOrder.containsKey(subGroupId)) {
+
+			Boolean isOrderExist = orderSubGroupIdToOrder.containsKey(subGroupId);
+			Boolean isOrderPaid = isOrderExist;
+
+			if (isOrderExist) {
 				Order__c order = orderSubGroupIdToOrder.get(subGroupId);
 				subGroupDetails.accordionTitle = 'Order: ' + order.Name + ' (Status: ' + (order.Status__c == 'Opened' ? 'Not Paid' : order.Status__c) + ')';
-
-				List<SubGroupParticipantWrap> subGroupParticipantList = subGroupDetails.subGroupParticipantList;
-				Boolean accordionIsExpanded = false;
-				for (SubGroupParticipantWrap subGroupParticipant : subGroupParticipantList) {
-					if (subGroupParticipant.isDraftStatus) accordionIsExpanded = true;
-					break;
-				}
-				subGroupDetails.accordionIsExpanded = accordionIsExpanded;
-				// subGroupDetails.accordionIsExpanded = !(order.Status__c == 'Paid');
+				isOrderPaid = order.Status__c == 'Paid';
 			} else {
 				subGroupDetails.accordionTitle = 'Order Not Found';
 			}
-			subGroupDetails.accordionIndex = accordionIndex;
-			accordionIndex++;
-			subGroupList.add(subGroupDetails);
+
+			List<SubGroupParticipantWrap> subGroupParticipantList = subGroupDetails.subGroupParticipantList;
+			Boolean accordionIsExpanded = false;
+			for (SubGroupParticipantWrap subGroupParticipant : subGroupParticipantList) {
+
+				subGroupParticipant.buttonsSettings.enableAddInviteButtons = isOrderPaid;
+
+				ErrorWrap error = new ErrorWrap();
+				error.hasError = false;
+				error.message = '';
+				ErrorWrap errorInitial = new ErrorWrap();
+				errorInitial.hasError = false;
+				errorInitial.message = 'Please enter email';
+
+				subGroupParticipant.errorInitial = error;
+
+				if (isOrderPaid && String.isBlank(subGroupParticipant.oldContactEmail)) {
+					error.hasError = true;
+					error.message = 'Please enter email';
+				}
+				subGroupParticipant.error = error;
+				subGroupParticipant.errorInitial = errorInitial;
+				// subGroupParticipant.errorInitial = error;
+
+				subGroupParticipant.buttonsSettings.displayAddButton = subGroupParticipant.buttonsSettings.displayAddButton && isOrderPaid;
+				subGroupParticipant.buttonsSettings.displayInviteButton = subGroupParticipant.buttonsSettings.displayInviteButton && isOrderPaid;
+				subGroupParticipant.buttonsSettingsInitial = subGroupParticipant.buttonsSettings;
+
+				if (subGroupParticipant.buttonsSettings.isDraftStatus) accordionIsExpanded = true;
+			}
+			subGroupDetails.accordionIsExpanded = accordionIsExpanded;
+
+		subGroupDetails.accordionIndex = accordionIndex;
+		accordionIndex++;
+		subGroupList.add(subGroupDetails);
 		}
 	}
 
@@ -239,14 +289,36 @@ public without sharing class GroupDetailsLeaderController {
 		@AuraEnabled public String uniquekey1 { get; set; }				//	subGroupId
 		@AuraEnabled public String uniquekey2 { get; set; }				//	index in list (0...)
 
+		@AuraEnabled public ParticipantButtonsWrap buttonsSettings { get; set; }
+		@AuraEnabled public ParticipantButtonsWrap buttonsSettingsInitial { get; set; }
+
+		// @AuraEnabled public Boolean enableAddInviteButtons { get; set; }
+		// @AuraEnabled public Boolean displayAddButton { get; set; }
+		// @AuraEnabled public Boolean displayInviteButton { get; set; }
+		// @AuraEnabled public Boolean displaySaveDraftButton { get; set; }
+		// @AuraEnabled public Boolean isDraftStatus { get; set; }
+		// @AuraEnabled public Boolean isInvited { get; set; }				//	participant.Invitation_Status_In_Group__c == 'Invited'
+		// @AuraEnabled public Boolean isConfirmed { get; set; }			//	participant.Invitation_Status_In_Group__c == 'Confirmed'
+
+		@AuraEnabled public ErrorWrap error { get; set; }
+		@AuraEnabled public ErrorWrap errorInitial { get; set; }		//	used ONLY if order is paid and the user was deleted the participant email in input field
+
+		@AuraEnabled public String invitationStatusInGroup { get; set; }
+	}
+
+	public class ParticipantButtonsWrap {
+		@AuraEnabled public Boolean enableAddInviteButtons { get; set; }
 		@AuraEnabled public Boolean displayAddButton { get; set; }
 		@AuraEnabled public Boolean displayInviteButton { get; set; }
 		@AuraEnabled public Boolean displaySaveDraftButton { get; set; }
 		@AuraEnabled public Boolean isDraftStatus { get; set; }
 		@AuraEnabled public Boolean isInvited { get; set; }				//	participant.Invitation_Status_In_Group__c == 'Invited'
 		@AuraEnabled public Boolean isConfirmed { get; set; }			//	participant.Invitation_Status_In_Group__c == 'Confirmed'
-
-		@AuraEnabled public String invitationStatusInGroup { get; set; }
-
 	}
+
+	public class ErrorWrap {
+		@AuraEnabled public Boolean hasError { get; set; }
+		@AuraEnabled public String message { get; set; }
+	}
+
 }

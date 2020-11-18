@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Available_for_Personas__c</fullName>
+    <description>If there are special persona values then ticket available for only for these special personas, country and membership is not considered, otherwise it works and simple ticket.</description>
     <externalId>false</externalId>
+    <inlineHelpText>If there are special persona values then ticket available for only for these special personas, country and membership is not considered, otherwise it works and simple ticket.</inlineHelpText>
     <label>Available for Personas</label>
     <required>false</required>
     <trackTrending>false</trackTrending>
@@ -11,19 +13,24 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>Persona 1</fullName>
+                <fullName>Press</fullName>
                 <default>false</default>
-                <label>Persona 1</label>
+                <label>Press</label>
             </value>
             <value>
-                <fullName>Persona 2</fullName>
+                <fullName>Grant_Winner</fullName>
                 <default>false</default>
-                <label>Persona 2</label>
+                <label>Grant Winner</label>
             </value>
             <value>
-                <fullName>Persona 3</fullName>
+                <fullName>Invited_Person</fullName>
                 <default>false</default>
-                <label>Persona 3</label>
+                <label>Invited Person</label>
+            </value>
+            <value>
+                <fullName>Speaker</fullName>
+                <default>false</default>
+                <label>Speaker</label>
             </value>
         </valueSetDefinition>
     </valueSet>

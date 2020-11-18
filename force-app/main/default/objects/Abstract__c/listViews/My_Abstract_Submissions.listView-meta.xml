@@ -2,11 +2,12 @@
 <ListView xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>My_Abstract_Submissions</fullName>
     <columns>NAME</columns>
+    <columns>Title__c</columns>
+    <columns>Abstract_Presenter__c</columns>
     <columns>Event__c</columns>
     <columns>Stage__c</columns>
     <columns>Status__c</columns>
     <columns>Type__c</columns>
-    <columns>Title__c</columns>
     <filterScope>Mine</filterScope>
     <filters>
         <field>RECORDTYPE</field>

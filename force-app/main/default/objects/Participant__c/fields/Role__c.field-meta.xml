@@ -11,6 +11,51 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
+                <fullName>EAN Supplier</fullName>
+                <default>false</default>
+                <label>EAN Supplier</label>
+            </value>
+            <value>
+                <fullName>EAN Staff</fullName>
+                <default>false</default>
+                <label>EAN Staff</label>
+            </value>
+            <value>
+                <fullName>Press</fullName>
+                <default>false</default>
+                <label>Press</label>
+            </value>
+            <value>
+                <fullName>Invited_Persons</fullName>
+                <default>false</default>
+                <label>Invited Persons</label>
+            </value>
+            <value>
+                <fullName>Invited_Speaker</fullName>
+                <default>false</default>
+                <label>Invited Speaker</label>
+            </value>
+            <value>
+                <fullName>Individual_Participant</fullName>
+                <default>false</default>
+                <label>Individual Participant</label>
+            </value>
+            <value>
+                <fullName>Exhibitor_Sponsor_IPR</fullName>
+                <default>false</default>
+                <label>Exhibitor/ Sponsor/ IPR</label>
+            </value>
+            <value>
+                <fullName>Group_Participant</fullName>
+                <default>false</default>
+                <label>Group Participant</label>
+            </value>
+            <value>
+                <fullName>Scholarship_Bursaries</fullName>
+                <default>false</default>
+                <label>Scholarship (Bursaries)</label>
+            </value>
+            <value>
                 <fullName>FW Convenor</fullName>
                 <default>false</default>
                 <label>FW Convenor</label>
@@ -19,11 +64,6 @@
                 <fullName>FW speaker</fullName>
                 <default>false</default>
                 <label>FW speaker</label>
-            </value>
-            <value>
-                <fullName>Group Participant</fullName>
-                <default>false</default>
-                <label>Group Participant</label>
             </value>
             <value>
                 <fullName>Guest</fullName>
@@ -67,7 +107,7 @@
             </value>
             <value>
                 <fullName>Participant</fullName>
-                <default>true</default>
+                <default>false</default>
                 <label>Participant</label>
             </value>
             <value>

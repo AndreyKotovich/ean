@@ -7,18 +7,9 @@
     <trackTrending>false</trackTrending>
     <type>Picklist</type>
     <valueSet>
+        <restricted>true</restricted>
         <valueSetDefinition>
             <sorted>false</sorted>
-            <value>
-                <fullName>3-Days Satellite Session</fullName>
-                <default>false</default>
-                <label>3-Days Satellite Session</label>
-            </value>
-            <value>
-                <fullName>Brain Challenge</fullName>
-                <default>false</default>
-                <label>Brain Challenge</label>
-            </value>
             <value>
                 <fullName>Career development session</fullName>
                 <default>false</default>
@@ -35,19 +26,9 @@
                 <label>Controversy</label>
             </value>
             <value>
-                <fullName>Early bird satellite session</fullName>
-                <default>false</default>
-                <label>Early bird satellite session</label>
-            </value>
-            <value>
                 <fullName>Focused Workshop</fullName>
                 <default>false</default>
                 <label>Focused Workshop</label>
-            </value>
-            <value>
-                <fullName>Grand Round session</fullName>
-                <default>false</default>
-                <label>Grand Round session</label>
             </value>
             <value>
                 <fullName>Hands-on Course</fullName>
@@ -65,16 +46,6 @@
                 <label>Plenary Sysmposium</label>
             </value>
             <value>
-                <fullName>Poster Session</fullName>
-                <default>false</default>
-                <label>Poster Session</label>
-            </value>
-            <value>
-                <fullName>Satellite Symposium</fullName>
-                <default>false</default>
-                <label>Satellite Symposium</label>
-            </value>
-            <value>
                 <fullName>Special Session</fullName>
                 <default>false</default>
                 <label>Special Session</label>
@@ -90,14 +61,14 @@
                 <label>ePoster</label>
             </value>
             <value>
-                <fullName>Oral Session</fullName>
+                <fullName>Oral Presentation</fullName>
                 <default>false</default>
-                <label>Oral Session</label>
+                <label>Oral Presentation</label>
             </value>
             <value>
-                <fullName>Symposium</fullName>
+                <fullName>Symposia</fullName>
                 <default>false</default>
-                <label>Symposium</label>
+                <label>Symposia</label>
             </value>
             <value>
                 <fullName>Teaching Course</fullName>
@@ -120,9 +91,69 @@
                 <label>Forum Programmes</label>
             </value>
             <value>
-                <fullName>Networking</fullName>
+                <fullName>Networking Session</fullName>
                 <default>false</default>
-                <label>Networking</label>
+                <label>Networking Session</label>
+            </value>
+            <value>
+                <fullName>3-Day Satellite Session</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>3-Day Satellite Session</label>
+            </value>
+            <value>
+                <fullName>3-Days Satellite Session</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>3-Days Satellite Session</label>
+            </value>
+            <value>
+                <fullName>Brain Challenge</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Brain Challenge</label>
+            </value>
+            <value>
+                <fullName>Controversy Session</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Controversy Session</label>
+            </value>
+            <value>
+                <fullName>Early bird satellite session</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Early bird satellite session</label>
+            </value>
+            <value>
+                <fullName>Grand Round session</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Grand Round session</label>
+            </value>
+            <value>
+                <fullName>Hands-on-course</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Hands-on-course</label>
+            </value>
+            <value>
+                <fullName>Plenary Symposium</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Plenary Symposium</label>
+            </value>
+            <value>
+                <fullName>Poster Session</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Poster Session</label>
+            </value>
+            <value>
+                <fullName>Satellite Symposium</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Satellite Symposium</label>
             </value>
         </valueSetDefinition>
     </valueSet>

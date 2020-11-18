@@ -4,6 +4,12 @@
     <columns>NAME</columns>
     <columns>Presenter__c</columns>
     <columns>Lecture__c</columns>
-    <filterScope>Mine</filterScope>
+    <columns>Eligible_for_Invited_Submission__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Eligible_for_Invited_Submission__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
     <label>My Presentations</label>
 </ListView>

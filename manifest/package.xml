@@ -33,6 +33,30 @@
         <name>StaticResource</name>
     </types>
     <types>
+        <members>*</members>
+        <name>EmailTemplate</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>PermissionSet</name>
+    </types>
+    <types>
+		<members>*</members>
+		<name>CustomField</name>
+	</types>
+    	<types>
+		<members>*</members>
+		<name>CustomObject</name>
+	</types>
+   	<types>
+		<members>*</members>
+		<name>QuickAction</name>
+	</types>
+    <types>
+		<members>*</members>
+		<name>ValidationRule</name>
+	</types>
+    <types>
         <members>Admin</members>
         <members>Member Community User Profile</members>
         <members>Non-Member Community User Profile</members>

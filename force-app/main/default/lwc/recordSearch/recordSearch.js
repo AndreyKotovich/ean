@@ -36,6 +36,9 @@ export default class RecordSearch extends LightningElement {
 	_lastServerResults = [];
 	_originaltext = '';
 
+	_newEnteredText = '';
+	_eventType = '';
+
 	//	prevent browser autofill
 	_inputName = 'incust';
 
@@ -61,6 +64,8 @@ export default class RecordSearch extends LightningElement {
     }
 
 	connectedCallback() {
+		this._newEnteredText = this.enteredtext;
+
 		if (this.uniquekey1 == null) {
 			this.uniquekey1 = '1234567890';
 			this.uniquekey2 = 0;
@@ -75,24 +80,39 @@ export default class RecordSearch extends LightningElement {
 		for (var i = 0; i < 16; i++) this._inputName += charset.charAt(Math.floor(Math.random() * charset.length));
 	}
 
-    handleChange(evt) {
-		var newEnteredText = evt.target.value;
-		if (newEnteredText == undefined) {
+	handleInputEvent(evt) {
+		this._newEnteredText = evt.target.value;
+		this._eventType = 'oninput';
+		this.handleChange();
+	}
+	handleChangeEvent(evt) {
+		this._newEnteredText = evt.target.value;
+		this._eventType = 'onchange';
+		this.handleChange();
+	}
+	handleBlurEvent(evt) {
+		this._newEnteredText = evt.target.value;
+		this._eventType = 'onblur';
+		this.handleChange();
+	}
+
+    handleChange() {
+		if (this._newEnteredText == undefined) {
 			// console.log('handleChange return 1');
 			return;
 		}
 
 		this._lastenteredtext = this.enteredtext;
-		this.enteredtext = newEnteredText;
-		if (this._lastenteredtext != '' && newEnteredText.startsWith(this._lastenteredtext) && this._lastServerResults.length <= 0) {
+		this.enteredtext = this._newEnteredText;
+		if (this._lastenteredtext != '' && this._newEnteredText.startsWith(this._lastenteredtext) && this._lastServerResults.length <= 0) {
 			// console.log('handleChange return 2');
 			this.selectedRecordDetails.enteredText = this.enteredtext;
 			this.selectedRecordDetails.originalText = this._originaltext;
-			this.dispatchEvent(new CustomEvent('changenewcontactemail', { bubbles: true, detail: { recorddetails: JSON.stringify(this.selectedRecordDetails), uniquekey1: this.uniquekey1, uniquekey2: this.uniquekey2 } }));
+			this.dispatchEvent(new CustomEvent('changenewcontactemail', { bubbles: true, detail: { recorddetails: JSON.stringify(this.selectedRecordDetails), uniquekey1: this.uniquekey1, uniquekey2: this.uniquekey2, eventtype: this._eventType } }));
 			this._originaltext = this.enteredtext;
 			return;
 		}
-		if (this._lastenteredtext == newEnteredText) {
+		if (this._lastenteredtext == this._newEnteredText) {
 			// console.log('handleChange return 3');
 			return;
 		}
@@ -129,7 +149,7 @@ export default class RecordSearch extends LightningElement {
 			this._lastServerResults = serverResults;
 			this.selectedRecordDetails.enteredText = this.enteredtext;
 			this.selectedRecordDetails.originalText = this._originaltext;
-			this.dispatchEvent(new CustomEvent('changenewcontactemail', { bubbles: true, detail: { recorddetails: JSON.stringify(this.selectedRecordDetails), uniquekey1: this.uniquekey1, uniquekey2: this.uniquekey2 } }));
+			this.dispatchEvent(new CustomEvent('changenewcontactemail', { bubbles: true, detail: { recorddetails: JSON.stringify(this.selectedRecordDetails), uniquekey1: this.uniquekey1, uniquekey2: this.uniquekey2, eventtype: this._eventType  } }));
 			this._originaltext = this.enteredtext;
 		})
 		.catch(error=>{

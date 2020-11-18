@@ -15,7 +15,34 @@
         </values>
     </picklistValues>
     <picklistValues>
+        <picklist>Invitation_Status_In_Group__c</picklist>
+        <values>
+            <fullName>Confirmed</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Draft</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Invited</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>Role__c</picklist>
+        <values>
+            <fullName>EAN Staff</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EAN Supplier</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Exhibitor_Sponsor_IPR</fullName>
+            <default>false</default>
+        </values>
         <values>
             <fullName>FW Convenor</fullName>
             <default>false</default>
@@ -25,7 +52,7 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>Group Participant</fullName>
+            <fullName>Group_Participant</fullName>
             <default>false</default>
         </values>
         <values>
@@ -37,7 +64,19 @@
             <default>false</default>
         </values>
         <values>
+            <fullName>Individual_Participant</fullName>
+            <default>false</default>
+        </values>
+        <values>
             <fullName>Investigator Award Winner</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Invited_Persons</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Invited_Speaker</fullName>
             <default>false</default>
         </values>
         <values>
@@ -66,6 +105,14 @@
         </values>
         <values>
             <fullName>Poster session %2Fsc chair</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Press</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Scholarship_Bursaries</fullName>
             <default>false</default>
         </values>
         <values>

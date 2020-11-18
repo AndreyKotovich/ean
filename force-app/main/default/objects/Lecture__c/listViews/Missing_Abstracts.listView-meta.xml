@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Missing_Abstracts</fullName>
+    <columns>NAME</columns>
+    <columns>Lecture_Title__c</columns>
+    <columns>Lecture_Type__c</columns>
+    <columns>Abstract__c</columns>
+    <columns>Session__c</columns>
+    <columns>Event_custom__c</columns>
+    <columns>Abstract_Submitted__c</columns>
+    <columns>Submission_Type__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Abstract__c</field>
+        <operation>equals</operation>
+    </filters>
+    <filters>
+        <field>Abstract_Submitted__c</field>
+        <operation>equals</operation>
+        <value>0</value>
+    </filters>
+    <label>Missing Abstracts</label>
+</ListView>

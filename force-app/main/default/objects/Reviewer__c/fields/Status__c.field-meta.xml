@@ -17,9 +17,9 @@
                 <label>Requested</label>
             </value>
             <value>
-                <fullName>Accpeted</fullName>
+                <fullName>Accepted</fullName>
                 <default>false</default>
-                <label>Accpeted</label>
+                <label>Accepted</label>
             </value>
             <value>
                 <fullName>Rejected</fullName>

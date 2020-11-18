@@ -2,8 +2,20 @@
 <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Closed_Stage</fullName>
     <active>true</active>
-    <errorConditionFormula>NOT(ISPICKVAL(Stage__c, &quot;Closed&quot;)) &amp;&amp; 
-(ISPICKVAL(Status__c, &quot;Accepted&quot;) || ISPICKVAL(Status__c, &quot;Rejected&quot;))</errorConditionFormula>
-    <errorDisplayField>Stage__c</errorDisplayField>
-    <errorMessage>Please set the stage to closed when this abstract has been accepted or rejected.</errorMessage>
+    <errorConditionFormula>OR(
+
+NOT(ISPICKVAL(Stage__c, &quot;Closed&quot;))&amp;&amp;
+(ISPICKVAL(Status__c, &quot;Accepted&quot;) ||
+ISPICKVAL(Status__c, &quot;Rejected&quot;))
+,
+ISPICKVAL(Stage__c, &quot;Closed&quot;) &amp;&amp;
+NOT(ISPICKVAL(Status__c, &quot;Accepted&quot;) ||
+ISPICKVAL(Status__c, &quot;Rejected&quot;))
+,
+ISPICKVAL(Status__c, &quot;Accepted&quot;) &amp;&amp;
+((Session__c=&quot;&quot;)||(  Abstract_Presenter__c  =&quot;&quot;))
+)</errorConditionFormula>
+    <errorMessage>An abstract is closed, if it is accepted or rejected.
+
+To accept an abstract, a presenter and a session need to be connected to this abstract.</errorMessage>
 </ValidationRule>

@@ -1,4 +1,4 @@
-trigger SendInvoice on Order__c (after update) {
+trigger SendInvoice on Order__c (after update, after insert) {
     //Sending PDF Invoices
     if (Trigger.isUpdate && Trigger.isAfter) {
         Set<Id> orderIds = Trigger.newMap.keySet();
@@ -31,4 +31,22 @@ trigger SendInvoice on Order__c (after update) {
             InvoicePDFGenerator.insertEmailActivity(eventOrderIds);
         }
     }
+    // if (Trigger.isInsert && Trigger.isAfter) {
+    //     List<String> openedGroupOrderIds = new List<String>();
+    //     List<String> openedSoloOrderIds = new List<String>();
+    //     for (Order__c order : Trigger.new) {
+    //         if (order.Status__c == 'Opened'
+    //         && order.Type__c == 'Event registration'
+    //         && String.isNotBlank(order.Event_Registration_Sub_Group__c)) {
+    //             openedGroupOrderIds.add(order.Id);
+    //         } else if (order.Status__c == 'Opened'
+    //         && order.Type__c == 'Event registration'
+    //         && String.isBlank(order.Event_Registration_Sub_Group__c)) {
+    //             openedSoloOrderIds.add(order.Id);
+    //         }
+    //     }
+    //     if (openedGroupOrderIds.size() > 0) {
+    //         InvoicePDFGenerator.sendInvoiceToGroupLeader(openedGroupOrderIds);
+    //     }
+    // }
 }

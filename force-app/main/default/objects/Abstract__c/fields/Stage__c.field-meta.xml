@@ -36,6 +36,11 @@
                 <default>false</default>
                 <label>Closed</label>
             </value>
+            <value>
+                <fullName>Deleted</fullName>
+                <default>false</default>
+                <label>Deleted</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

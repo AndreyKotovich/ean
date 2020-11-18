@@ -21,12 +21,20 @@ public without sharing class ChangeRequestHelper {
 	}
 	public static void sendEmailIfStatusChanged(List<Change_Request__c> changeRequestNew,  Map<Id, Change_Request__c> changeRequestOldMap) {
 		List<Change_Request__c> changeRequestsStatusChanged = new List<Change_Request__c>();
+		List<Change_Request__c> changeRequestsTransferApproved = new List<Change_Request__c>();
 		List<String> contactIds = new List<String>();
 		for (Change_Request__c changeRequest : changeRequestNew) {
 			if ((changeRequest.Status__c == 'Rejected' || changeRequest.Status__c == 'Approved')
 				&& changeRequestOldMap.get(changeRequest.Id).Status__c != changeRequest.Status__c) {
 					changeRequestsStatusChanged.add(changeRequest);
 					contactIds.add(changeRequest.Contact__c);
+			}
+			if (changeRequest.Status__c == 'Approved'
+			&& changeRequestOldMap.get(changeRequest.Id).Status__c != changeRequest.Status__c
+			&& changeRequest.Type__c == 'Solo Registration Transfer'
+			|| changeRequest.Type__c == 'Group Registration Transfer') {
+				changeRequestsTransferApproved.add(changeRequest);
+				contactIds.add(changeRequest.TransferToContact__c);
 			}
 		}
 		Map<Id, Contact> contactsMap = new Map<ID, Contact>([
@@ -61,6 +69,20 @@ public without sharing class ChangeRequestHelper {
 			}
 			emailActivity.Event_custom__c = changeRequest.Event_custom__c;				
 			emailActivity.Type__c = changeRequest.Type__c;
+			emailActivities.add(emailActivity);
+		}
+		for (Change_Request__c changeRequest : changeRequestsTransferApproved) {
+			Email_activity__c emailActivity = new Email_activity__c();
+			emailActivity.Change_Request__c = changeRequest.Id;
+			emailActivity.Contact__c = changeRequest.TransferToContact__c;
+			if (String.isNotBlank(contactsMap.get(changeRequest.TransferToContact__c).Email)) {
+				emailActivity.Send_To_Email__c = contactsMap.get(changeRequest.TransferToContact__c).Email;
+			} else {
+				emailActivity.Send_To_Email__c = changeRequest.TransferToEmail__c;
+			}
+			emailActivity.Event_custom__c = changeRequest.Event_custom__c;
+			emailActivity.Event_Participation__c = changeRequest.Event_Participation__c;
+			emailActivity.Type__c = 'QR code for transfered participant';
 			emailActivities.add(emailActivity);
 		}
 		insert emailActivities;

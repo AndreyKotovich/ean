@@ -18,6 +18,10 @@
             <default>false</default>
         </values>
         <values>
+            <fullName>COVID-19</fullName>
+            <default>false</default>
+        </values>
+        <values>
             <fullName>Cerebrovascular diseases</fullName>
             <default>false</default>
         </values>
@@ -189,7 +193,7 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>No Location Selected</fullName>
+            <fullName>No section selected</fullName>
             <default>false</default>
         </values>
         <values>
@@ -212,7 +216,7 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>No Location Selected</fullName>
+            <fullName>No section selected</fullName>
             <default>false</default>
         </values>
         <values>
@@ -235,7 +239,7 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>No Location Selected</fullName>
+            <fullName>No section selected</fullName>
             <default>false</default>
         </values>
         <values>
@@ -1241,6 +1245,10 @@
             <default>false</default>
         </values>
         <values>
+            <fullName>Deleted</fullName>
+            <default>false</default>
+        </values>
+        <values>
             <fullName>Draft</fullName>
             <default>true</default>
         </values>
@@ -1284,6 +1292,10 @@
         </values>
         <values>
             <fullName>Autonomic nervous system diseases</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>COVID-19</fullName>
             <default>false</default>
         </values>
         <values>

@@ -11,19 +11,71 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>Lecture</fullName>
+                <fullName>oral public</fullName>
                 <default>false</default>
-                <label>Lecture</label>
+                <label>oral public</label>
+            </value>
+            <value>
+                <fullName>ePoster</fullName>
+                <default>false</default>
+                <label>ePoster</label>
+            </value>
+            <value>
+                <fullName>oral invited</fullName>
+                <default>false</default>
+                <label>oral invited</label>
+            </value>
+            <value>
+                <fullName>ePresentation</fullName>
+                <default>false</default>
+                <label>ePresentation</label>
+            </value>
+            <value>
+                <fullName>industry</fullName>
+                <default>false</default>
+                <label>industry</label>
             </value>
             <value>
                 <fullName>Forum Talk</fullName>
                 <default>false</default>
+                <isActive>false</isActive>
                 <label>Forum Talk</label>
+            </value>
+            <value>
+                <fullName>Lecture</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Lecture</label>
+            </value>
+            <value>
+                <fullName>Onsite oral</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Onsite oral</label>
+            </value>
+            <value>
+                <fullName>Poster</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Poster</label>
+            </value>
+            <value>
+                <fullName>Poster or Oral</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Poster or Oral</label>
             </value>
             <value>
                 <fullName>Scientific Theatre talk</fullName>
                 <default>false</default>
+                <isActive>false</isActive>
                 <label>Scientific Theatre talk</label>
+            </value>
+            <value>
+                <fullName>Virtual oral</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Virtual oral</label>
             </value>
         </valueSetDefinition>
     </valueSet>

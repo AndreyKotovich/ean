@@ -104,7 +104,9 @@
 													disabledvalues = {_disabledEmailsString}
 													enabledvalue = {participant.newContactEmail}
 													disabledtoedit = {participant.disabledToEdit}
-													onchangenewcontactemail = {handleOngroupchangecontactemail}>
+													onchangenewcontactemail = {handleOngroupchangecontactemail}
+													error = {participant.error}
+													>
 												</c-record-search>
 											</template>
 										</div>
@@ -112,27 +114,29 @@
 											{participant.newContactName}
 										</div>
 
-										<template if:true={participant.displaySaveDraftButton}>
+										<template if:true={participant.buttonsSettings.displaySaveDraftButton}>
 											<div class="small-button">
 												<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;">Save</div>
 											</div>
 										</template>
-										<template if:true={participant.displayAddButton}>
-											<div class="small-button">
-												<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;">Add</div>
-											</div>
+										<template if:true={participant.buttonsSettings.enableAddInviteButtons}>
+											<template if:true={participant.buttonsSettings.displayAddButton}>
+												<div class="small-button">
+													<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;">Add</div>
+												</div>
+											</template>
+											<template if:true={participant.buttonsSettings.displayInviteButton}>
+												<div class="small-button">
+													<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;">Invite</div>
+												</div>
+											</template>
 										</template>
-										<template if:true={participant.displayInviteButton}>
-											<div class="small-button">
-												<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;">Invite</div>
-											</div>
-										</template>
-										<template if:true={participant.isInvited}>
+										<template if:true={participant.buttonsSettings.isInvited}>
 											<div style="display: inline-block; margin-left: 10px; vertical-align: bottom; color: #007dc6; font-weight: bold;">
 												<div>{_invitedMessage}</div>
 											</div>
 										</template>
-										<template if:true={participant.isConfirmed}>
+										<template if:true={participant.buttonsSettings.isConfirmed}>
 											<div style="display: inline-block; margin-left: 10px; vertical-align: bottom; color: #007dc6; font-weight: bold;">
 												<div>{_confirmedMessage}</div>
 											</div>

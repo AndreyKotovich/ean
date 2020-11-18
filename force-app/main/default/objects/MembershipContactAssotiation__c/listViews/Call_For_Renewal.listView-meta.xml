@@ -10,7 +10,7 @@
     <columns>Do_Call_For_Renewal__c</columns>
     <columns>Email_Activity__c</columns>
     <columns>Last_Call_For_Renewal_Date__c</columns>
-    <columns>Next_Membership_Status__c</columns>
+    <columns>Renewal_Application_Form__c</columns>
     <filterScope>Everything</filterScope>
     <filters>
         <field>Expiration_date__c</field>
@@ -43,7 +43,7 @@
         <value>Honorary Members</value>
     </filters>
     <filters>
-        <field>Next_Membership_Status__c</field>
+        <field>Renewal_Application_Form__c</field>
         <operation>equals</operation>
     </filters>
     <label>Call For Renewal</label>

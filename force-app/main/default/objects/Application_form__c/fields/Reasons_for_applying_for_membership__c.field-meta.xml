@@ -5,6 +5,7 @@
     <label>Reasons for applying for membership</label>
     <required>false</required>
     <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>TextArea</type>
 </CustomField>

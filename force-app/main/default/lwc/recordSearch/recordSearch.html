@@ -4,9 +4,9 @@
 
 			<div class={inputContainerClass}>
 				<div class="slds-form-element__control">
-					<input id="input" name={_inputName} list="valueList" placeholder={placeholder} class="slds-input"
+					<input id="input" name={_inputName} list="valueList" placeholder={placeholder} class="slds-input" data-id={_datalistId}
 						   type={inputtype} key={existingrecordid} value={enteredtext} autocomplete="password" style="padding-right: 0px;"
-						   oninput={handleChange} onchange={handleChange} onblur={handleChange} />
+						   oninput={handleInputEvent} onchange={handleChangeEvent} onblur={handleBlurEvent} />
 				</div>
 				<div if:true={error.hasError} class="slds-form-element__help" id="error-message-unique-id">{error.message}</div>
 			</div>
