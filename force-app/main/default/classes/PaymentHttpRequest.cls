@@ -633,6 +633,7 @@ public without sharing class PaymentHttpRequest {
 
     public static Map<String, String> refundTransaction(String orderRefunedId, String orderCancelledId, Decimal amount) {
         System.debug('START refundTransaction');
+        Transaction__c tr = new Transaction__c();
         try { 
             List<Order__c> ords = [
                 SELECT Id, Status__c, 
@@ -644,13 +645,12 @@ public without sharing class PaymentHttpRequest {
                 FROM Order__c WHERE Id = :orderRefunedId
             ];
 
-            if (ords.size() == 0 || ords[0].Transactions__r.size() == 0 || String.isBlank(ords[0].Transactions__r[0].Payment_Method__c) || 
-                ords[0].Transactions__r[0].Payment_Method__c == 'Bank Transfer') { 
-                    return new Map<String, String> {
-                        'status' => 'Error',
-                        'message' => 'The transaction is of the bank transfer type'
-                    }; 
-                }
+            if (ords.size() == 0 || ords[0].Transactions__r.size() == 0 || String.isBlank(ords[0].Transactions__r[0].Payment_Method__c)) {
+                return new Map<String, String> {
+                    'status' => 'Error',
+                    'message' => 'The transaction is of the bank transfer type'
+                }; 
+            }
 
             choosePaymentCredentials( new List<Payment_Credentials__mdt>() );
 
@@ -660,6 +660,22 @@ public without sharing class PaymentHttpRequest {
             String merchantAccountId = isPayPal ? paymentCredentials.Merchant_PayPal_Account_Id__c : paymentCredentials.Merchant_Account_Id__c;
             String tranType = isPayPal ? 'refund-debit' : 'refund-purchase';
             String paymentMethod = isPayPal ? 'paypal' : 'creditcard';
+
+            if (ords[0].Transactions__r[0].Payment_Method__c == 'Bank Transfer') { 
+                tr = new Transaction__c();
+                tr.Amount__c = (-1) * refundAmount;
+                tr.Order_Custom__c = orderCancelledId;
+                tr.Completion_Time_Stamp__c = Datetime.now();
+                tr.Status__c = 'Refund';
+                tr.Payment_Method__c = 'Bank Transfer';
+
+                insert tr;
+                
+                return new Map<String, String> {
+                    'status' => 'Success',
+                    'id' => String.valueOf(tr.Id)
+                };
+            }
 
             String requestBody = JSON.serialize( new Map<String,Object> {
                 'payment' => new Map<String,Object> {
@@ -691,7 +707,7 @@ public without sharing class PaymentHttpRequest {
             Log__c log = new Log__c(Process_Name__c = 'REST: Payment Refund', Order__c = orderRefunedId, Type__c = 'REST');
             createLog(log, requestBody, response.getBody(), Datetime.now(), response.getStatusCode());
 
-            Transaction__c tr = new Transaction__c();
+            tr = new Transaction__c();
             Map<String, Object> payments = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(((Map<String, Object>) JSON.deserializeUntyped(response.getBody())).get('payment')));
             Map<String, Object> requestedAmount = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(payments.get('requested-amount')));
             tr.Amount__c = (-1) * (Decimal) requestedAmount.get('value');

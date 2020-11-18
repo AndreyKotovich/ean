@@ -1,0 +1,154 @@
+<template>
+	<p>Under Development</p>
+	<div class="slds-card" style="padding: 15px; height: 100%;">
+		<template if:true={_isSpinner}>
+			<div class="slds-spinner_container" style="position: fixed">
+				<lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
+			</div>
+		</template>
+
+		<template if:false={_isSpinner}>
+			<template if:true={_isError}>
+				<div class="slds-text-heading_large slds-align_absolute-center slds-text-color_error">{_errorMessage}</div>
+			</template>
+
+			<template if:false={_isError}>
+				<div>
+
+					<div style="width: 70%; display: inline-block;">
+						<div>
+							<div class="detail-section">
+								<p style="font-size: 12px;">Group Name</p>
+								<p>{_groupName}</p>
+							</div>
+							<div class="detail-section">
+								<p style="font-size: 12px;">Event Name</p>
+								<p>{_eventName}</p>
+							</div>
+						</div>
+						<div>
+							<div class="detail-section">
+								<p style="font-size: 12px;">Event Start Time</p>
+								<p>{_eventStartDateString} {_eventStartTimeString}</p>
+							</div>
+							<div class="detail-section">
+								<p style="font-size: 12px;">Selected Participants</p>
+								<p>{_totalGroupExistingParticipants}</p>
+							</div>
+						</div>
+						<div>
+							<div class="detail-section">
+								<p style="font-size: 12px;">Event End Time</p>
+								<p>{_eventEndDateString} {_eventEndTimeString}</p>
+							</div>
+							<div class="detail-section">
+								<p style="font-size: 12px;">Requested Participants</p>
+								<p>{_totalGroupMaxParticipants}</p>
+							</div>
+						</div>
+					</div>
+
+					<div style="width: 30%; display: inline-block; vertical-align: top; padding-right: 10px;">
+						<div class="slds-text-align--right">
+
+							<!-- <template if:true={_displayAddMoreTicketsButton}>
+								<button class="slds-button slds-button_brand slds-align-bottom" onclick={handleAddMoreTicketsClick}>
+									<div style=" margin-top: 2px; margin-bottom: -2px;">Add more tickets to group</div>
+								</button>
+							</template> -->
+
+							<template if:true={_displayAddMoreTicketsButton}>
+								<button class="slds-button slds-button_brand" onclick={handleAddMoreTicketsClick}><div style="margin-top: 2px; margin-bottom: -2px;">Add more tickets to group</div></button>
+							</template>
+						</div>
+					</div>
+
+					<template for:each={_subGroupList} for:item="subGroup">
+						<div key={subGroup.subGroupId} style="margin-top: 2px; margin-bottom: 2px;">
+							<template if:false={subGroup.accordionIsExpanded}>
+								<div>
+									<div data-id={subGroup.accordionIndex} onclick={handleAccordionArrowClick} style="display: inline-block; cursor: pointer; width: 290px; margin-top: 5px;">
+										<div style="display: inline-block; vertical-align: top; padding-top: 1px;"><lightning-icon icon-name="utility:right" size="x-small"></lightning-icon></div>
+										<div class="accordion-title">{subGroup.accordionTitle}</div>
+									</div>
+								</div>
+							</template>
+							<template if:true={subGroup.accordionIsExpanded}>
+								<div>
+									<div data-id={subGroup.accordionIndex} onclick={handleAccordionArrowClick} style="display: inline-block; cursor: pointer; width: 290px; margin-top: 5px;">
+										<div style="display: inline-block; vertical-align: top; padding-top: 1px;"><lightning-icon icon-name="utility:down" size="x-small"></lightning-icon></div>
+										<div class="accordion-title">{subGroup.accordionTitle}</div>
+									</div>
+								</div>
+
+								<template for:each={subGroup.subGroupParticipantList} for:item="participant">
+									<div key={participant.participantId} style="margin-top: 2px; margin-bottom: 2px;">
+										<div style="display: inline-block; width: 310px;">
+											<template if:true={subGroup.disabledToEdit}>
+												<input class="slds-input" type="email" value={participant.oldContactEmail} autocomplete="password" disabled/>
+											</template>
+											<template if:false={subGroup.disabledToEdit}>
+												<c-record-search
+													listfields = "Id,Name,Email"
+													objectname = "Contact"
+													searchfield = "Email"
+													whereclause = {_whereclause}
+													limitrecords = 4
+													lookupicon = "standard:contact"
+													enteredtext = {participant.newContactEmail}
+													existingrecordid = {participant.newContactId}
+													placeholder = "Enter email to search Contacts"
+													inputtype = "email"
+													uniquekey1 = {participant.uniquekey1}
+													uniquekey2 = {participant.uniquekey2}
+													disabledvalues = {_disabledEmailsString}
+													enabledvalue = {participant.newContactEmail}
+													disabledtoedit = {participant.disabledToEdit}
+													onchangenewcontactemail = {handleOngroupchangecontactemail}>
+												</c-record-search>
+											</template>
+										</div>
+										<div style="display: inline-block; width: 200px; margin-left: 20px; vertical-align: bottom;">
+											{participant.newContactName}
+										</div>
+
+										<template if:true={participant.displaySaveDraftButton}>
+											<div class="small-button">
+												<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;">Save</div>
+											</div>
+										</template>
+										<template if:true={participant.displayAddButton}>
+											<div class="small-button">
+												<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;">Add</div>
+											</div>
+										</template>
+										<template if:true={participant.displayInviteButton}>
+											<div class="small-button">
+												<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;">Invite</div>
+											</div>
+										</template>
+										<template if:true={participant.isInvited}>
+											<div style="display: inline-block; margin-left: 10px; vertical-align: bottom; color: #007dc6; font-weight: bold;">
+												<div>{_invitedMessage}</div>
+											</div>
+										</template>
+										<template if:true={participant.isConfirmed}>
+											<div style="display: inline-block; margin-left: 10px; vertical-align: bottom; color: #007dc6; font-weight: bold;">
+												<div>{_confirmedMessage}</div>
+											</div>
+										</template>
+									</div>
+								</template>
+							</template>
+
+						</div>
+					</template>
+
+
+				</div>
+			</template>
+
+		</template>
+	</div>
+
+</template>

@@ -13,7 +13,7 @@
 				<template for:each={_certificateDetailsList} for:item="certificate">
 					<div key={certificate.documentId}>
 						<div>
-							<div style="display: inline-block; margin-left: 20px;">
+							<div style="display: inline-block; margin-left: 20px; min-width: 200px;">
 								{certificate.certificateTitle}
 							</div>
 							<div style="display: inline-block; margin-left: 20px;">
@@ -27,7 +27,6 @@
 				</template>
 			</lightning-card>
 		</template>
-
 	</template>
 
 </template>

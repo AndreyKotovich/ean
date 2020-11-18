@@ -1,0 +1,27 @@
+.detail-section{
+	display: inline-block;
+	width: 45%;
+	border-bottom: 1px solid #D4D4D4;
+	margin-right: 30px;
+	margin-top: 5px;
+	padding-bottom: 5px;
+}
+
+.accordion-title{
+	display: inline-block;
+	font-weight: bolder;
+	font-size: 16px;
+	color: #007DC6;
+}
+
+.small-button{
+	display: inline-block;
+	margin-left: 10px;
+	width: 60px;
+	border: 1px solid darkgray;
+	border-radius: 5px;
+	vertical-align: bottom;
+	background-color: #007DC6;
+	color: #FFFFFF;
+	text-align: center;
+}

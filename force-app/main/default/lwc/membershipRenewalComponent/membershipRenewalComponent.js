@@ -21,6 +21,7 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 	_currentContactId = '';
 	_membershipId = '';
 	_membershipName = '';
+	_membershipApiName = '';
 	_membershipStatusId = '';
 	_membershipRegion = '';
 	_membershipURL = '';
@@ -121,6 +122,7 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 				this._currentContactId = result.currentContactId;
 				this._membershipId = result.membershipId;
 				this._membershipName = result.membershipName;
+				this._membershipApiName = result.membershipApiName;
 				this._membershipStatusId = result.membershipStatusId;
 				this._membershipRegion = result.membershipRegion;
 				this._membershipURL = result.membershipURL;
@@ -186,7 +188,7 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 				this._displayDateOfGraduation = result.displayDateOfGraduation;
 				this._displayLicenseIssued = result.displayLicenseIssued;
 
-				this._dateOfGraduationErrorMessage = this._membershipName === 'Resident and Research Membership'
+				this._dateOfGraduationErrorMessage = this._membershipApiName === 'resident_and_research_membership'
 					? 'Will be defined by EAN! (validation 3 years)'
 						: 'If you have already graduated, you are no longer eligible for student Membership. Please proceed to upgrade your Membership. (validation future)';
 
@@ -289,6 +291,7 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 		recalculateRenewalFee({params: {
 			membershipId: this._membershipId,
 			membershipName: this._membershipName,
+			membershipApiName: this._membershipApiName,
 			formCountryOfResidence: this._formCountryOfResidence
 			}}).then(result=>{
 				this._isSpinner = false;
@@ -554,6 +557,7 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 		submitRenewal({params: {
 			membershipId: this._membershipId,
 			membershipName: this._membershipName,
+			membershipApiName: this._membershipApiName,
 			membershipStatusId: this._membershipStatusId,
 			applicationFormId: this._applicationFormId,
 			currentContactId: this._currentContactId,

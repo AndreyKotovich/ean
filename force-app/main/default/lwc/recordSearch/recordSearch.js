@@ -24,6 +24,7 @@ export default class RecordSearch extends LightningElement {
 	@api disabledtoedit;
 
 	@api selectedRecordDetails = {};
+	@api error = {};
 
 	_initialized = false;
 	_values = [];
@@ -95,7 +96,6 @@ export default class RecordSearch extends LightningElement {
 			// console.log('handleChange return 3');
 			return;
 		}
-
 		this.serverCall();
     }
 
@@ -136,6 +136,16 @@ export default class RecordSearch extends LightningElement {
 			console.log('RecordSearch component');
 			console.log('searchRecordsInDatabase Error: ' + JSON.stringify(error));
 		})
+	}
+
+	get inputContainerClass(){
+    	let res = 'slds-form-element';
+
+    	if(this.error.hasError){
+    		res += ' slds-has-error';
+		}
+
+    	return res;
 	}
 
 

@@ -403,27 +403,42 @@ public without sharing class EventRegistrationController {
         return roles;
     }
 
-    @AuraEnabled public static List<Map<String, Object>> getIPRFreeTicketsInfo(String exhibitorId){
-        List<AggregateResult> eventTicketParticipantsAmount = [SELECT COUNT(Id), Event_Ticket__c FROM Participant__c WHERE Event_Exhibitor__c = :exhibitorId GROUP BY Event_Ticket__c];
-        List<Exhibitor_Free_Ticket__c> exhibitorFreeTickets = [SELECT Id, Event_Ticket__c, Number__c FROM Exhibitor_Free_Ticket__c WHERE Event_Exhibitor__c = :exhibitorId];
+    @AuraEnabled public static List<String> getNotAvailableEventRegistrationEmails(List<String> eventsIds){
+        List<Participant__c> registeredParticipants = [
+                SELECT Id, Participant_Email__c, Contact__r.Email
+                FROM Participant__c
+                WHERE Event_custom__c IN :eventsIds
+                AND Status__c != 'Canceled'
+        ];
 
-        List<Map<String, Object>> result = new List<Map<String, Object>>();
+        Set<String> emails = new Set<String>();
 
-        for(AggregateResult ag : eventTicketParticipantsAmount){
-            Map<String, Object> resultMap = new Map<String, Object>();
-            resultMap.put('eventTicketId', ag.get('Event_Ticket__c'));
-            resultMap.put('freeTicketsAmountUsed', ag.get('expr0'));
-
-            for(Exhibitor_Free_Ticket__c freeTick : exhibitorFreeTickets){
-                if(freeTick.Event_Ticket__c == (Id)ag.get('Event_Ticket__c')){
-                    resultMap.put('freeTicketsAmount', freeTick.Number__c);
-                }
-            }
-
-            result.add(resultMap);
+        for(Participant__c p : registeredParticipants){
+            emails.add(p.Contact__r.Email);
+            emails.add(p.Participant_Email__c);
         }
 
-        return result;
+        List<Change_Request__c> activeChangeRequests = [
+                SELECT Id, Type__c, TransferToContact__r.Email, TransferToEmail__c
+                FROM Change_Request__c
+                WHERE Status__c IN ('Requested', 'In Progress')
+                AND Type__c IN ('Solo Registration Transfer', 'Group Registration Transfer')
+        ];
+
+        for(Change_Request__c cr : activeChangeRequests){
+            emails.add(cr.TransferToEmail__c);
+            emails.add(cr.TransferToContact__r.Email);
+        }
+
+        List<String> emailsList = new List<String>(emails);
+
+        Integer nullIndex = emailsList.indexOf(null);
+
+        if(nullIndex >= 0){
+            emailsList.remove(nullIndex);
+        }
+
+        return emailsList;
     }
 
 }

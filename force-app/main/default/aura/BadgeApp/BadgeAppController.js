@@ -19,7 +19,7 @@
       wiFiSupportedBy: 'Biogen',
       appSupportedBy: 'Roche',
       appName: 'ean',
-      appNumber: '19',
+      appNumber: '20',
       certificateLink: 'www.ean.org/oslo2019',
       bookedTickets: [
         '(Diese Info kommt dann von dem Regi System)',
@@ -38,12 +38,14 @@
       {
         firstName: 'John',
         lastName: 'Doe',
-        city: 'Paris',
-        country: 'France',
-        barcode: $A.get('$Resource.BadgeDetail') + '/barcode.svg',
+        label: 'Succes Craft',
+        labelType: 'danger',
+        // city: 'Paris',
+        // country: 'France',
+        // barcode: $A.get('$Resource.BadgeDetail') + '/barcode.svg',
         qrcode: $A.get('$Resource.BadgeDetail') + '/qr_code.png',
         footer: [
-          { label: 'Meeting only', size: 'lg' },
+          { label: 'Meeting only' },
         ],
       },
       {

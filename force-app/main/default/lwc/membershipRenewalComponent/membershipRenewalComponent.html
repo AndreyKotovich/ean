@@ -1,6 +1,4 @@
 <template>
-	<p>Membership Renewal Component (Under Development)</p>
-
 	<template if:true={_isSpinner}>
 		<div class="slds-spinner_container" style="position: fixed">
 			<lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
@@ -85,9 +83,11 @@
 									<lightning-input data-id="form-city" name="city" type="text" label="City" onchange={handleChangeCity} value={_formCity} placeholder="" max-length="80" required></lightning-input>
 									<lightning-input name="phone" type="text" label="Phone number" onchange={handleChangePhone} value={_formPhoneNumber} placeholder="" max-length="20"></lightning-input>
 
-									<br/>
-									<lightning-input name="iamaanmember" type="checkbox" label="I am AAN Member" onchange={handleChangeIamAANMember} checked={_formIamAANMember}></lightning-input>
-									<p style="margin-left: 22px;">AAN members from outside Europe get a 10% discount on EAN membership. Members from EAN member countries get a 10% discount on AAN membership.</p>
+									<template if:true={_allowAANMemberDiscount}>
+										<br/>
+										<lightning-input name="iamaanmember" type="checkbox" label="I am AAN Member" onchange={handleChangeIamAANMember} checked={_formIamAANMember}></lightning-input>
+										<p style="margin-left: 22px;">AAN members from outside Europe get a 10% discount on EAN membership. Members from EAN member countries get a 10% discount on AAN membership.</p>
+									</template>
 									<br/>
 									<lightning-input name="iamretired" type="checkbox" label="I am Retired" onchange={handleChangeIamRetired} checked={_formIamRetired}></lightning-input>
 

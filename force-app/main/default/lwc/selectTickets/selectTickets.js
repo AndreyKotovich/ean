@@ -3,7 +3,6 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { Utils } from "c/utils";
 import getEventTickets from "@salesforce/apex/EventRegistrationController.getEventTickets";
 import getEventPersonaInfo from "@salesforce/apex/EventRegistrationController.getEventPersonaInfo";
-import getIPRFreeTicketsInfo from "@salesforce/apex/EventRegistrationController.getIPRFreeTicketsInfo";
 
 export default class SelectTickets extends LightningElement {
     @api eanEvent = {};
@@ -69,7 +68,6 @@ export default class SelectTickets extends LightningElement {
 
     @track isSpinner = true;
     @track ticketsRadio = []; // array with info for markup in solo registration
-    @track groupIPRTicketsMarkupArr = []; // array with info for markup in group/IPR registration
     @track ticketId = 0;
     @track _priceTicket = 0;
     @track _ticketsAmount = 0;
@@ -86,9 +84,6 @@ export default class SelectTickets extends LightningElement {
     _userInfo = {};
 
     connectedCallback() {
-        if (this.isGroupRegistration) {
-            this.componentSize.largeDeviceSize = 6;
-        }
         console.log('_userInfo', JSON.stringify(this._userInfo));
         if (this._userInfo.iprInfo && this._userInfo.iprInfo.participantAmount) {
             this.iprRegisteredParticipants = this._userInfo.iprInfo.participantAmount;
@@ -103,22 +98,11 @@ export default class SelectTickets extends LightningElement {
             getEventPersonaInfo({ eventId: this.eanEvent.Id, contactId: this._userInfo.contact.Id })
         ];
 
-        if (this._userInfo.iprInfo && this._userInfo.iprInfo.isIPR) {
-            promises.push(getIPRFreeTicketsInfo({ exhibitorId: this._userInfo.iprInfo.Id }));
-        } else {
-            promises.push(new Promise((resolve) => { resolve([]) }));
-        }
-
         Promise.all(promises)
             .then((results) => {
                 console.log('results: ' + JSON.stringify(results));
                 this.allEventTickets = [...results[0]];
                 this._userInfo.contactEventPersonaRoles = [...results[1]];
-
-                if (this._userInfo.iprInfo && this._userInfo.iprInfo.isIPR) {
-                    this._userInfo.iprInfo.freeTicketsInfo = results[2];
-                }
-
                 return this.sortTicketsByRegType();
             })
             .then(() => {
@@ -142,7 +126,7 @@ export default class SelectTickets extends LightningElement {
     sortTicketsByRegType() {
         new Promise((resolve) => {
             let ticketArr = [];
-
+            this.groupTickets = [];
             for (let ticket of this.allEventTickets) {
                 const {
                     Is_Group_only__c,
@@ -152,9 +136,9 @@ export default class SelectTickets extends LightningElement {
                     Available_for_Personas__c
                 } = ticket.Ticket__r;
 
+                ticket.price = this.getTicketPrice(ticket);
+                ticket.isChecked = ticket.Participation__c && ticket.Participation__c === "Onsite";
                 if (this.registrationType === "solo") {
-                    ticket.price = this.getTicketPrice(ticket);
-                    ticket.isChecked = ticket.Participation__c && ticket.Participation__c === "Onsite";
                     if (Is_Group_only__c || Is_IPR_only__c) continue;
 
                     if (!this.isTicketAvailableForPersona(ticket.Ticket__r)) {
@@ -188,10 +172,11 @@ export default class SelectTickets extends LightningElement {
 
                 } else if (this.registrationType === "group") {
                     if (!Is_Group_only__c) continue;
-                    this.groupTickets.push(ticket);
+                    ticketArr.push(ticket);
+                    // this.groupTickets.push(ticket);
                 } else if (this.registrationType === "ipr") {
                     if (!Is_IPR_only__c) continue;
-                    this.iprTickets.push(ticket);
+                    ticketArr.push(ticket);
                 }
             }
 
@@ -209,7 +194,15 @@ export default class SelectTickets extends LightningElement {
                 let tik = e.tickets.find(el => { return el.Participation__c === "Onsite"; });
                 let tick = Object.assign({}, tik || e.tickets[0]);
                 tick.tickets = e.tickets.length > 1 ? e.tickets : [];
-                this.individualTickets.push(tick);
+                if (this.registrationType === "solo") {
+                    this.individualTickets.push(tick);
+                }
+                if (this.registrationType === "group") {
+                    this.groupTickets.push(tick);
+                }
+                if (this.registrationType === "ipr") {
+                    this.iprTickets.push(tick);
+                }
             });
 
             console.log("iprTickets: " + JSON.stringify(this.iprTickets));
@@ -254,64 +247,41 @@ export default class SelectTickets extends LightningElement {
                     : this.registrationType === "group"
                         ? this.groupTickets
                         : this.iprTickets;
+            console.log('tickets' , tickets)
+            for (let i = 0; i < tickets.length; i++) {
+                let price = this.getTicketPrice(tickets[i]);
 
-            if (this.registrationType === "solo") {
-                for (let i = 0; i < tickets.length; i++) {
-                    let price = this.getTicketPrice(tickets[i]);
+                if (price === undefined) continue;
 
-                    if (price === undefined) continue;
+                ticketsRadio.push({
+                    elementId: "individual-ticket-radio-" + i,
+                    id: tickets[i].Id,
+                    name: tickets[i].Ticket__r.Name,
+                    tickedId: tickets[i].Ticket__c,
+                    price: price,
+                    checked: this._selectedTicket === tickets[i].Id,
+                    tickets: tickets[i].tickets || [],
+                    isTickets: tickets[i].tickets && tickets[i].tickets.length > 1
+                });
 
-                    ticketsRadio.push({
-                        elementId: "individual-ticket-radio-" + i,
-                        id: tickets[i].Id,
-                        name: tickets[i].Ticket__r.Name,
-                        tickedId: tickets[i].Ticket__c,
-                        price: price,
-                        checked: this._selectedTicket === tickets[i].Id,
-                        tickets: tickets[i].tickets,
-                        isTickets: tickets[i].tickets.length > 1
-                    });
-
-                    if (this._selectedTicket === tickets[i].Id) {
-                        foundSelected = true;
-                    }
+                if (this._selectedTicket === tickets[i].Id) {
+                    foundSelected = true;
                 }
-
-                if (ticketsRadio.length > 0) {
-                    ticketsRadio[0].checked = true;
-                }
-
-                if (!foundSelected) this._selectedTicket = "";
-
-                this.ticketsRadio = [...ticketsRadio];
-
-                if (this.ticketsRadio.length === 0) {
-                    this.dispatchEvent(new CustomEvent("ticketsnotfound", {}));
-                }
-            } else {
-                //group IPR logic
-                let ticketsArray = [];
-
-                for (let i = 0; i < tickets.length; i++) {
-                    let price = this.getTicketPrice(tickets[i]);
-                    if (price === undefined) continue;
-
-                    let freeTicketInfo = this._userInfo.iprInfo.freeTicketsInfo.find(obj => obj.eventTicketId === tickets[i].Id);
-                    console.log('freeTicketInfo', JSON.stringify(freeTicketInfo));
-
-                    ticketsArray.push({
-                        eventTicketId: tickets[i].Id,
-                        name: tickets[i].Ticket__r.Name,
-                        tickedId: tickets[i].Ticket__c,
-                        price: price,
-                        quantity: 0, //TODO autoComplete
-                        freeTicketsAvailable: !!freeTicketInfo ? freeTicketInfo.freeTicketsAmount - freeTicketInfo.freeTicketsAmountUsed : 0
-                    });
-                }
-
-                this.groupIPRTicketsMarkupArr = ticketsArray;
             }
 
+            if (ticketsRadio.length > 0) {
+                ticketsRadio[0].checked = true;
+            }
+
+            if (!foundSelected) this._selectedTicket = "";
+
+            this.ticketsRadio = [...ticketsRadio];
+
+            console.log('this.ticketsRadio', JSON.stringify(this.ticketsRadio));
+
+            if (this.ticketsRadio.length === 0) {
+                this.dispatchEvent(new CustomEvent("ticketsnotfound", {}));
+            }
             resolve();
         })
     }

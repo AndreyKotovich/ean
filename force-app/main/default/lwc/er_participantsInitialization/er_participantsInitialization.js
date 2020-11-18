@@ -5,6 +5,7 @@ import {Utils} from "c/utils";
 import getContactInfo from "@salesforce/apex/EventRegistrationController.getContactInfo";
 import getCountries from "@salesforce/apex/membershipApplicationController.getCountries";
 import getContactMemberships from "@salesforce/apex/Utils.getContactMemberships";
+import getNotAvailableEventRegistrationEmails from "@salesforce/apex/EventRegistrationController.getNotAvailableEventRegistrationEmails";
 
 export default class ErParticipantsInitialization extends LightningElement {
     @api
@@ -21,7 +22,8 @@ export default class ErParticipantsInitialization extends LightningElement {
     @track isSpinner = true;
 
     @track _participantsInitialization = {};
-    @track usedEmails = [];
+    @track usedEmails = []; //emails which are selected during work of component
+    registeredEmails = []; //emails that are already registered in the Salesforce
     allCountriesAndRegions = [];
 
     selectTicketSize = {
@@ -43,7 +45,7 @@ export default class ErParticipantsInitialization extends LightningElement {
             let arr = [];
 
             for(let i = 0; i < arrayDifference; i++){
-                arr.push({contact:{Id: '', Email: ''}});
+                arr.push({contact:{Id: '', Email: ''}, error:{}});
             }
 
             this._participantsInitialization.initializedParticipants = this._participantsInitialization.initializedParticipants.concat(arr);
@@ -52,9 +54,16 @@ export default class ErParticipantsInitialization extends LightningElement {
             this._participantsInitialization.initializedParticipants = this._participantsInitialization.initializedParticipants.slice(0, this._participantsInitialization.participantsAmount);
         }
 
-        getCountries()
-            .then(result => {
-                this.allCountriesAndRegions = [...result];
+        let promises = [
+            getCountries(),
+            getNotAvailableEventRegistrationEmails({eventsIds: [this.eanEvent.Id]})
+        ];
+
+        Promise.all(promises)
+            .then(results => {
+                this.allCountriesAndRegions = [...results[0]];
+                this.registeredEmails = [...results[1]];
+                this.isSpinner = false;
             })
             .catch(error => {
                 this.isSpinner = false;
@@ -66,15 +75,15 @@ export default class ErParticipantsInitialization extends LightningElement {
                 }
                 this.throwError({message: message});
             })
-
-        this.isSpinner = false;
     }
 
     handleSelectEmail(event){
         let recordDetails = JSON.parse(event.detail.recorddetails);
+        console.log('recordDetails', JSON.stringify(recordDetails));
         let index = event.target.dataset.index;
         this._participantsInitialization.initializedParticipants[index].contact.Id =  recordDetails.id ? recordDetails.id : '';
         this._participantsInitialization.initializedParticipants[index].contact.Email =  recordDetails.enteredText ? recordDetails.enteredText : '';
+        this._participantsInitialization.initializedParticipants[index].error = {};
 
         if(!recordDetails.id){
             this._participantsInitialization.initializedParticipants[index].showPill = false;
@@ -139,7 +148,8 @@ export default class ErParticipantsInitialization extends LightningElement {
     }
 
     get usedEmailsString(){
-        return JSON.stringify(this.usedEmails);
+        let arr = this.registeredEmails.concat(this.usedEmails);
+        return JSON.stringify(arr);
     }
 
     handleRemoveTicket(event){
@@ -191,16 +201,22 @@ export default class ErParticipantsInitialization extends LightningElement {
 
         for(let initializedParticipant of this._participantsInitialization.initializedParticipants){
 
+            message = 'Check your inputs';
+
             if(initializedParticipant.contact.Email){
                 if(!Utils.emailValidationRegex(initializedParticipant.contact.Email)){
                     result = false;
-                    message = 'Check your input, only emails available';
-                    break;
+                    initializedParticipant.error = {hasError: true, message: 'Only email allowed here'};
                 }
+
+                if(this.registeredEmails.includes(initializedParticipant.contact.Email)){
+                    initializedParticipant.error = {hasError: true, message: 'Participant is already registered'};
+                    result = false;
+                }
+
             } else {
+                initializedParticipant.error = {hasError: true, message: 'Complete this field'};
                 result = false;
-                message = 'Complete all fields';
-                break;
             }
 
             if(!!initializedParticipant.selectedTicket && !!initializedParticipant.ticketId){

@@ -2,14 +2,32 @@ public without sharing class QRcodeBatch implements Database.Batchable<Participa
     public QRcodeBatch() {
         
     }
-    Integer Count = 0;
     public List<Participant__c> start(Database.BatchableContext bc) {
         String statusRegistered = 'Registered';
         List<Participant__c> participants = [
-            SELECT Id, Name, QR_Code_needed__c, Contact__r.Email, (SELECT Id FROM Event_Badges__r)
+            SELECT Id, Name, Event_custom__c, Participant_Email__c, QR_Code_needed__c, Contact__r.Email, Badge_Retrieval__c, Event_Ticket__r.Participation__c, (SELECT Id FROM Event_Badges__r)
             FROM Participant__c 
             WHERE QR_Code_needed__c = true AND Status__c = :statusRegistered
         ];
+        List<String> participantIds =new List<String>();
+        List<String> participantQRcodeFileNames =new List<String>();
+        for (Participant__c participant : participants) {
+            participantIds.add(participant.Id);
+            participantQRcodeFileNames.add('QR code ' + participant.Name + '.png');
+        }
+        List<ContentDocumentLink> conDocLinks = [
+            SELECT Id, ContentDocumentId FROM ContentDocumentLink WHERE LinkedEntityId IN :participantIds
+        ];
+        List<String> contentDocumentIds = new List<String>();
+        for (ContentDocumentLink conDocLink : conDocLinks) {
+            contentDocumentIds.add(conDocLink.ContentDocumentId);
+        }
+        List<ContentDocument> contentDocuments = [
+            SELECT Id FROM ContentDocument WHERE Id IN :contentDocumentIds AND Title IN :participantQRcodeFileNames
+        ];
+        if (contentDocuments.size() > 0) {
+            delete contentDocuments;
+        }
         return participants;
     }
     public void execute(Database.BatchableContext BC, List<Participant__c> participants) {
@@ -40,22 +58,49 @@ public without sharing class QRcodeBatch implements Database.Batchable<Participa
                 conVerIds.add(conVer.Id);
             }
             Map<ID, ContentVersion> conVersMap = new Map<ID, ContentVersion>([
-                SELECT Id, ContentDocumentId FROM ContentVersion WHERE Id IN :conVerIds
+                SELECT Id, ContentDocumentId, Title FROM ContentVersion WHERE Id IN :conVerIds
                 ]);
             List<ContentDocumentLink> conDocLinks = new List<ContentDocumentLink>();
+            List<ContentDistribution> newDists = new List<ContentDistribution>();
             for (String participantId : conVerToparticipantIdsMap.keySet()) {
                 ContentDocumentLink conDocLink = New ContentDocumentLink();
                 conDocLink.LinkedEntityId = participantId;
                 conDocLink.ContentDocumentId = conVersMap.get(conVerToparticipantIdsMap.get(participantId).Id).ContentDocumentId;
                 conDocLink.shareType = 'V';
+                conDocLink.Visibility='AllUsers';
                 conDocLinks.add(conDocLink);
+                ContentDistribution newDist = new ContentDistribution();
+                newDist.ContentVersionId = conVerToparticipantIdsMap.get(participantId).Id;
+                newDist.RelatedRecordId = participantId;
+                newDist.Name = conVerToparticipantIdsMap.get(participantId).Title + ' external Link';
+                newDist.PreferencesNotifyOnVisit = false;
+                newDist.PreferencesAllowViewInBrowser = true;
+                newDists.add(newDist);
             }
             insert conDocLinks;
+            insert newDists;
+            List<Email_Activity__c> emailActivities = new List<Email_Activity__c>();
             for (Participant__c participant : participants) {
                 if (conVerToparticipantIdsMap.keySet().contains(participant.Id)) {
                     participant.QR_Code_needed__c = false;
-                }                
+                    if (participant.Badge_Retrieval__c == 'onsite' 
+                    && participant.Event_Ticket__r.Participation__c == 'Onsite') {
+                        Email_Activity__c emailActivity = new Email_Activity__c(
+                            Contact__c = participant.Contact__c,
+                            Event_Custom__c = participant.Event_custom__c,
+                            Event_Participation__c = participant.Id,
+                            Type__c = 'QR code for participant'
+                        );
+                        if (String.isBlank(participant.Contact__r.Email)) {
+                            emailActivity.Send_To_Email__c = participant.Participant_Email__c;
+                        } else {
+                            emailActivity.Send_To_Email__c = participant.Contact__r.Email;
+                        }
+                        emailActivities.add(emailActivity);                        
+                    }
+                }
             }
+            insert emailActivities;
             update participants;
         }
         
@@ -69,5 +114,44 @@ public without sharing class QRcodeBatch implements Database.Batchable<Participa
             System.abortJob(QRcodeJob.Id);
         }
         System.scheduleBatch(new QRcodeBatch(), jobName, 60, 70);
+
+        // Logic for QR code reminder
+        List<Event__c> events = [
+            SELECT Id, Name, Start_Time__c FROM Event__c WHERE Start_Time__c > :Datetime.now()
+        ];
+        List<Event__c> upcommingEvents = new List<Event__c>();
+        for (Event__c event : events) {
+            if (event.Start_Time__c.addDays(-15).date() == Date.today()) {
+                upcommingEvents.add(event);
+            }
+        }
+        if (upcommingEvents.size() > 0) {
+            List<String> reminderJobNames = new List<String>();
+            for (Event__c upcommingEvent : upcommingEvents) {
+                String reminderJobName = 'QR code reminder ' + upcommingEvent.Name;
+                reminderJobNames.add(reminderJobName);
+            }
+            List<CronTrigger> reminderQRcodeJobs = [SELECT Id, CronJobDetail.Name, State, NextFireTime
+                FROM CronTrigger
+                WHERE CronJobDetail.Name IN :reminderJobNames];
+            Map<String, CronTrigger> reminderJobNameToQRcodeJobsMap = new Map<String, CronTrigger>();
+            for (CronTrigger reminderQRcodeJob : reminderQRcodeJobs) {
+                if (String.isNotBlank(reminderQRcodeJob.CronJobDetail.Name)) {
+                    reminderJobNameToQRcodeJobsMap.put(reminderQRcodeJob.CronJobDetail.Name, reminderQRcodeJob);
+                }
+            }
+            for (String reminderJobName : reminderJobNames) {
+                if (reminderJobNameToQRcodeJobsMap.containsKey(reminderJobName)) {
+                    if (reminderJobNameToQRcodeJobsMap.get(reminderJobName).NextFireTime < Datetime.now()
+                        || reminderJobNameToQRcodeJobsMap.get(reminderJobName).NextFireTime.addHours(-26) > Datetime.now()
+                        || reminderJobNameToQRcodeJobsMap.get(reminderJobName).State != 'WAITING') {
+                            System.abortJob(reminderJobNameToQRcodeJobsMap.get(reminderJobName).Id);
+                            System.scheduleBatch(new QRcodeBatchReminder(reminderJobName), reminderJobName, 1500);
+                        }
+                } else {
+                    System.scheduleBatch(new QRcodeBatchReminder(reminderJobName), reminderJobName, 1500);
+                }
+            }
+        }
     }
 }

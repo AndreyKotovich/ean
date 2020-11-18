@@ -32,5 +32,13 @@
         <members>*</members>
         <name>StaticResource</name>
     </types>
+    <types>
+        <members>Admin</members>
+        <members>Member Community User Profile</members>
+        <members>Non-Member Community User Profile</members>
+        <members>RRFS Reviewer</members>
+        <members>Secretary General</members>
+        <name>Profile</name>
+    </types>
     <version>49.0</version>
 </Package>

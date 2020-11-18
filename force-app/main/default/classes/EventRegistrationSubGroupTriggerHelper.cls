@@ -11,16 +11,14 @@ public without sharing class EventRegistrationSubGroupTriggerHelper {
         }
         if (lockedSubGroupIds.size() != 0) {
             List<Participant__c> partisipants = [
-                SELECT Id, QR_Code_needed__c, Contact__c, Event_custom__c, Event_Registration_Sub_Group__c, Participant_Email__c, Contact__r.Email, Contact__r.Name FROM Participant__c WHERE Event_Registration_Sub_Group__c IN :lockedSubGroupIds
+                SELECT Id, QR_Code_needed__c, Contact__c, Event_custom__c, Event_Registration_Sub_Group__c, Participant_Email__c, Contact__r.Email, Contact__r.Name, Event_Ticket__r.Participation__c FROM Participant__c WHERE Event_Registration_Sub_Group__c IN :lockedSubGroupIds
                 ];
-            List<Event_Badge__c> badges = new List<Event_Badge__c>();
-            for (Participant__c partisipant : partisipants) {
-                partisipant.QR_Code_needed__c = true;
-                Event_Badge__c badge = new Event_Badge__c();
-                badge.Event_Participation__c = partisipant.Id;
-                badges.add(badge);
-            }
             //Part for getting QR codes logic
+            for (Participant__c partisipant : partisipants) {
+                if (partisipant.Event_Ticket__r.Participation__c == 'Onsite') {
+                    partisipant.QR_Code_needed__c = true;
+                }
+            }
             if (partisipants.size() > 0) {
                 update partisipants;
             }

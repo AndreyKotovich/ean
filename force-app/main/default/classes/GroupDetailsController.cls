@@ -151,7 +151,12 @@ public without sharing class GroupDetailsController {
 		getGroupParticipations(communityContactId);
 		if (groupParticipations.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => 'Group configuration is not correct.'};
 
-		//	METHOD 2	user only at Change Requests
+		for (Participant__c participant : groupParticipations) {
+			if (participant.Contact__r.Name == SYSTEM_GROUP_CONTACT_NAME) continue;
+			groupParticipantIds.add('' + participant.Id);
+		}
+
+		//	METHOD 2	used only at Change Requests
 		//	result:
 		//		disableTransfersInGroup
 		//		participantIdToChangeRequest

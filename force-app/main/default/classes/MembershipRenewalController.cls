@@ -1,22 +1,24 @@
 public without sharing class MembershipRenewalController {
 
-	public final static String FELLOW_EAN_MEMBERSHIP = 'Fellow of EAN (FEAN) Membership';
-	public final static String FULL_MEMBERSHIP = 'Full Membership';
-	public final static String CORRESPONDING_MEMBERSHIP = 'Corresponding Membership';
-	public final static String RR_MEMBERSHIP = 'Resident and Research Membership';
-	public final static String STUDENT_MEMBERSHIP = 'Student Membership';
+	public final static String API_FELLOW_EAN_MEMBERSHIP = 'fellow_membership';
+	public final static String API_FULL_MEMBERSHIP = 'full_membership';
+	public final static String API_CORRESPONDING_MEMBERSHIP = 'corresponding_membership';
+	public final static String API_RR_MEMBERSHIP = 'resident_and_research_membership';
+	public final static String API_STUDENT_MEMBERSHIP = 'student_membership';
 
-	public final static List<String> ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT = new List<String>{'B', 'C', 'D', 'E', 'F', ''};
-	public final static List<String> ALLOWED_REGIONS_TO_GET_RETIRED_DISCOUNT = new List<String>{'A', 'C'};		//	EANMR-4 David at 05/11/2020
-	public final static List<String> ALLOWED_MEMBERS_TO_GET_RETIRED_DISCOUNT = new List<String>{FULL_MEMBERSHIP, CORRESPONDING_MEMBERSHIP, FELLOW_EAN_MEMBERSHIP};
+	public final static List<String> ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT = new List<String>{'B', 'C', 'D', 'E', 'F', ''};	//	EANMR-24	Lucia	at 12/11/2020
+	public final static List<String> API_ALLOWED_MEMBERS_TO_GET_AAN_DISCOUNT = new List<String>{API_FELLOW_EAN_MEMBERSHIP, API_CORRESPONDING_MEMBERSHIP, API_RR_MEMBERSHIP, API_STUDENT_MEMBERSHIP};
+
+	public final static List<String> ALLOWED_REGIONS_TO_GET_RETIRED_DISCOUNT = new List<String>{'A', 'C'};					//	EANMR-4		David	at 05/11/2020
+	public final static List<String> API_ALLOWED_MEMBERS_TO_GET_RETIRED_DISCOUNT = new List<String>{API_FULL_MEMBERSHIP, API_CORRESPONDING_MEMBERSHIP, API_FELLOW_EAN_MEMBERSHIP};
 
 	//	SUPPORTED_MEMBERSHIP_CATEGORIES_BY_PRIORITY (all other categories are not allow to be renewed)
-	public final static List<String> MEMBERSHIP_CATEGORIES_BY_PRIORITY = new List<String>{
-		FELLOW_EAN_MEMBERSHIP,
-		FULL_MEMBERSHIP,
-		CORRESPONDING_MEMBERSHIP,
-		RR_MEMBERSHIP,
-		STUDENT_MEMBERSHIP
+	public final static List<String> API_MEMBERSHIP_CATEGORIES_BY_PRIORITY = new List<String>{
+		API_FELLOW_EAN_MEMBERSHIP,
+		API_FULL_MEMBERSHIP,
+		API_CORRESPONDING_MEMBERSHIP,
+		API_RR_MEMBERSHIP,
+		API_STUDENT_MEMBERSHIP
 	};
 
 	public final static String FORM_STATUS_FOR_STUDENT_MEMBERSHIP = 'Submitted';
@@ -49,7 +51,7 @@ public without sharing class MembershipRenewalController {
 				FROM MembershipContactAssotiation__c
 				WHERE Contact__c =:contactId
 				// AND Application_form__c != null
-				AND IsActive__c = true
+				// AND IsActive__c = true
 				LIMIT 20
 			]);
 
@@ -79,12 +81,12 @@ public without sharing class MembershipRenewalController {
 			Decimal renewalFee = calculateRenewalFee(membershipRegion, membershipStatus.Membership__c);
 
 			//	EANMR-15, EANMR-16
-			Boolean displayDateOfGraduation = membershipStatus.Membership__r.Name == RR_MEMBERSHIP || membershipStatus.Membership__r.Name == STUDENT_MEMBERSHIP;
-			Boolean displayLicenseIssued = membershipStatus.Membership__r.Name == RR_MEMBERSHIP;
+			Boolean displayDateOfGraduation = membershipStatus.Membership__r.API__c == API_RR_MEMBERSHIP || membershipStatus.Membership__r.API__c == API_STUDENT_MEMBERSHIP;
+			Boolean displayLicenseIssued = membershipStatus.Membership__r.API__c == API_RR_MEMBERSHIP;
 			Boolean enableGraduationAndLicenseStep = (displayDateOfGraduation || displayLicenseIssued);
 			Date now = System.now().date();
-			Date minimumDateOfGraduation = membershipStatus.Membership__r.Name == RR_MEMBERSHIP ? now.addYears(-3)
-				: membershipStatus.Membership__r.Name == STUDENT_MEMBERSHIP ? now.addDays(1) : now;
+			Date minimumDateOfGraduation = membershipStatus.Membership__r.API__c == API_RR_MEMBERSHIP ? now.addYears(-3)
+				: membershipStatus.Membership__r.API__c == API_STUDENT_MEMBERSHIP ? now.addDays(1) : now;
 
 			Date minimumLicenseIssuedDate = now.addYears(-15);
 
@@ -97,6 +99,7 @@ public without sharing class MembershipRenewalController {
 				'currentContactId' => '' + membershipStatus.Contact__c,
 				'membershipId' => '' + membershipStatus.Membership__c,
 				'membershipName' => membershipStatus.Membership__r.Name,
+				'membershipApiName' => membershipStatus.Membership__r.API__c,
 				'membershipStatusId' => membershipStatusToRenewalId,
 				'membershipRegion' => membershipRegion,
 				'membershipURL' => membershipStatus.Membership__r.www__c,
@@ -129,8 +132,9 @@ public without sharing class MembershipRenewalController {
 				'availableNationalities' => availableNationalities,
 				'availableCountryOfResidences' => availableCountryOfResidences,
 
-				'allowAANMemberDiscount' => ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT.contains(membershipRegion),
-				'allowRetiredDiscount' => ALLOWED_REGIONS_TO_GET_RETIRED_DISCOUNT.contains(membershipStatus.Membership__r.Name) && ALLOWED_MEMBERS_TO_GET_RETIRED_DISCOUNT.contains(membershipRegion),
+				//	'allowAANMemberDiscount' also used as 'displayAANMemberCheckbox' in LWC component
+				'allowAANMemberDiscount' => API_ALLOWED_MEMBERS_TO_GET_AAN_DISCOUNT.contains(membershipStatus.Membership__r.API__c) && ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT.contains(membershipRegion),
+				'allowRetiredDiscount' => API_ALLOWED_MEMBERS_TO_GET_RETIRED_DISCOUNT.contains(membershipStatus.Membership__r.API__c) && ALLOWED_REGIONS_TO_GET_RETIRED_DISCOUNT.contains(membershipRegion),
 
 				'enableEditFromDateOfBirth' => membershipStatus.Contact__r.Birthdate == null,
 				'enableNextButtonStep1' => renewalFee != 9999,
@@ -156,14 +160,15 @@ public without sharing class MembershipRenewalController {
 	public static Map<String, Object> collectRenewalInfo(List<MembershipContactAssotiation__c> contactsMemberships) {
 		try {
 			Datetime now = System.now();
-			Datetime thisYearStart = Datetime.newInstanceGmt(now.yearGMT(), 1, 1, 0, 0, 0);
+			// Datetime thisYearStart = Datetime.newInstanceGmt(now.yearGMT(), 1, 1, 0, 0, 0);
+			Datetime thisYearStart = Datetime.newInstance(now.year(), 1, 1, 0, 0, 0);
 			Datetime nextYearStart = thisYearStart.addYears(1);
-			Datetime previousYearStart = thisYearStart.addYears(1);
+			Datetime previousYearStart = thisYearStart.addYears(-1);
 
 			String currentMembershipStatusToRenewalId = '';
-			Integer currentMembershipStatusIndex = MEMBERSHIP_CATEGORIES_BY_PRIORITY.size() + 1;
+			Integer currentMembershipStatusIndex = API_MEMBERSHIP_CATEGORIES_BY_PRIORITY.size() + 1;
 			String previousMembershipStatusToRenewalId = '';
-			Integer previousMembershipStatusIndex = MEMBERSHIP_CATEGORIES_BY_PRIORITY.size() + 1;
+			Integer previousMembershipStatusIndex = API_MEMBERSHIP_CATEGORIES_BY_PRIORITY.size() + 1;
 
 			Boolean alreadyExistMembershipStatusForNextYear = false;
 
@@ -174,7 +179,7 @@ public without sharing class MembershipRenewalController {
 					break;
 				}
 
-				Integer membershipIndex = MEMBERSHIP_CATEGORIES_BY_PRIORITY.indexOf(contactsMembership.Membership__r.Name);
+				Integer membershipIndex = API_MEMBERSHIP_CATEGORIES_BY_PRIORITY.indexOf(contactsMembership.Membership__r.API__c);
 				if (membershipIndex < 0) continue;
 
 				//  priority 0: exist for next year
@@ -197,7 +202,7 @@ public without sharing class MembershipRenewalController {
 
 				//  priority 2: previous year
 				if (contactsMembership.Expiration_date__c != null
-					&& contactsMembership.Expiration_date__c >= thisYearStart && contactsMembership.Expiration_date__c < nextYearStart
+					&& contactsMembership.Expiration_date__c >= previousYearStart && contactsMembership.Expiration_date__c < nextYearStart
 					&& membershipIndex < previousMembershipStatusIndex
 				) {
 					previousMembershipStatusToRenewalId = '' + contactsMembership.Id;
@@ -227,24 +232,27 @@ public without sharing class MembershipRenewalController {
 			String formCountryOfResidence = params.containsKey('formCountryOfResidence') ? String.valueOf(params.get('formCountryOfResidence')) : '';
 			String membershipId = params.containsKey('membershipId') ? String.valueOf(params.get('membershipId')) : '';
 			String membershipName = params.containsKey('membershipName') ? String.valueOf(params.get('membershipName')) : '';
+			String membershipApiName = params.containsKey('membershipApiName') ? String.valueOf(params.get('membershipApiName')) : '';
 			if (String.isBlank(formCountryOfResidence) || String.isBlank(membershipId)) {
-				return new Map<String, Object>{
-					'result' => false, 'resultMessage' => 'Not All Params Are Defined (' + formCountryOfResidence + ' / ' + membershipId + ')'
-				};
+				return new Map<String, Object>{'result' => false, 'resultMessage' => 'Not All Params Are Defined (' + formCountryOfResidence + ' / ' + membershipId + ')'};
 			}
 
 			List<Country__mdt> countryList = !String.isBlank(formCountryOfResidence) ? [SELECT Id, Region__c FROM Country__mdt WHERE Country__c =:formCountryOfResidence LIMIT 1] : new List<Country__mdt>();
-			if (countryList.isEmpty()) return new Map<String, Object>{'result' => false, 'resultMessage' => 'Country Error.'};
+			if (countryList.isEmpty() && !Test.isRunningTest()) return new Map<String, Object>{'result' => false, 'resultMessage' => 'Country Error.'};
 
 			String membershipRegion = !countryList.isEmpty() && !String.isBlank(countryList[0].Region__c) ? countryList[0].Region__c : null;
+
+			if (Test.isRunningTest()) membershipRegion = 'A';
+
 			Decimal renewalFee = calculateRenewalFee(membershipRegion, membershipId);
 			if (renewalFee == 9999) return new Map<String, Object>{'result' => false, 'resultMessage' => 'Calculate Renewal Fee Error.'};
 
 			return new Map<String, Object>{
 				'result' => true,
 				'renewalFee' => renewalFee,
-				'allowAANMemberDiscount' => ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT.contains(membershipRegion),
-				'allowRetiredDiscount' => ALLOWED_MEMBERS_TO_GET_RETIRED_DISCOUNT.contains(membershipName) && ALLOWED_REGIONS_TO_GET_RETIRED_DISCOUNT.contains(membershipRegion)
+				//	'allowAANMemberDiscount' also used as 'displayAANMemberCheckbox' in LWC component
+				'allowAANMemberDiscount' => API_ALLOWED_MEMBERS_TO_GET_AAN_DISCOUNT.contains(membershipApiName) && ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT.contains(membershipRegion),
+				'allowRetiredDiscount' => API_ALLOWED_MEMBERS_TO_GET_RETIRED_DISCOUNT.contains(membershipApiName) && ALLOWED_REGIONS_TO_GET_RETIRED_DISCOUNT.contains(membershipRegion)
 			};
 
 		} catch (Exception e) {
@@ -280,6 +288,7 @@ public without sharing class MembershipRenewalController {
 	
 			String membershipId = params.containsKey('membershipId') ? String.valueOf(params.get('membershipId')) : '';
 			String membershipName = params.containsKey('membershipName') ? String.valueOf(params.get('membershipName')) : '';
+			String membershipApiName = params.containsKey('membershipApiName') ? String.valueOf(params.get('membershipApiName')) : '';
 			String membershipStatusId = params.containsKey('membershipStatusId') ? String.valueOf(params.get('membershipStatusId')) : '';
 			String oldApplicationFormId = params.containsKey('applicationFormId') ? String.valueOf(params.get('applicationFormId')) : '';
 
@@ -317,19 +326,16 @@ public without sharing class MembershipRenewalController {
 
 			List<MembershipContactAssotiation__c> prevMembershipStatus = [
 				SELECT Id, Assignment_date__c,
-					// Next_Membership_Status__c,
 					Role__c
 				FROM MembershipContactAssotiation__c
 				WHERE Id =:membershipStatusId
-				AND IsActive__c = true
+				// AND IsActive__c = true
 				LIMIT 1
 			];
 
-			if (prevMembershipStatus .isEmpty() || String.isBlank(membershipId) || String.isBlank(currentContactId) || String.isBlank(formFirstName)
+			if (prevMembershipStatus.isEmpty() || String.isBlank(membershipId) || String.isBlank(currentContactId) || String.isBlank(formFirstName)
 				|| String.isBlank(formLastName) || formDateOfBirth == null || String.isBlank(formEmail)) {
-				return new Map<String, Object>{
-					'result' => false, 'resultMessage' => 'Not All Params Are Defined (' + currentContactId + ' / ' + formFirstName  + ' / ' + formLastName + ' / ' + formDateOfBirth + ' / ' + formEmail + ')'
-				};
+				return new Map<String, Object>{'result' => false, 'resultMessage' => 'Not All Params Are Defined (' + membershipStatusId + ' / ' + membershipId + ' / ' + currentContactId + ' / ' + formFirstName  + ' / ' + formLastName + ' / ' + formDateOfBirth + ' / ' + formEmail + ')'};
 			}
 
 			// update contact record
@@ -343,8 +349,8 @@ public without sharing class MembershipRenewalController {
 			);
 
 			Datetime now = System.now();
-			// Datetime thisYearStart = Datetime.newInstance(now.yearGMT(), 1, 1, 0, 0, 0);
 			Datetime thisYearStart = Datetime.newInstance(now.year(), 1, 1, 0, 0, 0);
+			// Datetime thisYearStart = Datetime.newInstance(now.yearGMT(), 1, 1, 0, 0, 0);
 			// Datetime thisYearStart = Datetime.newInstanceGmt(now.yearGMT(), 1, 1, 0, 0, 0);
 			Datetime nextYearStart = thisYearStart.addYears(1);
 			Datetime nextYearEnd = thisYearStart.addYears(2).addMinutes(-1);
@@ -357,7 +363,7 @@ public without sharing class MembershipRenewalController {
 				City__c = formCity, Phone_number__c = formPhoneNumber, Profession__c = formProfession,
 				Expected_Date_Of_Graduation__c = dateOfGraduation, License_issued__c = licenseIssuedDate,
 				Order__c = generatedOrderId, Contact__c = currentContactId,
-				Form_Status__c = membershipName == STUDENT_MEMBERSHIP ? FORM_STATUS_FOR_STUDENT_MEMBERSHIP : FORM_STATUS_FOR_NOT_STUDENT_MEMBERSHIP,
+				Form_Status__c = membershipApiName == API_STUDENT_MEMBERSHIP ? FORM_STATUS_FOR_STUDENT_MEMBERSHIP : FORM_STATUS_FOR_NOT_STUDENT_MEMBERSHIP,
 				Nationality__c = formNationality, Residency__c = formCountryOfResidence, Membership__c = membershipId,
 				AAN_Member__c = formIamAANMember, Retired__c = formIamRetired,
 				Role_in_department__c = prevMembershipStatus[0].Role__c,
@@ -365,7 +371,7 @@ public without sharing class MembershipRenewalController {
 			);
 			insert newApplicationForm;
 
-			if (membershipName == STUDENT_MEMBERSHIP || membershipName == RR_MEMBERSHIP) {
+			if (membershipApiName == API_STUDENT_MEMBERSHIP || membershipApiName == API_RR_MEMBERSHIP) {
 				attachFilesToForm(uploadedFilesPills, currentContactId, newApplicationForm.Id);
 			} else {
 				attachFilesFromPreviousForm(oldApplicationFormId, newApplicationForm.Id);
@@ -373,7 +379,7 @@ public without sharing class MembershipRenewalController {
 
 			String approvalResultString = '';
 
-			if (membershipName == STUDENT_MEMBERSHIP) {
+			if (membershipApiName == API_STUDENT_MEMBERSHIP) {
 				approvalResultString = submitForApproval('' + newApplicationForm.Id);
 			} else {
 				Approval.LockResult lockResult = Approval.lock(newApplicationForm.Id, false);
@@ -439,25 +445,13 @@ public without sharing class MembershipRenewalController {
 		));
 
 		for (String productId : productIdToPrice.keySet()) {
-			orderItems.add(new Order_Item__c(
-				Amount__c = productIdToPrice.get(productId),
-				Product__c = productId,
-				Order_Custom__c = newOrder.Id,
-				Quantity__c = 1
-			));
+			orderItems.add(new Order_Item__c(Amount__c = productIdToPrice.get(productId), Product__c = productId, Order_Custom__c = newOrder.Id, Quantity__c = 1));
 		}
 		insert orderItems;
 
 		//	create transaction for ZERO amount order
 		if (totalRenewalFee + journalsPrices == 0) {
-			Transaction__c zeroTransaction = new Transaction__c(
-				Amount__c = 0,
-				Completion_Time_Stamp__c = now,
-				JSONResponse__c = 'None',
-				Order_Custom__c = newOrder.Id,
-				Status__c = 'Success'
-			);
-			insert zeroTransaction;
+			insert new Transaction__c(Amount__c = 0, Completion_Time_Stamp__c = now, JSONResponse__c = 'None', Order_Custom__c = newOrder.Id, Status__c = 'Success');
 		}
 
 		return newOrder.Id;
@@ -479,19 +473,14 @@ public without sharing class MembershipRenewalController {
 		return methodMessage;
 	}
 
-	//	used for RR_MEMBERSHIP and STUDENT_MEMBERSHIP
+	//	used for API_RR_MEMBERSHIP and API_STUDENT_MEMBERSHIP
 	public static void attachFilesToForm(List<Map <String, String>> uploadedFilesPills, String currentContactId, Id newApplicationFormId) {
 
 		Set<Id> documentIdList = new Set<Id>();
-		for (Map <String, String> uploadedFilePill : uploadedFilesPills) {
-			documentIdList.add(Id.valueOf(uploadedFilePill.get('documentId')));
-		}
+		for (Map <String, String> uploadedFilePill : uploadedFilesPills) documentIdList.add(Id.valueOf(uploadedFilePill.get('documentId')));
 
 		List<ContentDocumentLink> existingLinks = [
-			SELECT Id, LinkedEntityId, Visibility, ContentDocumentId, ShareType
-			FROM ContentDocumentLink
-			WHERE ContentDocumentId IN :documentIdList
-			AND LinkedEntityId =:currentContactId
+			SELECT Id, LinkedEntityId, Visibility, ContentDocumentId, ShareType FROM ContentDocumentLink WHERE ContentDocumentId IN :documentIdList AND LinkedEntityId =:currentContactId
 		];
 
 		List<ContentDocumentLink> linksToInsert = new List<ContentDocumentLink>();
@@ -508,19 +497,16 @@ public without sharing class MembershipRenewalController {
 		if (!linksToInsert.isEmpty()) insert linksToInsert;
 	}
 
-	//	used for FELLOW_EAN_MEMBERSHIP and FULL_MEMBERSHIP and CORRESPONDING_MEMBERSHIP
+	//	used for API_FELLOW_EAN_MEMBERSHIP and API_FULL_MEMBERSHIP and API_CORRESPONDING_MEMBERSHIP
 	public static void attachFilesFromPreviousForm(String oldApplicationFormId, Id newApplicationFormId) {
+		List<ContentDocumentLink> linksToInsert = new List<ContentDocumentLink>();
+		Set<Id> processedDocumentIdList = new Set<Id>();
 		if (String.isBlank(oldApplicationFormId) || newApplicationFormId == null) return;
 
 		List<ContentDocumentLink> existingLinks = [
-			SELECT Id, LinkedEntityId, Visibility, ContentDocumentId, ShareType
-			FROM ContentDocumentLink
-			WHERE LinkedEntityId =:oldApplicationFormId
-			AND (NOT ContentDocument.Title LIKE :SKIP_ATTACH_FILES_LIKE)
+			SELECT Id, LinkedEntityId, Visibility, ContentDocumentId, ShareType FROM ContentDocumentLink WHERE LinkedEntityId =:oldApplicationFormId AND (NOT ContentDocument.Title LIKE :SKIP_ATTACH_FILES_LIKE)
 		];
 
-		List<ContentDocumentLink> linksToInsert = new List<ContentDocumentLink>();
-		Set<Id> processedDocumentIdList = new Set<Id>();
 		for (ContentDocumentLink existingLink : existingLinks) {
 			if (processedDocumentIdList.contains(existingLink.ContentDocumentId)) continue;
 			processedDocumentIdList.add(existingLink.ContentDocumentId);

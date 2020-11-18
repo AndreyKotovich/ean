@@ -79,121 +79,99 @@ public without sharing class ParticipantTriggerHelper {
     }
 
     public static void checkQRCode(Map<Id, Participant__c> newParticipantsMap, Map<Id, Participant__c> oldParticipantsMap) {
-        String statusCanceled = 'Canceled';
         String statusRegistered = 'Registered';
-        String undefinedParticipant = 'Undefined Participant';
-        Map<ID, Participant__c> participantsMap = new Map<ID, Participant__c>([
-            SELECT Id, Name, Event_Registration_Sub_Group__r.Is_Locked__c, Contact__r.Name FROM Participant__c WHERE Id IN :newParticipantsMap.keySet()
-        ]);
-        Map<String, Participant__c> deleteQRCodeParticipantsMap = new Map<String, Participant__c>();
-        Map<String, Participant__c> refreshQRCodeParticipantsMap = new Map<String, Participant__c>();
+        Map<String, Participant__c> getQRCodeParticipantsMap = new Map<String, Participant__c>();
         for (Participant__c participant : newParticipantsMap.values()) {
-            if (participant.Status__c == statusCanceled && oldParticipantsMap.get(participant.Id).Status__c != participant.Status__c) {
-                //Participant status changed to canceled
-                deleteQRCodeParticipantsMap.put(participant.Id, participant); 
-            } else if (participant.Status__c == statusRegistered
-            && participant.Contact__c != oldParticipantsMap.get(participant.Id).Contact__c) {
-                if (String.isBlank(participant.Event_Registration_Sub_Group__c)) {
-                    //Solo participant with status registered changed contact
-                    refreshQRCodeParticipantsMap.put(participant.Id, participant);
-                } else if (participantsMap.get(participant.Id).Event_Registration_Sub_Group__r.Is_Locked__c) {
-                    //Group participant with status registered changed contact
-                    refreshQRCodeParticipantsMap.put(participant.Id, participant); 
-                }                
-            } else if (participant.Status__c == statusRegistered
+            if (participant.Status__c == statusRegistered
             && oldParticipantsMap.get(participant.Id).Status__c != participant.Status__c
             && String.isBlank(participant.Event_Registration_Sub_Group__c)
             ) {
                 //Solo participant status changed to registered
-                refreshQRCodeParticipantsMap.put(participant.Id, participant); 
-            } else if (participant.Status__c == statusRegistered
-            && participant.Participant_Email__c != oldParticipantsMap.get(participant.Id).Participant_Email__c
-            && participantsMap.get(participant.Id).Contact__r.Name == undefinedParticipant
-            ) {
-                if (participantsMap.get(participant.Id).Event_Registration_Sub_Group__r.Is_Locked__c) {
-                    //Undefined group participant with status registered changed participant email
-                    refreshQRCodeParticipantsMap.put(participant.Id, participant); 
-                }
+                getQRCodeParticipantsMap.put(participant.Id, participant); 
             } else if (participant.QR_Code_needed__c == true
                     && participant.QR_Code_needed__c != oldParticipantsMap.get(participant.Id).QR_Code_needed__c) {
-                    refreshQRCodeParticipantsMap.put(participant.Id, participant);
+                    //Group participants subgroup locked
+                    getQRCodeParticipantsMap.put(participant.Id, participant);
             }
         }
-        if (deleteQRCodeParticipantsMap.size() > 0) {
-            processDeleteQRCodeParticipants(deleteQRCodeParticipantsMap);
-        }
-        if (refreshQRCodeParticipantsMap.size() > 0) {
-            processDeleteQRCodeParticipants(refreshQRCodeParticipantsMap);
-            processRefreshQRCodeParticipants(refreshQRCodeParticipantsMap);
+        if (getQRCodeParticipantsMap.size() > 0) {
+            processGetQRCodeParticipants(getQRCodeParticipantsMap);
         }
     }
 
-    public static void processDeleteQRCodeParticipants(Map<String, Participant__c> participantsMap) {
-        List<ContentDocumentLink> conDocLinks = [
-            SELECT Id, ContentDocumentId FROM ContentDocumentLink WHERE LinkedEntityId IN :participantsMap.keySet()
-        ];
-        List<String> contentDocumentIds = new List<String>();
-        for (ContentDocumentLink conDocLink : conDocLinks) {
-            contentDocumentIds.add(conDocLink.ContentDocumentId);
-        }
-        List<ContentDocument> contentDocuments = [
-            SELECT Id FROM ContentDocument WHERE Id IN :contentDocumentIds AND Title LIKE 'QR code%'
-        ];
-        if (contentDocuments.size() > 0) {
-            delete contentDocuments;
-        }
-        List<Event_Badge__c> badges = [
-            SELECT Id FROM Event_Badge__c WHERE Event_Participation__c IN :participantsMap.keySet()
-        ];
-        if (badges.size() > 0) {
-            delete badges;
-        }
-    }
+    // public static void processDeleteQRCodeParticipants(Map<String, Participant__c> participantsMap) {
+    //     List<ContentDocumentLink> conDocLinks = [
+    //         SELECT Id, ContentDocumentId FROM ContentDocumentLink WHERE LinkedEntityId IN :participantsMap.keySet()
+    //     ];
+    //     List<String> contentDocumentIds = new List<String>();
+    //     for (ContentDocumentLink conDocLink : conDocLinks) {
+    //         contentDocumentIds.add(conDocLink.ContentDocumentId);
+    //     }
+    //     List<ContentDocument> contentDocuments = [
+    //         SELECT Id FROM ContentDocument WHERE Id IN :contentDocumentIds AND Title LIKE 'QR code%'
+    //     ];
+    //     if (contentDocuments.size() > 0) {
+    //         delete contentDocuments;
+    //     }
+    //     List<Event_Badge__c> badges = [
+    //         SELECT Id FROM Event_Badge__c WHERE Event_Participation__c IN :participantsMap.keySet()
+    //     ];
+    //     if (badges.size() > 0) {
+    //         delete badges;
+    //     }
+    // }
 
-    public static void processRefreshQRCodeParticipants(Map<String, Participant__c> refreshQRCodeParticipantsMap) {
-        List<Event_Badge__c> badges = new List<Event_Badge__c>();
-        for (String participantId : refreshQRCodeParticipantsMap.keySet()) {
-            refreshQRCodeParticipantsMap.get(participantId).QR_Code_needed__c = true;
-            Event_Badge__c badge = new Event_Badge__c();
-            badge.Event_Participation__c = participantId;
-            badges.add(badge);
+    public static void processGetQRCodeParticipants(Map<String, Participant__c> getQRCodeParticipantsMap) {
+        List<Participant__c> QRCodeNeededParticipants = [
+            SELECT Id, Event_Ticket__r.Participation__c FROM Participant__c WHERE Id IN :getQRCodeParticipantsMap.keySet()
+        ];
+        List<String> createBadgeParticipantIds = new List<String>();
+        for (Participant__c participant : QRCodeNeededParticipants) {
+            if (participant.Event_Ticket__r.Participation__c == 'Onsite') {
+                getQRCodeParticipantsMap.get(participant.Id).QR_Code_needed__c = true;
+                createBadgeParticipantIds.add(participant.Id);
+            }
         }
-        if (badges.size() > 0) {
-            insert badges;
-        }
-        try {
-            startQRcodeBatch();
-        } catch (Exception error) {
-            System.debug(error);
-        }
+        createBadges(createBadgeParticipantIds);
     }
 
     public static void processNewParticipants(List<Participant__c> newParticipants) {
         String statusRegistered = 'Registered';
+        List<String> ticketIds = new List<String>();
         for (Participant__c newParticipant : newParticipants) {
-            if (newParticipant.Status__c == statusRegistered && String.isBlank(newParticipant.Event_Registration_Sub_Group__c)) {
-                newParticipant.QR_Code_needed__c = true;
+            ticketIds.add(newParticipant.Event_Ticket__c);
+        }
+        Map<Id, Event_Ticket__c> eventTicketsMap = new Map<Id, Event_Ticket__c>([
+            SELECT Id, Participation__c FROM Event_Ticket__c WHERE Id IN :ticketIds
+        ]);
+        List<String> createBadgeParticipantIds = new List<String>();
+        for (Participant__c newParticipant : newParticipants) {
+            if (eventTicketsMap.containsKey(newParticipant.Event_Ticket__c)) {
+                if (newParticipant.Status__c == statusRegistered 
+                && String.isBlank(newParticipant.Event_Registration_Sub_Group__c)
+                && eventTicketsMap.get(newParticipant.Event_Ticket__c).Participation__c == 'Onsite') {
+                    newParticipant.QR_Code_needed__c = true;
+                }
             }
         }
     }
 
-    public static void createBadges(List<Participant__c> newParticipants) {
+    public static void createBadges(List<String> participantIds) {
+        List<Participant__c> participants = [
+            SELECT Id, (SELECT Id FROM Event_Badges__r) FROM Participant__c WHERE Id IN :participantIds
+        ];
         List<Event_Badge__c> badges = new List<Event_Badge__c>();
-        for (Participant__c newParticipant : newParticipants) {
-            if (newParticipant.QR_Code_needed__c == true) {
+        for (Participant__c participant : participants) {
+            if (participant.Event_Badges__r.size() == 0) {
                 Event_Badge__c badge = new Event_Badge__c();
-                badge.Event_Participation__c = newParticipant.Id;
+                badge.Event_Participation__c = participant.Id;
                 badges.add(badge);
             }
         }
         if(badges.size() > 0) {
             insert badges;
-            try {
-                startQRcodeBatch();
-            } catch (Exception error) {
-                System.debug(error);
-            }
-        }        
+        }
+        startQRcodeBatch();
     }
 
     public static void startQRcodeBatch() {
