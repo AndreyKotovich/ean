@@ -21,21 +21,29 @@ public with sharing class QRcodeController {
         }
         return null;
     } set; }
-    public String contentDocumentId {get{
+    public String externalUrl {get{
         List<Participant__c> participants = [
             SELECT Id, Name FROM Participant__c WHERE Id = :participantId
         ];
-        if (participants.size() == 1) {
-            String contentDocumentName = 'QR code ' + participants[0].Name + '.png';
-            List<ContentDocumentLink> conDocLinks = [
-                SELECT Id, ContentDocument.Title
+        String contentDocumentName = 'QR code ' + participants[0].Name + '.png';
+        List<ContentDocumentLink> conDocLinks = [
+                SELECT Id, ContentDocumentId
                 FROM ContentDocumentLink
-                WHERE LinkedEntityId = :participantId
+                WHERE LinkedEntityId = :participants[0].Id
                 AND ContentDocument.Title = :contentDocumentName
             ];
-            if (conDocLinks.size() > 0) {
-                return conDocLinks[0].ContentDocumentId;
-            }
+        List<ContentVersion> conVersions = [
+                SELECT ContentBodyId, Id
+                FROM ContentVersion
+                WHERE ContentDocumentId = :conDocLinks[0].ContentDocumentId
+                AND Title = :contentDocumentName
+            ];
+        if (conVersions.size() == 1) {
+            String contentVersionId = conVersions[0].Id;
+            String contentBodyId = conVersions[0].ContentBodyId;
+
+            String imageUrl = URL.getSalesforceBaseUrl().toExternalForm().replace('.my.salesforce.com', '--c.documentforce.com/sfc/servlet.shepherd/version/renditionDownload?rendition=ORIGINAL_Png&versionId=').replace('.salesforce.com', '--c.documentforce.com/sfc/servlet.shepherd/version/renditionDownload?rendition=ORIGINAL_Png&versionId=') + contentVersionId.left(15)  + '&operationContext=CHATTER&contentId=' + contentBodyId.left(15);
+            return imageUrl;
         }
         return null;
     } set; }

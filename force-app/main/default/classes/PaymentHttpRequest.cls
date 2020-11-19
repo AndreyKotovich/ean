@@ -632,7 +632,6 @@ public without sharing class PaymentHttpRequest {
     }
 
     public static Map<String, String> refundTransaction(String orderRefunedId, String orderCancelledId, Decimal amount) {
-        System.debug('START refundTransaction');
         Transaction__c tr = new Transaction__c();
         try { 
             List<Order__c> ords = [
@@ -660,7 +659,38 @@ public without sharing class PaymentHttpRequest {
             String merchantAccountId = isPayPal ? paymentCredentials.Merchant_PayPal_Account_Id__c : paymentCredentials.Merchant_Account_Id__c;
             String tranType = isPayPal ? 'refund-debit' : 'refund-purchase';
             String paymentMethod = isPayPal ? 'paypal' : 'creditcard';
+            String invoiceNum = 'EAN' + String.valueOf(Date.today().year()).right(2) + '-CN-%';
+            Integer oIEANNumber;
 
+            List<Transaction__c> oIEAN = [
+                SELECT Refund_Invoice__c
+                FROM Transaction__c
+                WHERE Refund_Invoice__c != NULL AND Refund_Invoice__c LIKE :invoiceNum
+                ORDER BY Refund_Invoice__c DESC
+                LIMIT 10
+            ];
+
+            if (oIEAN.isEmpty()) { invoiceNum = invoiceNum.substring(0,invoiceNum.length()-1) + '000001'; }
+            if (!oIEAN.isEmpty()) {
+                for (Transaction__c o : oIEAN) {
+                    String invoiceNumb = o.Refund_Invoice__c.right(6);
+                    if (invoiceNumb.isNumeric()) {
+                        oIEANNumber = Integer.valueOf(invoiceNumb);
+                        break;
+                    }
+                }
+
+                oIEANNumber++;
+
+				String oIEANStr = String.valueOf(oIEANNumber);
+				while (oIEANStr.length() < 6) {
+					oIEANNumber++;
+					oIEANStr = '0' + oIEANStr;
+				}
+               
+				invoiceNum = invoiceNum.substring(0,invoiceNum.length()-1) + oIEANStr;
+            }
+     
             if (ords[0].Transactions__r[0].Payment_Method__c == 'Bank Transfer') { 
                 tr = new Transaction__c();
                 tr.Amount__c = (-1) * refundAmount;
@@ -668,6 +698,7 @@ public without sharing class PaymentHttpRequest {
                 tr.Completion_Time_Stamp__c = Datetime.now();
                 tr.Status__c = 'Refund';
                 tr.Payment_Method__c = 'Bank Transfer';
+                tr.Refund_Invoice__c = invoiceNum;
 
                 insert tr;
                 
@@ -726,6 +757,7 @@ public without sharing class PaymentHttpRequest {
             List<Object> paymentMethodList = (List<Object>) JSON.deserializeUntyped(JSON.serialize(paymentMethods.get('payment-method')));
             String name = (String) ((Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(paymentMethodList[0]))).get('name');
             tr.Payment_Method__c = String.valueOf(name);
+            tr.Refund_Invoice__c = invoiceNum;
             
             insert tr;
             System.debug('response.getBody()' + response.getBody());

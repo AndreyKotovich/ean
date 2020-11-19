@@ -13,7 +13,6 @@ import updateContacts from "@salesforce/apex/EventRegistrationController.updateC
 import getParticipation from "@salesforce/apex/EventRegistrationController.getParticipation";
 import updateParticipant from "@salesforce/apex/EventRegistrationController.updateParticipant";
 import insertUpgradeData from "@salesforce/apex/EventRegistrationController.insertUpgradeData";
-import sendInvoiceToGroupLeader from "@salesforce/apex/EventRegistrationController.sendInvoiceToGroupLeader";
 
 export default class EventRegistrationApplication extends NavigationMixin(LightningElement) {
     //TODO before participant insert check availability of participants
@@ -232,6 +231,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         }
         this.registrationType = event.detail.registrationType;
         this.eventGroupInformation = Object.assign({}, event.detail.eventGroupInformation);
+        console.log('eventGroupInformation', this.eventGroupInformation);
         this.userInfo.iprInfo = event.detail.iprInfo;
         this.updateProgressBar();
         this.onNext();

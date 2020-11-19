@@ -3,11 +3,7 @@
         <html>
             <body>
             <p style="margin: 0px; font-size: 11pt;">Dear {!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.LastName},</p>
-                <p style="margin: 0px; font-size: 11pt;">Thank you for registering<span style="{!IF(relatedTo.Order__r.Event_Registration_Sub_Group__c!='', '', 'display: none;')}"> your group 
-                {!relatedTo.Order__r.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name}</span> to the {!relatedTo.Event_custom__r.Name} of the European Academy of Neurology.
-                Please find attached the confirmation for your order. Kindly transfer the outstanding amount to the account indicated in the attachment.</p>
-                <p style="margin: 0px; font-size: 11pt;">You can check the registration status<span style="{!IF(relatedTo.Order__r.Event_Registration_Sub_Group__c!='', '', 'display: none;')}"> of your group</span>,
-                edit or add additional registrations or download relevant documents by accessing the registration system again via MyEAN (www.ean.org).</p>
+                <p style="margin: 0px; font-size: 11pt;">Your ticket is Canceled.</p>
                 <p style="margin: 0px; font-size: 11pt;">If you have any questions regarding registration, please contact us at registration@ean.org.<br />
                 We are looking forward to welcoming you at the {!relatedTo.Event_custom__r.Name}!</p>
                 <p style="margin: 0px; font-size: 11pt;">Yours sincerely, <br />
@@ -59,9 +55,6 @@
                 </p>
             </div>
             <div style="margin: 50px;">
-            </div>
-            <div style = "text-align: center">
-                <h2 style="margin: 0px; font-size: 11pt;">CREDIT NOTE – {!relatedTo.Order__r.Invoice_Number__c}</h2>
             </div>
             <div>
                 <c:RefundInvoiceTable order="{!relatedTo.Order__c}" body="{!relatedTo.JSON_body__c}" />

@@ -3,9 +3,19 @@
     <fullName>Submission_Deadline</fullName>
     <active>true</active>
     <errorConditionFormula>NOT(ISBLANK($User.ContactId)) &amp;&amp;
-RecordType.Name = &quot;Public Submission&quot; &amp;&amp;
 ISCHANGED(Stage__c)&amp;&amp;
-ISPICKVAL(Stage__c, &quot;Submitted&quot;)&amp;&amp;
-Event__r.Abstract_Submission_Deadline__c &lt; NOW()</errorConditionFormula>
-    <errorMessage>You cannot submit your abstract after the submission deadline.</errorMessage>
+ISPICKVAL(Stage__c, &quot;Submitted&quot;) 
+&amp;&amp; 
+(
+ ISPICKVAL(Event__r.Abstract_Submission__c , &quot;Closed&quot;)
+ || 
+  (RecordType.Name = &quot;Public Submission&quot; 
+  &amp;&amp; ISPICKVAL(Event__r.Abstract_Submission__c, &quot;Invited Submission Open&quot;)  
+   )
+ || 
+  (RecordType.Name = &quot;Invited Submission&quot; 
+   &amp;&amp; ISPICKVAL(Event__r.Abstract_Submission__c, &quot;Public Submission Open&quot;)  
+  )
+)</errorConditionFormula>
+    <errorMessage>The abstract submission has been closed.</errorMessage>
 </ValidationRule>

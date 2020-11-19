@@ -2,6 +2,29 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <apiVersion>49.0</apiVersion>
     <assignments>
+        <name>Assign_Type_and_Topic</name>
+        <label>Assign Type and Topic</label>
+        <locationX>380</locationX>
+        <locationY>806</locationY>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Type</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Abstract_Topic__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Topics_Pick</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Validate_Input</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>AssignAbstract</name>
         <label>AssignAbstract</label>
         <locationX>439</locationX>
@@ -76,15 +99,8 @@
     <assignments>
         <name>AssignAbstract_0</name>
         <label>AssignAbstract</label>
-        <locationX>557</locationX>
-        <locationY>3052</locationY>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Event__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>SelectedEvent</elementReference>
-            </value>
-        </assignmentItems>
+        <locationX>568</locationX>
+        <locationY>3050</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
             <operator>Assign</operator>
@@ -510,29 +526,6 @@
             <targetReference>Fill_Abstract_Screen_0</targetReference>
         </connector>
     </assignments>
-    <assignments>
-        <name>Set_Topic_and_Type</name>
-        <label>Set Topic and Type</label>
-        <locationX>412</locationX>
-        <locationY>829</locationY>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Type</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Abstract_Topic__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Topics_Pick</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Validate_Input</targetReference>
-        </connector>
-    </assignments>
     <choices>
         <name>AuthorConsentChoice</name>
         <choiceText>&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;* &lt;/span&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;I confirm that I have the consent of the authors to submit this abstract&lt;/span&gt;</choiceText>
@@ -683,12 +676,26 @@
         <defaultConnectorLabel>Deadline Passed</defaultConnectorLabel>
         <rules>
             <name>Deadline_Not_Passed</name>
-            <conditionLogic>and</conditionLogic>
+            <conditionLogic>1 AND (2 OR 3)</conditionLogic>
             <conditions>
                 <leftValueReference>$Flow.CurrentDateTime</leftValueReference>
                 <operator>LessThan</operator>
                 <rightValue>
                     <elementReference>GetEvent.Abstract_Submission_Deadline__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetEvent.Abstract_Submission__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>All Submissions Open</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetEvent.Abstract_Submission__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Public Submission Open</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -1018,7 +1025,7 @@
             <field>Value</field>
             <operator>NotEqualTo</operator>
             <value>
-                <elementReference>TypeDefaultChoice</elementReference>
+                <elementReference>SetTypeDefaultChoice</elementReference>
             </value>
         </filters>
         <object>PicklistValueInfo</object>
@@ -1156,6 +1163,7 @@
         <object>Event__c</object>
         <queriedFields>Id</queriedFields>
         <queriedFields>Abstract_Submission_Deadline__c</queriedFields>
+        <queriedFields>Abstract_Submission__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
@@ -1763,7 +1771,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>DeadlinePassedText</name>
-            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;The abstract submission deadline for this event has already passed.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;The abstract submission deadline for this event has already passed.&lt;/span&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <showFooter>true</showFooter>
@@ -1778,7 +1786,7 @@
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Set_Topic_and_Type</targetReference>
+            <targetReference>Assign_Type_and_Topic</targetReference>
         </connector>
         <fields>
             <name>ProgressFillAbstract</name>
@@ -2934,7 +2942,7 @@
             <targetReference>Select_Event_Screen</targetReference>
         </connector>
     </start>
-    <status>Active</status>
+    <status>Draft</status>
     <variables>
         <name>AbstractAuthor</name>
         <dataType>SObject</dataType>

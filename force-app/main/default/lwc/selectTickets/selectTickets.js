@@ -30,6 +30,7 @@ export default class SelectTickets extends LightningElement {
         mediumDeviceSize: 6,
         smallDeviceSize: 12
     }
+    @api eventGroupInformation = {};
 
     @api
     get selectedTicket() {
@@ -101,7 +102,10 @@ export default class SelectTickets extends LightningElement {
         }
 
         if (this.eanEvent.Max_Participants__c) {
-            this.availableParticipantNumber = this.eanEvent.Max_Participants__c - this.eanEvent.Registrations__c;
+            let availableParticipantNumber = this.eanEvent.Max_Participants__c - this.eanEvent.Registrations__c;
+            this.availableParticipantNumber = availableParticipantNumber > 150 ? 150 : availableParticipantNumber;
+        } else {
+            this.availableParticipantNumber = null;
         }
 
         let promises = [
@@ -429,12 +433,25 @@ export default class SelectTickets extends LightningElement {
             errorMessage = "Check your input";
         }
 
-        if (result && this.isGroupRegistration && !!this.maxParticipantsAvailable) {
-            let ticketAmount = !!this._ticketsAmount ? parseInt(this._ticketsAmount) : 0;
-            let individualTicketAmount = this._groupIndividualTickets.participantsAmount ? parseInt(this._groupIndividualTickets.participantsAmount) : 0;
-            result = ticketAmount + individualTicketAmount <= this.maxParticipantsAvailable;
+        if (result && this.isGroupRegistration && !!this.availableParticipantNumber && !!this._ticketsAmount) {
+            result = parseInt(this._ticketsAmount) <= this.availableParticipantNumber;
             if (!result) {
                 errorMessage = "You have selected too many participants";
+            }
+        }
+
+        if (result && this.isGroupRegistration && !!this._groupIndividualTickets.participantsAmount && !!this.availableParticipantNumber) {
+            result = parseInt(this._groupIndividualTickets.participantsAmount) <= this.availableParticipantNumber;
+            if (!result) {
+                errorMessage = "You have selected too many participants";
+            }
+        }
+
+        if(result && this.registrationType === 'group' && !!!this.eventGroupInformation.Id){
+            let amount = this.isGroupIndividual ? this._groupIndividualTickets.participantsAmount : this._ticketsAmount;
+            result = parseInt(amount) >= 5;
+            if(!result){
+                errorMessage = "At least 5 tickets need to be selected";
             }
         }
 
@@ -471,22 +488,8 @@ export default class SelectTickets extends LightningElement {
     get inputLabel() {
         let str = 'Ticket Amount';
 
-        if (this.registrationType === "ipr") {
-
-            if (this.eanEvent.Max_Participants__c) {
-                this.availableParticipantNumber =
-                    this.availableParticipantNumber > this._userInfo.iprInfo.ticketAmount - this.iprRegisteredParticipants ?
-                        this._userInfo.iprInfo.ticketAmount - this.iprRegisteredParticipants : this.availableParticipantNumber;
-            } else {
-                this.availableParticipantNumber = this._userInfo.iprInfo.ticketAmount - this.iprRegisteredParticipants;
-            }
+        if (this.availableParticipantNumber != null) {
             str += ' (max. ' + this.availableParticipantNumber + ' available)';
-        } else if (this.registrationType === "group") {
-            if (this.eanEvent.Max_Participants__c) {
-                str += ' (max. ' + this.availableParticipantNumber + ' available)';
-            } else {
-                this.availableParticipantNumber = null;
-            }
         }
 
         return str;
@@ -508,21 +511,11 @@ export default class SelectTickets extends LightningElement {
         return res;
     }
 
-    get maxParticipantsAvailable() {
-        let res = null;
-
-        if (this.eanEvent.Max_Participants__c) {
-            res = this.eanEvent.Max_Participants__c - this.eanEvent.Registrations__c;
-        }
-
-        return res;
-    }
-
     get individualTicketAmountLabel() {
         let str = 'Individual ticket amount'
 
-        if (!!this.maxParticipantsAvailable) {
-            str += ' (max. ' + this.maxParticipantsAvailable + ' available)';
+        if (this.availableParticipantNumber != null) {
+            str += ' (max. ' + this.availableParticipantNumber + ' available)';
         }
 
         return str;
@@ -551,5 +544,23 @@ export default class SelectTickets extends LightningElement {
         }
 
         return result;
+    }
+
+    get availableFreeIPRAmount(){
+        let res  = 0;
+
+        if(this.registrationType === 'ipr' && this._userInfo.iprInfo.ticketAmount){
+            res = this._userInfo.iprInfo.ticketAmount - this.iprRegisteredParticipants;
+        }
+
+        return res;
+    }
+
+    get showFreeTicketSection(){
+        return this.availableFreeIPRAmount > 0;
+    }
+
+    get atLeastWording(){
+        return this.registrationType === 'group' && !!!this.eventGroupInformation.Id;
     }
 }

@@ -5,7 +5,7 @@
         <name>Assign_Abstract_Affirmations</name>
         <label>Assign Abstract Affirmations</label>
         <locationX>790</locationX>
-        <locationY>1739</locationY>
+        <locationY>1806</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Authors_consent__c</assignToReference>
             <operator>Assign</operator>
@@ -35,7 +35,7 @@
         <name>Assign_Abstract_Affirmations_0</name>
         <label>Assign Abstract Affirmations</label>
         <locationX>449</locationX>
-        <locationY>1727</locationY>
+        <locationY>1794</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Authors_consent__c</assignToReference>
             <operator>Assign</operator>
@@ -86,7 +86,7 @@
         <name>Assign_Abstract_Affirmations_0_0</name>
         <label>Assign Abstract Affirmations</label>
         <locationX>556</locationX>
-        <locationY>1800</locationY>
+        <locationY>1867</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Authors_consent__c</assignToReference>
             <operator>Assign</operator>
@@ -123,7 +123,7 @@
         <name>Assign_Abstract_Values</name>
         <label>Assign Abstract Values</label>
         <locationX>551</locationX>
-        <locationY>1118</locationY>
+        <locationY>1185</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Introduction__c</assignToReference>
             <operator>Assign</operator>
@@ -188,7 +188,7 @@
         <name>Assign_Abstract_Values_0</name>
         <label>Assign Abstract Values</label>
         <locationX>247</locationX>
-        <locationY>1120</locationY>
+        <locationY>1187</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Disclosure__c</assignToReference>
             <operator>Assign</operator>
@@ -246,7 +246,7 @@
         <name>Enable_Error_Message</name>
         <label>Enable Error Message</label>
         <locationX>50</locationX>
-        <locationY>985</locationY>
+        <locationY>1052</locationY>
         <assignmentItems>
             <assignToReference>ShowError</assignToReference>
             <operator>Assign</operator>
@@ -262,7 +262,7 @@
         <name>Enable_Error_Message_0</name>
         <label>Enable Error Message</label>
         <locationX>749</locationX>
-        <locationY>995</locationY>
+        <locationY>1062</locationY>
         <assignmentItems>
             <assignToReference>ShowError</assignToReference>
             <operator>Assign</operator>
@@ -278,7 +278,7 @@
         <name>Enable_Files_Error_Message</name>
         <label>Enable Files Error Message</label>
         <locationX>67</locationX>
-        <locationY>1964</locationY>
+        <locationY>2031</locationY>
         <assignmentItems>
             <assignToReference>FilesErrorMessage</assignToReference>
             <operator>Assign</operator>
@@ -294,7 +294,7 @@
         <name>Remove_Image_Id_1</name>
         <label>Remove Image Id 1</label>
         <locationX>779</locationX>
-        <locationY>1965</locationY>
+        <locationY>2032</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Image_1_ID__c</assignToReference>
             <operator>Assign</operator>
@@ -310,7 +310,7 @@
         <name>Remove_Image_Id_2</name>
         <label>Remove Image Id 2</label>
         <locationX>785</locationX>
-        <locationY>2087</locationY>
+        <locationY>2154</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Image_2_ID__c</assignToReference>
             <operator>Assign</operator>
@@ -326,7 +326,7 @@
         <name>Remove_Image_Id_3</name>
         <label>Remove Image Id 3</label>
         <locationX>782</locationX>
-        <locationY>2205</locationY>
+        <locationY>2272</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Image_3_ID__c</assignToReference>
             <operator>Assign</operator>
@@ -396,7 +396,7 @@
         <name>Abstract_Type</name>
         <label>Abstract Type</label>
         <locationX>405</locationX>
-        <locationY>734</locationY>
+        <locationY>801</locationY>
         <defaultConnector>
             <targetReference>Get_membership_Status</targetReference>
         </defaultConnector>
@@ -436,7 +436,7 @@
         <name>Check_Abstract_Status</name>
         <label>Check Abstract Status</label>
         <locationX>410</locationX>
-        <locationY>314</locationY>
+        <locationY>381</locationY>
         <defaultConnector>
             <targetReference>Get_Event</targetReference>
         </defaultConnector>
@@ -489,34 +489,47 @@
         <name>Check_Submission_Deadline</name>
         <label>Check Submission Deadline</label>
         <locationX>400</locationX>
-        <locationY>514</locationY>
+        <locationY>581</locationY>
         <defaultConnector>
             <targetReference>Abstract_Type</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
-            <name>Deadline_Not_Passed</name>
-            <conditionLogic>and</conditionLogic>
+            <name>Too_Late_to_Submit</name>
+            <conditionLogic>(1 AND 2) OR (3 AND 4) OR 5</conditionLogic>
             <conditions>
-                <leftValueReference>Get_Event.Abstract_Submission_Deadline__c</leftValueReference>
-                <operator>GreaterThan</operator>
+                <leftValueReference>Get_Abstract.RecordTypeId</leftValueReference>
+                <operator>EqualTo</operator>
                 <rightValue>
-                    <elementReference>$Flow.CurrentDateTime</elementReference>
+                    <elementReference>InvitedRecordTypeId</elementReference>
                 </rightValue>
             </conditions>
-            <connector>
-                <targetReference>Abstract_Type</targetReference>
-            </connector>
-            <label>Deadline Not Passed</label>
-        </rules>
-        <rules>
-            <name>Too_Late_to_Submit</name>
-            <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>Get_Event.Abstract_Submission_Deadline__c</leftValueReference>
-                <operator>LessThanOrEqualTo</operator>
+                <leftValueReference>Get_Event.Abstract_Submission__c</leftValueReference>
+                <operator>EqualTo</operator>
                 <rightValue>
-                    <elementReference>$Flow.CurrentDateTime</elementReference>
+                    <stringValue>Public Submission Open</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Abstract.RecordTypeId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>PublicRecordTypeId</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Event.Abstract_Submission__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Invited Submission Open</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Event.Abstract_Submission__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Closed</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -529,7 +542,7 @@
         <name>Checkboxes_Null</name>
         <label>Checkboxes = Null</label>
         <locationX>546</locationX>
-        <locationY>1619</locationY>
+        <locationY>1686</locationY>
         <defaultConnector>
             <targetReference>Assign_Abstract_Affirmations_0</targetReference>
         </defaultConnector>
@@ -575,7 +588,7 @@
         <name>Delete_Image</name>
         <label>Delete Image?</label>
         <locationX>490</locationX>
-        <locationY>2077</locationY>
+        <locationY>2144</locationY>
         <defaultConnector>
             <targetReference>Update_Image_Info</targetReference>
         </defaultConnector>
@@ -651,7 +664,7 @@
         <name>Image_Locations_Selected</name>
         <label>Image Locations Selected</label>
         <locationX>297</locationX>
-        <locationY>2028</locationY>
+        <locationY>2095</locationY>
         <defaultConnector>
             <targetReference>Delete_Image</targetReference>
         </defaultConnector>
@@ -711,7 +724,7 @@
         <name>Max_Body_Words_Reached</name>
         <label>Max Body Words Reached?</label>
         <locationX>205</locationX>
-        <locationY>1361</locationY>
+        <locationY>1428</locationY>
         <defaultConnector>
             <targetReference>Update_Abstract</targetReference>
         </defaultConnector>
@@ -736,7 +749,7 @@
         <name>Max_Total_Words_Reached_0</name>
         <label>Max Total Words Reached?</label>
         <locationX>545</locationX>
-        <locationY>1280</locationY>
+        <locationY>1347</locationY>
         <defaultConnector>
             <targetReference>Check_Affirmations_Screen</targetReference>
         </defaultConnector>
@@ -761,7 +774,7 @@
         <name>Submit_Abstract_Decision</name>
         <label>Submit Abstract Decision</label>
         <locationX>290</locationX>
-        <locationY>2411</locationY>
+        <locationY>2478</locationY>
         <defaultConnector>
             <targetReference>Set_Draft</targetReference>
         </defaultConnector>
@@ -1029,8 +1042,8 @@ SUBSTITUTE(SUBSTITUTE({!FileUpload3.contentDocIds},&apos;[&apos;,&apos;&apos;),&
     <recordLookups>
         <name>Get_Abstract</name>
         <label>Get Abstract</label>
-        <locationX>419</locationX>
-        <locationY>190</locationY>
+        <locationX>410</locationX>
+        <locationY>220</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Check_Abstract_Status</targetReference>
@@ -1054,7 +1067,7 @@ SUBSTITUTE(SUBSTITUTE({!FileUpload3.contentDocIds},&apos;[&apos;,&apos;&apos;),&
         <name>Get_Event</name>
         <label>Get Event</label>
         <locationX>534</locationX>
-        <locationY>410</locationY>
+        <locationY>477</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Check_Submission_Deadline</targetReference>
@@ -1075,13 +1088,14 @@ SUBSTITUTE(SUBSTITUTE({!FileUpload3.contentDocIds},&apos;[&apos;,&apos;&apos;),&
         <queriedFields>Id</queriedFields>
         <queriedFields>Name</queriedFields>
         <queriedFields>Abstract_Submission_Deadline__c</queriedFields>
+        <queriedFields>Abstract_Submission__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
         <name>Get_membership_Status</name>
         <label>Get membership Status</label>
-        <locationX>553</locationX>
-        <locationY>851</locationY>
+        <locationX>554</locationX>
+        <locationY>917</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Fill_Abstract_Screen</targetReference>
@@ -1107,7 +1121,7 @@ SUBSTITUTE(SUBSTITUTE({!FileUpload3.contentDocIds},&apos;[&apos;,&apos;&apos;),&
         <name>Set_Draft</name>
         <label>Set Draft</label>
         <locationX>470</locationX>
-        <locationY>2557</locationY>
+        <locationY>2624</locationY>
         <connector>
             <targetReference>Success_Screen</targetReference>
         </connector>
@@ -1134,7 +1148,7 @@ SUBSTITUTE(SUBSTITUTE({!FileUpload3.contentDocIds},&apos;[&apos;,&apos;&apos;),&
         <name>Submit_Abstract</name>
         <label>Submit Abstract</label>
         <locationX>171</locationX>
-        <locationY>2510</locationY>
+        <locationY>2577</locationY>
         <connector>
             <targetReference>Success_Screen</targetReference>
         </connector>
@@ -1161,7 +1175,7 @@ SUBSTITUTE(SUBSTITUTE({!FileUpload3.contentDocIds},&apos;[&apos;,&apos;&apos;),&
         <name>Update_Abstract</name>
         <label>Update Abstract</label>
         <locationX>305</locationX>
-        <locationY>1755</locationY>
+        <locationY>1822</locationY>
         <connector>
             <targetReference>Upload_Files_Screen</targetReference>
         </connector>
@@ -1174,7 +1188,7 @@ SUBSTITUTE(SUBSTITUTE({!FileUpload3.contentDocIds},&apos;[&apos;,&apos;&apos;),&
         <name>Update_Image_Info</name>
         <label>Update Image Info</label>
         <locationX>298</locationX>
-        <locationY>2159</locationY>
+        <locationY>2226</locationY>
         <connector>
             <targetReference>Submit_Screen</targetReference>
         </connector>
@@ -1249,7 +1263,7 @@ SUBSTITUTE(SUBSTITUTE({!FileUpload3.contentDocIds},&apos;[&apos;,&apos;&apos;),&
         <name>Check_Affirmations_Screen</name>
         <label>Check Affirmations Screen</label>
         <locationX>555</locationX>
-        <locationY>1484</locationY>
+        <locationY>1551</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1424,8 +1438,8 @@ SUBSTITUTE(SUBSTITUTE({!FileUpload3.contentDocIds},&apos;[&apos;,&apos;&apos;),&
     <screens>
         <name>Deadline_passed_screen</name>
         <label>Deadline passed screen</label>
-        <locationX>221</locationX>
-        <locationY>411</locationY>
+        <locationX>227</locationX>
+        <locationY>472</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1441,7 +1455,7 @@ SUBSTITUTE(SUBSTITUTE({!FileUpload3.contentDocIds},&apos;[&apos;,&apos;&apos;),&
         <name>Fill_Abstract_Screen</name>
         <label>Fill Abstract Screen</label>
         <locationX>552</locationX>
-        <locationY>995</locationY>
+        <locationY>1062</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1550,7 +1564,7 @@ SUBSTITUTE(SUBSTITUTE({!FileUpload3.contentDocIds},&apos;[&apos;,&apos;&apos;),&
         <name>Fill_Abstract_Screen_0</name>
         <label>Fill Abstract Screen</label>
         <locationX>247</locationX>
-        <locationY>985</locationY>
+        <locationY>1052</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1619,7 +1633,7 @@ SUBSTITUTE(SUBSTITUTE({!FileUpload3.contentDocIds},&apos;[&apos;,&apos;&apos;),&
         <name>Submit_Screen</name>
         <label>Submit Screen</label>
         <locationX>298</locationX>
-        <locationY>2282</locationY>
+        <locationY>2349</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1669,7 +1683,7 @@ SUBSTITUTE(SUBSTITUTE({!FileUpload3.contentDocIds},&apos;[&apos;,&apos;&apos;),&
         <name>Success_Screen</name>
         <label>Success Screen</label>
         <locationX>288</locationX>
-        <locationY>2673</locationY>
+        <locationY>2740</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -1710,7 +1724,7 @@ SUBSTITUTE(SUBSTITUTE({!FileUpload3.contentDocIds},&apos;[&apos;,&apos;&apos;),&
         <name>Upload_Files_Screen</name>
         <label>Upload Files Screen</label>
         <locationX>305</locationX>
-        <locationY>1903</locationY>
+        <locationY>1970</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2092,7 +2106,7 @@ SUBSTITUTE(SUBSTITUTE({!FileUpload3.contentDocIds},&apos;[&apos;,&apos;&apos;),&
         <showHeader>true</showHeader>
     </screens>
     <start>
-        <locationX>292</locationX>
+        <locationX>293</locationX>
         <locationY>50</locationY>
         <connector>
             <targetReference>Get_Abstract</targetReference>

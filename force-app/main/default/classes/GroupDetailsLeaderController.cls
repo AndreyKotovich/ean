@@ -299,14 +299,6 @@ public without sharing class GroupDetailsLeaderController {
 		@AuraEnabled public ParticipantButtonsWrap buttonsSettingsInitial { get; set; }
 		@AuraEnabled public ParticipantButtonsWrap buttonsSettingsIntermediate { get; set; }
 
-		// @AuraEnabled public Boolean enableAddInviteButtons { get; set; }
-		// @AuraEnabled public Boolean displayAddButton { get; set; }
-		// @AuraEnabled public Boolean displayInviteButton { get; set; }
-		// @AuraEnabled public Boolean displaySaveDraftButton { get; set; }
-		// @AuraEnabled public Boolean isDraftStatus { get; set; }
-		// @AuraEnabled public Boolean isInvited { get; set; }				//	participant.Invitation_Status_In_Group__c == 'Invited'
-		// @AuraEnabled public Boolean isConfirmed { get; set; }			//	participant.Invitation_Status_In_Group__c == 'Confirmed'
-
 		@AuraEnabled public ErrorWrap error { get; set; }
 		@AuraEnabled public ErrorWrap errorInitial { get; set; }		//	used ONLY if order is paid and the user was deleted the participant email in input field
 

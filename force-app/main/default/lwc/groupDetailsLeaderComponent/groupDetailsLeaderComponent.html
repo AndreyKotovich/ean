@@ -116,18 +116,24 @@
 
 										<template if:true={participant.buttonsSettings.displaySaveDraftButton}>
 											<div class="small-button">
-												<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;">Save</div>
+												<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;" onclick={handleSaveClick} title="Save the definition without an email invitation (can be changed in the future)">
+													Save
+												</div>
 											</div>
 										</template>
 										<template if:true={participant.buttonsSettings.enableAddInviteButtons}>
 											<template if:true={participant.buttonsSettings.displayAddButton}>
 												<div class="small-button">
-													<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;">Add</div>
+													<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;" onclick={handleAddClick} title="Register a participant for the event">
+														Add
+													</div>
 												</div>
 											</template>
 											<template if:true={participant.buttonsSettings.displayInviteButton}>
 												<div class="small-button">
-													<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;">Invite</div>
+													<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;" onclick={handleInviteClick} title="Invite to community and event">
+														Invite
+													</div>
 												</div>
 											</template>
 										</template>

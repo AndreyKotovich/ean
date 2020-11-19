@@ -12,12 +12,13 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 	_isSpinner = true;
 	_isError = false;
 
-	_invitedMessage = 'Succesfully Invited';
-	_confirmedMessage = 'Succesfully Registered';
+	_invitedMessage = 'Successfully invited to the community and to the event';
+	_confirmedMessage = 'Successfully registered for the event';
 
 	_groupId = '';
 	_eventId = '';
 	_groupName = '';
+	_groupNameInitial = '';
 	_eventName = '';
 	_eventEndDateString = '';
 	_eventStartDateString = '';
@@ -64,6 +65,7 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 
 				this._groupId = result.groupDetails.groupId;
 				this._groupName = result.groupDetails.groupName;
+				this._groupNameInitial = result.groupDetails.groupNameInitial;
 				this._eventName = result.groupDetails.eventName;
 				this._eventId = result.groupDetails.eventId;
 				this._eventEndDateString = result.groupDetails.eventEndDateString;
@@ -75,6 +77,8 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 
 				this._displayAddMoreTicketsButton = result.displayAddMoreTicketsButton;
 				this._subGroupList = result.subGroupList;
+
+				this.processDuplicateParticipants();
 			})
 			.catch(error=>{
 				console.log('GroupDetailsLeaderComponent error: ', error);
@@ -94,69 +98,33 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 
 	handleOngroupchangecontactemail(event) {
 		console.log('----------------------------');
-		console.log('handleOngroupchangecontactemail this._disabledEmails: ', this._disabledEmails);
-		console.log('handleOngroupchangecontactemail this._disabledEmailsNotThisGroup: ', this._disabledEmailsNotThisGroup);
-		console.log('handleOngroupchangecontactemail this._disabledEmailsThisGroup: ', this._disabledEmailsThisGroup);
+		// console.log('handleOngroupchangecontactemail this._disabledEmails: ', this._disabledEmails);
+		// console.log('handleOngroupchangecontactemail this._disabledEmailsNotThisGroup: ', this._disabledEmailsNotThisGroup);
+		// console.log('handleOngroupchangecontactemail this._disabledEmailsThisGroup: ', this._disabledEmailsThisGroup);
 
 		const subGroupId = event.detail.uniquekey1;
 		const participantIndex = event.detail.uniquekey2;
 		const eventType = event.detail.eventtype;
-
 		var participantDetails = event.detail.recorddetails ? JSON.parse(event.detail.recorddetails) : null;
 
-		// console.log('participantDetails: ', participantDetails);
-		console.log('participantDetails.originalText: ', participantDetails.originalText);
-		console.log('participantDetails.enteredText: ', participantDetails.enteredText);
-		// console.log('subGroupId: ', subGroupId);
-		// console.log('participantIndex: ', participantIndex);
-		console.log('eventType: ', eventType);
-
-		// console.log('TEST1');
-
-		// if (participantDetails.originalText == participantDetails.enteredText) return;
-
-		// eventType === 'onblur' && 
-		// console.log('TEST2');
-		//	NOT VALID EMAIL
-		// if ((!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(participantDetails.enteredText)) || participantDetails.enteredText === '')) {
-		// 	console.log('NOT VALID EMAIL');
-		// }
-		//	ironman@hotmail.com
-		// console.log('----------------------------');
-		// console.log('participantDetails.enteredText: ', participantDetails.enteredText);
-		// console.log('--');
-		// console.log('this._disabledEmailsThisGroup: ', this._disabledEmailsThisGroup);
-		// console.log('--');
-		// console.log('this._disabledEmails: ', this._disabledEmails);
-		// console.log('----------------------------');
-
-		// if(this._disabledEmailsThisGroup.includes(participantDetails.enteredText)) {
-		// 	console.log('includes in this._disabledEmailsThisGroup');
-		// }
-		// if(this._disabledEmails.includes(participantDetails.enteredText)) {
-		// 	console.log('includes in this._disabledEmails');
-		// }
-		// console.log('TEST3');
-
 		for (var i = 0; i < this._subGroupList.length; i++) {
+
 			if (this._subGroupList[i].subGroupId !== subGroupId) {
 				continue;
 			}
 
 			var tempSubGroupList = JSON.parse(JSON.stringify(this._subGroupList));
-
-			// console.log('tempSubGroupList: ', tempSubGroupList);
-
-			console.log('ZALUPA 0 INDEX: ', i);
 			var currentParticipant = tempSubGroupList[i].subGroupParticipantList[participantIndex];
 
-			//	Email is Empty
-			if (participantDetails.enteredText === '') {
+			currentParticipant.newContactId = participantDetails ? participantDetails.id : null;
+			currentParticipant.newContactEmail = participantDetails ? participantDetails.enteredText : null;
+			currentParticipant.newContactName = participantDetails ? participantDetails.field2val : null;
+			console.log();
 
+			//	VALIDATION 1	ENTERED EMAIL IS EMPTY
+			if (participantDetails.enteredText === '') {
 				console.log('VALIDATION: EMAIL IS EMPTY');
 
-				if (participantDetails.originalText != '') this.removeEmailFromDisabledEmails(participantDetails.originalText);
-				// console.log('ZALUPA 1 currentParticipant.errorInitial: ', currentParticipant.errorInitial);
 				currentParticipant.buttonsSettings.displaySaveDraftButton = false;
 				currentParticipant.buttonsSettings.displayAddButton = false;
 				currentParticipant.buttonsSettings.displayInviteButton = false;
@@ -164,42 +132,46 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 				currentParticipant.buttonsSettings.isConfirmed = false;
 				currentParticipant.error = JSON.parse(JSON.stringify(currentParticipant.errorInitial));
 
+				if (currentParticipant.oldContactEmail !== '') currentParticipant.buttonsSettings.displaySaveDraftButton = true;
+
 				//	Order is Paid, when we show error message
 				if (currentParticipant.buttonsSettings.enableAddInviteButtons) currentParticipant.error.hasError = true;
+				tempSubGroupList[i].subGroupParticipantList[participantIndex] = currentParticipant;
+				this._subGroupList = tempSubGroupList;
 
-			//	Not valid EMAIL
-			} else if ((!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(participantDetails.enteredText)) && eventType === 'onblur')) {
+				this.processDuplicateParticipants();
+				return;
+			}
 
+			//	VALIDATION 2	INVALID EMAIL IS ENTERED
+			if ((!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(participantDetails.enteredText)) && eventType === 'onblur')) {
 				console.log('VALIDATION: EMAIL IS INVALID');
 
 				currentParticipant.error.hasError = true;
 				currentParticipant.error.message = 'Not valid email';
 				currentParticipant.buttonsSettings.displaySaveDraftButton = false;
+
 				currentParticipant.buttonsSettings.displayAddButton = false;
 				currentParticipant.buttonsSettings.displayInviteButton = false;
 				currentParticipant.buttonsSettings.isInvited = false;
 				currentParticipant.buttonsSettings.isConfirmed = false;
 
-			//	Value is not Changed
-			} else if (participantDetails.originalText == participantDetails.enteredText) {
+				tempSubGroupList[i].subGroupParticipantList[participantIndex] = currentParticipant;
+				this._subGroupList = tempSubGroupList;
 
+				this.processDuplicateParticipants();
+				return;
+			}
+
+			//	VALIDATION 3	EMAIL IS NOT CHANGED
+			if (participantDetails.originalText == participantDetails.enteredText) {
 				console.log('VALIDATION: VALUE IS NOT CHANGED');
-
 				return;
+			}
 
-			//	In all next conditions EMAIL will be valid
-			} else if (!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(participantDetails.enteredText))) {
-				console.log('NOT VALID EMAIL');
-				return;
-
-			//	alex1983_work@tut.by
-			//	Already Registered On Event as Solo or in other Group
-			} else if (this._disabledEmailsNotThisGroup.includes(participantDetails.enteredText)) {
-			// } else if (!this._disabledEmailsThisGroup.includes(participantDetails.enteredText) && this._disabledEmailsNotThisGroup.includes(participantDetails.enteredText)) {
+			//	VALIDATION 4	ALREADY REGISTERED AS SOLO OR IN OTHER GROUP
+			if (this._disabledEmailsNotThisGroup.includes(participantDetails.enteredText)) {
 				console.log('VALIDATION: ALREADY REGISTERED');
-
-				// if (participantDetails.originalText != '' && currentParticipant.error.message === 'Duplicate email') this.removeEmailFromDisabledEmails(participantDetails.originalText);
-				if (participantDetails.originalText != '') this.removeEmailFromDisabledEmails(participantDetails.originalText);
 
 				currentParticipant.error.hasError = true;
 				currentParticipant.error.message = 'Already registered on this event';
@@ -208,77 +180,149 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 				currentParticipant.buttonsSettings.displayInviteButton = false;
 				currentParticipant.buttonsSettings.isInvited = false;
 				currentParticipant.buttonsSettings.isConfirmed = false;
-				console.log('ZALUPA 31');
+	
+				tempSubGroupList[i].subGroupParticipantList[participantIndex] = currentParticipant;
+				this._subGroupList = tempSubGroupList;
 
-			//	Email was changed several times and at last user entered First Initial Email
-			} else if (currentParticipant.oldContactEmail === participantDetails.enteredText) {
+				this.processDuplicateParticipants();
+				return;
+			}
 
+			//	VALIDATION 5	ORIGINAL EMAIL IS ENTERED
+			if (currentParticipant.oldContactEmail === participantDetails.enteredText) {
 				console.log('VALIDATION: ORIGINAL IS ENTERED');
 
 				currentParticipant.error = JSON.parse(JSON.stringify(currentParticipant.errorInitial));
 				currentParticipant.buttonsSettings = JSON.parse(JSON.stringify(currentParticipant.buttonsSettingsInitial));
 
-			//	Email was already entered in THIS group
-			} else if (this._disabledEmailsThisGroup.includes(participantDetails.enteredText)) {
+				tempSubGroupList[i].subGroupParticipantList[participantIndex] = currentParticipant;
+				this._subGroupList = tempSubGroupList;
 
+				this.processDuplicateParticipants();
+				return;
+			}
+
+			//	VALIDATION 6	 DUPLICATE EMAIL IN THIS GROUP
+			if (this._disabledEmailsThisGroup.includes(participantDetails.enteredText)) {
 				console.log('VALIDATION: DUPLICATE EMAIL');
 
-				if (participantDetails.originalText != '' && currentParticipant.error.message !== 'Duplicate email') this.removeEmailFromDisabledEmails(participantDetails.originalText);
-				console.log('ZALUPA 4');
-				currentParticipant.error.hasError = true;
-				currentParticipant.error.message = 'Duplicate email';
-				currentParticipant.buttonsSettings.displaySaveDraftButton = false;
+				tempSubGroupList[i].subGroupParticipantList[participantIndex] = currentParticipant;
+				this._subGroupList = tempSubGroupList;
+				this.processDuplicateParticipants();
+				return;
+			}
+
+			//	VALIDATION IS PASSED
+			console.log('VALIDATION: IS PASSED');
+
+			currentParticipant.error.hasError = false;
+			currentParticipant.error.message = '';
+
+			//	Order is Paid
+			if (currentParticipant.buttonsSettings.enableAddInviteButtons) {
+				currentParticipant.buttonsSettings.displaySaveDraftButton = true;
 				currentParticipant.buttonsSettings.displayAddButton = false;
 				currentParticipant.buttonsSettings.displayInviteButton = false;
-				currentParticipant.buttonsSettings.isInvited = false;
-				currentParticipant.buttonsSettings.isConfirmed = false;
-				// if (participantDetails.enteredText != '') this.addEmailToDisabledEmails(participantDetails.enteredText);
-				console.log('ZALUPA 41');
-
-
-			//	Allow changes
-			} else {
-				console.log('VALIDATION: ALLOW CHANGES');
-
-				if (participantDetails.originalText != '' && currentParticipant.error.message !== 'Duplicate email') this.removeEmailFromDisabledEmails(participantDetails.originalText);
-				if (participantDetails.enteredText != '') this.addEmailToDisabledEmails(participantDetails.enteredText);
-
-				currentParticipant.error.hasError = false;
-				currentParticipant.error.message = '';
-
-				//	Order is Paid
-				if (currentParticipant.buttonsSettings.enableAddInviteButtons) {
-					currentParticipant.buttonsSettings.displaySaveDraftButton = true;
-					if (participantDetails.id) {
-						currentParticipant.buttonsSettings.displayAddButton = true;
-					} else {
-						currentParticipant.buttonsSettings.displayInviteButton = true;
-					}
-				
-				//	Order is not Paid (so we can't send any emails to the Participant)
+				if (participantDetails.id) {
+					currentParticipant.buttonsSettings.displayAddButton = true;
 				} else {
-					currentParticipant.buttonsSettings.displaySaveDraftButton = true;
+					currentParticipant.buttonsSettings.displayInviteButton = true;
 				}
-
-
-				currentParticipant.newContactId = participantDetails ? participantDetails.id : null;
-				currentParticipant.newContactEmail = participantDetails ? participantDetails.enteredText : null;
-				currentParticipant.newContactName = participantDetails ? participantDetails.field2val : null;
-
+			
+			//	Order is not Paid (so we can't send any emails to the Participant)
+			} else {
+				currentParticipant.buttonsSettings.displaySaveDraftButton = true;
 			}
-			// if (participantDetails.originalText != '') this.removeEmailFromDisabledEmails(participantDetails.originalText);
-			console.log('ZALUPA 200__00 currentParticipant: ', currentParticipant);
-			// this.removeEmailFromDisabledEmails(participantDetails.originalText);
-			console.log('ZALUPA 200 currentParticipant: ', currentParticipant);
+
 			tempSubGroupList[i].subGroupParticipantList[participantIndex] = currentParticipant;
 
-			if (participantDetails.originalText == participantDetails.enteredText && eventType !== 'onblur') return;
+			// if (participantDetails.originalText == participantDetails.enteredText && eventType !== 'onblur') return;
 
 			this._subGroupList = tempSubGroupList;
-			console.log('ZALUPA 400');
-			console.log('ZZZ3 this._disabledEmails: ', this._disabledEmails);
+
+			this.processDuplicateParticipants();
 		}
+
 	}
+
+	processDuplicateParticipants() {
+		console.log('processDuplicateParticipants START this._subGroupList: ', this._subGroupList);
+		var tempSubGroupList = JSON.parse(JSON.stringify(this._subGroupList));
+
+		var emailToIsDuplicate = {};
+		var tempDisabledEmailsGroup = [];
+		for (var i = 0; i < tempSubGroupList.length; i++) {
+			for (var i2 = 0; i2 < tempSubGroupList[i].subGroupParticipantList.length; i2++) {
+				// if (tempSubGroupList[i].subGroupParticipantList[i2].newContactEmail == undefined || tempSubGroupList[i].subGroupParticipantList[i2].newContactEmail == '') continue;
+				if (!tempSubGroupList[i].subGroupParticipantList[i2].newContactEmail) continue;
+
+				let contactEmail = tempSubGroupList[i].subGroupParticipantList[i2].newContactEmail;
+				tempDisabledEmailsGroup.push(contactEmail);
+
+				let emailInMap = emailToIsDuplicate.hasOwnProperty(contactEmail);
+
+				console.log('' + contactEmail + ' = ', emailInMap);
+				// emailToIsDuplicate[contactEmail] = emailInMap;
+
+				if (emailInMap) {
+					emailToIsDuplicate[contactEmail] = true;
+				} else {
+					emailToIsDuplicate[contactEmail] = false;
+				}
+			}
+		}
+
+		console.log('emailToIsDuplicate: ', emailToIsDuplicate);
+
+		for (var i = 0; i < tempSubGroupList.length; i++) {
+			for (var i2 = 0; i2 < tempSubGroupList[i].subGroupParticipantList.length; i2++) {
+				if (!tempSubGroupList[i].subGroupParticipantList[i2].newContactEmail) continue;
+
+				let contactEmail = tempSubGroupList[i].subGroupParticipantList[i2].newContactEmail;
+
+				let hasDuplicates = emailToIsDuplicate[contactEmail];
+
+				if (!hasDuplicates) {
+					let currentErrorMessage = tempSubGroupList[i].subGroupParticipantList[i2].error.message;
+
+					if (currentErrorMessage === 'Duplicate email') {
+						let buttonsSettingsTemp = JSON.parse(JSON.stringify(tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettingsIntermediate));
+						tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettings = buttonsSettingsTemp;
+						tempSubGroupList[i].subGroupParticipantList[i2].error.hasError = false;
+						tempSubGroupList[i].subGroupParticipantList[i2].error.message = '';
+					}
+
+					let buttonsSettingsTemp = JSON.parse(JSON.stringify(tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettings));
+					tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettingsIntermediate = buttonsSettingsTemp;
+
+				} else {
+					console.log('1 DUPLICATE FOUND i: ', i);
+					console.log('2 DUPLICATE FOUND i2: ', i2);
+					let currentErrorMessage = tempSubGroupList[i].subGroupParticipantList[i2].error.message;
+
+					if (currentErrorMessage === 'Duplicate email') {
+						continue;
+					}
+
+					if (currentErrorMessage !== 'Already registered on this event') {
+
+						//	NEW DUPLICATE FOUND
+						tempSubGroupList[i].subGroupParticipantList[i2].error.hasError = true;
+						tempSubGroupList[i].subGroupParticipantList[i2].error.message = 'Duplicate email';
+						tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettings.displaySaveDraftButton = false;
+						tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettings.displayAddButton = false;
+						tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettings.displayInviteButton = false;
+					}
+				}
+			}
+		}
+
+		this._subGroupList = tempSubGroupList;
+		this._disabledEmailsThisGroup = tempDisabledEmailsGroup;
+		this.combineDisabledEmails();
+		console.log('processDuplicateParticipants END this._subGroupList: ', this._subGroupList);
+	}
+
 
 	addEmailToDisabledEmails(emailString) {
 		this._disabledEmailsThisGroup.push(emailString);
@@ -292,14 +336,6 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 			// var alreadyRemoved = false;
 			for (var i = 0; i < this._disabledEmailsThisGroup.length; i++) {
 
-				// if (this._disabledEmailsThisGroup[i] === emailString && !alreadyRemoved) {
-				// 	continue;
-				// }
-
-				// if (this._disabledEmailsThisGroup[i] === emailString) alreadyRemoved = true;
-				// tempDisabledEmailsGroup.push(this._disabledEmailsThisGroup[i]);
-
-				// OLD LOGIC
 				if (this._disabledEmailsThisGroup[i] !== emailString) {
 					tempDisabledEmailsGroup.push(this._disabledEmailsThisGroup[i]);
 				}
@@ -327,6 +363,21 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 		// console.log('ZZZ2 this._disabledEmailsString: ', this._disabledEmailsString);
 		// console.log('ZZZ3 this._disabledEmails: ', this._disabledEmails);
 		console.log('combineDisabledEmails END');
+	}
+
+	//	contact already exist at the community
+	handleAddClick() {
+		console.log('handleAddClick');
+	}
+
+	//	contact not exist at the community
+	handleInviteClick() {
+		console.log('handleAddClick');
+	}
+
+	//	save as draft (can be changed in future)
+	handleSaveClick() {
+		console.log('handleAddClick');
 	}
 
 

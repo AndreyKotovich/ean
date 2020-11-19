@@ -59,7 +59,7 @@ export default class ErSummarize extends LightningElement {
             return arr;
         };
         let daysArray = getDaysArray(this.eanEvent.Start_Time__c, this.eanEvent.End_Time__c);
-        if (daysArray.length < 2) {
+        if (daysArray.length === 0) {
             this.isDates = false;
         }
         return daysArray;

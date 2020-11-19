@@ -280,7 +280,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>true</active>
+        <active>false</active>
         <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Event registration&apos;) &amp;&amp; NOT(ISNULL(Order__c))</formula>
         <triggerType>onCreateOrTriggeringUpdate</triggerType>
     </rules>
@@ -308,7 +308,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>true</active>
+        <active>false</active>
         <criteriaItems>
             <field>Email_Activity__c.Type__c</field>
             <operation>equals</operation>
@@ -331,7 +331,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>true</active>
+        <active>false</active>
         <criteriaItems>
             <field>Email_Activity__c.Email_Sent__c</field>
             <operation>equals</operation>
@@ -350,7 +350,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>true</active>
+        <active>false</active>
         <criteriaItems>
             <field>Email_Activity__c.Email_Sent__c</field>
             <operation>equals</operation>
@@ -424,7 +424,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>false</active>
+        <active>true</active>
         <criteriaItems>
             <field>Email_Activity__c.Email_Sent__c</field>
             <operation>equals</operation>

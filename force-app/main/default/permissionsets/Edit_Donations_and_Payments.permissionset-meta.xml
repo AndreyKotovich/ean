@@ -1428,6 +1428,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Email_Activity__c.JSON_body__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Email_Activity__c.Membership_Status__c</field>
         <readable>false</readable>
     </fieldPermissions>

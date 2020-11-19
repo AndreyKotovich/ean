@@ -135,7 +135,10 @@
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
-        <relatedList>Email_Activity__c.Event_Participation__c</relatedList>
+        <fields>Date_of_visit__c</fields>
+        <relatedList>Event_participation_configuration__c.Event_Participation__c</relatedList>
+        <sortField>Date_of_visit__c</sortField>
+        <sortOrder>Asc</sortOrder>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>
