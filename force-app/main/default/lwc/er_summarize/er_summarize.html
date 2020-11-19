@@ -143,18 +143,19 @@
                 </div>
             </div>
             <template if:true={isDates}>
-                <lightning-card>
-                    <div class="slds-form-elemen slds-m-left_large">
-                        <div class="slds-grid">
-                            <div class="slds-col slds-m-left_medium">
-                                <lightning-dual-listbox name="Dates of visit" label="Dates of visit"
-                                    source-label="Available" selected-label="Selected" field-level-help="Dates of visit"
-                                    size=10 options={options} onchange={handleChangeDates} class='list'>
-                                </lightning-dual-listbox>
+                    <lightning-card>
+                        <div class="slds-form-elemen slds-m-left_large">
+                            <div class="slds-grid">
+                                <div class="slds-col slds-m-left_medium">
+                                    <lightning-dual-listbox name="Dates of visit" label="Dates of visit"
+                                        source-label="Available" selected-label="Selected"
+                                        field-level-help="Dates of visit" size=10 options={options}
+                                        onchange={handleChangeDates} class='list'>
+                                    </lightning-dual-listbox>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </lightning-card>
+                    </lightning-card> 
             </template>
         </lightning-layout-item>
 

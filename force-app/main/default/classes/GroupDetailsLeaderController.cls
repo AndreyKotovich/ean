@@ -51,14 +51,20 @@ public without sharing class GroupDetailsLeaderController {
 			groupDetails.totalGroupExistingParticipants = totalGroupExistingParticipants;
 			groupDetails.totalGroupMaxParticipants = totalGroupMaxParticipants;
 
-			List<String> disabledEmails = EventRegistrationController.getNotAvailableEventRegistrationEmails(new List<String>{groupDetails.eventId});
+			List<String> disabledEmailsNotThisGroup = EventRegistrationController.getNotAvailableEventRegistrationEmails(new List<String>{groupDetails.eventId}, orderedSubGroupIds);
+
+			// Set<String> disabledEmailsNotThisGroup = new Set<String>();
+			// for (String disabledEmail : disabledEmails) {
+			// 	if (!disabledEmailsThisGroup.contains(disabledEmail)) disabledEmailsNotThisGroup.add(disabledEmail);
+			// }
 
 			return new Map<String, Object>{
 				'result' => true,
 				'groupDetails' => groupDetails,
 				'subGroupList' => subGroupList,
-				'disabledEmails' => disabledEmails,
+				// 'disabledEmails' => disabledEmails,
 				'disabledEmailsThisGroup' => disabledEmailsThisGroup,
+				'disabledEmailsNotThisGroup' => disabledEmailsNotThisGroup,
 				'displayAccordions' => !subGroupList.isEmpty(),
 				'displayAddMoreTicketsButton' => true
 			};
@@ -220,9 +226,8 @@ public without sharing class GroupDetailsLeaderController {
 				errorInitial.hasError = false;
 				errorInitial.message = 'Please enter email';
 
-				subGroupParticipant.errorInitial = error;
-
 				if (isOrderPaid && String.isBlank(subGroupParticipant.oldContactEmail)) {
+					errorInitial.hasError = true;
 					error.hasError = true;
 					error.message = 'Please enter email';
 				}
@@ -233,6 +238,7 @@ public without sharing class GroupDetailsLeaderController {
 				subGroupParticipant.buttonsSettings.displayAddButton = subGroupParticipant.buttonsSettings.displayAddButton && isOrderPaid;
 				subGroupParticipant.buttonsSettings.displayInviteButton = subGroupParticipant.buttonsSettings.displayInviteButton && isOrderPaid;
 				subGroupParticipant.buttonsSettingsInitial = subGroupParticipant.buttonsSettings;
+				subGroupParticipant.buttonsSettingsIntermediate = subGroupParticipant.buttonsSettings;
 
 				if (subGroupParticipant.buttonsSettings.isDraftStatus) accordionIsExpanded = true;
 			}
@@ -291,6 +297,7 @@ public without sharing class GroupDetailsLeaderController {
 
 		@AuraEnabled public ParticipantButtonsWrap buttonsSettings { get; set; }
 		@AuraEnabled public ParticipantButtonsWrap buttonsSettingsInitial { get; set; }
+		@AuraEnabled public ParticipantButtonsWrap buttonsSettingsIntermediate { get; set; }
 
 		// @AuraEnabled public Boolean enableAddInviteButtons { get; set; }
 		// @AuraEnabled public Boolean displayAddButton { get; set; }

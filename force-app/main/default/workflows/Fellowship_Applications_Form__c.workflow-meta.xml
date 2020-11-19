@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <alerts>
+        <fullName>Clinical_Fellowship_Application_Status_Changed</fullName>
+        <description>Clinical Fellowship Application Status Changed</description>
+        <protected>false</protected>
+        <recipients>
+            <type>creator</type>
+        </recipients>
+        <senderAddress>membership@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>Clinical_Fellowship_Approval_Process/Clinical_Fellowship_Application_Status_Changed</template>
+    </alerts>
+    <fieldUpdates>
+        <fullName>Change_to_Accepted</fullName>
+        <field>Approval_Status__c</field>
+        <literalValue>Accepted</literalValue>
+        <name>Change to Accepted</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>true</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Change_to_Declined</fullName>
+        <field>Approval_Status__c</field>
+        <literalValue>Declined</literalValue>
+        <name>Change to Declined</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>true</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Change_to_Further_Information_Required</fullName>
+        <field>Approval_Status__c</field>
+        <literalValue>Further information required</literalValue>
+        <name>Change to Further Information Required</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>true</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Change_to_In_Review</fullName>
+        <field>Approval_Status__c</field>
+        <literalValue>In review</literalValue>
+        <name>Change to In Review</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>true</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Change_to_Submitted</fullName>
+        <field>Approval_Status__c</field>
+        <literalValue>Submitted</literalValue>
+        <name>Change to Submitted</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>true</reevaluateOnChange>
+    </fieldUpdates>
+</Workflow>

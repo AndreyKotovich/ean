@@ -26,6 +26,7 @@
             </value>
         </inputParameters>
     </actionCalls>
+    <apiVersion>49.0</apiVersion>
     <assignments>
         <name>DisplayValidationError</name>
         <label>DisplayValidationError</label>
@@ -196,6 +197,7 @@
         <name>CountryRecordChoice</name>
         <dataType>String</dataType>
         <displayField>Label</displayField>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
@@ -217,6 +219,7 @@
         <name>SalutationPicklistRecordChoices</name>
         <dataType>String</dataType>
         <displayField>Label</displayField>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
@@ -330,6 +333,7 @@
         <connector>
             <targetReference>Register_for_Congress</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -350,6 +354,7 @@
         <connector>
             <targetReference>GetContact</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>

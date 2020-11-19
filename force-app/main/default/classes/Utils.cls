@@ -46,6 +46,26 @@ public with sharing class Utils {
         insert sbojects;
     }
 
+    public static void startOrderReminder() {
+        String jobName = 'Order Reminder';
+        List<CronTrigger> waitingJobs = [SELECT Id, CronJobDetail.Name, NextFireTime, State
+                                FROM CronTrigger
+                                WHERE CronJobDetail.Name = :jobName];
+        Boolean isBatchWorking = false;
+        for (CronTrigger waitingJob : waitingJobs) {
+            if (waitingJob.NextFireTime < System.now().addDays(1) 
+            && waitingJob.NextFireTime > System.now().addSeconds(-30)
+            && waitingJob.CronJobDetail.Name == jobName){
+                isBatchWorking = true;
+            } else if (waitingJob.CronJobDetail.Name == jobName){
+                System.abortJob(waitingJob.Id);
+            }
+        }
+        if (isBatchWorking == false) {
+            System.scheduleBatch(new OrderReminderBatch(), jobName, 1400);
+        }
+    }
+
     //  TEMPORARY DEPRECATED (by Vitaly Serebrakov)
 
 	// /**

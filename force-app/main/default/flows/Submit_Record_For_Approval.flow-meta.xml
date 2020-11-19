@@ -43,6 +43,7 @@
             <name>entityId</name>
         </outputParameters>
     </actionCalls>
+    <apiVersion>49.0</apiVersion>
     <decisions>
         <name>Check_Status</name>
         <label>Check Status</label>
@@ -116,6 +117,7 @@
         <connector>
             <targetReference>Over_App_Forms</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Order__c</field>
             <operator>EqualTo</operator>
@@ -138,6 +140,7 @@
         <connector>
             <targetReference>Submit_For_Existed_Approval</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>TargetObjectId</field>
             <operator>EqualTo</operator>

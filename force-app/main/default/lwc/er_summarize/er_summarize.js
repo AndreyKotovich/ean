@@ -28,6 +28,7 @@ export default class ErSummarize extends LightningElement {
     isSolo = false;
     isUpgrade = false;
     isDiscount = false;
+    isDates = false;
     discountCode = '';
     totalAmountOrg = 0;
     discountInfo = {};
@@ -57,8 +58,11 @@ export default class ErSummarize extends LightningElement {
             }
             return arr;
         };
-
-        return getDaysArray(this.eanEvent.Start_Time__c, this.eanEvent.End_Time__c);
+        let daysArray = getDaysArray(this.eanEvent.Start_Time__c, this.eanEvent.End_Time__c);
+        if (daysArray.length < 2) {
+            this.isDates = false;
+        }
+        return daysArray;
     }
 
     get selectedDates() {

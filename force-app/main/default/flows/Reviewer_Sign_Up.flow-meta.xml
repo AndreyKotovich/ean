@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <apiVersion>50.0</apiVersion>
     <constants>
         <name>EventRcordTypeId</name>
         <dataType>String</dataType>
@@ -45,6 +46,7 @@
         <name>EventChoice</name>
         <dataType>String</dataType>
         <displayField>Name</displayField>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>RecordTypeId</field>
             <operator>EqualTo</operator>
@@ -143,6 +145,7 @@
         <connector>
             <targetReference>CheckIfReviewerExists</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Contact__c</field>
             <operator>EqualTo</operator>
@@ -193,7 +196,7 @@
         </connector>
         <fields>
             <name>InstructionText</name>
-            <fieldText>&lt;p&gt;&lt;b&gt;To sign up as reviewer, please complete following information.&lt;/b&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;b&gt;To sign up as reviewer, please complete the following information.&lt;/b&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <fields>
@@ -226,8 +229,8 @@
     <screens>
         <name>ReviewerAlreadySubmittedScreen</name>
         <label>ReviewerAlreadySubmittedScreen</label>
-        <locationX>915</locationX>
-        <locationY>391</locationY>
+        <locationX>919</locationX>
+        <locationY>454</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>

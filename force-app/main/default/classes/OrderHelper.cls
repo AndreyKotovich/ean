@@ -196,7 +196,9 @@ public without sharing class OrderHelper {
         List<Order_Item__c> oI = generalData.containsKey('oI') ?
             (List<Order_Item__c>)JSON.deserialize(JSON.serialize(generalData.get('oI')), List<Order_Item__c>.class) :
             new List<Order_Item__c>();
-
+        Map<String,Object> oIOrig = generalData.containsKey('oIOrig') ?
+            (Map<String,Object>)JSON.deserializeUntyped(JSON.serialize(generalData.get('oIOrig'))) :
+        new Map<String,Object>();   
         Map<String, String> resMap = PaymentHttpRequest.refundTransaction(orderId, orderId, refundAmount);
 
         if (resMap.get('status') == 'Success' && oI.size() > 0) {
@@ -234,6 +236,25 @@ public without sharing class OrderHelper {
 
                 update part;
                 update sPart;
+
+                List<Order__c> ord = [
+                    SELECT Id, Contact__c, Contact__r.Email, Event_custom__c 
+                    FROM Order__c 
+                    WHERE Id =: orderId 
+                    LIMIT 1
+                ];
+
+                if (ord.size() > 0) {
+                    Email_Activity__c emailActivity = new Email_Activity__c(
+                        Contact__c = ord[0].Contact__c,
+                        Event_Custom__c = ord[0].Event_custom__c,
+                        Order__c = ord[0].Id,
+                        Send_To_Email__c = ord[0].Contact__r.Email,
+                        Type__c = 'Refund Order',
+                        JSON_body__c = JSON.serialize(oIOrig)
+                    );
+                    insert emailActivity;
+                }
             }
             catch(Exception e) {
                 Database.rollback(sp);

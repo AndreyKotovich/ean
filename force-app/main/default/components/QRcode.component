@@ -1,4 +1,5 @@
 <apex:component id="QRcode" access="global" controller="QRcodeController">
     <apex:attribute name="participant" description="Participant Id for event" type="String" assignTo="{!participantId}" required="false" access="global"/>
+    <img src = "{!PublicUrl}" height="100" align="center"/>
     <p>{!PublicUrl}</p>
 </apex:component>

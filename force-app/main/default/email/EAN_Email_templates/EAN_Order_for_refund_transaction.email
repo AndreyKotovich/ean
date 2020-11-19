@@ -1,0 +1,83 @@
+<messaging:emailTemplate subject="Event" recipientType="Contact" relatedToType="Email_Activity__c">
+    <messaging:htmlEmailBody >
+        <html>
+            <body>
+            <p style="margin: 0px; font-size: 11pt;">Dear {!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.LastName},</p>
+                <p style="margin: 0px; font-size: 11pt;">Thank you for registering<span style="{!IF(relatedTo.Order__r.Event_Registration_Sub_Group__c!='', '', 'display: none;')}"> your group 
+                {!relatedTo.Order__r.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name}</span> to the {!relatedTo.Event_custom__r.Name} of the European Academy of Neurology.
+                Please find attached the confirmation for your order. Kindly transfer the outstanding amount to the account indicated in the attachment.</p>
+                <p style="margin: 0px; font-size: 11pt;">You can check the registration status<span style="{!IF(relatedTo.Order__r.Event_Registration_Sub_Group__c!='', '', 'display: none;')}"> of your group</span>,
+                edit or add additional registrations or download relevant documents by accessing the registration system again via MyEAN (www.ean.org).</p>
+                <p style="margin: 0px; font-size: 11pt;">If you have any questions regarding registration, please contact us at registration@ean.org.<br />
+                We are looking forward to welcoming you at the {!relatedTo.Event_custom__r.Name}!</p>
+                <p style="margin: 0px; font-size: 11pt;">Yours sincerely, <br />
+                {!relatedTo.Event_custom__r.Name} Registration Management</p>
+            </body>
+        </html>
+    </messaging:htmlEmailBody>
+        <messaging:attachment renderAs="PDF" filename="invoice.pdf">
+        <html>
+            <body>
+            <div>
+                <center>
+                    <img src = "{!$Resource.BannerTest}" height="100" align="center"/>
+                </center>
+            </div>
+            <div>
+                <p style="margin: 0px; font-size: 11pt;">{!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.FirstName} {!relatedTo.Contact__r.LastName}<br />
+                Department: {!relatedTo.Contact__r.Department_Name__c}<br />
+                Street: {!relatedTo.Contact__r.Work_Street__c}<br />
+                ZIP City: {!relatedTo.Contact__r.Work_Zip_Postal_Code__c} {!relatedTo.Contact__r.Work_City__c}<br />
+                Country: {!relatedTo.Contact__r.Work_Country__c}<br />
+                VAT Nr: </p>
+            </div>
+            
+            <div style="margin: 50px;">
+            </div>
+            
+            <div style = "text-align: right">
+                <p style="margin: 0px; font-size: 9pt;">
+                    <apex:outputText value="{0, date, d MMMM yyyy}">
+                        <apex:param value="{!relatedTo.CreatedDate}" /> 
+                    </apex:outputText>
+                </p>
+            </div>
+            
+            <div style="margin: 50px;">
+            </div>
+            
+            <div>
+                <p style="margin: 0px; font-size: 11pt;">
+                {!relatedTo.Event_custom__r.Name} - Congress of the European Academy of Neurology<br/>
+                    <apex:outputText value="{0, date, d MMMM}">
+                        <apex:param value="{!relatedTo.Event_custom__r.Start_Time__c}" /> 
+                    </apex:outputText>
+                     - 
+                    <apex:outputText value="{0, date, d MMMM yyyy}">
+                        <apex:param value="{!relatedTo.Event_custom__r.End_Time__c}" /> 
+                    </apex:outputText>
+                </p>
+            </div>
+            <div style="margin: 50px;">
+            </div>
+            <div style = "text-align: center">
+                <h2 style="margin: 0px; font-size: 11pt;">CREDIT NOTE – {!relatedTo.Order__r.Invoice_Number__c}</h2>
+            </div>
+            <div>
+                <c:RefundInvoiceTable order="{!relatedTo.Order__c}" body="{!relatedTo.JSON_body__c}" />
+            </div>
+            
+            
+            <div style="margin: 150px;">
+            </div>
+            
+            
+            
+            <p style="text-align: center; margin: 0px; font-size: 9pt;"><b>EAN Registration Management</b><br/>
+                Breite Gasse 4/7, 1070 Vienna, Austria<br/>
+                registration@ean.org, 00431889050325</p>
+            </body>
+        </html>
+    </messaging:attachment>
+ 
+</messaging:emailTemplate>

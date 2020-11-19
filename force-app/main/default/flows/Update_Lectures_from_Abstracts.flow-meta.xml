@@ -3,8 +3,8 @@
     <actionCalls>
         <name>Notify_User</name>
         <label>Notify User</label>
-        <locationX>515</locationX>
-        <locationY>809</locationY>
+        <locationX>634</locationX>
+        <locationY>718</locationY>
         <actionName>customNotificationAction</actionName>
         <actionType>customNotificationAction</actionType>
         <inputParameters>
@@ -16,7 +16,7 @@
         <inputParameters>
             <name>body</name>
             <value>
-                <elementReference>NotificationText</elementReference>
+                <elementReference>NotificationTextAuto</elementReference>
             </value>
         </inputParameters>
         <inputParameters>
@@ -34,15 +34,16 @@
         <inputParameters>
             <name>targetId</name>
             <value>
-                <elementReference>$Record.Id</elementReference>
+                <elementReference>Create_Lecture</elementReference>
             </value>
         </inputParameters>
     </actionCalls>
+    <apiVersion>50.0</apiVersion>
     <assignments>
         <name>Assign_Users_To_Notify</name>
         <label>Assign Users To Notify</label>
-        <locationX>518</locationX>
-        <locationY>667</locationY>
+        <locationX>634</locationX>
+        <locationY>559</locationY>
         <assignmentItems>
             <assignToReference>UsersToNotify</assignToReference>
             <operator>Add</operator>
@@ -78,28 +79,35 @@
             <name>Public_Abstract_is_Accepted</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>Get_Abstract.RecordTypeId</leftValueReference>
+                <leftValueReference>$Record.RecordTypeId</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <elementReference>PublicRecordTypeId</elementReference>
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>Get_Abstract.Stage__c</leftValueReference>
+                <leftValueReference>$Record.Stage__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Closed</stringValue>
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>Get_Abstract.Status__c</leftValueReference>
+                <leftValueReference>$Record.Status__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Accepted</stringValue>
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>Get_Abstract.Session__c</leftValueReference>
+                <leftValueReference>$Record.Session__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Abstract_Presenter__c</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
@@ -108,6 +116,7 @@
             <connector>
                 <targetReference>Create_Lecture</targetReference>
             </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
             <label>Public Abstract is Accepted</label>
         </rules>
         <rules>
@@ -133,6 +142,11 @@
             <label>Invited Abstract is created</label>
         </rules>
     </decisions>
+    <formulas>
+        <name>NotificationTextAuto</name>
+        <dataType>String</dataType>
+        <expression>&quot;A new Lecture was created from the abstract &quot;&amp; {!Get_Abstract.Name}</expression>
+    </formulas>
     <interviewLabel>Update Lectures from Abstracts {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Update Lectures from Abstracts</label>
     <processMetadataValues>
@@ -157,11 +171,17 @@
     <recordCreates>
         <name>Create_Lecture</name>
         <label>Create Lecture</label>
-        <locationX>520</locationX>
-        <locationY>411</locationY>
+        <locationX>510</locationX>
+        <locationY>404</locationY>
         <connector>
             <targetReference>Get_Notification</targetReference>
         </connector>
+        <inputAssignments>
+            <field>Abstract_Submitted__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
         <inputAssignments>
             <field>Abstract__c</field>
             <value>
@@ -186,6 +206,12 @@
                 <elementReference>Get_Abstract.Session__c</elementReference>
             </value>
         </inputAssignments>
+        <inputAssignments>
+            <field>Submission_Type__c</field>
+            <value>
+                <stringValue>Public</stringValue>
+            </value>
+        </inputAssignments>
         <object>Lecture__c</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordCreates>
@@ -198,6 +224,7 @@
         <connector>
             <targetReference>Abstract_Status</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -215,6 +242,10 @@
         <queriedFields>Title__c</queriedFields>
         <queriedFields>Presenter__c</queriedFields>
         <queriedFields>RecordTypeId</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <queriedFields>Abstract_Presenter__c</queriedFields>
+        <queriedFields>Submitter__c</queriedFields>
+        <queriedFields>Type__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
@@ -226,6 +257,7 @@
         <connector>
             <targetReference>Update_Lecture</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Contact__c</field>
             <operator>EqualTo</operator>
@@ -242,12 +274,13 @@
     <recordLookups>
         <name>Get_Notification</name>
         <label>Get Notification</label>
-        <locationX>521</locationX>
-        <locationY>540</locationY>
+        <locationX>633</locationX>
+        <locationY>404</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Assign_Users_To_Notify</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>CustomNotifTypeName</field>
             <operator>EqualTo</operator>
@@ -262,8 +295,9 @@
     <recordUpdates>
         <name>Update_Lecture</name>
         <label>Update Lecture</label>
-        <locationX>55</locationX>
-        <locationY>564</locationY>
+        <locationX>52</locationX>
+        <locationY>551</locationY>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -271,6 +305,12 @@
                 <elementReference>Get_Lecture_Presentations.Lecture__c</elementReference>
             </value>
         </filters>
+        <inputAssignments>
+            <field>Abstract_Submitted__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
         <inputAssignments>
             <field>Abstract__c</field>
             <value>
@@ -284,9 +324,9 @@
             </value>
         </inputAssignments>
         <inputAssignments>
-            <field>Lecture_Type__c</field>
+            <field>Submission_Type__c</field>
             <value>
-                <elementReference>Get_Abstract.Type__c</elementReference>
+                <stringValue>Invited</stringValue>
             </value>
         </inputAssignments>
         <object>Lecture__c</object>
@@ -297,6 +337,7 @@
         <connector>
             <targetReference>Get_Abstract</targetReference>
         </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
         <object>Abstract__c</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
@@ -304,6 +345,7 @@
     <status>Active</status>
     <textTemplates>
         <name>NotificationText</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
         <text>&lt;p&gt;A lecture {!Create_Lecture} was created from this abstract. &lt;/p&gt;</text>
     </textTemplates>
     <variables>

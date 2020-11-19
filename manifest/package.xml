@@ -34,7 +34,30 @@
     </types>
     <types>
         <members>*</members>
+          <members>EAN_Email_templates/EAN_Order_for_event_participation_paid</members>
+          <members>EAN_Email_templates/EAN_Order_for_refund_transaction</members>
         <name>EmailTemplate</name>
+    </types>
+    <types>
+		<members>*</members>
+		<name>EmailServicesFunction</name>
+	</types>
+      <types>
+    <members>Abstract__c</members>
+    <members>Application_form__c</members>
+    <members>Email_Activity__c</members>
+    <members>Fellowship_Applications_Form__c</members>
+    <members>MembershipContactAssotiation__c</members>
+    <members>Order__c</members>
+    <name>Workflow</name>
+  </types>
+    <types>
+		<members>*</members>
+		<name>WorkflowAlert</name>
+	</types>
+    <types>
+        <members>*</members>
+        <name>WorkflowRule</name>
     </types>
     <types>
         <members>*</members>
@@ -54,8 +77,13 @@
 	</types>
     <types>
 		<members>*</members>
-		<name>ValidationRule</name>
+		<name>Flow</name>
 	</types>
+	<types>
+		<members>*</members>
+		<name>FlowDefinition</name>
+	</types>
+
     <types>
         <members>Admin</members>
         <members>Member Community User Profile</members>
@@ -64,5 +92,5 @@
         <members>Secretary General</members>
         <name>Profile</name>
     </types>
-    <version>49.0</version>
+    <version>50.0</version>
 </Package>

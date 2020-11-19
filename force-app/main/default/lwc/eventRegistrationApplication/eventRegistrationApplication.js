@@ -13,6 +13,7 @@ import updateContacts from "@salesforce/apex/EventRegistrationController.updateC
 import getParticipation from "@salesforce/apex/EventRegistrationController.getParticipation";
 import updateParticipant from "@salesforce/apex/EventRegistrationController.updateParticipant";
 import insertUpgradeData from "@salesforce/apex/EventRegistrationController.insertUpgradeData";
+import sendInvoiceToGroupLeader from "@salesforce/apex/EventRegistrationController.sendInvoiceToGroupLeader";
 
 export default class EventRegistrationApplication extends NavigationMixin(LightningElement) {
     //TODO before participant insert check availability of participants
@@ -203,7 +204,32 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         }
     }
 
+    resetData(){
+        this.selectedTicket = "";
+        this.ticketsAmount = 0;
+        this.priceTicket = 0;
+        this.ticketId = 0;
+        this.participantsInitialization = {
+            isPartInit: false,
+            participantsAmount: 0,
+            initializedParticipants: []
+        };
+        this.participantRole = '';
+        this.selectedSessions = [];
+        this.selectedServices = {
+            visaLetter: false,
+            badgeRetrieval: ''
+        };
+        this.discountInfo = {};
+        this.selectedDates = [];
+        this.participants = {};
+        this.upgradeParticipant = {};
+    }
+
     onNextRegType(event) {
+        if(this.registrationType !== event.detail.registrationType){
+            this.resetData();
+        }
         this.registrationType = event.detail.registrationType;
         this.eventGroupInformation = Object.assign({}, event.detail.eventGroupInformation);
         this.userInfo.iprInfo = event.detail.iprInfo;
@@ -473,6 +499,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                 }
 
                 console.log('data insertEventParticipants ', data);
+
                 if (data.status !== 'Error') {
                     this[NavigationMixin.Navigate]({
                         type: 'comm__namedPage',
@@ -484,6 +511,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                         }
                     });
                 }
+
             })
             .catch((error) => {
                 this.handleError(error);

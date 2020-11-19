@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>50.0</apiVersion>
     <assignments>
         <name>Assign_Abstract_Affirmations</name>
         <label>Assign Abstract Affirmations</label>
-        <locationX>659</locationX>
-        <locationY>1788</locationY>
+        <locationX>683</locationX>
+        <locationY>1763</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Authors_consent__c</assignToReference>
             <operator>Assign</operator>
@@ -33,8 +34,8 @@
     <assignments>
         <name>Assign_Abstract_Affirmations_0</name>
         <label>Assign Abstract Affirmations</label>
-        <locationX>455</locationX>
-        <locationY>1782</locationY>
+        <locationX>447</locationX>
+        <locationY>1754</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Authors_consent__c</assignToReference>
             <operator>Assign</operator>
@@ -84,8 +85,8 @@
     <assignments>
         <name>Assign_Abstract_Affirmations_0_0</name>
         <label>Assign Abstract Affirmations</label>
-        <locationX>555</locationX>
-        <locationY>1785</locationY>
+        <locationX>562</locationX>
+        <locationY>1766</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Authors_consent__c</assignToReference>
             <operator>Assign</operator>
@@ -186,7 +187,7 @@
     <assignments>
         <name>Assign_Abstract_Values_0</name>
         <label>Assign Abstract Values</label>
-        <locationX>246</locationX>
+        <locationX>247</locationX>
         <locationY>1120</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Disclosure__c</assignToReference>
@@ -207,13 +208,6 @@
             <operator>Assign</operator>
             <value>
                 <elementReference>Body</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>Get_Abstract.Abstract_Topic__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>TopicInvited</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -246,8 +240,8 @@
     <assignments>
         <name>Enable_Error_Message_0</name>
         <label>Enable Error Message</label>
-        <locationX>739</locationX>
-        <locationY>997</locationY>
+        <locationX>749</locationX>
+        <locationY>995</locationY>
         <assignmentItems>
             <assignToReference>ShowError</assignToReference>
             <operator>Assign</operator>
@@ -257,6 +251,22 @@
         </assignmentItems>
         <connector>
             <targetReference>Fill_Abstract_Screen</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Enable_Files_Error_Message</name>
+        <label>Enable Files Error Message</label>
+        <locationX>112</locationX>
+        <locationY>1911</locationY>
+        <assignmentItems>
+            <assignToReference>FilesErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Upload_Files_Screen_0</targetReference>
         </connector>
     </assignments>
     <choices>
@@ -318,6 +328,9 @@
         <label>Abstract Type</label>
         <locationX>405</locationX>
         <locationY>734</locationY>
+        <defaultConnector>
+            <targetReference>Get_membership_Status</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Public</name>
@@ -408,6 +421,9 @@
         <label>Check Submission Deadline</label>
         <locationX>400</locationX>
         <locationY>514</locationY>
+        <defaultConnector>
+            <targetReference>Abstract_Type</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Deadline_Not_Passed</name>
@@ -434,13 +450,6 @@
                     <elementReference>$Flow.CurrentDateTime</elementReference>
                 </rightValue>
             </conditions>
-            <conditions>
-                <leftValueReference>Get_Abstract.Stage__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Draft</stringValue>
-                </rightValue>
-            </conditions>
             <connector>
                 <targetReference>Deadline_passed_screen</targetReference>
             </connector>
@@ -450,8 +459,8 @@
     <decisions>
         <name>Checkboxes_Null</name>
         <label>Checkboxes = Null</label>
-        <locationX>546</locationX>
-        <locationY>1629</locationY>
+        <locationX>547</locationX>
+        <locationY>1632</locationY>
         <defaultConnector>
             <targetReference>Assign_Abstract_Affirmations_0</targetReference>
         </defaultConnector>
@@ -491,6 +500,121 @@
                 <targetReference>Assign_Abstract_Affirmations_0_0</targetReference>
             </connector>
             <label>Tournament = Null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Delete_Image</name>
+        <label>Delete Image?</label>
+        <locationX>490</locationX>
+        <locationY>2077</locationY>
+        <defaultConnector>
+            <targetReference>Update_Image_Info</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Do not delete</defaultConnectorLabel>
+        <rules>
+            <name>Delete_Image_1</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Delete_image1</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Delete1</targetReference>
+            </connector>
+            <label>Delete Image 1</label>
+        </rules>
+        <rules>
+            <name>Delete_Image_2</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Delete_image2</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Delete2</targetReference>
+            </connector>
+            <label>Delete Image 2</label>
+        </rules>
+        <rules>
+            <name>Delete_Image_3</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Delete_image3</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Delete3</targetReference>
+            </connector>
+            <label>Delete Image 3</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Image_Locations_Selected</name>
+        <label>Image Locations Selected</label>
+        <locationX>106</locationX>
+        <locationY>2054</locationY>
+        <defaultConnector>
+            <targetReference>Delete_Image</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>No_Location_Selected</name>
+            <conditionLogic>(1 AND 2) OR (3 AND 4) OR (5 AND 6)</conditionLogic>
+            <conditions>
+                <leftValueReference>Image_1_Location</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>No section selected</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>NewImage1Id</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue/>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Image_2_Location</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>No section selected</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>NewImage2Id</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue/>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Image_3_Location</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>No section selected</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>NewImage3Id</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue/>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Enable_Files_Error_Message</targetReference>
+            </connector>
+            <label>No Location Selected</label>
         </rules>
     </decisions>
     <decisions>
@@ -546,8 +670,8 @@
     <decisions>
         <name>Submit_Abstract_Decision</name>
         <label>Submit Abstract Decision</label>
-        <locationX>298</locationX>
-        <locationY>2243</locationY>
+        <locationX>294</locationX>
+        <locationY>2344</locationY>
         <defaultConnector>
             <targetReference>Set_Draft</targetReference>
         </defaultConnector>
@@ -572,18 +696,12 @@
         <name>ImageChoiceSet1</name>
         <dataType>String</dataType>
         <displayField>Label</displayField>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
             <value>
                 <stringValue>Abstract__c.00N0E000007ua70</stringValue>
-            </value>
-        </filters>
-        <filters>
-            <field>Value</field>
-            <operator>NotEqualTo</operator>
-            <value>
-                <elementReference>Get_Abstract.Image_1_Location__c</elementReference>
             </value>
         </filters>
         <object>PicklistValueInfo</object>
@@ -595,18 +713,12 @@
         <name>ImageChoiceSet2</name>
         <dataType>String</dataType>
         <displayField>Label</displayField>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
             <value>
                 <stringValue>Abstract__c.00N0E000007ua7A</stringValue>
-            </value>
-        </filters>
-        <filters>
-            <field>Value</field>
-            <operator>NotEqualTo</operator>
-            <value>
-                <elementReference>Get_Abstract.Image_2_Location__c</elementReference>
             </value>
         </filters>
         <object>PicklistValueInfo</object>
@@ -618,18 +730,12 @@
         <name>ImageChoiceSet3</name>
         <dataType>String</dataType>
         <displayField>Label</displayField>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
             <value>
                 <stringValue>Abstract__c.00N0E000007ua7F</stringValue>
-            </value>
-        </filters>
-        <filters>
-            <field>Value</field>
-            <operator>NotEqualTo</operator>
-            <value>
-                <elementReference>Get_Abstract.Image_3_Location__c</elementReference>
             </value>
         </filters>
         <object>PicklistValueInfo</object>
@@ -641,6 +747,7 @@
         <name>TopicChoiceSet</name>
         <dataType>String</dataType>
         <displayField>Label</displayField>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
@@ -662,6 +769,7 @@
         <name>TypeChoiceSet</name>
         <dataType>String</dataType>
         <displayField>Label</displayField>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
@@ -683,6 +791,7 @@
         <name>TypeInvitedChoiceSet</name>
         <dataType>String</dataType>
         <displayField>Label</displayField>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
@@ -707,6 +816,48 @@
         <object>PicklistValueInfo</object>
         <valueField>Value</valueField>
     </dynamicChoiceSets>
+    <formulas>
+        <name>NewImage1Id</name>
+        <dataType>String</dataType>
+        <expression>IF(
+ISBLANK({!FileUpload1.contentDocIds}), 
+{!Get_Abstract.Image_1_ID__c}, 
+SUBSTITUTE(SUBSTITUTE({!FileUpload1.contentDocIds},&apos;[&apos;,&apos;&apos;),&apos;]&apos;,&apos;&apos;)
+)</expression>
+    </formulas>
+    <formulas>
+        <name>NewImage2Id</name>
+        <dataType>String</dataType>
+        <expression>IF(
+ISBLANK({!FileUpload2.contentDocIds}), 
+{!Get_Abstract.Image_2_ID__c}, 
+SUBSTITUTE(SUBSTITUTE({!FileUpload2.contentDocIds},&apos;[&apos;,&apos;&apos;),&apos;]&apos;,&apos;&apos;)
+)</expression>
+    </formulas>
+    <formulas>
+        <name>NewImage3Id</name>
+        <dataType>String</dataType>
+        <expression>IF(
+ISBLANK({!FileUpload3.contentDocIds}), 
+{!Get_Abstract.Image_3_ID__c}, 
+SUBSTITUTE(SUBSTITUTE({!FileUpload3.contentDocIds},&apos;[&apos;,&apos;&apos;),&apos;]&apos;,&apos;&apos;)
+)</expression>
+    </formulas>
+    <formulas>
+        <name>SetLocation1DefaultChoice</name>
+        <dataType>String</dataType>
+        <expression>BLANKVALUE(TEXT({!Get_Abstract.Image_1_Location__c}) , &quot;No section selected&quot;)</expression>
+    </formulas>
+    <formulas>
+        <name>SetLocation2DefaultChoice</name>
+        <dataType>String</dataType>
+        <expression>BLANKVALUE(TEXT({!Get_Abstract.Image_2_Location__c}) , &quot;No section selected&quot;)</expression>
+    </formulas>
+    <formulas>
+        <name>SetLocation3DefaultChoice</name>
+        <dataType>String</dataType>
+        <expression>BLANKVALUE(TEXT({!Get_Abstract.Image_3_Location__c}) , &quot;No section selected&quot;)</expression>
+    </formulas>
     <formulas>
         <name>TotalBodyWordCount</name>
         <dataType>Number</dataType>
@@ -744,7 +895,7 @@
         <scale>0</scale>
     </formulas>
     <interviewLabel>Update Abstract {!$Flow.CurrentDateTime}</interviewLabel>
-    <label>Update Abstract</label>
+    <label>Edit Abstract</label>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -764,6 +915,60 @@
         </value>
     </processMetadataValues>
     <processType>Flow</processType>
+    <recordDeletes>
+        <name>Delete1</name>
+        <label>Delete1</label>
+        <locationX>640</locationX>
+        <locationY>1930</locationY>
+        <connector>
+            <targetReference>Delete_Image</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Abstract.Image_1_ID__c</elementReference>
+            </value>
+        </filters>
+        <object>ContentDocument</object>
+    </recordDeletes>
+    <recordDeletes>
+        <name>Delete2</name>
+        <label>Delete2</label>
+        <locationX>711</locationX>
+        <locationY>2065</locationY>
+        <connector>
+            <targetReference>Delete_Image</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Abstract.Image_2_ID__c</elementReference>
+            </value>
+        </filters>
+        <object>ContentDocument</object>
+    </recordDeletes>
+    <recordDeletes>
+        <name>Delete3</name>
+        <label>Delete3</label>
+        <locationX>716</locationX>
+        <locationY>2191</locationY>
+        <connector>
+            <targetReference>Delete_Image</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Abstract.Image_3_ID__c</elementReference>
+            </value>
+        </filters>
+        <object>ContentDocument</object>
+    </recordDeletes>
     <recordLookups>
         <name>Get_Abstract</name>
         <label>Get Abstract</label>
@@ -773,6 +978,10 @@
         <connector>
             <targetReference>Check_Abstract_Status</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Deadline_passed_screen</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -793,6 +1002,7 @@
         <connector>
             <targetReference>Check_Submission_Deadline</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -810,12 +1020,13 @@
     <recordLookups>
         <name>Get_membership_Status</name>
         <label>Get membership Status</label>
-        <locationX>552</locationX>
-        <locationY>861</locationY>
+        <locationX>553</locationX>
+        <locationY>851</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Fill_Abstract_Screen</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -830,36 +1041,17 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordUpdates>
-        <name>File1Visibility</name>
-        <label>File1Visibility</label>
-        <locationX>309</locationX>
-        <locationY>1991</locationY>
-        <connector>
-            <targetReference>Upload_Files_Screen</targetReference>
-        </connector>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>Get_Abstract.Image_1_ID__c</elementReference>
-            </value>
-        </filters>
-        <inputAssignments>
-            <field>SharingPrivacy</field>
-            <value>
-                <stringValue>N</stringValue>
-            </value>
-        </inputAssignments>
-        <object>ContentDocument</object>
-    </recordUpdates>
-    <recordUpdates>
         <name>Set_Draft</name>
         <label>Set Draft</label>
-        <locationX>309</locationX>
-        <locationY>2443</locationY>
+        <locationX>422</locationX>
+        <locationY>2464</locationY>
         <connector>
             <targetReference>Success_Screen</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Submit_Abstract_Decision</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -878,14 +1070,15 @@
     <recordUpdates>
         <name>Submit_Abstract</name>
         <label>Submit Abstract</label>
-        <locationX>148</locationX>
-        <locationY>2454</locationY>
+        <locationX>166</locationX>
+        <locationY>2452</locationY>
         <connector>
             <targetReference>Success_Screen</targetReference>
         </connector>
         <faultConnector>
             <targetReference>Submit_Abstract_Decision</targetReference>
         </faultConnector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -904,12 +1097,84 @@
     <recordUpdates>
         <name>Update_Abstract</name>
         <label>Update Abstract</label>
-        <locationX>307</locationX>
-        <locationY>1870</locationY>
+        <locationX>302</locationX>
+        <locationY>1767</locationY>
         <connector>
-            <targetReference>File1Visibility</targetReference>
+            <targetReference>Upload_Files_Screen_0</targetReference>
         </connector>
         <inputReference>Get_Abstract</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Image_Info</name>
+        <label>Update Image Info</label>
+        <locationX>303</locationX>
+        <locationY>2119</locationY>
+        <connector>
+            <targetReference>Submit_Screen</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Image_1_Caption__c</field>
+            <value>
+                <elementReference>Image_1_Caption</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Image_1_ID__c</field>
+            <value>
+                <elementReference>NewImage1Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Image_1_Location__c</field>
+            <value>
+                <elementReference>Image_1_Location</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Image_2_Caption__c</field>
+            <value>
+                <elementReference>Image_2_Caption</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Image_2_ID__c</field>
+            <value>
+                <elementReference>NewImage2Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Image_2_Location__c</field>
+            <value>
+                <elementReference>Image_2_Location</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Image_3_Caption__c</field>
+            <value>
+                <elementReference>Image_3_Caption</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Image_3_ID__c</field>
+            <value>
+                <elementReference>NewImage3Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Image_3_Location__c</field>
+            <value>
+                <elementReference>Image_3_Location</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Abstract__c</object>
     </recordUpdates>
     <screens>
         <name>Check_Affirmations_Screen</name>
@@ -1249,16 +1514,6 @@
             <isRequired>true</isRequired>
         </fields>
         <fields>
-            <name>TopicInvited</name>
-            <choiceReferences>TopicDefaultChoice</choiceReferences>
-            <choiceReferences>TopicChoiceSet</choiceReferences>
-            <dataType>String</dataType>
-            <defaultSelectedChoiceReference>TopicDefaultChoice</defaultSelectedChoiceReference>
-            <fieldText>Topic</fieldText>
-            <fieldType>DropdownBox</fieldType>
-            <isRequired>true</isRequired>
-        </fields>
-        <fields>
             <name>Title_0</name>
             <dataType>String</dataType>
             <defaultValue>
@@ -1294,8 +1549,8 @@
     <screens>
         <name>Submit_Screen</name>
         <label>Submit Screen</label>
-        <locationX>306</locationX>
-        <locationY>2116</locationY>
+        <locationX>301</locationX>
+        <locationY>2228</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1344,8 +1599,8 @@
     <screens>
         <name>Success_Screen</name>
         <label>Success Screen</label>
-        <locationX>302</locationX>
-        <locationY>2599</locationY>
+        <locationX>299</locationX>
+        <locationY>2612</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -1385,14 +1640,75 @@
     <screens>
         <name>Upload_Files_Screen</name>
         <label>Upload Files Screen</label>
-        <locationX>510</locationX>
-        <locationY>2064</locationY>
+        <locationX>67</locationX>
+        <locationY>1707</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
-        <connector>
-            <targetReference>Submit_Screen</targetReference>
-        </connector>
+        <fields>
+            <name>EditImagesText</name>
+            <fieldText>&lt;p&gt;Below you can see the images you have added to your abstract. &lt;/p&gt;&lt;p&gt;You have the option to adjust where they should be located in the abstract. You can also replace them by uploading a new picture.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>or</conditionLogic>
+                <conditions>
+                    <leftValueReference>Get_Abstract.Image_1_ID__c</leftValueReference>
+                    <operator>NotEqualTo</operator>
+                    <rightValue>
+                        <stringValue/>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Abstract.Image_2_ID__c</leftValueReference>
+                    <operator>NotEqualTo</operator>
+                    <rightValue>
+                        <stringValue/>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Abstract.Image_3_ID__c</leftValueReference>
+                    <operator>NotEqualTo</operator>
+                    <rightValue>
+                        <stringValue/>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>FileErrorText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;Please select a section for all files you uploaded.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Image_1_Location</name>
+            <choiceReferences>ImageChoiceSet1</choiceReferences>
+            <choiceReferences>ImageLocationDefaultChoice1</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>ImageLocationDefaultChoice1</defaultSelectedChoiceReference>
+            <fieldText>1. Add image to section:</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>Get_Abstract.RecordTypeId</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <elementReference>PublicRecordTypeId</elementReference>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Image_1_Caption</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>Get_Abstract.Image_1_Caption__c</elementReference>
+            </defaultValue>
+            <fieldText>1. Caption:</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>false</isRequired>
+        </fields>
         <fields>
             <name>View_Image1</name>
             <extensionName>vfv:FileViewer</extensionName>
@@ -1417,13 +1733,10 @@
             </visibilityRule>
         </fields>
         <fields>
-            <name>Image_1_Location</name>
-            <choiceReferences>ImageLocationDefaultChoice1</choiceReferences>
-            <choiceReferences>ImageChoiceSet1</choiceReferences>
-            <dataType>String</dataType>
-            <defaultSelectedChoiceReference>ImageLocationDefaultChoice1</defaultSelectedChoiceReference>
-            <fieldText>1. Add image to section:</fieldText>
-            <fieldType>DropdownBox</fieldType>
+            <name>Delete_image1</name>
+            <dataType>Boolean</dataType>
+            <fieldText>Delete image</fieldText>
+            <fieldType>InputField</fieldType>
             <isRequired>true</isRequired>
             <visibilityRule>
                 <conditionLogic>and</conditionLogic>
@@ -1437,24 +1750,71 @@
             </visibilityRule>
         </fields>
         <fields>
-            <name>Image_1_Caption</name>
+            <name>FileUpload1</name>
+            <extensionName>forceContent:fileUpload</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>label</name>
+                <value>
+                    <stringValue>1. Upload new image</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>accept</name>
+                <value>
+                    <stringValue>.jpg,.png</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>Get_Abstract.Id</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>contentDocIds</name>
+                <value>
+                    <elementReference>ContentDocumentIds</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>fileNames</name>
+                <value>
+                    <elementReference>UploadedFileNames</elementReference>
+                </value>
+            </inputParameters>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <fields>
+            <name>Image_2_Location</name>
+            <choiceReferences>ImageLocationDefaultChoice2</choiceReferences>
+            <choiceReferences>ImageChoiceSet2</choiceReferences>
             <dataType>String</dataType>
-            <defaultValue>
-                <elementReference>Get_Abstract.Image_1_Caption__c</elementReference>
-            </defaultValue>
-            <fieldText>1. Caption:</fieldText>
-            <fieldType>InputField</fieldType>
-            <isRequired>false</isRequired>
+            <defaultSelectedChoiceReference>ImageLocationDefaultChoice2</defaultSelectedChoiceReference>
+            <fieldText>2. Add image to section:</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
             <visibilityRule>
                 <conditionLogic>and</conditionLogic>
                 <conditions>
-                    <leftValueReference>Get_Abstract.Image_1_ID__c</leftValueReference>
-                    <operator>NotEqualTo</operator>
+                    <leftValueReference>Get_Abstract.RecordTypeId</leftValueReference>
+                    <operator>EqualTo</operator>
                     <rightValue>
-                        <stringValue/>
+                        <elementReference>PublicRecordTypeId</elementReference>
                     </rightValue>
                 </conditions>
             </visibilityRule>
+        </fields>
+        <fields>
+            <name>Image_2_Caption</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>Get_Abstract.Image_2_Caption__c</elementReference>
+            </defaultValue>
+            <fieldText>2. Caption:</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>false</isRequired>
         </fields>
         <fields>
             <name>View_Image2</name>
@@ -1486,13 +1846,10 @@
             </visibilityRule>
         </fields>
         <fields>
-            <name>Image_2_Location</name>
-            <choiceReferences>ImageLocationDefaultChoice2</choiceReferences>
-            <choiceReferences>ImageChoiceSet2</choiceReferences>
-            <dataType>String</dataType>
-            <defaultSelectedChoiceReference>ImageLocationDefaultChoice2</defaultSelectedChoiceReference>
-            <fieldText>2. Add image to section:</fieldText>
-            <fieldType>DropdownBox</fieldType>
+            <name>Delete_image2</name>
+            <dataType>Boolean</dataType>
+            <fieldText>Delete image</fieldText>
+            <fieldType>InputField</fieldType>
             <isRequired>true</isRequired>
             <visibilityRule>
                 <conditionLogic>and</conditionLogic>
@@ -1506,24 +1863,71 @@
             </visibilityRule>
         </fields>
         <fields>
-            <name>Image_2_Caption</name>
+            <name>FileUpload2</name>
+            <extensionName>forceContent:fileUpload</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>label</name>
+                <value>
+                    <stringValue>2. Upload new image</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>accept</name>
+                <value>
+                    <stringValue>.jpg,.png</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>Get_Abstract.Id</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>contentDocIds</name>
+                <value>
+                    <elementReference>ContentDocumentIds</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>fileNames</name>
+                <value>
+                    <elementReference>UploadedFileNames</elementReference>
+                </value>
+            </inputParameters>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <fields>
+            <name>Image_3_Location</name>
+            <choiceReferences>ImageLocationDefaultChoice3</choiceReferences>
+            <choiceReferences>ImageChoiceSet3</choiceReferences>
             <dataType>String</dataType>
-            <defaultValue>
-                <elementReference>Get_Abstract.Image_2_Caption__c</elementReference>
-            </defaultValue>
-            <fieldText>2. Caption:</fieldText>
-            <fieldType>InputField</fieldType>
-            <isRequired>false</isRequired>
+            <defaultSelectedChoiceReference>ImageLocationDefaultChoice3</defaultSelectedChoiceReference>
+            <fieldText>3. Add image to section:</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
             <visibilityRule>
                 <conditionLogic>and</conditionLogic>
                 <conditions>
-                    <leftValueReference>Get_Abstract.Image_2_ID__c</leftValueReference>
-                    <operator>NotEqualTo</operator>
+                    <leftValueReference>Get_Abstract.RecordTypeId</leftValueReference>
+                    <operator>EqualTo</operator>
                     <rightValue>
-                        <stringValue/>
+                        <elementReference>PublicRecordTypeId</elementReference>
                     </rightValue>
                 </conditions>
             </visibilityRule>
+        </fields>
+        <fields>
+            <name>Image_3_Caption</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>Get_Abstract.Image_3_Caption__c</elementReference>
+            </defaultValue>
+            <fieldText>3. Caption:</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>false</isRequired>
         </fields>
         <fields>
             <name>View_Image3</name>
@@ -1549,13 +1953,10 @@
             </visibilityRule>
         </fields>
         <fields>
-            <name>Image_3_Location</name>
-            <choiceReferences>ImageLocationDefaultChoice3</choiceReferences>
-            <choiceReferences>ImageChoiceSet3</choiceReferences>
-            <dataType>String</dataType>
-            <defaultSelectedChoiceReference>ImageLocationDefaultChoice3</defaultSelectedChoiceReference>
-            <fieldText>3. Add image to section:</fieldText>
-            <fieldType>DropdownBox</fieldType>
+            <name>Delete_image3</name>
+            <dataType>Boolean</dataType>
+            <fieldText>Delete image</fieldText>
+            <fieldType>InputField</fieldType>
             <isRequired>true</isRequired>
             <visibilityRule>
                 <conditionLogic>and</conditionLogic>
@@ -1569,7 +1970,258 @@
             </visibilityRule>
         </fields>
         <fields>
-            <name>Image_3_Caption</name>
+            <name>FileUpload3</name>
+            <extensionName>forceContent:fileUpload</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>label</name>
+                <value>
+                    <stringValue>3. Upload new image</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>accept</name>
+                <value>
+                    <stringValue>.jpg,.png</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>recordId</name>
+                <value>
+                    <elementReference>Get_Abstract.Id</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>contentDocIds</name>
+                <value>
+                    <elementReference>ContentDocumentIds</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>fileNames</name>
+                <value>
+                    <elementReference>UploadedFileNames</elementReference>
+                </value>
+            </inputParameters>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Upload_Files_Screen_0</name>
+        <label>Upload Files Screen</label>
+        <locationX>299</locationX>
+        <locationY>1895</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Image_Locations_Selected</targetReference>
+        </connector>
+        <fields>
+            <name>EditImagesText_0</name>
+            <fieldText>&lt;p&gt;Below you can see the images you have added to your abstract. &lt;/p&gt;&lt;p&gt;You have the option to adjust where they should be located in the abstract. You can also replace them by uploading a new picture.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>or</conditionLogic>
+                <conditions>
+                    <leftValueReference>Get_Abstract.Image_1_ID__c</leftValueReference>
+                    <operator>NotEqualTo</operator>
+                    <rightValue>
+                        <stringValue/>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Abstract.Image_2_ID__c</leftValueReference>
+                    <operator>NotEqualTo</operator>
+                    <rightValue>
+                        <stringValue/>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Abstract.Image_3_ID__c</leftValueReference>
+                    <operator>NotEqualTo</operator>
+                    <rightValue>
+                        <stringValue/>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>FileErrorText_0</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;Please select a section for all files you uploaded.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Image_1_Location_0</name>
+            <choiceReferences>ImageChoiceSet1</choiceReferences>
+            <choiceReferences>ImageLocationDefaultChoice1</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>ImageLocationDefaultChoice1</defaultSelectedChoiceReference>
+            <fieldText>1. Add image to section:</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>Get_Abstract.RecordTypeId</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <elementReference>PublicRecordTypeId</elementReference>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Image_1_Caption_0</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>Get_Abstract.Image_1_Caption__c</elementReference>
+            </defaultValue>
+            <fieldText>1. Caption:</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>false</isRequired>
+        </fields>
+        <fields>
+            <name>View_Image1_0</name>
+            <extensionName>vfv:FileViewer</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>fileId</name>
+                <value>
+                    <elementReference>Get_Abstract.Image_1_ID__c</elementReference>
+                </value>
+            </inputParameters>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>Get_Abstract.Image_1_ID__c</leftValueReference>
+                    <operator>NotEqualTo</operator>
+                    <rightValue>
+                        <stringValue/>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Delete_image1_0</name>
+            <dataType>Boolean</dataType>
+            <fieldText>Delete image</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>Get_Abstract.Image_1_ID__c</leftValueReference>
+                    <operator>NotEqualTo</operator>
+                    <rightValue>
+                        <stringValue/>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Image_2_Location_0</name>
+            <choiceReferences>ImageLocationDefaultChoice2</choiceReferences>
+            <choiceReferences>ImageChoiceSet2</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>ImageLocationDefaultChoice2</defaultSelectedChoiceReference>
+            <fieldText>2. Add image to section:</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>Get_Abstract.RecordTypeId</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <elementReference>PublicRecordTypeId</elementReference>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Image_2_Caption_0</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>Get_Abstract.Image_2_Caption__c</elementReference>
+            </defaultValue>
+            <fieldText>2. Caption:</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>false</isRequired>
+        </fields>
+        <fields>
+            <name>View_Image2_0</name>
+            <extensionName>vfv:FileViewer</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>center</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>fileId</name>
+                <value>
+                    <elementReference>Get_Abstract.Image_2_ID__c</elementReference>
+                </value>
+            </inputParameters>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>Get_Abstract.Image_2_ID__c</leftValueReference>
+                    <operator>NotEqualTo</operator>
+                    <rightValue>
+                        <stringValue/>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Delete_image2_0</name>
+            <dataType>Boolean</dataType>
+            <fieldText>Delete image</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>Get_Abstract.Image_2_ID__c</leftValueReference>
+                    <operator>NotEqualTo</operator>
+                    <rightValue>
+                        <stringValue/>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Image_3_Location_0</name>
+            <choiceReferences>ImageLocationDefaultChoice3</choiceReferences>
+            <choiceReferences>ImageChoiceSet3</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>ImageLocationDefaultChoice3</defaultSelectedChoiceReference>
+            <fieldText>3. Add image to section:</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>Get_Abstract.RecordTypeId</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <elementReference>PublicRecordTypeId</elementReference>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Image_3_Caption_0</name>
             <dataType>String</dataType>
             <defaultValue>
                 <elementReference>Get_Abstract.Image_3_Caption__c</elementReference>
@@ -1577,6 +2229,36 @@
             <fieldText>3. Caption:</fieldText>
             <fieldType>InputField</fieldType>
             <isRequired>false</isRequired>
+        </fields>
+        <fields>
+            <name>View_Image3_0</name>
+            <extensionName>vfv:FileViewer</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>fileId</name>
+                <value>
+                    <elementReference>Get_Abstract.Image_3_ID__c</elementReference>
+                </value>
+            </inputParameters>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>Get_Abstract.Image_3_ID__c</leftValueReference>
+                    <operator>NotEqualTo</operator>
+                    <rightValue>
+                        <stringValue/>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Delete_image3_0</name>
+            <dataType>Boolean</dataType>
+            <fieldText>Delete image</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
             <visibilityRule>
                 <conditionLogic>and</conditionLogic>
                 <conditions>
@@ -1598,7 +2280,24 @@
             <targetReference>Get_Abstract</targetReference>
         </connector>
     </start>
-    <status>Active</status>
+    <status>Draft</status>
+    <variables>
+        <name>ContentDocumentIds</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>FilesErrorMessage</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
     <variables>
         <name>recordId</name>
         <dataType>String</dataType>
@@ -1615,5 +2314,12 @@
         <value>
             <booleanValue>false</booleanValue>
         </value>
+    </variables>
+    <variables>
+        <name>UploadedFileNames</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
     </variables>
 </Flow>

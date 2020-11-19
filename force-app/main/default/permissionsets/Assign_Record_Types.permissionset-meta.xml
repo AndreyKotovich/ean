@@ -1686,6 +1686,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Event__c.Abstract_Submission__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Event__c.Address__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -1747,6 +1752,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Event__c.Host_URL__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Event__c.Invited_Abstract_Submission_Deadline__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -3937,6 +3947,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>User.www__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Visa_Letter__c.Event_Participation__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>

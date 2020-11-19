@@ -17,6 +17,7 @@
             </value>
         </inputParameters>
     </actionCalls>
+    <apiVersion>50.0</apiVersion>
     <decisions>
         <name>Contact_email</name>
         <label>Contact email</label>
@@ -174,6 +175,7 @@
         <label>Update</label>
         <locationX>870</locationX>
         <locationY>116</locationY>
+        <filterLogic>or</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -202,6 +204,7 @@
         <connector>
             <targetReference>Contact_email</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Status__c</field>
             <operator>EqualTo</operator>

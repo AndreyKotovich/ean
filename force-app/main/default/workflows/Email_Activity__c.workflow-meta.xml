@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <alerts>
+        <fullName>Cancel_group_event_registration_request</fullName>
+        <description>Cancel group event registration request</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/Group_registration_cancellation</template>
+    </alerts>
+    <alerts>
+        <fullName>Cancel_solo_event_registration_request</fullName>
+        <description>Cancel solo event registration request</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/Solo_registration_cancellation</template>
+    </alerts>
+    <alerts>
+        <fullName>EAN_Group_participants_added</fullName>
+        <description>EAN: Group participants added</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/EAN_Group_participants_added</template>
+    </alerts>
+    <alerts>
+        <fullName>EAN_Order_for_event_participation_paid</fullName>
+        <description>EAN: Order for event participation paid</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/EAN_Order_for_event_participation_paid</template>
+    </alerts>
+    <alerts>
+        <fullName>EAN_Order_for_refund_transaction</fullName>
+        <description>EAN: Order for refund transaction</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/EAN_Order_for_refund_transaction</template>
+    </alerts>
+    <alerts>
+        <fullName>EAN_QR_code_for_participant</fullName>
+        <description>EAN: QR code for participant</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/EAN_QR_code_for_participant</template>
+    </alerts>
+    <alerts>
+        <fullName>EAN_QR_code_for_participant_reminder</fullName>
+        <description>EAN: QR code for participant reminder</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/EAN_QR_code_for_participant_reminder</template>
+    </alerts>
+    <alerts>
+        <fullName>EAN_Reminder_for_opened_orders</fullName>
+        <description>EAN: Reminder for opened orders</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/EAN_Reminder_for_opened_orders</template>
+    </alerts>
+    <alerts>
+        <fullName>EAN_Send_email_to_participant_when_SubGroup_is_submited</fullName>
+        <description>EAN: Send email to participant when SubGroup is submited</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/Regisration_for_participant_in_subGroup</template>
+    </alerts>
+    <alerts>
+        <fullName>EAN_Send_email_to_undefined_participant_when_SubGroup_is_submited</fullName>
+        <description>EAN: Send email to undefined participant when SubGroup is submited</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/RegisrForUndefinedParticipantInSubGroup</template>
+    </alerts>
+    <alerts>
+        <fullName>EAN_Solo_regisration_success</fullName>
+        <description>EAN: Solo regisration success</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/EAN_Solo_regisration_success</template>
+    </alerts>
+    <alerts>
+        <fullName>Group_Registration_Transfer</fullName>
+        <description>Group Registration Transfer</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/Group_registration_transfer</template>
+    </alerts>
+    <alerts>
+        <fullName>Group_registration_success</fullName>
+        <description>Group registration success</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/EAN_Group_registration_success</template>
+    </alerts>
+    <alerts>
+        <fullName>Solo_Registration_Transfer</fullName>
+        <description>Solo Registration Transfer</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/Solo_registration_transfer</template>
+    </alerts>
+    <fieldUpdates>
+        <fullName>Email_sent</fullName>
+        <field>Email_Sent__c</field>
+        <literalValue>1</literalValue>
+        <name>Email sent</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <rules>
+        <fullName>EAN%3A Cancel group event registration request</fullName>
+        <actions>
+            <name>Cancel_group_event_registration_request</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>Email_Activity__c.Type__c</field>
+            <operation>equals</operation>
+            <value>Group Registration Cancellation</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Email_Activity__c.Email_Sent__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A Cancel solo event registration request</fullName>
+        <actions>
+            <name>Cancel_solo_event_registration_request</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>Email_Activity__c.Type__c</field>
+            <operation>equals</operation>
+            <value>Solo Registration Cancellation</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Email_Activity__c.Email_Sent__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A Group participants added</fullName>
+        <actions>
+            <name>EAN_Group_participants_added</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>false</active>
+        <criteriaItems>
+            <field>Email_Activity__c.Type__c</field>
+            <operation>equals</operation>
+            <value>Group participants added</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Email_Activity__c.Email_Sent__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A Group registration success</fullName>
+        <actions>
+            <name>Group_registration_success</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>false</active>
+        <criteriaItems>
+            <field>Email_Activity__c.Type__c</field>
+            <operation>equals</operation>
+            <value>Group registration success</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Email_Activity__c.Email_Sent__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A Order for event participation paid</fullName>
+        <actions>
+            <name>EAN_Order_for_event_participation_paid</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Event registration&apos;) &amp;&amp; NOT(ISNULL(Order__c))</formula>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A Order for refund transaction</fullName>
+        <actions>
+            <name>EAN_Order_for_refund_transaction</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Refund Order&apos;) &amp;&amp; NOT(ISNULL(Order__c))</formula>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A QR code for participant</fullName>
+        <actions>
+            <name>EAN_QR_code_for_participant</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>Email_Activity__c.Type__c</field>
+            <operation>equals</operation>
+            <value>QR code for participant</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Email_Activity__c.Email_Sent__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A QR code for participant reminder</fullName>
+        <actions>
+            <name>EAN_QR_code_for_participant_reminder</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>Email_Activity__c.Email_Sent__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Email_Activity__c.Type__c</field>
+            <operation>equals</operation>
+            <value>QR code for participant reminder</value>
+        </criteriaItems>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A QR code for transfered participant</fullName>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>Email_Activity__c.Email_Sent__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Email_Activity__c.Type__c</field>
+            <operation>equals</operation>
+            <value>QR code for transfered participant</value>
+        </criteriaItems>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A Reminder for opened orders</fullName>
+        <actions>
+            <name>EAN_Reminder_for_opened_orders</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>Email_Activity__c.Type__c</field>
+            <operation>equals</operation>
+            <value>Open order reminder</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Email_Activity__c.Email_Sent__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A Send email to participant when subGroup submited</fullName>
+        <actions>
+            <name>EAN_Send_email_to_participant_when_SubGroup_is_submited</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Sub group is submited&apos;) &amp;&amp; (Contact__r.FirstName != &apos;Undefined&apos;) &amp;&amp; (Contact__r.LastName != &apos;Participant&apos;)</formula>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A Send email to undefined participant when subGroup submited</fullName>
+        <actions>
+            <name>EAN_Send_email_to_undefined_participant_when_SubGroup_is_submited</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Sub group is submited&apos;) &amp;&amp; (Contact__r.FirstName == &apos;Undefined&apos;) &amp;&amp; (Contact__r.LastName == &apos;Participant&apos;)</formula>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A Solo registration success</fullName>
+        <actions>
+            <name>EAN_Solo_regisration_success</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>false</active>
+        <criteriaItems>
+            <field>Email_Activity__c.Email_Sent__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Email_Activity__c.Type__c</field>
+            <operation>equals</operation>
+            <value>Solo registration success</value>
+        </criteriaItems>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A Transfer group event registration request</fullName>
+        <actions>
+            <name>Group_Registration_Transfer</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>Email_Activity__c.Type__c</field>
+            <operation>equals</operation>
+            <value>Group Registration Transfer</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Email_Activity__c.Email_Sent__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A Transfer solo event registration request</fullName>
+        <actions>
+            <name>Solo_Registration_Transfer</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>Email_Activity__c.Email_Sent__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Email_Activity__c.Type__c</field>
+            <operation>equals</operation>
+            <value>Solo Registration Transfer</value>
+        </criteriaItems>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+</Workflow>

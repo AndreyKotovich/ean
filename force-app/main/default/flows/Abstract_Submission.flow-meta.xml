@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <apiVersion>49.0</apiVersion>
     <assignments>
-        <name>AssignAbstractValues</name>
-        <label>AssignAbstractValues</label>
-        <locationX>375</locationX>
-        <locationY>1203</locationY>
+        <name>AssignAbstract</name>
+        <label>AssignAbstract</label>
+        <locationX>439</locationX>
+        <locationY>1098</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Event__c</assignToReference>
             <operator>Assign</operator>
@@ -54,6 +55,101 @@
                 <elementReference>Results</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Disclosure__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Disclosure</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Abstract_Topic__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Topics_Pick</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>CreateAbstract</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>AssignAbstract_0</name>
+        <label>AssignAbstract</label>
+        <locationX>557</locationX>
+        <locationY>3052</locationY>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Event__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>SelectedEvent</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Type_0</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Conclusion__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Conclusion_0</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Introduction__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Introduction_0</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Methods__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Methods_0</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Title__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Title_0</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Results__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Results_0</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Disclosure__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Disclosure_0</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Abstract_Topic__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Topics_Pick_0</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Abstract</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>AssignAbstractValues</name>
+        <label>AssignAbstractValues</label>
+        <locationX>337</locationX>
+        <locationY>3396</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Bursary__c</assignToReference>
             <operator>Assign</operator>
@@ -96,85 +192,15 @@
                 <elementReference>Tournament_Clinical</elementReference>
             </value>
         </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Disclosure__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Disclosure</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Submitter__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$User.ContactId</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Topics__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Topics_Pick</elementReference>
-            </value>
-        </assignmentItems>
         <connector>
-            <targetReference>Review_Abstract</targetReference>
+            <targetReference>AssignStage50</targetReference>
         </connector>
     </assignments>
     <assignments>
         <name>AssignAbstractValues_0</name>
         <label>AssignAbstractValues</label>
-        <locationX>523</locationX>
-        <locationY>1206</locationY>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Event__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>SelectedEvent</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Type</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Conclusion__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Conclusion</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Introduction__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Introduction</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Methods__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Methods</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Title__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Title</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Results__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Results</elementReference>
-            </value>
-        </assignmentItems>
+        <locationX>458</locationX>
+        <locationY>3379</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Bursary__c</assignToReference>
             <operator>Assign</operator>
@@ -203,85 +229,15 @@
                 <elementReference>CopyrightCheckbox</elementReference>
             </value>
         </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Disclosure__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Disclosure</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Submitter__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$User.ContactId</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Topics__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Topics_Pick</elementReference>
-            </value>
-        </assignmentItems>
         <connector>
-            <targetReference>Review_Abstract</targetReference>
+            <targetReference>AssignStage50</targetReference>
         </connector>
     </assignments>
     <assignments>
         <name>AssignAbstractValues_0_0</name>
         <label>AssignAbstractValues</label>
-        <locationX>220</locationX>
-        <locationY>1205</locationY>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Event__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>SelectedEvent</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Type</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Conclusion__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Conclusion</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Introduction__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Introduction</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Methods__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Methods</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Title__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Title</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Results__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Results</elementReference>
-            </value>
-        </assignmentItems>
+        <locationX>225</locationX>
+        <locationY>3368</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Authors_consent__c</assignToReference>
             <operator>Assign</operator>
@@ -303,71 +259,27 @@
                 <elementReference>CopyrightCheckbox</elementReference>
             </value>
         </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Disclosure__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Disclosure</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Submitter__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$User.ContactId</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Topics__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Topics_Pick</elementReference>
-            </value>
-        </assignmentItems>
         <connector>
-            <targetReference>Review_Abstract</targetReference>
+            <targetReference>AssignStage50</targetReference>
         </connector>
     </assignments>
     <assignments>
         <name>AssignAuthor</name>
         <label>AssignAuthor</label>
-        <locationX>384</locationX>
-        <locationY>2874</locationY>
+        <locationX>296</locationX>
+        <locationY>2644</locationY>
         <assignmentItems>
-            <assignToReference>AbstractAuthor.Author__c</assignToReference>
+            <assignToReference>AbstractAuthor.Abstract__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>AbstractRecordVariable.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractAuthor.Abstract_Author__c</assignToReference>
             <operator>Assign</operator>
             <value>
                 <elementReference>LookupAuthor.recordId</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractAuthor.Abstract__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>AbstractRecordVariable.Id</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>CreateAbstractAuthor</targetReference>
-        </connector>
-    </assignments>
-    <assignments>
-        <name>AssignNewAuthor</name>
-        <label>AssignNewAuthor</label>
-        <locationX>241</locationX>
-        <locationY>2909</locationY>
-        <assignmentItems>
-            <assignToReference>AbstractAuthor.Author__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>NewAuthorID</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractAuthor.Abstract__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>AbstractRecordVariable.Id</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -377,8 +289,8 @@
     <assignments>
         <name>AssignStage1</name>
         <label>AssignStage1</label>
-        <locationX>245</locationX>
-        <locationY>270</locationY>
+        <locationX>341</locationX>
+        <locationY>308</locationY>
         <assignmentItems>
             <assignToReference>$Flow.CurrentStage</assignToReference>
             <operator>Assign</operator>
@@ -393,8 +305,8 @@
     <assignments>
         <name>AssignStage10</name>
         <label>AssignStage10</label>
-        <locationX>485</locationX>
-        <locationY>667</locationY>
+        <locationX>469</locationX>
+        <locationY>689</locationY>
         <assignmentItems>
             <assignToReference>$Flow.CurrentStage</assignToReference>
             <operator>Assign</operator>
@@ -407,26 +319,10 @@
         </connector>
     </assignments>
     <assignments>
-        <name>AssignStage12</name>
-        <label>AssignStage12</label>
-        <locationX>467</locationX>
-        <locationY>870</locationY>
-        <assignmentItems>
-            <assignToReference>$Flow.CurrentStage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Check_Affirmations_Stage_12</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Check_Affirmations_Screen</targetReference>
-        </connector>
-    </assignments>
-    <assignments>
         <name>AssignStage20</name>
         <label>AssignStage20</label>
-        <locationX>516</locationX>
-        <locationY>1560</locationY>
+        <locationX>440</locationX>
+        <locationY>1228</locationY>
         <assignmentItems>
             <assignToReference>$Flow.CurrentStage</assignToReference>
             <operator>Assign</operator>
@@ -441,8 +337,8 @@
     <assignments>
         <name>AssignStage30</name>
         <label>AssignStage30</label>
-        <locationX>520</locationX>
-        <locationY>1975</locationY>
+        <locationX>433</locationX>
+        <locationY>1772</locationY>
         <assignmentItems>
             <assignToReference>$Flow.CurrentStage</assignToReference>
             <operator>Assign</operator>
@@ -457,8 +353,8 @@
     <assignments>
         <name>AssignStage40</name>
         <label>AssignStage40</label>
-        <locationX>401</locationX>
-        <locationY>2427</locationY>
+        <locationX>311</locationX>
+        <locationY>2232</locationY>
         <assignmentItems>
             <assignToReference>$Flow.CurrentStage</assignToReference>
             <operator>Assign</operator>
@@ -471,10 +367,26 @@
         </connector>
     </assignments>
     <assignments>
+        <name>AssignStage45</name>
+        <label>AssignStage45</label>
+        <locationX>446</locationX>
+        <locationY>2687</locationY>
+        <assignmentItems>
+            <assignToReference>$Flow.CurrentStage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Check_Affirmations_Stage_45</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Fill_Abstract_Screen_0</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>AssignStage50</name>
         <label>AssignStage50</label>
-        <locationX>729</locationX>
-        <locationY>3160</locationY>
+        <locationX>462</locationX>
+        <locationY>3506</locationY>
         <assignmentItems>
             <assignToReference>$Flow.CurrentStage</assignToReference>
             <operator>Assign</operator>
@@ -487,12 +399,28 @@
         </connector>
     </assignments>
     <assignments>
-        <name>Enable_Error_Message</name>
-        <label>Enable Error Message</label>
-        <locationX>114</locationX>
-        <locationY>813</locationY>
+        <name>Enable_Files_Error_Message</name>
+        <label>Enable Files Error Message</label>
+        <locationX>116</locationX>
+        <locationY>1550</locationY>
         <assignmentItems>
-            <assignToReference>ShowError</assignToReference>
+            <assignToReference>FilesErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Upload_Files_Screen</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Enable_Topic_Error</name>
+        <label>Enable Topic Error</label>
+        <locationX>45</locationX>
+        <locationY>677</locationY>
+        <assignmentItems>
+            <assignToReference>ShowTopicError</assignToReference>
             <operator>Assign</operator>
             <value>
                 <booleanValue>true</booleanValue>
@@ -503,24 +431,106 @@
         </connector>
     </assignments>
     <assignments>
-        <name>Reset_Author</name>
-        <label>Reset Author</label>
-        <locationX>535</locationX>
-        <locationY>2874</locationY>
+        <name>Enable_Topic_Error_0</name>
+        <label>Enable Topic Error</label>
+        <locationX>645</locationX>
+        <locationY>2692</locationY>
         <assignmentItems>
-            <assignToReference>LookupAuthor.recordId</assignToReference>
+            <assignToReference>ShowTopicErrorReview</assignToReference>
             <operator>Assign</operator>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractAuthor.Author__c</assignToReference>
-            <operator>Assign</operator>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>NewAuthorEmail.value</assignToReference>
-            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
         </assignmentItems>
         <connector>
-            <targetReference>Add_Authors_Screen</targetReference>
+            <targetReference>Fill_Abstract_Screen_0</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Enable_Type_Error</name>
+        <label>Enable Type Error</label>
+        <locationX>140</locationX>
+        <locationY>745</locationY>
+        <assignmentItems>
+            <assignToReference>ShowTypeError</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Fill_Abstract_Screen</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Enable_Type_Error_0</name>
+        <label>Enable Type Error</label>
+        <locationX>767</locationX>
+        <locationY>2948</locationY>
+        <assignmentItems>
+            <assignToReference>ShowTypeErrorReview</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Fill_Abstract_Screen_0</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Enable_Word_Count_Error</name>
+        <label>Enable Word Count Error</label>
+        <locationX>246</locationX>
+        <locationY>799</locationY>
+        <assignmentItems>
+            <assignToReference>ShowWordCountError</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Fill_Abstract_Screen</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Enable_Word_Count_Error_0</name>
+        <label>Enable Word Count Error</label>
+        <locationX>767</locationX>
+        <locationY>2807</locationY>
+        <assignmentItems>
+            <assignToReference>ShowWordCountErrorReview</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Fill_Abstract_Screen_0</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Topic_and_Type</name>
+        <label>Set Topic and Type</label>
+        <locationX>412</locationX>
+        <locationY>829</locationY>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Type</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Abstract_Topic__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Topics_Pick</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Validate_Input</targetReference>
         </connector>
     </assignments>
     <choices>
@@ -557,44 +567,34 @@
     </choices>
     <choices>
         <name>TopicDefaultChoice</name>
-        <choiceText>Select a topic</choiceText>
+        <choiceText>{!SetTopicDefaultChoice}</choiceText>
         <dataType>String</dataType>
         <value>
-            <stringValue>Select a topic</stringValue>
+            <elementReference>SetTopicDefaultChoice</elementReference>
         </value>
     </choices>
-    <decisions>
-        <name>AddAnotherAuthorDecision</name>
-        <label>AddAnotherAuthorDecision</label>
-        <locationX>522</locationX>
-        <locationY>3160</locationY>
-        <defaultConnector>
-            <targetReference>AssignStage50</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>No</defaultConnectorLabel>
-        <rules>
-            <name>AddAnother</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>AddAnotherAuthorToggle.value</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Reset_Author</targetReference>
-            </connector>
-            <label>AddAnother</label>
-        </rules>
-    </decisions>
+    <choices>
+        <name>TypeDefaultChoice</name>
+        <choiceText>{!SetTypeDefaultChoice}</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <elementReference>SetTypeDefaultChoice</elementReference>
+        </value>
+    </choices>
+    <constants>
+        <name>CongressRecordTypeId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>0123Y000000MjVbQAK</stringValue>
+        </value>
+    </constants>
     <decisions>
         <name>Author_Found</name>
         <label>Author Found?</label>
-        <locationX>384</locationX>
-        <locationY>2679</locationY>
+        <locationX>297</locationX>
+        <locationY>2476</locationY>
         <defaultConnector>
-            <targetReference>AssignStage50</targetReference>
+            <targetReference>AssignStage45</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>No Author</defaultConnectorLabel>
         <rules>
@@ -623,17 +623,14 @@
                 <leftValueReference>LookupAuthor.recordId</leftValueReference>
                 <operator>EqualTo</operator>
             </conditions>
-            <connector>
-                <targetReference>CreateAuthor</targetReference>
-            </connector>
             <label>Create Author</label>
         </rules>
     </decisions>
     <decisions>
         <name>Checkboxes_Null</name>
         <label>Checkboxes = Null</label>
-        <locationX>360</locationX>
-        <locationY>1047</locationY>
+        <locationX>321</locationX>
+        <locationY>3234</locationY>
         <defaultConnector>
             <targetReference>AssignAbstractValues</targetReference>
         </defaultConnector>
@@ -678,8 +675,8 @@
     <decisions>
         <name>CheckSubmissionDeadline</name>
         <label>CheckSubmissionDeadline</label>
-        <locationX>231</locationX>
-        <locationY>512</locationY>
+        <locationX>327</locationX>
+        <locationY>550</locationY>
         <defaultConnector>
             <targetReference>Deadline_passed_screen</targetReference>
         </defaultConnector>
@@ -701,35 +698,70 @@
         </rules>
     </decisions>
     <decisions>
-        <name>Max_Words_Reached</name>
-        <label>Max Words Reached?</label>
-        <locationX>270</locationX>
-        <locationY>808</locationY>
+        <name>Image_Locations_Selected</name>
+        <label>Image Locations Selected</label>
+        <locationX>286</locationX>
+        <locationY>1498</locationY>
         <defaultConnector>
-            <targetReference>AssignStage12</targetReference>
+            <targetReference>Review_Files_Screen</targetReference>
         </defaultConnector>
-        <defaultConnectorLabel>Not Reached</defaultConnectorLabel>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
-            <name>MaximumReached</name>
-            <conditionLogic>and</conditionLogic>
+            <name>No_Location_Selected</name>
+            <conditionLogic>(1 AND 2) OR (3 AND 4) OR (5 AND 6)</conditionLogic>
             <conditions>
-                <leftValueReference>TotalBodyWordCount</leftValueReference>
-                <operator>GreaterThanOrEqualTo</operator>
+                <leftValueReference>Image_1_Location</leftValueReference>
+                <operator>EqualTo</operator>
                 <rightValue>
-                    <numberValue>250.0</numberValue>
+                    <stringValue>No section selected</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Image1Id</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue/>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Image_2_Location</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>No section selected</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Image2Id</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue/>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Image_3_Location</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>No section selected</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Image3Id</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue/>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Enable_Error_Message</targetReference>
+                <targetReference>Enable_Files_Error_Message</targetReference>
             </connector>
-            <label>Maximum Reached</label>
+            <label>No Location Selected</label>
         </rules>
     </decisions>
     <decisions>
         <name>PresenterFound</name>
         <label>PresenterFound</label>
-        <locationX>378</locationX>
-        <locationY>2180</locationY>
+        <locationX>289</locationX>
+        <locationY>1989</locationY>
         <defaultConnector>
             <targetReference>AssignStage40</targetReference>
         </defaultConnector>
@@ -760,19 +792,16 @@
                     <stringValue/>
                 </rightValue>
             </conditions>
-            <connector>
-                <targetReference>Create_Presenter</targetReference>
-            </connector>
             <label>Create Presenter</label>
         </rules>
     </decisions>
     <decisions>
         <name>SubmitAbstractDecision</name>
         <label>SubmitAbstractDecision</label>
-        <locationX>719</locationX>
-        <locationY>3451</locationY>
+        <locationX>318</locationX>
+        <locationY>3691</locationY>
         <defaultConnector>
-            <targetReference>DraftSuccessMessage</targetReference>
+            <targetReference>SubmissionSuccessScreen</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Keep Draft</defaultConnectorLabel>
         <rules>
@@ -791,6 +820,116 @@
             <label>Ready to Submit</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>Validate_Input</name>
+        <label>Validate Input</label>
+        <locationX>320</locationX>
+        <locationY>973</locationY>
+        <defaultConnector>
+            <targetReference>AssignAbstract</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Valid</defaultConnectorLabel>
+        <rules>
+            <name>MaximumReached</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>TotalBodyWordCount</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>250.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Enable_Word_Count_Error</targetReference>
+            </connector>
+            <label>Maximum Reached</label>
+        </rules>
+        <rules>
+            <name>Type_Not_Selected</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Type</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Select a type</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Enable_Type_Error</targetReference>
+            </connector>
+            <label>Type Not Selected</label>
+        </rules>
+        <rules>
+            <name>Topic_Not_Selected</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Topics_Pick</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Select a topic</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Enable_Topic_Error</targetReference>
+            </connector>
+            <label>Topic Not Selected</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Validate_Input_0</name>
+        <label>Validate Input</label>
+        <locationX>560</locationX>
+        <locationY>2880</locationY>
+        <defaultConnector>
+            <targetReference>AssignAbstract_0</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Valid</defaultConnectorLabel>
+        <rules>
+            <name>MaximumReached_0</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>TotalBodyWordCount</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>250.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Enable_Word_Count_Error_0</targetReference>
+            </connector>
+            <label>Maximum Reached</label>
+        </rules>
+        <rules>
+            <name>Type_Not_Selected_0</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>SetTypeDefaultChoice</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Select a type</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Enable_Type_Error_0</targetReference>
+            </connector>
+            <label>Type Not Selected</label>
+        </rules>
+        <rules>
+            <name>Topic_Not_Selected_0</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>SetTopicDefaultChoice</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Select a topic</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Enable_Topic_Error_0</targetReference>
+            </connector>
+            <label>Topic Not Selected</label>
+        </rules>
+    </decisions>
     <dynamicChoiceSets>
         <name>AbstractTypeChoice</name>
         <dataType>Picklist</dataType>
@@ -803,11 +942,19 @@
         <name>EventChoice</name>
         <dataType>String</dataType>
         <displayField>Name</displayField>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>RecordTypeId</field>
             <operator>EqualTo</operator>
             <value>
-                <stringValue>0123Y000000MjVbQAK</stringValue>
+                <elementReference>CongressRecordTypeId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Scheduled</stringValue>
             </value>
         </filters>
         <object>Event__c</object>
@@ -832,6 +979,50 @@
         <object xsi:nil="true"/>
         <picklistField>Abstract_Topic__c</picklistField>
         <picklistObject>Abstract__c</picklistObject>
+    </dynamicChoiceSets>
+    <dynamicChoiceSets>
+        <name>TopicRecordChoice</name>
+        <dataType>String</dataType>
+        <displayField>Label</displayField>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>EntityParticleId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Abstract__c.00N0E000007uo8z</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Value</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <elementReference>SetTopicDefaultChoice</elementReference>
+            </value>
+        </filters>
+        <object>PicklistValueInfo</object>
+        <valueField>Value</valueField>
+    </dynamicChoiceSets>
+    <dynamicChoiceSets>
+        <name>TypeRecordChoice</name>
+        <dataType>String</dataType>
+        <displayField>Label</displayField>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>EntityParticleId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Abstract__c.00N0E000007uHfg</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Value</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <elementReference>TypeDefaultChoice</elementReference>
+            </value>
+        </filters>
+        <object>PicklistValueInfo</object>
+        <valueField>Value</valueField>
     </dynamicChoiceSets>
     <formulas>
         <name>Image1Id</name>
@@ -862,6 +1053,16 @@
         <name>Image3Name</name>
         <dataType>String</dataType>
         <expression>SUBSTITUTE(SUBSTITUTE({!FileUpload3.fileNames},&apos;[&apos;,&apos;&apos;),&apos;]&apos;,&apos;&apos;)</expression>
+    </formulas>
+    <formulas>
+        <name>SetTopicDefaultChoice</name>
+        <dataType>String</dataType>
+        <expression>BLANKVALUE(TEXT({!AbstractRecordVariable.Abstract_Topic__c}), &quot;Select a topic&quot;)</expression>
+    </formulas>
+    <formulas>
+        <name>SetTypeDefaultChoice</name>
+        <dataType>String</dataType>
+        <expression>BLANKVALUE(TEXT({!AbstractRecordVariable.Type__c}), &quot;Select a type&quot;)</expression>
     </formulas>
     <formulas>
         <name>TotalBodyWordCount</name>
@@ -915,33 +1116,10 @@
     </processMetadataValues>
     <processType>Flow</processType>
     <recordCreates>
-        <name>Create_Presenter</name>
-        <label>Create Presenter</label>
-        <locationX>279</locationX>
-        <locationY>2253</locationY>
-        <connector>
-            <targetReference>Update_Abstract_with_Presenter</targetReference>
-        </connector>
-        <inputAssignments>
-            <field>Name</field>
-            <value>
-                <elementReference>NewPresenterEmail.value</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>New_Presenter_Email__c</field>
-            <value>
-                <elementReference>NewPresenterEmail.value</elementReference>
-            </value>
-        </inputAssignments>
-        <object>Presenter__c</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordCreates>
-    <recordCreates>
-        <name>CreateAbstract_0</name>
+        <name>CreateAbstract</name>
         <label>CreateAbstract</label>
-        <locationX>375</locationX>
-        <locationY>1482</locationY>
+        <locationX>301</locationX>
+        <locationY>1155</locationY>
         <connector>
             <targetReference>AssignStage20</targetReference>
         </connector>
@@ -950,45 +1128,23 @@
     <recordCreates>
         <name>CreateAbstractAuthor</name>
         <label>CreateAbstractAuthor</label>
-        <locationX>381</locationX>
-        <locationY>3024</locationY>
+        <locationX>297</locationX>
+        <locationY>2769</locationY>
         <connector>
-            <targetReference>Add_Another_Author_Screen</targetReference>
+            <targetReference>Fill_Abstract_Screen_0</targetReference>
         </connector>
         <inputReference>AbstractAuthor</inputReference>
-    </recordCreates>
-    <recordCreates>
-        <name>CreateAuthor</name>
-        <label>CreateAuthor</label>
-        <locationX>245</locationX>
-        <locationY>2792</locationY>
-        <assignRecordIdToReference>NewAuthorID</assignRecordIdToReference>
-        <connector>
-            <targetReference>AssignNewAuthor</targetReference>
-        </connector>
-        <inputAssignments>
-            <field>Name</field>
-            <value>
-                <elementReference>NewAuthorEmail.value</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>New_Author_Email__c</field>
-            <value>
-                <elementReference>NewAuthorEmail.value</elementReference>
-            </value>
-        </inputAssignments>
-        <object>Author__c</object>
     </recordCreates>
     <recordLookups>
         <name>GetEvent</name>
         <label>GetEvent</label>
-        <locationX>241</locationX>
-        <locationY>382</locationY>
+        <locationX>337</locationX>
+        <locationY>420</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>CheckSubmissionDeadline</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -1005,12 +1161,13 @@
     <recordLookups>
         <name>GetMembershipStatus</name>
         <label>GetMembershipStatus</label>
-        <locationX>484</locationX>
-        <locationY>515</locationY>
+        <locationX>544</locationX>
+        <locationY>554</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>AssignStage10</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -1027,11 +1184,12 @@
     <recordUpdates>
         <name>SubmitAbstract</name>
         <label>SubmitAbstract</label>
-        <locationX>638</locationX>
-        <locationY>3653</locationY>
+        <locationX>265</locationX>
+        <locationY>3905</locationY>
         <connector>
             <targetReference>SubmissionSuccessScreen</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -1048,36 +1206,24 @@
         <object>Abstract__c</object>
     </recordUpdates>
     <recordUpdates>
-        <name>Update_Abstract_with_Presenter</name>
-        <label>Update Abstract with Presenter</label>
-        <locationX>277</locationX>
-        <locationY>2408</locationY>
+        <name>Update_Abstract</name>
+        <label>Update Abstract</label>
+        <locationX>425</locationX>
+        <locationY>3023</locationY>
         <connector>
-            <targetReference>AssignStage40</targetReference>
+            <targetReference>Check_Affirmations_Screen</targetReference>
         </connector>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>AbstractRecordVariable.Id</elementReference>
-            </value>
-        </filters>
-        <inputAssignments>
-            <field>Presenter__c</field>
-            <value>
-                <elementReference>Create_Presenter</elementReference>
-            </value>
-        </inputAssignments>
-        <object>Abstract__c</object>
+        <inputReference>AbstractRecordVariable</inputReference>
     </recordUpdates>
     <recordUpdates>
         <name>Update_Abstract_with_Presenter_0</name>
         <label>Update Abstract with Presenter</label>
-        <locationX>495</locationX>
-        <locationY>2307</locationY>
+        <locationX>407</locationX>
+        <locationY>2088</locationY>
         <connector>
             <targetReference>AssignStage40</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -1086,7 +1232,7 @@
             </value>
         </filters>
         <inputAssignments>
-            <field>Presenter__c</field>
+            <field>Abstract_Presenter__c</field>
             <value>
                 <elementReference>PresenterLookup.recordId</elementReference>
             </value>
@@ -1096,11 +1242,12 @@
     <recordUpdates>
         <name>UpdateAbstract</name>
         <label>UpdateAbstract</label>
-        <locationX>387</locationX>
-        <locationY>1903</locationY>
+        <locationX>297</locationX>
+        <locationY>1739</locationY>
         <connector>
             <targetReference>AssignStage30</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -1184,54 +1331,10 @@
     </recordUpdates>
     <runInMode>DefaultMode</runInMode>
     <screens>
-        <name>Add_Another_Author_Screen</name>
-        <label>Add Another Author Screen</label>
-        <locationX>385</locationX>
-        <locationY>3165</locationY>
-        <allowBack>false</allowBack>
-        <allowFinish>true</allowFinish>
-        <allowPause>false</allowPause>
-        <connector>
-            <targetReference>AddAnotherAuthorDecision</targetReference>
-        </connector>
-        <fields>
-            <name>CreateAbstractAuthorSuccessMessage</name>
-            <fieldText>&lt;p&gt;The author was successfully added to this abstract.&lt;/p&gt;</fieldText>
-            <fieldType>DisplayText</fieldType>
-        </fields>
-        <fields>
-            <name>AddAnotherAuthorToggle</name>
-            <extensionName>flowruntime:toggle</extensionName>
-            <fieldType>ComponentInstance</fieldType>
-            <inputParameters>
-                <name>label</name>
-                <value>
-                    <stringValue>Does the abstract have another author?</stringValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>messageToggleActive</name>
-                <value>
-                    <stringValue>Yes, I want to add more authors</stringValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>messageToggleInactive</name>
-                <value>
-                    <stringValue>No, I am done</stringValue>
-                </value>
-            </inputParameters>
-            <isRequired>true</isRequired>
-            <storeOutputAutomatically>true</storeOutputAutomatically>
-        </fields>
-        <showFooter>true</showFooter>
-        <showHeader>true</showHeader>
-    </screens>
-    <screens>
         <name>Add_Authors_Screen</name>
         <label>Add Authors Screen</label>
-        <locationX>398</locationX>
-        <locationY>2550</locationY>
+        <locationX>311</locationX>
+        <locationY>2347</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1274,13 +1377,13 @@
             <inputParameters>
                 <name>fieldApiName</name>
                 <value>
-                    <stringValue>Author__c</stringValue>
+                    <stringValue>Abstract_Author__c</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>label</name>
                 <value>
-                    <stringValue>Search Authors by Email</stringValue>
+                    <stringValue>Search Authors</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -1342,8 +1445,8 @@
     <screens>
         <name>Add_Presenter_Screen</name>
         <label>Add Presenter Screen</label>
-        <locationX>386</locationX>
-        <locationY>2041</locationY>
+        <locationX>297</locationX>
+        <locationY>1843</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -1381,13 +1484,13 @@
             <inputParameters>
                 <name>fieldApiName</name>
                 <value>
-                    <stringValue>Presenter__c</stringValue>
+                    <stringValue>Abstract_Presenter__c</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>label</name>
                 <value>
-                    <stringValue>Search Presenter by Email</stringValue>
+                    <stringValue>Search Presenter</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -1437,8 +1540,8 @@
     <screens>
         <name>Check_Affirmations_Screen</name>
         <label>Check Affirmations Screen</label>
-        <locationX>273</locationX>
-        <locationY>945</locationY>
+        <locationX>332</locationX>
+        <locationY>3100</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1629,7 +1732,7 @@
             <inputParameters>
                 <name>backLabel</name>
                 <value>
-                    <stringValue>Back</stringValue>
+                    <stringValue>Previous</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -1653,8 +1756,8 @@
     <screens>
         <name>Deadline_passed_screen</name>
         <label>Deadline passed screen</label>
-        <locationX>50</locationX>
-        <locationY>669</locationY>
+        <locationX>134</locationX>
+        <locationY>544</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1667,31 +1770,15 @@
         <showHeader>false</showHeader>
     </screens>
     <screens>
-        <name>DraftSuccessMessage</name>
-        <label>DraftSuccessMessage</label>
-        <locationX>829</locationX>
-        <locationY>3661</locationY>
-        <allowBack>true</allowBack>
-        <allowFinish>false</allowFinish>
-        <allowPause>false</allowPause>
-        <fields>
-            <name>DraftSuccessDisplay</name>
-            <fieldText>&lt;p&gt;Your draft has been saved.&lt;/p&gt;&lt;p&gt;All abstracts drafts can be seen and edited in the community.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Please remember to submit your abstract before the deadline {!GetEvent.Abstract_Submission_Deadline__c}&lt;/p&gt;</fieldText>
-            <fieldType>DisplayText</fieldType>
-        </fields>
-        <showFooter>true</showFooter>
-        <showHeader>true</showHeader>
-    </screens>
-    <screens>
         <name>Fill_Abstract_Screen</name>
         <label>Fill Abstract Screen</label>
-        <locationX>280</locationX>
-        <locationY>668</locationY>
+        <locationX>339</locationX>
+        <locationY>689</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Max_Words_Reached</targetReference>
+            <targetReference>Set_Topic_and_Type</targetReference>
         </connector>
         <fields>
             <name>ProgressFillAbstract</name>
@@ -1719,11 +1806,28 @@
         </fields>
         <fields>
             <name>Type</name>
-            <choiceReferences>AbstractTypeChoice</choiceReferences>
+            <choiceReferences>TypeRecordChoice</choiceReferences>
+            <choiceReferences>TypeDefaultChoice</choiceReferences>
             <dataType>String</dataType>
+            <defaultSelectedChoiceReference>TypeDefaultChoice</defaultSelectedChoiceReference>
             <fieldText>Type</fieldText>
             <fieldType>DropdownBox</fieldType>
             <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>TypeErrorText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;This field is required. &lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>ShowTypeError</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
         </fields>
         <fields>
             <name>Title</name>
@@ -1741,7 +1845,7 @@
         </fields>
         <fields>
             <name>Topics_Pick</name>
-            <choiceReferences>TopicChoice</choiceReferences>
+            <choiceReferences>TopicRecordChoice</choiceReferences>
             <choiceReferences>TopicDefaultChoice</choiceReferences>
             <dataType>String</dataType>
             <defaultSelectedChoiceReference>TopicDefaultChoice</defaultSelectedChoiceReference>
@@ -1750,18 +1854,33 @@
             <isRequired>true</isRequired>
         </fields>
         <fields>
+            <name>TopicErrorText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;This field is required. &lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>ShowTopicError</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
             <name>BodyHeadlineText</name>
             <fieldText>&lt;p&gt;&lt;b&gt;&lt;u&gt;Abstract Body:&lt;/u&gt;&lt;/b&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <fields>
-            <name>ErrorText</name>
+            <name>MaxWordErrorText</name>
             <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0);&quot;&gt;Please enter less than 250 words.&lt;/span&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <visibilityRule>
                 <conditionLogic>and</conditionLogic>
                 <conditions>
-                    <leftValueReference>ShowError</leftValueReference>
+                    <leftValueReference>ShowWordCountError</leftValueReference>
                     <operator>EqualTo</operator>
                     <rightValue>
                         <booleanValue>true</booleanValue>
@@ -1844,19 +1963,204 @@
         <showHeader>true</showHeader>
     </screens>
     <screens>
-        <name>Review_Abstract</name>
-        <label>Review Abstract</label>
-        <locationX>374</locationX>
-        <locationY>1351</locationY>
+        <name>Fill_Abstract_Screen_0</name>
+        <label>Review Abstract Screen</label>
+        <locationX>446</locationX>
+        <locationY>2835</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>CreateAbstract_0</targetReference>
+            <targetReference>Validate_Input_0</targetReference>
         </connector>
         <fields>
+            <name>ProgressFillAbstract_0_0</name>
+            <extensionName>dhfpi:lwcProgressIndicator</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>currentStage</name>
+                <value>
+                    <elementReference>$Flow.CurrentStage</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>fontSize</name>
+                <value>
+                    <stringValue>11</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>stages</name>
+                <value>
+                    <elementReference>$Flow.ActiveStages</elementReference>
+                </value>
+            </inputParameters>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Type_0</name>
+            <choiceReferences>TypeDefaultChoice</choiceReferences>
+            <choiceReferences>TypeRecordChoice</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>TypeDefaultChoice</defaultSelectedChoiceReference>
+            <fieldText>Type</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>TypeErrorText_0</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;This field is required. &lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>ShowTypeErrorReview</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Title_0</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>Title</elementReference>
+            </defaultValue>
+            <fieldText>Title</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+            <validationRule>
+                <errorMessage>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0);&quot;&gt;Please enter less than 120 characters&lt;/span&gt;&lt;/p&gt;</errorMessage>
+                <formulaExpression>LEN({!Title})&lt;=120</formulaExpression>
+            </validationRule>
+        </fields>
+        <fields>
+            <name>Topics_Pick_0</name>
+            <choiceReferences>TopicDefaultChoice</choiceReferences>
+            <choiceReferences>TopicRecordChoice</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>TopicDefaultChoice</defaultSelectedChoiceReference>
+            <fieldText>Abstract Topic</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>TopicErrorText_0</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;This field is required. &lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>ShowTopicErrorReview</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>BodyHeadlineText_0</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;&lt;u&gt;Abstract Body:&lt;/u&gt;&lt;/b&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>MaxWordErrorText_0</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0);&quot;&gt;Please enter less than 250 words.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>ShowWordCountErrorReview</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Introduction_0</name>
+            <defaultValue>
+                <stringValue>{!Introduction}</stringValue>
+            </defaultValue>
+            <fieldText>Introduction</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <isRequired>true</isRequired>
+            <validationRule>
+                <errorMessage>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0);&quot;&gt;This field is required.&lt;/span&gt;&lt;/p&gt;</errorMessage>
+                <formulaExpression>LEN(TRIM({!Introduction}))!=0</formulaExpression>
+            </validationRule>
+        </fields>
+        <fields>
+            <name>Methods_0</name>
+            <defaultValue>
+                <stringValue>{!Methods}</stringValue>
+            </defaultValue>
+            <fieldText>Methods</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <isRequired>true</isRequired>
+            <validationRule>
+                <errorMessage>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;This field is required.&lt;/span&gt;&lt;/p&gt;</errorMessage>
+                <formulaExpression>LEN(TRIM({!Methods}))!=0</formulaExpression>
+            </validationRule>
+        </fields>
+        <fields>
+            <name>Results_0</name>
+            <defaultValue>
+                <stringValue>{!Results}</stringValue>
+            </defaultValue>
+            <fieldText>Results</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <isRequired>true</isRequired>
+            <validationRule>
+                <errorMessage>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;This field is required.&lt;/span&gt;&lt;/p&gt;</errorMessage>
+                <formulaExpression>LEN(TRIM({!Results}))!=0</formulaExpression>
+            </validationRule>
+        </fields>
+        <fields>
+            <name>Conclusion_0</name>
+            <defaultValue>
+                <stringValue>{!Conclusion}</stringValue>
+            </defaultValue>
+            <fieldText>Conclusion</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <isRequired>true</isRequired>
+            <validationRule>
+                <errorMessage>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;This field is required&lt;/span&gt;&lt;/p&gt;</errorMessage>
+                <formulaExpression>LEN(TRIM({!Conclusion}))!=0</formulaExpression>
+            </validationRule>
+        </fields>
+        <fields>
+            <name>Disclosure_0</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>Disclosure</elementReference>
+            </defaultValue>
+            <fieldText>Disclosure</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+            <validationRule>
+                <errorMessage>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0);&quot;&gt;This field is required.&lt;/span&gt;&lt;/p&gt;</errorMessage>
+                <formulaExpression>LEN(TRIM({!Disclosure}))!=0</formulaExpression>
+            </validationRule>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Review_Abstract</name>
+        <label>Review Abstract</label>
+        <locationX>161</locationX>
+        <locationY>2887</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
             <name>AbstractSummary</name>
-            <fieldText>&lt;p&gt;&lt;b style=&quot;font-size: 16px;&quot;&gt;&lt;i&gt;Please review your submission:&lt;/i&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 16px;&quot;&gt;﻿&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px;&quot;&gt;Abstract Type: &lt;/b&gt;&lt;b&gt;{!Type}&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px;&quot;&gt;Topic: &lt;/b&gt;&lt;b&gt;{!Topics_Pick}&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px;&quot;&gt;&lt;u&gt;Abstract Title:&lt;/u&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(62, 62, 60); background-color: rgb(255, 255, 255);&quot;&gt;{!Title}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px;&quot;&gt;&lt;u&gt;Abstract Body:&lt;/u&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-size: 12px;&quot;&gt;({!TotalBodyWordCount} words total)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;color: rgb(62, 62, 60); background-color: rgb(255, 255, 255); font-size: 14px;&quot;&gt;Introduction:&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(62, 62, 60); background-color: rgb(255, 255, 255);&quot;&gt;({!WordCountIntroduction} words)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(62, 62, 60); background-color: rgb(255, 255, 255);&quot;&gt;{!Introduction}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;color: rgb(62, 62, 60); background-color: rgb(255, 255, 255); font-size: 14px;&quot;&gt;Methods:&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(62, 62, 60); background-color: rgb(255, 255, 255);&quot;&gt;({!WordCountMethods} words)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(62, 62, 60); background-color: rgb(255, 255, 255);&quot;&gt;{!Methods}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;color: rgb(62, 62, 60); background-color: rgb(255, 255, 255); font-size: 14px;&quot;&gt;﻿Results:&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(62, 62, 60); background-color: rgb(255, 255, 255);&quot;&gt;({!WordCountResults} words)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(62, 62, 60); background-color: rgb(255, 255, 255);&quot;&gt;{!Results}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;color: rgb(62, 62, 60); background-color: rgb(255, 255, 255); font-size: 14px;&quot;&gt;﻿Conclusion&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(62, 62, 60); background-color: rgb(255, 255, 255);&quot;&gt;({!WordCountConclusion} words)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(62, 62, 60); background-color: rgb(255, 255, 255);&quot;&gt;{!Conclusion}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;color: rgb(62, 62, 60); background-color: rgb(255, 255, 255); font-size: 14px;&quot;&gt;&lt;u&gt;Disclosure: &lt;/u&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(62, 62, 60); background-color: rgb(255, 255, 255);&quot;&gt;{!Disclosure}&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;b style=&quot;font-size: 14px;&quot;&gt;&lt;i&gt;Please review your submission:&lt;/i&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 16px;&quot;&gt;﻿&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px;&quot;&gt;Abstract Type: &lt;/b&gt;&lt;b&gt;{!Type}&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px;&quot;&gt;Topic: &lt;/b&gt;&lt;b&gt;{!Topics_Pick}&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px;&quot;&gt;&lt;u&gt;Abstract Title:&lt;/u&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;{!Title}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px;&quot;&gt;&lt;u&gt;Abstract Body:&lt;/u&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-size: 12px;&quot;&gt;({!TotalBodyWordCount} words total)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px; background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;Introduction:&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;({!WordCountIntroduction} words)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;{!Introduction}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px; background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;Methods:&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;({!WordCountMethods} words)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;{!Methods}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px; background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;﻿Results:&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;({!WordCountResults} words)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;{!Results}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px; background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;﻿Conclusion&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;({!WordCountConclusion} words)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;{!Conclusion}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px; background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;&lt;u&gt;Disclosure: &lt;/u&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;{!Disclosure}&lt;/span&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <fields>
@@ -1943,6 +2247,12 @@
                     <stringValue>Confirm</stringValue>
                 </value>
             </inputParameters>
+            <inputParameters>
+                <name>backLabel</name>
+                <value>
+                    <stringValue>Previous</stringValue>
+                </value>
+            </inputParameters>
             <isRequired>true</isRequired>
             <storeOutputAutomatically>true</storeOutputAutomatically>
         </fields>
@@ -1952,18 +2262,71 @@
     <screens>
         <name>Review_Files_Screen</name>
         <label>Review Files Screen</label>
-        <locationX>384</locationX>
-        <locationY>1775</locationY>
-        <allowBack>false</allowBack>
+        <locationX>411</locationX>
+        <locationY>1613</locationY>
+        <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
             <targetReference>UpdateAbstract</targetReference>
         </connector>
         <fields>
-            <name>FileSuccessText</name>
-            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;Following files have been added to your abstract:&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <name>NoFilesAddedText</name>
+            <fieldText>&lt;p&gt;You have not added any images to your abstract. &lt;/p&gt;&lt;p&gt;Click &lt;i&gt;Previous&lt;/i&gt; to add images. &lt;/p&gt;&lt;p&gt;Click &lt;i&gt;Next&lt;/i&gt; to continue. You can also add images later. &lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>Image1Id</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue/>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Image2Id</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue/>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Image3Id</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue/>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>FileSuccessText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(62, 62, 60); background-color: rgb(255, 255, 255);&quot;&gt;Following images have been added to your abstract:&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>or</conditionLogic>
+                <conditions>
+                    <leftValueReference>Image1Id</leftValueReference>
+                    <operator>NotEqualTo</operator>
+                    <rightValue>
+                        <stringValue/>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Image2Id</leftValueReference>
+                    <operator>NotEqualTo</operator>
+                    <rightValue>
+                        <stringValue/>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Image3Id</leftValueReference>
+                    <operator>NotEqualTo</operator>
+                    <rightValue>
+                        <stringValue/>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
         </fields>
         <fields>
             <name>FileAddedSuccessMessage_1</name>
@@ -2085,8 +2448,8 @@
     <screens>
         <name>Select_Event_Screen</name>
         <label>Select Event Screen</label>
-        <locationX>241</locationX>
-        <locationY>151</locationY>
+        <locationX>337</locationX>
+        <locationY>189</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2131,15 +2494,40 @@
     <screens>
         <name>SubmissionSuccessScreen</name>
         <label>SubmissionSuccessScreen</label>
-        <locationX>638</locationX>
-        <locationY>3788</locationY>
+        <locationX>434</locationX>
+        <locationY>3905</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <fields>
-            <name>SubmissionSuccessDisplay</name>
+            <name>DraftSuccessText</name>
+            <fieldText>&lt;p&gt;Your draft has been saved.&lt;/p&gt;&lt;p&gt;All abstracts drafts can be seen and edited in the community.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Please remember to submit your abstract before the deadline {!GetEvent.Abstract_Submission_Deadline__c}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>SubmitToggle.value</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>false</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>SubmissionSuccessText</name>
             <fieldText>&lt;p&gt;Thank you for your abstract submission!&lt;/p&gt;&lt;p&gt;You can see the status of your submitted abstract in the community.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>SubmitToggle.value</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
         </fields>
         <fields>
             <name>EndFlowFooter</name>
@@ -2154,7 +2542,7 @@
             <inputParameters>
                 <name>redirectUrl</name>
                 <value>
-                    <stringValue>https://eanregisterdev--eventreg1.my.salesforce.com/servlet/networks/switch?networkId=0DB3Y000000Gopq&amp;</stringValue>
+                    <stringValue>/s/abstracts</stringValue>
                 </value>
             </inputParameters>
             <isRequired>true</isRequired>
@@ -2166,8 +2554,8 @@
     <screens>
         <name>Submit_Screen</name>
         <label>Submit Screen</label>
-        <locationX>730</locationX>
-        <locationY>3315</locationY>
+        <locationX>328</locationX>
+        <locationY>3568</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -2236,7 +2624,7 @@
             <inputParameters>
                 <name>finishLabel</name>
                 <value>
-                    <stringValue>Submit</stringValue>
+                    <stringValue>Confirm</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -2257,6 +2645,12 @@
                     <stringValue>Confirm</stringValue>
                 </value>
             </inputParameters>
+            <inputParameters>
+                <name>backLabel</name>
+                <value>
+                    <stringValue>Previous</stringValue>
+                </value>
+            </inputParameters>
             <isRequired>true</isRequired>
             <storeOutputAutomatically>true</storeOutputAutomatically>
         </fields>
@@ -2266,13 +2660,13 @@
     <screens>
         <name>Upload_Files_Screen</name>
         <label>Upload Files Screen</label>
-        <locationX>385</locationX>
-        <locationY>1647</locationY>
+        <locationX>295</locationX>
+        <locationY>1380</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Review_Files_Screen</targetReference>
+            <targetReference>Image_Locations_Selected</targetReference>
         </connector>
         <fields>
             <name>ProgressFileUpload</name>
@@ -2339,6 +2733,21 @@
             </inputParameters>
             <isRequired>true</isRequired>
             <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <fields>
+            <name>FileErrorText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0);&quot;&gt;Please select a section for all files you uploaded.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>FilesErrorMessage</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
         </fields>
         <fields>
             <name>Image_1_Caption</name>
@@ -2495,10 +2904,10 @@
         <stageOrder>30</stageOrder>
     </stages>
     <stages>
-        <name>Check_Affirmations_Stage_12</name>
+        <name>Check_Affirmations_Stage_45</name>
         <isActive>true</isActive>
         <label>Confirm</label>
-        <stageOrder>12</stageOrder>
+        <stageOrder>45</stageOrder>
     </stages>
     <stages>
         <name>Fill_Abstract_Stage_10</name>
@@ -2519,8 +2928,8 @@
         <stageOrder>50</stageOrder>
     </stages>
     <start>
-        <locationX>115</locationX>
-        <locationY>12</locationY>
+        <locationX>211</locationX>
+        <locationY>50</locationY>
         <connector>
             <targetReference>Select_Event_Screen</targetReference>
         </connector>
@@ -2543,6 +2952,20 @@
         <objectType>Abstract_Author__c</objectType>
     </variables>
     <variables>
+        <name>AbstractCreated</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <name>AbstractId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
         <name>AbstractRecordVariable</name>
         <dataType>SObject</dataType>
         <isCollection>false</isCollection>
@@ -2556,6 +2979,16 @@
         <isCollection>true</isCollection>
         <isInput>false</isInput>
         <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <name>FilesErrorMessage</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
     </variables>
     <variables>
         <name>NewAuthorID</name>
@@ -2572,7 +3005,57 @@
         <isOutput>false</isOutput>
     </variables>
     <variables>
-        <name>ShowError</name>
+        <name>ShowTopicError</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <name>ShowTopicErrorReview</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <name>ShowTypeError</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <name>ShowTypeErrorReview</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <name>ShowWordCountError</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <name>ShowWordCountErrorReview</name>
         <dataType>Boolean</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>

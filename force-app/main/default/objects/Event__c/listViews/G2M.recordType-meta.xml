@@ -4,6 +4,25 @@
     <active>true</active>
     <label>G2M</label>
     <picklistValues>
+        <picklist>Abstract_Submission__c</picklist>
+        <values>
+            <fullName>All Submissions Open</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Closed</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Invited Submission Open</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Public Submission Open</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>Country__c</picklist>
         <values>
             <fullName>Afghanistan</fullName>

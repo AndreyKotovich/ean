@@ -49,10 +49,14 @@ export default class CancelOrder extends LightningElement {
     refund() {
         this.isSpinner = true;
         let refundAmount = 0;
+        let oIOrig = {};
         this.orderItem.forEach(e => {
             e.sobjectType = "Order_Item__c";
             e.Refund_Amount__c += e.maxRef;
             refundAmount += e.maxRef;
+            if (+e.maxRef !== 0) {
+                oIOrig[`${e.Id}`] = +e.maxRef;
+            }
         });
 
         if (refundAmount == 0) {
@@ -62,7 +66,8 @@ export default class CancelOrder extends LightningElement {
         let generalData = {
             id : this.infoOrder.Id,
             refundAmount : refundAmount,
-            oI: this.orderItem
+            oI: this.orderItem,
+            oIOrig: oIOrig
         };
 
         cancelOrder({ generalData : generalData})

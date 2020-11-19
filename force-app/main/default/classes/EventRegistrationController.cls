@@ -106,6 +106,16 @@ public without sharing class EventRegistrationController {
                     'sessionParticipantPrice' => sessionParticipationPriceMap
             });
 
+            List<String> orderIds = new List<String>();
+
+            for(Order__c o : order){
+                orderIds.add(o.Id);
+            }
+
+            if(!orderIds.isEmpty()){
+                sendInvoiceToGroupLeader(orderIds);
+            }
+
             return new Map<String, Object>{
                     'status' => 'Success',
                     'message' => 'Success',
@@ -404,12 +414,24 @@ public without sharing class EventRegistrationController {
     }
 
     @AuraEnabled public static List<String> getNotAvailableEventRegistrationEmails(List<String> eventsIds){
-        List<Participant__c> registeredParticipants = [
+        return getNotAvailableEventRegistrationEmails(eventsIds, new List<String>());
+    }
+
+    @AuraEnabled public static List<String> getNotAvailableEventRegistrationEmails(List<String> eventsIds, List<String> skippedSubGroupsIds){
+        List<Participant__c> registeredParticipants = skippedSubGroupsIds.isEmpty()
+            ? [
                 SELECT Id, Participant_Email__c, Contact__r.Email
                 FROM Participant__c
                 WHERE Event_custom__c IN :eventsIds
                 AND Status__c != 'Canceled'
-        ];
+            ]
+            : [
+                SELECT Id, Participant_Email__c, Contact__r.Email
+                FROM Participant__c
+                WHERE Event_custom__c IN :eventsIds
+                AND Status__c != 'Canceled'
+                AND Event_Registration_Sub_Group__c NOT IN :skippedSubGroupsIds
+            ];
 
         Set<String> emails = new Set<String>();
 
@@ -458,16 +480,18 @@ public without sharing class EventRegistrationController {
         }
         Map<Id, Event_Registration_Group__c> eventGroupsMap = new Map<Id, Event_Registration_Group__c>([
             SELECT Id, (SELECT Id FROM Event_Registration_Sub_Groups__r)
-            FROM Event_Registration_Group__c 
+            FROM Event_Registration_Group__c
             WHERE Id IN :ordersToGroupIdsMap.keySet()
         ]);
         List<Order__c> groupCreatedOrders = new List<Order__c>();
         List<Order__c> groupAddedParticipantsOrders = new List<Order__c>();
         for (Order__c order : orders) {
-            if (eventGroupsMap.get(order.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Id).Event_Registration_Sub_Groups__r.size() == 1) {
-                groupCreatedOrders.add(order);
-            } else if (eventGroupsMap.get(order.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Id).Event_Registration_Sub_Groups__r.size() > 1) {
-                groupAddedParticipantsOrders.add(order);
+            if (String.isNotBlank(order.Event_Registration_Sub_Group__c)) {
+                if (eventGroupsMap.get(order.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Id).Event_Registration_Sub_Groups__r.size() == 1) {
+                    groupCreatedOrders.add(order);
+                } else if (eventGroupsMap.get(order.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Id).Event_Registration_Sub_Groups__r.size() > 1) {
+                    groupAddedParticipantsOrders.add(order);
+                }
             }
         }
         List<Email_Activity__c> emailActivities = new List<Email_Activity__c>();

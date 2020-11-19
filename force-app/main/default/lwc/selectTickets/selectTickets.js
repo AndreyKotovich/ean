@@ -73,6 +73,8 @@ export default class SelectTickets extends LightningElement {
     @track _ticketsAmount = 0;
     @track availableParticipantNumber = 0;
     @track _groupIndividualTickets = {};
+    @track isTicketTypeModal = false; //TODO AUTO POPULATE IT
+    @track isGroupIndividual = false;
 
     // hideNextButton = false;
     allEventTickets = [];
@@ -84,6 +86,15 @@ export default class SelectTickets extends LightningElement {
     _userInfo = {};
 
     connectedCallback() {
+        if(this.registrationType === 'group'){
+            if(this._groupIndividualTickets.isPartInit && this._groupIndividualTickets.participantsAmount > 0){
+                this.individualGroupTickets();
+            } else if(!!this._selectedTicket && this._ticketsAmount > 0) {
+                this.contingentGroupTickets();
+            } else {
+                this.isTicketTypeModal = true;
+            }
+        }
         console.log('_userInfo', JSON.stringify(this._userInfo));
         if (this._userInfo.iprInfo && this._userInfo.iprInfo.participantAmount) {
             this.iprRegisteredParticipants = this._userInfo.iprInfo.participantAmount;
@@ -307,7 +318,6 @@ export default class SelectTickets extends LightningElement {
         return result;
     }
 
-
     earlyBirdCheck() {
         let isEarlyBird = false;
 
@@ -359,7 +369,9 @@ export default class SelectTickets extends LightningElement {
     }
 
     handleNextClick() {
-        this.getSelectedTickets();
+        if(this.showTicketsRadioGroup){
+            this.getSelectedTickets();
+        }
 
         if (this.nextClickValidation()) {
             let eventTicket = this.allEventTickets.find(obj => obj.Id === this._selectedTicket);
@@ -407,7 +419,7 @@ export default class SelectTickets extends LightningElement {
         let result = true;
         let errorMessage = "";
 
-        if (this._selectedTicket === "") {
+        if (this.showTicketsRadioGroup && this._selectedTicket === "") {
             result = false;
             errorMessage = "Select a ticket please";
         }
@@ -518,5 +530,26 @@ export default class SelectTickets extends LightningElement {
 
     get isTicketAmountRequired() {
         return !this._groupIndividualTickets.isPartInit;
+    }
+
+    individualGroupTickets(){
+        this.isGroupIndividual = true;
+        this._groupIndividualTickets.isPartInit = true;
+        this.isTicketTypeModal = false;
+    }
+
+    contingentGroupTickets(){
+        this.isGroupIndividual = false;
+        this.isTicketTypeModal = false;
+    }
+
+    get showTicketsRadioGroup(){
+        let result = true;
+
+        if(this.registrationType === 'group'){
+            result = !this.isGroupIndividual;
+        }
+
+        return result;
     }
 }

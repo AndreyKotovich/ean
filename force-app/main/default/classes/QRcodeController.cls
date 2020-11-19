@@ -21,4 +21,22 @@ public with sharing class QRcodeController {
         }
         return null;
     } set; }
+    public String contentDocumentId {get{
+        List<Participant__c> participants = [
+            SELECT Id, Name FROM Participant__c WHERE Id = :participantId
+        ];
+        if (participants.size() == 1) {
+            String contentDocumentName = 'QR code ' + participants[0].Name + '.png';
+            List<ContentDocumentLink> conDocLinks = [
+                SELECT Id, ContentDocument.Title
+                FROM ContentDocumentLink
+                WHERE LinkedEntityId = :participantId
+                AND ContentDocument.Title = :contentDocumentName
+            ];
+            if (conDocLinks.size() > 0) {
+                return conDocLinks[0].ContentDocumentId;
+            }
+        }
+        return null;
+    } set; }
 }

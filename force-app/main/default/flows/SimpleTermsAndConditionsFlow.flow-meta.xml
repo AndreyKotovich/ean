@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <apiVersion>49.0</apiVersion>
     <assignments>
         <name>DisplayValidationError</name>
         <label>DisplayValidationError</label>
@@ -262,6 +263,7 @@
         <name>OtherProfessionRecordChoice</name>
         <dataType>String</dataType>
         <displayField>Label</displayField>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
@@ -283,6 +285,7 @@
         <name>PrescriberPricklistRecordChoice</name>
         <dataType>String</dataType>
         <displayField>Label</displayField>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
@@ -304,6 +307,7 @@
         <name>ProfessionPicklistRecordChoices</name>
         <dataType>String</dataType>
         <displayField>Label</displayField>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
@@ -325,6 +329,7 @@
         <name>ResidencyPicklist</name>
         <dataType>String</dataType>
         <displayField>Label</displayField>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
@@ -354,6 +359,7 @@
         <name>SalutationPicklistRecordChoices</name>
         <dataType>String</dataType>
         <displayField>Label</displayField>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
@@ -377,6 +383,7 @@
         <name>TopicsOfInterestPicklistRecordChoice</name>
         <dataType>String</dataType>
         <displayField>Label</displayField>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
@@ -451,6 +458,7 @@
         <connector>
             <targetReference>Terms_Conditions_Ever_Accepted</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -489,6 +497,7 @@
         <connector>
             <targetReference>Terms_Conditions</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>

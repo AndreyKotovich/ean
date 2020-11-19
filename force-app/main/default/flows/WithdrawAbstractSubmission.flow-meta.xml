@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>50.0</apiVersion>
     <decisions>
         <name>Event_Started</name>
         <label>Event Started?</label>
-        <locationX>515</locationX>
-        <locationY>566</locationY>
+        <locationX>463</locationX>
+        <locationY>561</locationY>
         <defaultConnector>
             <targetReference>AbstractCannotBeWithdrawnScreen</targetReference>
         </defaultConnector>
@@ -28,8 +29,8 @@
     <decisions>
         <name>Stage_Submitted</name>
         <label>Stage = Submitted?</label>
-        <locationX>669</locationX>
-        <locationY>446</locationY>
+        <locationX>666</locationX>
+        <locationY>447</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Submitted</name>
@@ -54,8 +55,30 @@
             <label>Submitted</label>
         </rules>
         <rules>
-            <name>Not_Submitted</name>
+            <name>Closed</name>
             <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>GetAbstractStage.Stage__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Closed</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GetAbstractStage.Stage__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Deleted</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>AbstractCannotBeWithdrawnScreen</targetReference>
+            </connector>
+            <label>Closed</label>
+        </rules>
+        <rules>
+            <name>Draft</name>
+            <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>GetAbstractStage.Stage__c</leftValueReference>
                 <operator>EqualTo</operator>
@@ -63,27 +86,20 @@
                     <stringValue>Draft</stringValue>
                 </rightValue>
             </conditions>
-            <conditions>
-                <leftValueReference>GetAbstractStage.Stage__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Close</stringValue>
-                </rightValue>
-            </conditions>
             <connector>
-                <targetReference>AbstractCannotBeWithdrawnScreen</targetReference>
+                <targetReference>Confirm_Abstract_Deletion_Screen</targetReference>
             </connector>
-            <label>Not Submitted</label>
+            <label>Draft</label>
         </rules>
     </decisions>
     <decisions>
         <name>Withdrawal_Confirmed</name>
-        <label>Withdrawal Confirmed?</label>
-        <locationX>515</locationX>
-        <locationY>902</locationY>
+        <label>Withdrawal/Deletion Confirmed?</label>
+        <locationX>675</locationX>
+        <locationY>877</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
-            <name>Confimed</name>
+            <name>Withdraw</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>CorfirmAbstractWithdrawalToggle.value</leftValueReference>
@@ -95,7 +111,22 @@
             <connector>
                 <targetReference>UpdateStage</targetReference>
             </connector>
-            <label>Confimed</label>
+            <label>Withdraw</label>
+        </rules>
+        <rules>
+            <name>Delete</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>CorfirmAbstractDeletionToggle.value</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>UpdateStage_0</targetReference>
+            </connector>
+            <label>Delete</label>
         </rules>
     </decisions>
     <interviewLabel>WithdrawAbstractSubmission {!$Flow.CurrentDateTime}</interviewLabel>
@@ -122,12 +153,13 @@
     <recordLookups>
         <name>GetAbstractStage</name>
         <label>GetAbstractStage</label>
-        <locationX>669</locationX>
-        <locationY>206</locationY>
+        <locationX>677</locationX>
+        <locationY>187</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>GetEventDate</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -145,12 +177,13 @@
     <recordLookups>
         <name>GetEventDate</name>
         <label>GetEventDate</label>
-        <locationX>669</locationX>
-        <locationY>326</locationY>
+        <locationX>675</locationX>
+        <locationY>316</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Stage_Submitted</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -167,8 +200,9 @@
     <recordUpdates>
         <name>UpdateStage</name>
         <label>UpdateStage</label>
-        <locationX>383</locationX>
-        <locationY>1022</locationY>
+        <locationX>579</locationX>
+        <locationY>1079</locationY>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -184,11 +218,32 @@
         </inputAssignments>
         <object>Abstract__c</object>
     </recordUpdates>
+    <recordUpdates>
+        <name>UpdateStage_0</name>
+        <label>UpdateStage</label>
+        <locationX>768</locationX>
+        <locationY>1075</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Stage__c</field>
+            <value>
+                <stringValue>Deleted</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Abstract__c</object>
+    </recordUpdates>
     <screens>
         <name>AbstractCannotBeWithdrawnScreen</name>
         <label>Abstract cannot be withdrawn screen</label>
-        <locationX>823</locationX>
-        <locationY>566</locationY>
+        <locationX>675</locationX>
+        <locationY>626</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -235,7 +290,51 @@
             </visibilityRule>
         </fields>
         <showFooter>true</showFooter>
-        <showHeader>true</showHeader>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Confirm_Abstract_Deletion_Screen</name>
+        <label>Confirm Abstract Deletion Screen</label>
+        <locationX>844</locationX>
+        <locationY>639</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Withdrawal_Confirmed</targetReference>
+        </connector>
+        <fields>
+            <name>ConfirmAbstractDeletionText</name>
+            <fieldText>&lt;p&gt;If you continue, your draft abstract will be deleted. &lt;/p&gt;&lt;p&gt;Are you sure you want to delete your abstract?&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>CorfirmAbstractDeletionToggle</name>
+            <extensionName>flowruntime:toggle</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>messageToggleActive</name>
+                <value>
+                    <stringValue>Yes, I want to delete my abstract</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>messageToggleInactive</name>
+                <value>
+                    <stringValue>No, I want to keep my draft</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>value</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
     </screens>
     <screens>
         <name>Confirm_Abstract_Withdrawal_Screen</name>
@@ -279,7 +378,7 @@
             <storeOutputAutomatically>true</storeOutputAutomatically>
         </fields>
         <showFooter>true</showFooter>
-        <showHeader>true</showHeader>
+        <showHeader>false</showHeader>
     </screens>
     <start>
         <locationX>543</locationX>

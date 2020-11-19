@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <apiVersion>50.0</apiVersion>
     <assignments>
         <name>Assign_List_of_Authors</name>
         <label>Assign List of Authors</label>
@@ -148,6 +149,7 @@
         <connector>
             <targetReference>Get_Authors</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -168,6 +170,7 @@
         <connector>
             <targetReference>Loop_Authors</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Abstract__c</field>
             <operator>EqualTo</operator>
@@ -191,6 +194,7 @@
         <faultConnector>
             <targetReference>SuccessScreen_0</targetReference>
         </faultConnector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Reviewer__c</field>
             <operator>EqualTo</operator>
@@ -217,6 +221,7 @@
         <connector>
             <targetReference>SuccessScreen</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -240,6 +245,7 @@
         <connector>
             <targetReference>SuccessScreen</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -287,6 +293,7 @@
         <connector>
             <targetReference>SuccessScreen</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -746,10 +753,12 @@
     <status>Active</status>
     <textTemplates>
         <name>AuthorDetails</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
         <text>&lt;ul&gt;&lt;li&gt;{!Loop_Authors.Author_First_Name__c} {!Loop_Authors.Author_Last_Name__c}, {!Loop_Authors.Author_Department__c}, {!Loop_Authors.Author_Country__c}&lt;/li&gt;&lt;/ul&gt;</text>
     </textTemplates>
     <textTemplates>
         <name>PresenterDetails</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
         <text>&lt;ul&gt;&lt;li&gt;{!Get_Abstract.Presenter_First_Name__c} {!Get_Abstract.Presenter_Last_Name__c}, {!Get_Abstract.Presenter_Department__c}, {!Get_Abstract.Presenter_Country__c}&lt;/li&gt;&lt;/ul&gt;</text>
     </textTemplates>
     <variables>

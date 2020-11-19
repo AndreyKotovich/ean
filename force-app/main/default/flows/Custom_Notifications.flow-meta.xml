@@ -38,6 +38,7 @@
             </value>
         </inputParameters>
     </actionCalls>
+    <apiVersion>49.0</apiVersion>
     <assignments>
         <name>Add_userId_to_text_collection</name>
         <label>Add userId to text collection</label>
@@ -93,6 +94,7 @@
         <connector>
             <targetReference>loop</targetReference>
         </connector>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>IsActive</field>
             <operator>EqualTo</operator>

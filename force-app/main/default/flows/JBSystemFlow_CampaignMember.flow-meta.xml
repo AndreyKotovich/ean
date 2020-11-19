@@ -56,6 +56,7 @@
             </value>
         </inputParameters>
     </actionCalls>
+    <apiVersion>49.0</apiVersion>
     <decisions>
         <name>JB_Decision_Null_Check_SalesforceObj0d8729d65c2f0b988e19042d951fc91a</name>
         <label>JB_Decision_Null_Check_SalesforceObj0d8729d65c2f0b988e19042d951fc91a</label>

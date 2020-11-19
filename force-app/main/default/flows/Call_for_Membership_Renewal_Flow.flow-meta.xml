@@ -35,6 +35,7 @@
             </value>
         </inputParameters>
     </actionCalls>
+    <apiVersion>50.0</apiVersion>
     <decisions>
         <name>Initial_Call_OR_Reminder</name>
         <label>Initial Call OR Reminder</label>
@@ -121,6 +122,7 @@
         <label>Uncheck Checkbox</label>
         <locationX>1019</locationX>
         <locationY>126</locationY>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
@@ -148,6 +150,8 @@
         <connector>
             <targetReference>Create_Email_Activity</targetReference>
         </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Do_Call_For_Renewal__c</field>
             <operator>EqualTo</operator>
