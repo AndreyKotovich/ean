@@ -51,14 +51,10 @@
 					<div style="width: 30%; display: inline-block; vertical-align: top; padding-right: 10px;">
 						<div class="slds-text-align--right">
 
-							<!-- <template if:true={_displayAddMoreTicketsButton}>
-								<button class="slds-button slds-button_brand slds-align-bottom" onclick={handleAddMoreTicketsClick}>
-									<div style=" margin-top: 2px; margin-bottom: -2px;">Add more tickets to group</div>
-								</button>
-							</template> -->
-
 							<template if:true={_displayAddMoreTicketsButton}>
-								<button class="slds-button slds-button_brand" onclick={handleAddMoreTicketsClick}><div style="margin-top: 2px; margin-bottom: -2px;">Add more tickets to group</div></button>
+								<button class="slds-button slds-button_brand" onclick={handleAddMoreTicketsClick}>
+									<div style="margin-top: 2px; margin-bottom: -2px;">Add more tickets to group</div>
+								</button>
 							</template>
 						</div>
 					</div>
@@ -110,40 +106,48 @@
 												</c-record-search>
 											</template>
 										</div>
-										<div style="display: inline-block; width: 200px; margin-left: 20px; vertical-align: bottom;">
+										<div style="display: inline-block; width: 200px; margin-left: 20px; vertical-align: top; margin-top: 15px;">
 											{participant.newContactName}
 										</div>
 
-										<template if:true={participant.buttonsSettings.displaySaveDraftButton}>
-											<div class="small-button">
-												<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;" onclick={handleSaveClick} title="Save the definition without an email invitation (can be changed in the future)">
-													Save
-												</div>
-											</div>
-										</template>
-										<template if:true={participant.buttonsSettings.enableAddInviteButtons}>
-											<template if:true={participant.buttonsSettings.displayAddButton}>
+										<div style="display: inline-block; vertical-align: top; margin-top: 10px;">
+											<template if:true={participant.buttonsSettings.displaySaveDraftButton}>
 												<div class="small-button">
-													<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;" onclick={handleAddClick} title="Register a participant for the event">
-														Add
+													<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;"
+														data-id={subGroup.accordionIndex} data-index={participant.uniquekey2} onclick={handleSaveClick}
+														title="Save the definition without an email invitation and registration (You can changed participant later)">
+														Save
 													</div>
 												</div>
 											</template>
-											<template if:true={participant.buttonsSettings.displayInviteButton}>
-												<div class="small-button">
-													<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;" onclick={handleInviteClick} title="Invite to community and event">
-														Invite
+											<template if:true={participant.buttonsSettings.enableAddInviteButtons}>
+												<template if:true={participant.buttonsSettings.displayAddButton}>
+													<div class="small-button">
+														<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;"
+															data-id={subGroup.accordionIndex} data-index={participant.uniquekey2} onclick={handleAddClick}
+															title="Register a participant for the event">
+															Add
+														</div>
 													</div>
-												</div>
+												</template>
+												<template if:true={participant.buttonsSettings.displayInviteButton}>
+													<div class="small-button">
+														<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;"
+															data-id={subGroup.accordionIndex} data-index={participant.uniquekey2} onclick={handleInviteClick}
+															title="Invite to community and event">
+															Invite
+														</div>
+													</div>
+												</template>
 											</template>
-										</template>
+										</div>
 										<template if:true={participant.buttonsSettings.isInvited}>
-											<div style="display: inline-block; margin-left: 10px; vertical-align: bottom; color: #007dc6; font-weight: bold;">
+											<div style="display: inline-block; margin-left: 10px; vertical-align: top; margin-top: 15px; color: #007dc6; font-weight: bold;">
 												<div>{_invitedMessage}</div>
 											</div>
 										</template>
 										<template if:true={participant.buttonsSettings.isConfirmed}>
-											<div style="display: inline-block; margin-left: 10px; vertical-align: bottom; color: #007dc6; font-weight: bold;">
+											<div style="display: inline-block; margin-left: 10px; vertical-align: top; margin-top: 15px; color: #007dc6; font-weight: bold;">
 												<div>{_confirmedMessage}</div>
 											</div>
 										</template>

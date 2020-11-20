@@ -196,9 +196,11 @@ public without sharing class OrderHelper {
         List<Order_Item__c> oI = generalData.containsKey('oI') ?
             (List<Order_Item__c>)JSON.deserialize(JSON.serialize(generalData.get('oI')), List<Order_Item__c>.class) :
             new List<Order_Item__c>();
+        System.debug('generalData.get(oIOrig) ' + generalData.get('oIOrig'));
         Map<String,Object> oIOrig = generalData.containsKey('oIOrig') ?
             (Map<String,Object>)JSON.deserializeUntyped(JSON.serialize(generalData.get('oIOrig'))) :
         new Map<String,Object>();   
+        System.debug('generalData.get(oIOrig) oIOrig ' + oIOrig); 
         Map<String, String> resMap = PaymentHttpRequest.refundTransaction(orderId, orderId, refundAmount);
 
         if (resMap.get('status') == 'Success' && oI.size() > 0) {

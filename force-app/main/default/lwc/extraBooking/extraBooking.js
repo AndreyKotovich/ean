@@ -8,7 +8,7 @@ export default class ExtraBooking extends LightningElement {
     @api eanEvent = {};
     @api userInfo = {};
     @api registrationType = "";
-    @api selectedTickets = [];
+    @api hasOnlineTickets;
 
     @api
     get selectedSessions() {
@@ -45,6 +45,7 @@ export default class ExtraBooking extends LightningElement {
     }
 
     connectedCallback() {
+        console.log('hasOnlineTickets', this.hasOnlineTickets);
         this.hidePreviousButton = this.userInfo.isUpgrade;
 
         this.isEarlyBird = this.eanEvent.Early_Bird_Deadline__c ? Utils.deadlineCheck(this.eanEvent.Early_Bird_Deadline__c) : false;
@@ -376,20 +377,7 @@ export default class ExtraBooking extends LightningElement {
     }
 
     get showOnsiteServices() {
-        let result = true;
-        if (this.selectedTickets.length > 0) {
-
-            for (let ticket of this.selectedTickets) {
-                if (ticket.type) {
-                    result = ticket.type.toLowerCase() === 'onsite';
-                }
-
-                if (!result) break;
-            }
-
-        }
-
-        return result;
+        return !this.hasOnlineTickets;
     }
 
     get badgeRetrievalTooltip() {

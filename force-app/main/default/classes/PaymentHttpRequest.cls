@@ -725,10 +725,10 @@ public without sharing class PaymentHttpRequest {
                     }
                 }
             });
-            apiUrl = 'baseUrlWireCard_test';
+
             Http http = new Http();
             HttpRequest request = new HttpRequest();
-            request.setEndpoint('callout:' + apiUrl);
+            request.setEndpoint('callout:baseUrlWireCard_test');
             request.setMethod('POST');
             request.setHeader('Content-Type', 'application/json');
             request.setHeader('Accept', 'application/json');

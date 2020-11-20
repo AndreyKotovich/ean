@@ -14,13 +14,18 @@ public without sharing class EventRegistrationSubGroupTriggerHelper {
                 SELECT Id, QR_Code_needed__c, Contact__c, Event_custom__c, Event_Registration_Sub_Group__c, Participant_Email__c, Contact__r.Email, Contact__r.Name, Event_Ticket__r.Participation__c FROM Participant__c WHERE Event_Registration_Sub_Group__c IN :lockedSubGroupIds
                 ];
             //Part for getting QR codes logic
+            List<String> partisipantIds = new List<String>();
             for (Participant__c partisipant : partisipants) {
                 if (partisipant.Event_Ticket__r.Participation__c == 'Onsite') {
                     partisipant.QR_Code_needed__c = true;
+                    partisipantIds.add(partisipant.Id);
                 }
             }
             if (partisipants.size() > 0) {
                 update partisipants;
+            }
+            if (partisipantIds.size() > 0) {
+                ParticipantTriggerHelper.createBadges(partisipantIds);
             }
             
             List<Email_activity__c> emailActivities = new List<Email_activity__c>();

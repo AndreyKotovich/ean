@@ -383,13 +383,41 @@ public without sharing class GroupDetailsController {
 	//	define titles on Accordions
 	//	collect 'disabledEmails'	// REMOVERD
 	public static void genereteAccordionsAndSubmitButton() {
+
+		//	NEW LOGIC
+		List<Order__c> orders = !orderedSubGroupIds.isEmpty() ? [
+				SELECT Id, Name, Status__c, Event_Registration_Sub_Group__c
+				FROM Order__c
+				WHERE Event_Registration_Sub_Group__c IN :orderedSubGroupIds]
+			: new List<Order__c>();
+
+		Map<String, Order__c> orderSubGroupIdToOrder = new Map<String, Order__c>();
+		for (Order__c order : orders) {
+			orderSubGroupIdToOrder.put('' + order.Event_Registration_Sub_Group__c, order);
+		}
+
+
 		Integer index = 0;
 		for (String subGroupId : orderedSubGroupIds) {
 			SubGroupDetailsWrap subGroupDetails = subGroupIdToDetailsWrap.get(subGroupId);
 
 			//	define titles on Accordions
-			subGroupDetails.accordionTitle = 'Created: ' + subGroupDetails.createdDateString + ' ' + subGroupDetails.createdTimeString +
-			(subGroupDetails.disabledToEdit ? ' (Locked)' : '');
+			Boolean isOrderExist = orderSubGroupIdToOrder.containsKey(subGroupId);
+			Boolean isOrderPaid = isOrderExist;
+			Boolean isDisabledOrder = false;
+			//	NEW LOGIC
+			if (isOrderExist) {
+				Order__c order = orderSubGroupIdToOrder.get(subGroupId);
+				subGroupDetails.accordionTitle = 'Order: ' + order.Name + ' (Status: ' + (order.Status__c == 'Opened' ? 'Not Paid' : order.Status__c) + ')';
+				isOrderPaid = order.Status__c == 'Paid';
+				isDisabledOrder = order.Status__c == 'Cancelled' || order.Status__c == 'Closed';
+			} else {
+				subGroupDetails.accordionTitle = 'Order Not Found';
+			}
+
+			//	OLD LOGIC
+			// subGroupDetails.accordionTitle = 'Created: ' + subGroupDetails.createdDateString + ' ' + subGroupDetails.createdTimeString +
+			// (subGroupDetails.disabledToEdit ? ' (Locked)' : '');
 
 			//	logic for show button Submit to Lock Subgroup
 			//	if we have 'Undefined Participant' with empty Email in subgroup => then subgroup can't be locked
@@ -401,7 +429,7 @@ public without sharing class GroupDetailsController {
 				}
 			}
 			enableSubmitButton = !(!enableSubmitButton || subGroupDetails.disabledToEdit);
-			subGroupDetails.enableSubmitButton = enableSubmitButton;
+			subGroupDetails.enableSubmitButton = enableSubmitButton && !isDisabledOrder;
 
 			subGroupDetails.accordionIsExpanded = true;
 			subGroupDetails.accordionIndex = index;			//	CUSTOM ACCORDIONS

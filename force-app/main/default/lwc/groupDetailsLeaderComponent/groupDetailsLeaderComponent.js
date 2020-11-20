@@ -1,12 +1,12 @@
 import { LightningElement, api } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getGroupDetails from '@salesforce/apex/GroupDetailsLeaderController.getGroupDetails'
+import addButtonClick from '@salesforce/apex/GroupDetailsLeaderController.addButtonClick'
+import inviteButtonClick from '@salesforce/apex/GroupDetailsLeaderController.inviteButtonClick'
+import saveButtonClick from '@salesforce/apex/GroupDetailsLeaderController.saveButtonClick'
 
 export default class GroupDetailsLeaderComponent extends LightningElement {
 	@api recordId;				// required
-
-	_callbackResult;			// DELETE
-	_callbackResultString = '';	// DELETE
 
 	_errorMessage = 'Something went wrong, please contact your system administrator.';
 	_isSpinner = true;
@@ -39,29 +39,30 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 	_disabledEmailsThisGroup;
 	_disabledEmailsNotThisGroup;
 
+	_disabledGroupNames;
+
 	connectedCallback() {
 		this._isSpinner = true;
-		this._isStep1 = false;
 
 		getGroupDetails({params: {
 			groupId: this.recordId
 			}}).then(result=>{
-				console.log('result: ', result);
+				// console.log('result: ', result);
 				this._isSpinner = false;
 
 				if (!result.result) {
-					// console.log('result: ', result);
+					console.log('result: ', result);
 					this._isError = true;
 					return;
 				}
 
 				this._isError = false;
-				this._callbackResult = result;							// DELETE
-				this._callbackResultString = JSON.stringify(result);	// DELETE
 
 				this._disabledEmailsNotThisGroup = result.disabledEmailsNotThisGroup;
 				this._disabledEmailsThisGroup = result.disabledEmailsThisGroup;
 				this.combineDisabledEmails();
+				this._disabledGroupNames = result.disabledGroupNames;
+				console.log('this._disabledGroupNames: ', this._disabledGroupNames);
 
 				this._groupId = result.groupDetails.groupId;
 				this._groupName = result.groupDetails.groupName;
@@ -97,11 +98,6 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 	}
 
 	handleOngroupchangecontactemail(event) {
-		console.log('----------------------------');
-		// console.log('handleOngroupchangecontactemail this._disabledEmails: ', this._disabledEmails);
-		// console.log('handleOngroupchangecontactemail this._disabledEmailsNotThisGroup: ', this._disabledEmailsNotThisGroup);
-		// console.log('handleOngroupchangecontactemail this._disabledEmailsThisGroup: ', this._disabledEmailsThisGroup);
-
 		const subGroupId = event.detail.uniquekey1;
 		const participantIndex = event.detail.uniquekey2;
 		const eventType = event.detail.eventtype;
@@ -144,7 +140,8 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 			}
 
 			//	VALIDATION 2	INVALID EMAIL IS ENTERED
-			if ((!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(participantDetails.enteredText)) && eventType === 'onblur')) {
+			if (!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(participantDetails.enteredText))) {
+			// if ((!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(participantDetails.enteredText)) && eventType === 'onblur')) {
 				console.log('VALIDATION: EMAIL IS INVALID');
 
 				currentParticipant.error.hasError = true;
@@ -219,8 +216,8 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 			currentParticipant.error.message = '';
 
 			//	Order is Paid
+			currentParticipant.buttonsSettings.displaySaveDraftButton = true;
 			if (currentParticipant.buttonsSettings.enableAddInviteButtons) {
-				currentParticipant.buttonsSettings.displaySaveDraftButton = true;
 				currentParticipant.buttonsSettings.displayAddButton = false;
 				currentParticipant.buttonsSettings.displayInviteButton = false;
 				if (participantDetails.id) {
@@ -230,8 +227,6 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 				}
 			
 			//	Order is not Paid (so we can't send any emails to the Participant)
-			} else {
-				currentParticipant.buttonsSettings.displaySaveDraftButton = true;
 			}
 
 			tempSubGroupList[i].subGroupParticipantList[participantIndex] = currentParticipant;
@@ -246,7 +241,6 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 	}
 
 	processDuplicateParticipants() {
-		console.log('processDuplicateParticipants START this._subGroupList: ', this._subGroupList);
 		var tempSubGroupList = JSON.parse(JSON.stringify(this._subGroupList));
 
 		var emailToIsDuplicate = {};
@@ -261,9 +255,6 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 
 				let emailInMap = emailToIsDuplicate.hasOwnProperty(contactEmail);
 
-				console.log('' + contactEmail + ' = ', emailInMap);
-				// emailToIsDuplicate[contactEmail] = emailInMap;
-
 				if (emailInMap) {
 					emailToIsDuplicate[contactEmail] = true;
 				} else {
@@ -272,7 +263,6 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 			}
 		}
 
-		console.log('emailToIsDuplicate: ', emailToIsDuplicate);
 
 		for (var i = 0; i < tempSubGroupList.length; i++) {
 			for (var i2 = 0; i2 < tempSubGroupList[i].subGroupParticipantList.length; i2++) {
@@ -283,6 +273,8 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 				let hasDuplicates = emailToIsDuplicate[contactEmail];
 
 				if (!hasDuplicates) {
+
+					//	NO DUPLICATE
 					let currentErrorMessage = tempSubGroupList[i].subGroupParticipantList[i2].error.message;
 
 					if (currentErrorMessage === 'Duplicate email') {
@@ -290,21 +282,34 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 						tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettings = buttonsSettingsTemp;
 						tempSubGroupList[i].subGroupParticipantList[i2].error.hasError = false;
 						tempSubGroupList[i].subGroupParticipantList[i2].error.message = '';
+
+						// //	display buttons
+						// if (tempSubGroupList[i].subGroupParticipantList[i2].newContactEmail !== '')
+						// 	tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettings.displaySaveDraftButton = true;
+
+						// 	//	Order is Paid
+						// 	if (tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettings.enableAddInviteButtons) {
+						// 		tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettings.displayAddButton = false;
+						// 		tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettings.displayInviteButton = false;
+						// 		if (tempSubGroupList[i].subGroupParticipantList[i2].newContactId) {
+						// 			tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettings.displayAddButton = true;
+						// 		} else {
+						// 			tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettings.displayInviteButton = true;
+						// 		}
+						// 	}
 					}
 
 					let buttonsSettingsTemp = JSON.parse(JSON.stringify(tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettings));
 					tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettingsIntermediate = buttonsSettingsTemp;
 
 				} else {
-					console.log('1 DUPLICATE FOUND i: ', i);
-					console.log('2 DUPLICATE FOUND i2: ', i2);
 					let currentErrorMessage = tempSubGroupList[i].subGroupParticipantList[i2].error.message;
 
 					if (currentErrorMessage === 'Duplicate email') {
 						continue;
 					}
 
-					if (currentErrorMessage !== 'Already registered on this event') {
+					// if (currentErrorMessage !== 'Already registered on this event') {
 
 						//	NEW DUPLICATE FOUND
 						tempSubGroupList[i].subGroupParticipantList[i2].error.hasError = true;
@@ -312,7 +317,7 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 						tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettings.displaySaveDraftButton = false;
 						tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettings.displayAddButton = false;
 						tempSubGroupList[i].subGroupParticipantList[i2].buttonsSettings.displayInviteButton = false;
-					}
+					// }
 				}
 			}
 		}
@@ -320,7 +325,6 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 		this._subGroupList = tempSubGroupList;
 		this._disabledEmailsThisGroup = tempDisabledEmailsGroup;
 		this.combineDisabledEmails();
-		console.log('processDuplicateParticipants END this._subGroupList: ', this._subGroupList);
 	}
 
 
@@ -330,7 +334,6 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 	}
 
 	removeEmailFromDisabledEmails(emailString) {
-		console.log('removeEmailFromDisabledEmails START');
 		// if (emailString != '') {
 			var tempDisabledEmailsGroup = [];
 			// var alreadyRemoved = false;
@@ -342,43 +345,232 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 			}
 			this._disabledEmailsThisGroup = tempDisabledEmailsGroup;
 		// }
-		console.log('removeEmailFromDisabledEmails END');
 		this.combineDisabledEmails();
 	}
 
 	combineDisabledEmails() {
-		console.log('combineDisabledEmails START');
-		// console.log('combineDisabledEmails this._disabledEmailsNotThisGroup: ', this._disabledEmailsNotThisGroup);
-		// console.log('combineDisabledEmails this._disabledEmailsThisGroup: ', this._disabledEmailsThisGroup);
 		var tempDisabledEmails = [];
-		// tempDisabledEmails.push.apply(this._disabledEmailsNotThisGroup, this._disabledEmailsThisGroup);
-
 		tempDisabledEmails.push(...this._disabledEmailsNotThisGroup);
 		tempDisabledEmails.push(...this._disabledEmailsThisGroup);
 
 		this._disabledEmailsString = JSON.stringify(tempDisabledEmails);
 		this._disabledEmails = JSON.parse(this._disabledEmailsString);
-
-		// console.log('ZZZ1 tempDisabledEmails: ', tempDisabledEmails);
-		// console.log('ZZZ2 this._disabledEmailsString: ', this._disabledEmailsString);
-		// console.log('ZZZ3 this._disabledEmails: ', this._disabledEmails);
-		console.log('combineDisabledEmails END');
 	}
 
 	//	contact already exist at the community
-	handleAddClick() {
-		console.log('handleAddClick');
+	handleAddClick(event) {
+		var subGroupIndex = event.currentTarget.dataset.id;
+		var participantIndex = event.currentTarget.dataset.index;
+		var subGroupId = this._subGroupList[subGroupIndex].subGroupId;
+		var currentParticipant = JSON.parse(JSON.stringify(this._subGroupList[subGroupIndex].subGroupParticipantList[participantIndex]));
+
+		this._isSpinner = true;
+		console.log('handleAddClick currentParticipant: ', currentParticipant);
+
+		addButtonClick({params: {
+			subGroupId: subGroupId,
+			participantDetailsString: JSON.stringify(currentParticipant)
+			}}).then(result=>{
+
+				this._isSpinner = false;
+
+				if (result.result) {
+					this.showSuccessToast(result.message);
+				}
+				if (!result.result) {
+					console.log('handleAddClick result: ', result);
+					this.showErrorToast(result.message);
+					return;
+				}
+
+				var buttonsSettings = JSON.parse(JSON.stringify(currentParticipant.buttonsSettings));
+				buttonsSettings.enableAddInviteButtons = false;
+				buttonsSettings.displayAddButton = false;
+				buttonsSettings.displayInviteButton = false;
+				buttonsSettings.displaySaveDraftButton = false;
+				buttonsSettings.isDraftStatus = false;
+				buttonsSettings.isInvited = false;
+				buttonsSettings.isConfirmed = true;
+				currentParticipant.buttonsSettings = buttonsSettings;
+				currentParticipant.buttonsSettingsInitial = buttonsSettings;
+				currentParticipant.buttonsSettingsIntermediate = buttonsSettings;
+
+				var error = JSON.parse(JSON.stringify(currentParticipant.error));
+				error.hasError = false;
+				error.message = '';
+				currentParticipant.error = error;
+				currentParticipant.errorInitial = error;
+
+				if (!currentParticipant.oldContactEmail && currentParticipant.newContactEmail) this._totalGroupExistingParticipants++;
+
+				currentParticipant.oldContactId = '' + currentParticipant.newContactId;
+				currentParticipant.oldContactName = '' + currentParticipant.newContactName;
+				currentParticipant.oldContactEmail = '' + currentParticipant.newContactEmail;
+
+				currentParticipant.disabledToEdit = true;
+				currentParticipant.invitationStatusInGroup = 'Confirmed';
+
+				this._subGroupList[subGroupIndex].subGroupParticipantList[participantIndex] = currentParticipant;
+			})
+			.catch(error=>{
+				console.log('groupDetailsLeaderComponent error: ', error);
+				console.log('handleAddClick Error: ' + JSON.stringify(error));
+				this._isError = true;
+
+			})
+
 	}
 
 	//	contact not exist at the community
-	handleInviteClick() {
-		console.log('handleAddClick');
+	handleInviteClick(event) {
+		var subGroupIndex = event.currentTarget.dataset.id;
+		var participantIndex = event.currentTarget.dataset.index;
+		var subGroupId = this._subGroupList[subGroupIndex].subGroupId;
+		var currentParticipant = JSON.parse(JSON.stringify(this._subGroupList[subGroupIndex].subGroupParticipantList[participantIndex]));
+
+		this._isSpinner = true;
+
+		inviteButtonClick({params: {
+			subGroupId: subGroupId,
+			participantDetailsString: JSON.stringify(currentParticipant)
+			}}).then(result=>{
+				this._isSpinner = false;
+
+				if (result.result) {
+					this.showSuccessToast(result.message);
+				}
+				if (!result.result) {
+					console.log('handleInviteClick result: ', result);
+					this.showErrorToast(result.message);
+					return;
+				}
+				// this.connectedCallback();
+
+				var buttonsSettings = JSON.parse(JSON.stringify(currentParticipant.buttonsSettings));
+				buttonsSettings.enableAddInviteButtons = false;
+				buttonsSettings.displayAddButton = true;
+				buttonsSettings.displayInviteButton = false;
+				buttonsSettings.displaySaveDraftButton = false;
+				buttonsSettings.isDraftStatus = false;
+				buttonsSettings.isInvited = true;
+				buttonsSettings.isConfirmed = false;
+				currentParticipant.buttonsSettings = buttonsSettings;
+				currentParticipant.buttonsSettingsInitial = buttonsSettings;
+				currentParticipant.buttonsSettingsIntermediate = buttonsSettings;
+
+				var error = JSON.parse(JSON.stringify(currentParticipant.error));
+				error.hasError = false;
+				error.message = '';
+				currentParticipant.error = error;
+				currentParticipant.errorInitial = error;
+
+				if (!currentParticipant.oldContactEmail && currentParticipant.newContactEmail) this._totalGroupExistingParticipants++;
+
+				currentParticipant.oldContactId = '' + currentParticipant.newContactId;
+				currentParticipant.oldContactName = '' + currentParticipant.newContactName;
+				currentParticipant.oldContactEmail = '' + currentParticipant.newContactEmail;
+
+				currentParticipant.disabledToEdit = true;
+				currentParticipant.invitationStatusInGroup = 'Invited';
+
+				this._subGroupList[subGroupIndex].subGroupParticipantList[participantIndex] = currentParticipant;
+			})
+			.catch(error=>{
+				console.log('groupDetailsLeaderComponent error: ', error);
+				console.log('inviteButtonClick Error: ' + JSON.stringify(error));
+				this._isError = true;
+
+			})
+
 	}
 
 	//	save as draft (can be changed in future)
-	handleSaveClick() {
-		console.log('handleAddClick');
+	handleSaveClick(event) {
+		var subGroupIndex = event.currentTarget.dataset.id;
+		var participantIndex = event.currentTarget.dataset.index;
+		var subGroupId = this._subGroupList[subGroupIndex].subGroupId;
+		var currentParticipant = JSON.parse(JSON.stringify(this._subGroupList[subGroupIndex].subGroupParticipantList[participantIndex]));
+
+		this._isSpinner = true;
+
+		saveButtonClick({params: {
+			subGroupId: subGroupId,
+			participantDetailsString: JSON.stringify(currentParticipant)
+			}}).then(result=>{
+				this._isSpinner = false;
+
+				if (result.result) {
+					this.showSuccessToast(result.message);
+				}
+				if (!result.result) {
+					console.log('handleSaveClick result: ', result);
+					this.showErrorToast(result.message);
+					return;
+				}
+
+				var buttonsSettings = JSON.parse(JSON.stringify(currentParticipant.buttonsSettings));
+				if (buttonsSettings.enableAddInviteButtons) {	// order is paid
+					if (currentParticipant.newContactId) buttonsSettings.displayAddButton = true;
+					if (!currentParticipant.newContactId) buttonsSettings.displayInviteButton = true;
+				}
+				// buttonsSettings.enableAddInviteButtons = true;	// order is paid
+
+				buttonsSettings.displaySaveDraftButton = false;
+				buttonsSettings.isDraftStatus = true;
+				buttonsSettings.isInvited = false;
+				buttonsSettings.isConfirmed = false;
+				currentParticipant.buttonsSettings = buttonsSettings;
+				currentParticipant.buttonsSettingsInitial = buttonsSettings;
+				currentParticipant.buttonsSettingsIntermediate = buttonsSettings;
+
+				var error = JSON.parse(JSON.stringify(currentParticipant.error));
+				error.hasError = false;
+				error.message = '';
+				currentParticipant.error = error;
+				currentParticipant.errorInitial = error;
+
+				if (!currentParticipant.oldContactEmail && currentParticipant.newContactEmail) this._totalGroupExistingParticipants++;
+				if (currentParticipant.oldContactEmail && !currentParticipant.newContactEmail) this._totalGroupExistingParticipants--;
+
+				currentParticipant.oldContactId = '' + currentParticipant.newContactId;
+				currentParticipant.oldContactName = '' + currentParticipant.newContactName;
+				currentParticipant.oldContactEmail = '' + currentParticipant.newContactEmail;
+
+				currentParticipant.disabledToEdit = false;
+				currentParticipant.invitationStatusInGroup = 'Draft';
+
+				this._subGroupList[subGroupIndex].subGroupParticipantList[participantIndex] = currentParticipant;
+			})
+			.catch(error=>{
+				console.log('groupDetailsLeaderComponent error: ', error);
+				console.log('saveButtonClick Error: ' + JSON.stringify(error));
+				this._isError = true;
+			})
 	}
 
+	handleAddMoreTicketsClick() {
+		var newURL = window.location.protocol + "//" + window.location.host + "/s/event-registration" + "?ei=" + this._eventId + "&gi=" + this._groupId;
+		window.location.replace(newURL);
+	}
+
+	showSuccessToast(msg) {
+		const evt = new ShowToastEvent({
+			title: 'Success',
+			message: msg,
+			variant: 'success',
+			mode: 'dismissable'
+		});
+		this.dispatchEvent(evt);
+	}
+
+	showErrorToast(msg) {
+		const evt = new ShowToastEvent({
+			title: 'Error',
+			message: msg,
+			variant: 'error',
+			mode: 'dismissable'
+		});
+		this.dispatchEvent(evt);
+	}
 
 }

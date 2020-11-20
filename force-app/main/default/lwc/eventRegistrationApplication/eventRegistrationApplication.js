@@ -78,8 +78,10 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         isPartInit: false,
         participantsAmount: 0,
         initializedParticipants: []
-    }
+    };
     participantRole = '';
+    freeTicketAmount = 0;
+    hasOnlineTickets = false; // indicates if the any of selected tickets is online
 
     connectedCallback() {
         this.updateProgressBar();
@@ -223,6 +225,8 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         this.selectedDates = [];
         this.participants = {};
         this.upgradeParticipant = {};
+        this.freeTicketAmount = 0;
+        this.hasOnlineTickets = false;
     }
 
     onNextRegType(event) {
@@ -247,11 +251,19 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         this.participantsInitialization = event.detail.groupIndividualTickets;
         this.participantRole = event.detail.participantRole;
         this.userInfo = event.detail.userInfo;
+        this.freeTicketAmount = event.detail.freeAmount;
+        this.hasOnlineTickets = event.detail.isOnlineTicket;
         this.onNext();
     }
 
     onParticipantInitialization(event){
         this.participantsInitialization = event.detail.participantsInitialization;
+
+        for(let participant of this.participantsInitialization.initializedParticipants) {
+            this.hasOnlineTickets = participant.isOnlineTicket;
+            if(this.hasOnlineTickets) break;
+        }
+
         this.onNext();
     }
 
@@ -279,15 +291,15 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                         ticketId: this.selectedTicket,
                         quantity: this.ticketsAmount,
                         amount: this.priceTicket,
-                        id: this.ticketId
+                        id: this.ticketId,
+                        freeTicketAmount: this.freeTicketAmount
                     }
                 );
             }
         }
 
-        if(this.registrationType === 'group' || this.registrationType === 'ipr' && this.participantsInitialization.isPartInit){
+        if(this.registrationType === 'group' && this.participantsInitialization.isPartInit){
             let uniqTickets = {};
-
 
             for(let participant of this.participantsInitialization.initializedParticipants){
 
@@ -450,9 +462,11 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                             obj.Event_Exhibitor__c = this.userInfo.iprInfo.Id
                         }
 
+                        let price = this.freeTicketAmount > 0 && i+1 <= this.freeTicketAmount ? 0 : this.priceTicket;
+
                         participantPriceArr.push({
                             participant: obj,
-                            price: this.priceTicket
+                            price: price
                         });
                     }
 

@@ -112,7 +112,14 @@ export default class ErSummarize extends LightningElement {
                     for (let ticket of this._selections.selectedTickets) {
                         if (!results[1][ticket.ticketId]) continue;
 
-                        let amount = ticket.amount * ticket.quantity;
+                        let amount;
+
+                        if(ticket.freeTicketAmount){
+                            let rate = ticket.freeTicketAmount <= ticket.quantity ? ticket.quantity - ticket.freeTicketAmount : 0;
+                            amount = ticket.amount * rate;
+                        } else {
+                            amount = ticket.amount * ticket.quantity;
+                        }
 
                         this.ticketsTable.push(
                             {

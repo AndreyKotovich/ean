@@ -31,6 +31,11 @@
                 <label>Pending</label>
             </value>
             <value>
+                <fullName>Registered Draft</fullName>
+                <default>false</default>
+                <label>Registered Draft</label>
+            </value>
+            <value>
                 <fullName>Status 1</fullName>
                 <default>false</default>
                 <isActive>false</isActive>

@@ -22,12 +22,140 @@
         </value>
     </processMetadataValues>
     <processType>Flow</processType>
+    <recordCreates>
+        <name>Create_Visa_Letter</name>
+        <label>Create Visa Letter</label>
+        <locationX>776</locationX>
+        <locationY>686</locationY>
+        <inputAssignments>
+            <field>Authority__c</field>
+            <value>
+                <elementReference>Authority</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Date_of_Birth__c</field>
+            <value>
+                <elementReference>Date_of_Birth</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Date_of_Expiry__c</field>
+            <value>
+                <elementReference>Date_of_Expiry</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Date_of_Issue__c</field>
+            <value>
+                <elementReference>Date_of_Issue</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Event_Participation__c</field>
+            <value>
+                <elementReference>Get_Event_Participation.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>First_Name__c</field>
+            <value>
+                <elementReference>First_Name</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Last_Name__c</field>
+            <value>
+                <elementReference>Last_Name</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Nationality__c</field>
+            <value>
+                <elementReference>Nationality</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Official_City__c</field>
+            <value>
+                <elementReference>Official_City</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Official_Country__c</field>
+            <value>
+                <elementReference>Official_Country</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Official_State_Province__c</field>
+            <value>
+                <elementReference>Official_State_Province</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Official_Street__c</field>
+            <value>
+                <elementReference>Official_Street</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Official_ZIP_Postal_Code__c</field>
+            <value>
+                <elementReference>Official_ZIP_Postal_Code</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Passport_Number__c</field>
+            <value>
+                <elementReference>Passport_Number</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Place_of_Birth__c</field>
+            <value>
+                <elementReference>Place_of_Birth</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Sex__c</field>
+            <value>
+                <elementReference>Sex</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Visa_Letter__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordLookups>
+        <name>Get_Contact</name>
+        <label>Get Contact</label>
+        <locationX>776</locationX>
+        <locationY>326</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Visa_Letter_Information</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Event_Participation.Contact__r.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Contact</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <recordLookups>
         <name>Get_Event_Participation</name>
         <label>Get Event Participation</label>
         <locationX>776</locationX>
         <locationY>206</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Contact</targetReference>
+        </connector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -40,6 +168,169 @@
         <object>Participant__c</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <screens>
+        <name>Visa_Letter_Information</name>
+        <label>Visa Letter Information</label>
+        <locationX>776</locationX>
+        <locationY>446</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Visa_Letter_Information_2</targetReference>
+        </connector>
+        <fields>
+            <name>Last_Name</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>Get_Contact.LastName</elementReference>
+            </defaultValue>
+            <fieldText>Last Name</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>First_Name</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>Get_Contact.FirstName</elementReference>
+            </defaultValue>
+            <fieldText>First Name</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Official_Country</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>Get_Contact.MailingCountry</elementReference>
+            </defaultValue>
+            <fieldText>Official Country</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Official_State_Province</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>Get_Contact.MailingState</elementReference>
+            </defaultValue>
+            <fieldText>Official State/Province</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>false</isRequired>
+        </fields>
+        <fields>
+            <name>Official_ZIP_Postal_Code</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>Get_Contact.MailingPostalCode</elementReference>
+            </defaultValue>
+            <fieldText>Official ZIP/Postal Code</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Official_City</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>Get_Contact.MailingCity</elementReference>
+            </defaultValue>
+            <fieldText>Official City</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Official_Street</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>Get_Contact.MailingStreet</elementReference>
+            </defaultValue>
+            <fieldText>Official Street</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Visa_Letter_Information_2</name>
+        <label>Visa Letter Information 2</label>
+        <locationX>776</locationX>
+        <locationY>566</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Create_Visa_Letter</targetReference>
+        </connector>
+        <fields>
+            <name>Passport_Number</name>
+            <dataType>String</dataType>
+            <fieldText>Passport Number</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Nationality</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>Get_Contact.Nationality__c</elementReference>
+            </defaultValue>
+            <fieldText>Nationality</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Place_of_Birth</name>
+            <dataType>String</dataType>
+            <fieldText>Place of Birth</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Sex</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>Get_Contact.Gender__c</elementReference>
+            </defaultValue>
+            <fieldText>Sex</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Authority</name>
+            <dataType>String</dataType>
+            <fieldText>Authority</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Date_of_Birth</name>
+            <dataType>Date</dataType>
+            <defaultValue>
+                <elementReference>Get_Contact.Birthdate</elementReference>
+            </defaultValue>
+            <fieldText>Date of Birth</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Date_of_Issue</name>
+            <dataType>Date</dataType>
+            <fieldText>Date of Issue</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Date_of_Expiry</name>
+            <dataType>Date</dataType>
+            <fieldText>Date of Expiry</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
     <start>
         <locationX>650</locationX>
         <locationY>48</locationY>

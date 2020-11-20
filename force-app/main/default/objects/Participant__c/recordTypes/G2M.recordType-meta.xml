@@ -150,5 +150,9 @@
             <fullName>Registered</fullName>
             <default>false</default>
         </values>
+        <values>
+            <fullName>Registered Draft</fullName>
+            <default>false</default>
+        </values>
     </picklistValues>
 </RecordType>

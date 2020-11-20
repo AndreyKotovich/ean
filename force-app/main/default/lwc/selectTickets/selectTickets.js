@@ -105,7 +105,7 @@ export default class SelectTickets extends LightningElement {
             let availableParticipantNumber = this.eanEvent.Max_Participants__c - this.eanEvent.Registrations__c;
             this.availableParticipantNumber = availableParticipantNumber > 150 ? 150 : availableParticipantNumber;
         } else {
-            this.availableParticipantNumber = null;
+            this.availableParticipantNumber = 150;
         }
 
         let promises = [
@@ -357,7 +357,7 @@ export default class SelectTickets extends LightningElement {
         let chosenTicket = this.ticketsRadio.find(e => {
             return e.id === selectedTicket;
         });
-        console.log('chosenTicket ' , chosenTicket);
+        console.log('chosenTicket ' , JSON.stringify(chosenTicket));
         this._priceTicket = chosenTicket.price;
         this.ticketId = chosenTicket.tickedId;
         console.log(selectedTicket);
@@ -379,8 +379,10 @@ export default class SelectTickets extends LightningElement {
 
         if (this.nextClickValidation()) {
             let eventTicket = this.allEventTickets.find(obj => obj.Id === this._selectedTicket);
-
+            console.log('eventTicket', JSON.stringify(eventTicket));
             let participantRole = '';
+            let isOnlineTicket = eventTicket && eventTicket.Participation__c && eventTicket.Participation__c === 'Online';
+            console.log('hasOnlineTickets', isOnlineTicket);
 
             if (this.registrationType === 'group') {
                 participantRole = 'Group_Participant';
@@ -412,7 +414,9 @@ export default class SelectTickets extends LightningElement {
                     participantRole: participantRole,
                     ticketName: !!eventTicket ? eventTicket.Ticket__r.Name : '',
                     groupIndividualTickets: this._groupIndividualTickets,
-                    userInfo: this._userInfo
+                    userInfo: this._userInfo,
+                    freeAmount: this.registrationType === 'ipr' ? this.availableFreeIPRAmount : 0,
+                    isOnlineTicket: isOnlineTicket
                 }
             });
             this.dispatchEvent(selectEvent);

@@ -2942,7 +2942,7 @@
             <targetReference>Select_Event_Screen</targetReference>
         </connector>
     </start>
-    <status>Draft</status>
+    <status>Active</status>
     <variables>
         <name>AbstractAuthor</name>
         <dataType>SObject</dataType>
