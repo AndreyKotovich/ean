@@ -1,4 +1,7 @@
 public class InvoicePDFGenerator {
+
+    public static final String SYSTEM_GROUP_CONTACT_NAME = 'Undefined Participant';
+
     @Future(Callout = true)
     public static void generateInvoicePDFs(List<Id> orderIds) {
         List<ContentVersion> attachments = new List<ContentVersion>();
@@ -264,10 +267,14 @@ public class InvoicePDFGenerator {
     }
 
     public static void updateParticipantsStatus(List<Id> orderIds){
+
+        List<Contact> undefinedParticipant = [SELECT Id FROM Contact WHERE Name =:SYSTEM_GROUP_CONTACT_NAME LIMIT 1];
+        Id undefinedParticipantId = undefinedParticipant.isEmpty() ? null : undefinedParticipant[0].Id;
+
         List<Order__c> ordersWithParticipationItems = [
                 SELECT Id, Status__c,
                 (
-                        SELECT Id, Session_Participation__r.Status__c, Event_Participation__r.Status__c
+                        SELECT Id, Session_Participation__r.Status__c, Event_Participation__r.Status__c, Event_Participation__r.Contact__c
                         FROM Order_Items__r
                         WHERE Session_Participation__c != NULL
                         OR Event_Participation__c != NULL
@@ -281,9 +288,18 @@ public class InvoicePDFGenerator {
 
         for(Order__c o : ordersWithParticipationItems){
             for(Order_Item__c oi : o.Order_Items__r){
-                if(oi.Event_Participation__c != null && oi.Event_Participation__r.Status__c == 'Pending'){
-                   eventParticipants.add(new Participant__c(Id = oi.Event_Participation__c, Status__c = 'Registered'));
+
+                //  OLD LOGIC
+                // if(oi.Event_Participation__c != null && oi.Event_Participation__r.Status__c == 'Pending'){
+                //    eventParticipants.add(new Participant__c(Id = oi.Event_Participation__c, Status__c = 'Registered'));
+                // }
+
+                //  NEW LOGIC
+                if(oi.Event_Participation__c != null && oi.Event_Participation__r.Status__c == 'Pending') {
+                    String newStatus = oi.Event_Participation__r.Contact__c != undefinedParticipantId ? 'Registered' : 'Registered Draft';
+                    eventParticipants.add(new Participant__c(Id = oi.Event_Participation__c, Status__c = newStatus));
                 }
+
                 if(oi.Session_Participation__c != null && oi.Session_Participation__r.Status__c == 'Pending'){
                     sessionParticipants.add(new Session_Participation__c(Id = oi.Session_Participation__c, Status__c = 'Registered'));
                 }

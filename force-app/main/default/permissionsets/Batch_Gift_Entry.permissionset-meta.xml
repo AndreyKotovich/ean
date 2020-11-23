@@ -2998,11 +2998,6 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Participant__c.Invitation_Status_In_Group__c</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
         <field>Participant__c.Join_Time__c</field>
         <readable>false</readable>
     </fieldPermissions>

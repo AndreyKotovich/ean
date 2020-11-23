@@ -1,0 +1,14 @@
+<apex:page id="BankTransferCredentialsPdf" renderAs="pdf">
+    <html>
+        <head>
+            <style>
+                @page {
+                    size: A5;
+                }
+            </style>
+        </head>
+    <body>
+        <c:BankTransferRegistration />
+    </body>
+    </html>
+</apex:page>

@@ -4,6 +4,7 @@ import getGroupDetails from '@salesforce/apex/GroupDetailsLeaderController.getGr
 import addButtonClick from '@salesforce/apex/GroupDetailsLeaderController.addButtonClick'
 import inviteButtonClick from '@salesforce/apex/GroupDetailsLeaderController.inviteButtonClick'
 import saveButtonClick from '@salesforce/apex/GroupDetailsLeaderController.saveButtonClick'
+import groupNameSave from '@salesforce/apex/GroupDetailsLeaderController.groupNameSave'
 
 export default class GroupDetailsLeaderComponent extends LightningElement {
 	@api recordId;				// required
@@ -14,6 +15,7 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 
 	_invitedMessage = 'Successfully invited to the community and to the event';
 	_confirmedMessage = 'Successfully registered for the event';
+	_warningMessage = 'Will be automatically registered for the event after payment';
 
 	_groupId = '';
 	_eventId = '';
@@ -39,7 +41,13 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 	_disabledEmailsThisGroup;
 	_disabledEmailsNotThisGroup;
 
+	_groupNameReservedMessage = 'Already reserved';
+	_groupEmptyMessage = 'Enter Group Name';
+	_isGroupNameReserved;
+	_isGroupNameEmpty;
+
 	_disabledGroupNames;
+	_displayGroupNameButtons;
 
 	connectedCallback() {
 		this._isSpinner = true;
@@ -78,6 +86,9 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 
 				this._displayAddMoreTicketsButton = result.displayAddMoreTicketsButton;
 				this._subGroupList = result.subGroupList;
+				this._isGroupNameReserved = false;
+				this._isGroupNameEmpty = false;
+				this._displayGroupNameButtons = false;
 
 				this.processDuplicateParticipants();
 			})
@@ -126,6 +137,7 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 				currentParticipant.buttonsSettings.displayInviteButton = false;
 				currentParticipant.buttonsSettings.isInvited = false;
 				currentParticipant.buttonsSettings.isConfirmed = false;
+				currentParticipant.buttonsSettings.displayWarningMessage = false;
 				currentParticipant.error = JSON.parse(JSON.stringify(currentParticipant.errorInitial));
 
 				if (currentParticipant.oldContactEmail !== '') currentParticipant.buttonsSettings.displaySaveDraftButton = true;
@@ -152,6 +164,7 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 				currentParticipant.buttonsSettings.displayInviteButton = false;
 				currentParticipant.buttonsSettings.isInvited = false;
 				currentParticipant.buttonsSettings.isConfirmed = false;
+				currentParticipant.buttonsSettings.displayWarningMessage = false;
 
 				tempSubGroupList[i].subGroupParticipantList[participantIndex] = currentParticipant;
 				this._subGroupList = tempSubGroupList;
@@ -177,6 +190,7 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 				currentParticipant.buttonsSettings.displayInviteButton = false;
 				currentParticipant.buttonsSettings.isInvited = false;
 				currentParticipant.buttonsSettings.isConfirmed = false;
+				currentParticipant.buttonsSettings.displayWarningMessage = false;
 	
 				tempSubGroupList[i].subGroupParticipantList[participantIndex] = currentParticipant;
 				this._subGroupList = tempSubGroupList;
@@ -203,6 +217,7 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 			if (this._disabledEmailsThisGroup.includes(participantDetails.enteredText)) {
 				console.log('VALIDATION: DUPLICATE EMAIL');
 
+				currentParticipant.buttonsSettings.displayWarningMessage = false;
 				tempSubGroupList[i].subGroupParticipantList[participantIndex] = currentParticipant;
 				this._subGroupList = tempSubGroupList;
 				this.processDuplicateParticipants();
@@ -225,8 +240,14 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 				} else {
 					currentParticipant.buttonsSettings.displayInviteButton = true;
 				}
-			
-			//	Order is not Paid (so we can't send any emails to the Participant)
+			}
+
+			if (currentParticipant.buttonsSettings.enableWarningMessage) {
+				if (participantDetails.id) {
+					currentParticipant.buttonsSettings.displayWarningMessage = true;
+				} else {
+					currentParticipant.buttonsSettings.displayWarningMessage = false;
+				}
 			}
 
 			tempSubGroupList[i].subGroupParticipantList[participantIndex] = currentParticipant;
@@ -388,7 +409,7 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 				buttonsSettings.displayAddButton = false;
 				buttonsSettings.displayInviteButton = false;
 				buttonsSettings.displaySaveDraftButton = false;
-				buttonsSettings.isDraftStatus = false;
+				// buttonsSettings.isDraftStatus = false;
 				buttonsSettings.isInvited = false;
 				buttonsSettings.isConfirmed = true;
 				currentParticipant.buttonsSettings = buttonsSettings;
@@ -451,7 +472,7 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 				buttonsSettings.displayAddButton = true;
 				buttonsSettings.displayInviteButton = false;
 				buttonsSettings.displaySaveDraftButton = false;
-				buttonsSettings.isDraftStatus = false;
+				// buttonsSettings.isDraftStatus = false;
 				buttonsSettings.isInvited = true;
 				buttonsSettings.isConfirmed = false;
 				currentParticipant.buttonsSettings = buttonsSettings;
@@ -513,10 +534,16 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 					if (currentParticipant.newContactId) buttonsSettings.displayAddButton = true;
 					if (!currentParticipant.newContactId) buttonsSettings.displayInviteButton = true;
 				}
+
+				if (buttonsSettings.enableWarningMessage) {
+					if (currentParticipant.newContactId) buttonsSettings.displayWarningMessage = true;
+					if (!currentParticipant.newContactId) buttonsSettings.displayWarningMessage = false;
+				}
+
 				// buttonsSettings.enableAddInviteButtons = true;	// order is paid
 
 				buttonsSettings.displaySaveDraftButton = false;
-				buttonsSettings.isDraftStatus = true;
+				// buttonsSettings.isDraftStatus = true;
 				buttonsSettings.isInvited = false;
 				buttonsSettings.isConfirmed = false;
 				currentParticipant.buttonsSettings = buttonsSettings;
@@ -551,6 +578,68 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 	handleAddMoreTicketsClick() {
 		var newURL = window.location.protocol + "//" + window.location.host + "/s/event-registration" + "?ei=" + this._eventId + "&gi=" + this._groupId;
 		window.location.replace(newURL);
+	}
+
+	handleChangeGroupName(evt) {
+		this._groupName = evt.target.value;
+
+		if (!this._groupName) {
+			this._displayGroupNameButtons = false;
+			this._isGroupNameEmpty = true;
+			this._isGroupNameReserved = false;
+			return;
+		}
+
+		if (this._groupName === this._groupNameInitial) {
+			this._displayGroupNameButtons = false;
+			this._isGroupNameEmpty = false;
+			this._isGroupNameReserved = false;
+			return;
+		}
+
+		if (this._disabledGroupNames.includes(this._groupName)) {
+			this._displayGroupNameButtons = false;
+			this._isGroupNameEmpty = false;
+			this._isGroupNameReserved = true;
+			return;
+		}
+
+		this._displayGroupNameButtons = true;
+	}
+
+	handleGroupNameSave() {
+		groupNameSave({params: {
+			groupId: this._groupId,
+			groupName: this._groupName,
+			}}).then(result=>{
+				this._isSpinner = false;
+
+				if (result.result) {
+					this.showSuccessToast(result.message);
+				}
+				if (!result.result) {
+					console.log('handleGroupNameSave result: ', result);
+					this.showErrorToast(result.message);
+					return;
+				}
+				this._displayGroupNameButtons = false;
+				this._isGroupNameEmpty = false;
+				this._isGroupNameReserved = false;
+				this._groupNameInitial = '' + this._groupName;
+
+			})
+			.catch(error=>{
+				console.log('groupDetailsLeaderComponent error: ', error);
+				console.log('handleGroupNameSave Error: ' + JSON.stringify(error));
+				this._isError = true;
+			})
+	}
+
+	handleGroupNameCancel() {
+		this._groupName = '' + this._groupNameInitial;
+		this._displayGroupNameButtons = false;
+		this._isGroupNameEmpty = false;
+		this._isGroupNameReserved = false;
 	}
 
 	showSuccessToast(msg) {

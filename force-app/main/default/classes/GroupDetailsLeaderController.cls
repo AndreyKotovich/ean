@@ -2,11 +2,12 @@ public without sharing class GroupDetailsLeaderController {
 
 	public static final String SYSTEM_GROUP_CONTACT_NAME = 'Undefined Participant';
 
+	public static String undefinedParticipantId = '';
+
 	//	COMMUNITY PAGE: GROUP DETAILS
 	@AuraEnabled
 	public static Map<String, Object> getGroupDetails(Map<String, Object> params) {
 		try {
-
 			String groupId = params.containsKey('groupId') ? String.valueOf(params.get('groupId')) : '';
 
 			//	FIRST PRIORITY
@@ -22,6 +23,9 @@ public without sharing class GroupDetailsLeaderController {
 					'groupId' => groupId, 'communityUser' => communityUser, 'contactRecordId' => contactRecordId,
 					'result' => false, 'message' => 'Leader Contact or Group not found.'
 				};
+
+        	List<Contact> undefinedParticipant = [SELECT Id FROM Contact WHERE Name =:SYSTEM_GROUP_CONTACT_NAME LIMIT 1];
+        	undefinedParticipantId = undefinedParticipant.isEmpty() ? '' : '' + undefinedParticipant[0].Id;
 
 			//	SOQL
 			getGroupParticipants(contactRecordId, groupId);
@@ -95,6 +99,8 @@ public without sharing class GroupDetailsLeaderController {
 
 	public static void getGroupParticipants(String contactRecordId, String groupId) {
 		Id g2mRT = Schema.SObjectType.Participant__c.getRecordTypeInfosByDeveloperName().get('G2M').getRecordTypeId();
+
+		Set<String> validStatuses = new Set<String>{'Pending', 'Registered', 'Registered Draft'};
 		groupParticipants = [
 			SELECT Id, Name, Participant_Email__c, Contact__c, Contact__r.Name, Contact__r.Email,
 				Event_custom__c, Event_custom__r.Name, Event_custom__r.End_Time__c, Event_custom__r.Start_Time__c,
@@ -110,8 +116,7 @@ public without sharing class GroupDetailsLeaderController {
 			AND Event_Registration_Sub_Group__r.Event_Registration_Group__c =:groupId
 			AND Contact__c != null
 			AND Event_custom__c != null
-			AND Status__c != 'Canceled'
-			AND Status__c != 'Participated'
+			AND Status__c IN :validStatuses
 			ORDER BY Event_Registration_Sub_Group__r.CreatedDate, Status__c ASC NULLS LAST, Participant_Email__c DESC NULLS LAST
 			// ORDER BY Event_Registration_Sub_Group__r.CreatedDate, Invitation_Status_In_Group__c DESC NULLS LAST, Participant_Email__c DESC NULLS LAST
 		];
@@ -135,18 +140,17 @@ public without sharing class GroupDetailsLeaderController {
 			if (!String.isBlank(subGroupParticipant.oldContactEmail)) disabledEmailsThisGroup.add(subGroupParticipant.oldContactEmail);
 
 			// Boolean isDraftStatus = String.isBlank(participant.Invitation_Status_In_Group__c) || participant.Invitation_Status_In_Group__c == 'Draft';
-			Boolean isDraftStatus = String.isBlank(participant.Status__c) || participant.Status__c == 'Pending';
+			Boolean isDraftStatus = String.isBlank(participant.Status__c) || participant.Status__c == 'Pending' || participant.Status__c == 'Registered Draft';
 			ParticipantButtonsWrap buttonsSettings = new ParticipantButtonsWrap();
 			buttonsSettings.enableAddInviteButtons = true;
 			buttonsSettings.displayAddButton = isDraftStatus && !String.isBlank(subGroupParticipant.oldContactName);
 			buttonsSettings.displayInviteButton = isDraftStatus && String.isBlank(subGroupParticipant.oldContactName) && !String.isBlank(subGroupParticipant.oldContactEmail);
 			buttonsSettings.displaySaveDraftButton = false;
-			buttonsSettings.isDraftStatus = isDraftStatus;	// ???
+			// buttonsSettings.isDraftStatus = isDraftStatus;
 			// buttonsSettings.isInvited = participant.Invitation_Status_In_Group__c == 'Invited';
 			// buttonsSettings.isConfirmed = participant.Invitation_Status_In_Group__c == 'Confirmed';
 			buttonsSettings.isInvited = participant.Status__c == 'Registered' && participant.Contact__r.Name == SYSTEM_GROUP_CONTACT_NAME;
 			buttonsSettings.isConfirmed = participant.Status__c == 'Registered' && participant.Contact__r.Name != SYSTEM_GROUP_CONTACT_NAME;
-
 
 			subGroupParticipant.buttonsSettings = buttonsSettings;
 			subGroupParticipant.buttonsSettingsInitial = buttonsSettings;
@@ -210,7 +214,7 @@ public without sharing class GroupDetailsLeaderController {
 
 			if (isOrderExist) {
 				Order__c order = orderSubGroupIdToOrder.get(subGroupId);
-				subGroupDetails.accordionTitle = 'Order: ' + order.Name + ' (Status: ' + (order.Status__c == 'Opened' ? 'Not Paid' : order.Status__c) + ')';
+				subGroupDetails.accordionTitle = 'Order: ' + order.Name + ' (Status: ' + (order.Status__c == 'Opened' ? 'Payment Pending' : order.Status__c) + ')';
 				isOrderPaid = order.Status__c == 'Paid';
 				isDisabledOrder = order.Status__c == 'Cancelled' || order.Status__c == 'Closed';
 			} else {
@@ -222,6 +226,9 @@ public without sharing class GroupDetailsLeaderController {
 			for (SubGroupParticipantWrap subGroupParticipant : subGroupParticipantList) {
 
 				subGroupParticipant.buttonsSettings.enableAddInviteButtons = isOrderPaid;
+
+				subGroupParticipant.buttonsSettings.enableWarningMessage = !isOrderPaid;
+				subGroupParticipant.buttonsSettings.displayWarningMessage = !String.isBlank(subGroupParticipant.oldContactId) && subGroupParticipant.oldContactId != undefinedParticipantId;
 
 				ErrorWrap error = new ErrorWrap();
 				error.hasError = false;
@@ -244,9 +251,9 @@ public without sharing class GroupDetailsLeaderController {
 				subGroupParticipant.buttonsSettingsInitial = subGroupParticipant.buttonsSettings;
 				subGroupParticipant.buttonsSettingsIntermediate = subGroupParticipant.buttonsSettings;
 
+				// if (subGroupParticipant.buttonsSettings.isDraftStatus) accordionIsExpanded = true;
+				if (!subGroupParticipant.disabledToEdit) accordionIsExpanded = true;
 				if (isDisabledOrder) subGroupParticipant.disabledToEdit = true;
-
-				if (subGroupParticipant.buttonsSettings.isDraftStatus) accordionIsExpanded = true;
 			}
 			subGroupDetails.accordionIsExpanded = accordionIsExpanded && !isDisabledOrder;
 
@@ -272,7 +279,6 @@ public without sharing class GroupDetailsLeaderController {
 				Contact__c = participantDetails.newContactId,
 				Participant_Email__c = participantDetails.newContactEmail,
 				Status__c = 'Registered'
-				// Invitation_Status_In_Group__c = 'Confirmed'
 			);
 
 			List<Participant__c> updatedParticipant = [SELECT Id, Name FROM Participant__c WHERE Id =:participantDetails.participantId LIMIT 1];
@@ -302,8 +308,7 @@ public without sharing class GroupDetailsLeaderController {
 				Id = participantDetails.participantId,
 				Contact__c = String.isBlank(participantDetails.newContactId) ? undefinedParticipant[0].Id : participantDetails.newContactId,
 				Participant_Email__c = participantDetails.newContactEmail,
-				Status__c = 'Registered',
-				Invitation_Status_In_Group__c = 'Invited'
+				Status__c = 'Registered'
 			);
 
 			List<Participant__c> updatedParticipant = [SELECT Id, Name FROM Participant__c WHERE Id =:participantDetails.participantId LIMIT 1];
@@ -331,13 +336,35 @@ public without sharing class GroupDetailsLeaderController {
 			update new Participant__c(
 				Id = participantDetails.participantId,
 				Contact__c = String.isBlank(participantDetails.newContactId) ? undefinedParticipant[0].Id : participantDetails.newContactId,
-				Participant_Email__c = participantDetails.newContactEmail,
-				Invitation_Status_In_Group__c = 'Draft'
+				Participant_Email__c = participantDetails.newContactEmail
 			);
 
 			List<Participant__c> updatedParticipant = [SELECT Id, Name FROM Participant__c WHERE Id =:participantDetails.participantId LIMIT 1];
 
 			return new Map<String, Object>{'result' => true, 'message' => updatedParticipant[0].Name + ' Successfully saved as a Draft. You can change this participant later.'};
+
+		} catch (Exception e) { 
+			system.debug('GroupDetailsLeaderController Error: ' + e.getMessage());
+			system.debug('GroupDetailsLeaderController Stack : ' + e.getStackTraceString());
+			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString()};
+		}
+	}
+
+	@AuraEnabled
+	public static Map<String, Object> groupNameSave(Map<String, Object> params) {
+		try {
+			String groupId = params.containsKey('groupId') ? String.valueOf(params.get('groupId')) : '';
+			String groupName = params.containsKey('groupName') ? String.valueOf(params.get('groupName')) : '';
+
+			if (String.isBlank(groupId) || String.isBlank(groupName))
+				return new Map<String, Object>{'result' => false, 'message' => 'Not Exists All Params. /' + groupId + ' / ' + groupName + ' / '};
+
+			update new Event_Registration_Group__c(
+				Id = groupId,
+				Name = groupName
+			);
+
+			return new Map<String, Object>{'result' => true, 'message' => ' Successfully updated group name.'};
 
 		} catch (Exception e) { 
 			system.debug('GroupDetailsLeaderController Error: ' + e.getMessage());
@@ -407,9 +434,12 @@ public without sharing class GroupDetailsLeaderController {
 		@AuraEnabled public Boolean displayAddButton { get; set; }
 		@AuraEnabled public Boolean displayInviteButton { get; set; }
 		@AuraEnabled public Boolean displaySaveDraftButton { get; set; }
-		@AuraEnabled public Boolean isDraftStatus { get; set; }
+		// @AuraEnabled public Boolean isDraftStatus { get; set; }
 		@AuraEnabled public Boolean isInvited { get; set; }
 		@AuraEnabled public Boolean isConfirmed { get; set; }
+		@AuraEnabled public Boolean enableWarningMessage { get; set; }
+		@AuraEnabled public Boolean displayWarningMessage { get; set; }	//	NOT PAID orders with Participant__r.Contact__r.Name != 'Undefined Participant'
+
 	}
 
 	public class ErrorWrap {

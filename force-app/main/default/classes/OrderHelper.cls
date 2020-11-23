@@ -34,13 +34,45 @@ public without sharing class OrderHelper {
             (List<DiscountHelper.TicketWrapper>)JSON.deserialize(JSON.serialize(discountInfo.get('tickets')), List<DiscountHelper.TicketWrapper>.class) : 
             new List<DiscountHelper.TicketWrapper>();     
 
+        String invoiceNum = 'EAN' + String.valueOf(Date.today().year()).right(2) + '-OC-%';
+        Integer oIEANNumber = 0;
+        List<Order__c> oIEAN = [
+            SELECT Invoice_Number__c
+            FROM Order__c
+            WHERE Invoice_Number__c != NULL AND Invoice_Number__c LIKE :invoiceNum
+            ORDER BY Invoice_Number__c DESC
+            LIMIT 10
+        ];
+
+        if (oIEAN.isEmpty()) { invoiceNum = invoiceNum.substring(0,invoiceNum.length()-1) + '000001'; }
+        if (!oIEAN.isEmpty()) {
+            for (Order__c o : oIEAN) {
+                String invoiceNumb = o.Invoice_Number__c.right(6);
+                if (invoiceNumb.isNumeric()) {
+                    oIEANNumber = Integer.valueOf(invoiceNumb);
+                    break;
+                }
+            }
+
+            oIEANNumber++;
+
+			String oIEANStr = String.valueOf(oIEANNumber);
+			while (oIEANStr.length() < 6) {
+			    oIEANNumber++;
+				oIEANStr = '0' + oIEANStr;
+			}
+              
+			invoiceNum = invoiceNum.substring(0,invoiceNum.length()-1) + oIEANStr;
+        }
+
         Order__c o = new Order__c(
             Contact__c = contactId,
             Status__c = 'Opened',
             Event_custom__c = eventId,
             Purchase_Type__c = 'New',
             Event_Registration_Sub_Group__c = groupId,
-            Type__c = 'Event registration'
+            Type__c = 'Event registration',
+            Invoice_Number__c = invoiceNum
         );
         System.debug('createNewOrder o ' + o);
         insert o;

@@ -1,5 +1,4 @@
 <template>
-	<p>Under Development</p>
 	<div class="slds-card" style="padding: 15px; height: 100%;">
 		<template if:true={_isSpinner}>
 			<div class="slds-spinner_container" style="position: fixed">
@@ -19,7 +18,26 @@
 						<div>
 							<div class="detail-section">
 								<p style="font-size: 12px;">Group Name</p>
-								<p>{_groupName}</p>
+								<div style="display: inline-block;">
+									<input class="slds-input" style="width: 200px; min-height: 21px; height: 21px; padding-top: 5px;" value={_groupName}
+										oninput={handleChangeGroupName} onchange={handleChangeGroupName} onblur={handleChangeGroupName}/>
+								</div>
+								<div style="float: right;">
+									<template if:true={_isGroupNameReserved}>
+										<div class="slds-form-element__help" style="color: red;" id="warning-message-unique-id1">{_groupNameReservedMessage}</div>
+									</template>
+									<template if:true={_isGroupNameEmpty}>
+										<div class="slds-form-element__help" style="color: red;" id="warning-message-unique-id2">{_groupEmptyMessage}</div>
+									</template>
+									<template if:true={_displayGroupNameButtons}>
+										<div class="small-button button-white">
+											<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;" onclick={handleGroupNameCancel}>Cancel</div>
+										</div>
+										<div class="small-button button-blue">
+											<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;" onclick={handleGroupNameSave}>Save</div>
+										</div>
+									</template>
+								</div>
 							</div>
 							<div class="detail-section">
 								<p style="font-size: 12px;">Event Name</p>
@@ -63,7 +81,7 @@
 						<div key={subGroup.subGroupId} style="margin-top: 2px; margin-bottom: 2px;">
 							<template if:false={subGroup.accordionIsExpanded}>
 								<div>
-									<div data-id={subGroup.accordionIndex} onclick={handleAccordionArrowClick} style="display: inline-block; cursor: pointer; width: 290px; margin-top: 5px;">
+									<div data-id={subGroup.accordionIndex} onclick={handleAccordionArrowClick} style="display: inline-block; cursor: pointer; width: 370px; margin-top: 5px;">
 										<div style="display: inline-block; vertical-align: top; padding-top: 1px;"><lightning-icon icon-name="utility:right" size="x-small"></lightning-icon></div>
 										<div class="accordion-title">{subGroup.accordionTitle}</div>
 									</div>
@@ -71,7 +89,7 @@
 							</template>
 							<template if:true={subGroup.accordionIsExpanded}>
 								<div>
-									<div data-id={subGroup.accordionIndex} onclick={handleAccordionArrowClick} style="display: inline-block; cursor: pointer; width: 290px; margin-top: 5px;">
+									<div data-id={subGroup.accordionIndex} onclick={handleAccordionArrowClick} style="display: inline-block; cursor: pointer; width: 370px; margin-top: 5px;">
 										<div style="display: inline-block; vertical-align: top; padding-top: 1px;"><lightning-icon icon-name="utility:down" size="x-small"></lightning-icon></div>
 										<div class="accordion-title">{subGroup.accordionTitle}</div>
 									</div>
@@ -79,7 +97,7 @@
 
 								<template for:each={subGroup.subGroupParticipantList} for:item="participant">
 									<div key={participant.participantId} style="margin-top: 2px; margin-bottom: 2px;">
-										<div style="display: inline-block; width: 310px;">
+										<div style="display: inline-block; width: 350px;">
 											<template if:true={subGroup.disabledToEdit}>
 												<input class="slds-input" type="email" value={participant.oldContactEmail} autocomplete="password" disabled/>
 											</template>
@@ -112,17 +130,17 @@
 
 										<div style="display: inline-block; vertical-align: top; margin-top: 10px;">
 											<template if:true={participant.buttonsSettings.displaySaveDraftButton}>
-												<div class="small-button">
+												<div class="small-button button-blue">
 													<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;"
 														data-id={subGroup.accordionIndex} data-index={participant.uniquekey2} onclick={handleSaveClick}
-														title="Save the definition without an email invitation and registration (You can changed participant later)">
+														title="Save the definition without an email invitation and registration (Draft)">
 														Save
 													</div>
 												</div>
 											</template>
 											<template if:true={participant.buttonsSettings.enableAddInviteButtons}>
 												<template if:true={participant.buttonsSettings.displayAddButton}>
-													<div class="small-button">
+													<div class="small-button button-blue">
 														<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;"
 															data-id={subGroup.accordionIndex} data-index={participant.uniquekey2} onclick={handleAddClick}
 															title="Register a participant for the event">
@@ -131,7 +149,7 @@
 													</div>
 												</template>
 												<template if:true={participant.buttonsSettings.displayInviteButton}>
-													<div class="small-button">
+													<div class="small-button button-blue">
 														<div style="margin-top: 1px; margin-bottom: -1px; cursor: pointer;"
 															data-id={subGroup.accordionIndex} data-index={participant.uniquekey2} onclick={handleInviteClick}
 															title="Invite to community and event">
@@ -150,6 +168,13 @@
 											<div style="display: inline-block; margin-left: 10px; vertical-align: top; margin-top: 15px; color: #007dc6; font-weight: bold;">
 												<div>{_confirmedMessage}</div>
 											</div>
+										</template>
+										<template if:true={participant.buttonsSettings.enableWarningMessage}>
+											<template if:true={participant.buttonsSettings.displayWarningMessage}>
+												<div style="display: inline-block; margin-left: 10px; vertical-align: top; margin-top: 15px; color: #007dc6; font-weight: bold;">
+													<div>{_warningMessage}</div>
+												</div>
+											</template>
 										</template>
 									</div>
 								</template>

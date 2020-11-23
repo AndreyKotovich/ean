@@ -21,7 +21,19 @@
 	border: 1px solid darkgray;
 	border-radius: 5px;
 	vertical-align: bottom;
+	text-align: center;
+}
+
+.button-white{
+	color: #007dc6;
+	background-color: #FFFFFF;
+}
+
+.button-blue{
 	background-color: #007DC6;
 	color: #FFFFFF;
-	text-align: center;
+}
+
+.small-button:hover{
+	color: #000000;
 }

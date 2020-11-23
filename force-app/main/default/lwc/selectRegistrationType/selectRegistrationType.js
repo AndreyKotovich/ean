@@ -5,10 +5,9 @@ import {Utils} from "c/utils";
 import getContactIpr from "@salesforce/apex/EventRegistrationController.getContactIpr";
 import existedParticipationCheck from "@salesforce/apex/EventRegistrationController.existedParticipationCheck";
 import getRegistrationGroupById from "@salesforce/apex/EventRegistrationController.getRegistrationGroupById";
-import getContactGroupsForEvent from "@salesforce/apex/EventRegistrationController.getContactGroupsForEvent";
+import validateGroupName from "@salesforce/apex/EventRegistrationController.validateGroupName";
 
 export default class SelectRegistrationType extends NavigationMixin(LightningElement) {
-    //TODO validation when adding participants to group Group from the Event?
     @api
     get registrationType() {
         return this._selectedRegistrationType;
@@ -47,7 +46,6 @@ export default class SelectRegistrationType extends NavigationMixin(LightningEle
         let promises = [
             getContactIpr({contactId: this.userInfo.contact.Id, eventId: this.eanEvent.Id}),
             existedParticipationCheck({contactId: this.userInfo.contact.Id, eventId: this.eanEvent.Id}),
-            getContactGroupsForEvent({contactId: this.userInfo.contact.Id, eventId: this.eanEvent.Id})
         ];
 
         let urlParams = new URL(window.location);
@@ -58,11 +56,7 @@ export default class SelectRegistrationType extends NavigationMixin(LightningEle
         }
 
         Promise.all(promises)
-            .then(results => {
-                let ipr = results[0];
-                let existedParticipant = results[1];
-                this.contactGroupsForEvent = [...results[2]];
-
+            .then(([ipr, existedParticipant, registrationGroup]) => {
                 this.existedParticipant = existedParticipant;
 
                 this.iprInfo = {
@@ -70,16 +64,17 @@ export default class SelectRegistrationType extends NavigationMixin(LightningEle
                     ticketAmount: ipr.length > 0 ? ipr[0].Number_of_free_tickets__c : 0,
                     Id: ipr.length > 0 ? ipr[0].Id : "",
                     participantAmount: ipr.length > 0 && ipr[0].Event_Participations__r ? ipr[0].Event_Participations__r.length : 0
-                }
+                };
 
-                if(ipr.length > 0 && !this._eventGroupInformation.Name){
+                console.log('ipr', ipr);
+                if(ipr.length > 0 && !this._eventGroupInformation.Name && !ipr[0].Event_Registration_Groups__r){
                     this._eventGroupInformation.Name = ipr[0].Account__r.Name.length > 80 ?
                         ipr[0].Account__r.Name.slice(0, this.MAX_GROUP_NAME_LENGTH) :
                         ipr[0].Account__r.Name;
                 }
 
-                if(!!this.groupId && results[3].length > 0){
-                    this._eventGroupInformation = Object.assign({}, results[3][0]);
+                if(!!this.groupId && registrationGroup.length > 0){
+                    this._eventGroupInformation = Object.assign({}, registrationGroup[0]);
                     this.groupInputLocked = true;
                 }
 
@@ -140,33 +135,63 @@ export default class SelectRegistrationType extends NavigationMixin(LightningEle
     }
 
     handleNextClick() {
+        this.isSpinner = true;
+        Promise.all([this.validateGroupDuplicates()])
+            .then(results => {
+                console.log('results', JSON.stringify(results));
+                let validation = {result: true};
 
-        if (Utils.validateElements.call(this, "lightning-combobox, lightning-input") && this.validateGroupDuplicates()) {
-            let obj = {
-                registrationType: this._selectedRegistrationType,
-                iprInfo: this.iprInfo
-            };
-
-            if(this.isGroupRegistration){
-                if(this.registrationType === 'group' && !!!this._eventGroupInformation.Id){
-                    if(this._eventGroupInformation.Event_Exhibitor__c){
-                        delete this._eventGroupInformation.Event_Exhibitor__c;
+                for(let result of results){
+                    console.log('result', result);
+                    if(!result.result){
+                        validation = result;
+                        break;
                     }
                 }
 
-                if(this.registrationType === 'ipr' && !!!this._eventGroupInformation.Id){
-                    this._eventGroupInformation.Event_Exhibitor__c = this.iprInfo.Id
+                if(!Utils.validateElements.call(this, "lightning-combobox, lightning-input")){
+                    validation.result = false;
+                    validation.message = 'Check your inputs';
                 }
 
-                obj.eventGroupInformation = this._eventGroupInformation;
+                if (validation.result) {
+                    let obj = {
+                        registrationType: this._selectedRegistrationType,
+                        iprInfo: this.iprInfo
+                    };
 
-            }
+                    if(this.isGroupRegistration){
+                        if(this.registrationType === 'group' && !!!this._eventGroupInformation.Id){
+                            if(this._eventGroupInformation.Event_Exhibitor__c){
+                                delete this._eventGroupInformation.Event_Exhibitor__c;
+                            }
+                        }
 
-            const selectEvent = new CustomEvent("continue", {
-                detail: obj
-            });
-            this.dispatchEvent(selectEvent);
-        }
+                        if(this.registrationType === 'ipr' && !!!this._eventGroupInformation.Id){
+                            this._eventGroupInformation.Event_Exhibitor__c = this.iprInfo.Id
+                        }
+
+                        obj.eventGroupInformation = this._eventGroupInformation;
+
+                    }
+
+                    const selectEvent = new CustomEvent("continue", {
+                        detail: obj
+                    });
+                    this.dispatchEvent(selectEvent);
+                } else {
+                    let message = 'Something went wrong, contact your system administrator.';
+                    if(!!validation.message) message = validation.message;
+                    this.dispatchToast('Error', message, 'error');
+                }
+                this.isSpinner = false;
+            })
+            .catch(error => {
+                console.log(JSON.stringify(error));
+                console.log(JSON.stringify(error.message));
+                this.isSpinner = false;
+                this.dispatchToast('Error', 'Something went wrong, contact your system administrator.', 'error')
+            })
     }
 
     throwError(error) {
@@ -225,16 +250,21 @@ export default class SelectRegistrationType extends NavigationMixin(LightningEle
     }
 
     validateGroupDuplicates(){
-        let result = true;
-
-        if((this._selectedRegistrationType === 'group' || this._selectedRegistrationType === 'ipr') && !!!this.groupId){
-            if(!!this.contactGroupsForEvent.find(obj => obj.Name === this._eventGroupInformation.Name && !!!obj.Event_Exhibitor__c)){
-                result = confirm("You already registered a group with this name. If you want to create a new group click OK.\n" +
-                    "\n" +
-                    "If you want to add participants to your existing group, go to the My Registrations tab. ");
+        return new Promise((resolve, reject)=>{
+            let result = true;
+            if((this._selectedRegistrationType === 'group' || this._selectedRegistrationType === 'ipr') && !!!this.groupId && !!this._eventGroupInformation.Name){
+                validateGroupName({eventId: this.eanEvent.Id, groupName: this._eventGroupInformation.Name })
+                    .then(callback_result => {
+                        result = callback_result;
+                        resolve({result: result, message: 'The selected group name is not available, it is already in use. Please select a different group name.'})
+                    })
+                    .catch(error => {
+                        reject(error);
+                    })
+            } else {
+                resolve({result: result})
             }
-        }
+        });
 
-        return result;
     }
 }

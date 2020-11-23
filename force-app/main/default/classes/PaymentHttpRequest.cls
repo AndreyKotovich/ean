@@ -493,7 +493,7 @@ public without sharing class PaymentHttpRequest {
         }
     }
     @RemoteAction public static List<Order__c> getOrderInfo(String orderId) {
-        List<Order__c> order = [SELECT Id, Name, Contact__r.FirstName, Contact__r.LastName, Total_amount__c FROM Order__c WHERE Id = :orderId];
+        List<Order__c> order = [SELECT Id, Name, Contact__r.FirstName, Contact__r.LastName, Invoice_Number__c, Total_amount__c FROM Order__c WHERE Id = :orderId];
         return order;
     }
     @AuraEnabled public static String getCommunityHomeUrlAuraEnabled(){
@@ -585,8 +585,12 @@ public without sharing class PaymentHttpRequest {
         List<Order__c> order = getOrderInfo(orderId);
         String attachmentLink = 'javascript:void(0);';
         if(!order.isEmpty()){
-            PageReference defaultPage = new PageReference('/apex/BankTransferCredentialsPdf');
+            Boolean isTypeOc = order[0].Invoice_Number__c.contains( 'EAN' + String.valueOf(Date.today().year()).right(2) + '-OC');
+            String template = !isTypeOc ? 'BankTransferCredentialsPdf' : 'BankTransferRegistrationPdf';
+            PageReference defaultPage = new PageReference('/apex/' + template);
+            
             defaultPage.getParameters().put('orderName', order[0].Name);
+            defaultPage.getParameters().put('orderInvoiceNumber', order[0].Invoice_Number__c);
             defaultPage.getParameters().put('orderAmount', String.valueOf(order[0].Total_amount__c));
             defaultPage.getParameters().put('firstName', String.valueOf(order[0].Contact__r.FirstName));
             defaultPage.getParameters().put('lastName', String.valueOf(order[0].Contact__r.LastName));

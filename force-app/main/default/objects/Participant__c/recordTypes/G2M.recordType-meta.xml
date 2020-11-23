@@ -15,21 +15,6 @@
         </values>
     </picklistValues>
     <picklistValues>
-        <picklist>Invitation_Status_In_Group__c</picklist>
-        <values>
-            <fullName>Confirmed</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Draft</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Invited</fullName>
-            <default>false</default>
-        </values>
-    </picklistValues>
-    <picklistValues>
         <picklist>Role__c</picklist>
         <values>
             <fullName>FW Convenor</fullName>
