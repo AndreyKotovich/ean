@@ -29,13 +29,22 @@ public with sharing class Utils {
     }
 
     public static List<Map<String, String>> picklistValues(String objectName, String fieldName) {
+        return picklistValues(objectName, fieldName, new Set<String>());
+    }
+
+    public static List<Map<String, String>> picklistValues(String objectName, String fieldName, Set<String> disabledValues) {
         List<Map<String, String>> values = new List<Map<String, String>>();
         List<String> types = new List<String>{objectName};
         List<Schema.DescribeSObjectResult> results = Schema.describeSObjects(types);
         for(Schema.DescribeSObjectResult res : results) {
             for (Schema.PicklistEntry entry : res.fields.getMap().get(fieldName).getDescribe().getPicklistValues()) {
                 if (entry.isActive()) {
-                    values.add(new Map<String, String>{'value' => entry.getValue(), 'label' => entry.getLabel()});
+
+                    String picklistValue = '' + entry.getValue();
+                    String picklistLabel = '' + entry.getLabel();
+                    if (disabledValues.contains(picklistValue) || disabledValues.contains(picklistLabel)) continue;
+
+                    values.add(new Map<String, String>{'value' => picklistValue, 'label' => picklistLabel});
                 }
             }
         }

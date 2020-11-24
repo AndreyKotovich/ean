@@ -3,10 +3,12 @@
     <fullName>All</fullName>
     <columns>NAME</columns>
     <columns>RECORDTYPE</columns>
+    <columns>Contact__c</columns>
     <columns>Role__c</columns>
     <columns>Event_custom__c</columns>
-    <columns>tx_efnsusr_type_name__c</columns>
-    <columns>deleted__c</columns>
+    <columns>Status__c</columns>
+    <columns>Badge_Retrieval__c</columns>
+    <columns>CREATED_DATE</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
 </ListView>

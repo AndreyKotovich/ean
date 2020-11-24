@@ -4,6 +4,7 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getGroupDetails from '@salesforce/apex/GroupDetailsController.getGroupDetails'
 import clickSubmitRegistrationFlow from '@salesforce/apex/GroupDetailsController.clickSubmitRegistrationFlow'
 import clickSubmitSubGroupParticipants from '@salesforce/apex/GroupDetailsController.clickSubmitSubGroupParticipants'
+import clickRequestCancellationGroupParticipant from '@salesforce/apex/GroupDetailsController.clickRequestCancellationGroupParticipant'
 
 export default class GroupDetailsComponent extends LightningElement {
 	@api recordId;				// required for mode 'My Registrations'
@@ -15,6 +16,10 @@ export default class GroupDetailsComponent extends LightningElement {
 
 	_errorMessage = 'Something went wrong, please contact your system administrator.';
 	_noRegistrationMessage = 'You have no registrations.'
+
+	_invitedMessage = 'Successfully invited to the community and to the event';
+	_confirmedMessage = 'Successfully registered for the event';
+
 	_isSpinner = true;
 	_isError = false;
 
@@ -22,6 +27,7 @@ export default class GroupDetailsComponent extends LightningElement {
 	_eventId = '';
 	_groupName = '';
 	_eventName = '';
+	_communityContactId = '';
 	_eventEndDateString = '';
 	_eventStartDateString = '';
 	_eventEndTimeString = '';
@@ -38,6 +44,7 @@ export default class GroupDetailsComponent extends LightningElement {
 	_displayAccordions = false;
 	_displayGroupDetailsCancelButton = false;
 	_displayFinalCancel = false;
+	_displayFinalReturn = false;
 	_displayRegistrationSubmit = false;
 	_displayAddMoreTicketsButton = false;
 
@@ -51,6 +58,9 @@ export default class GroupDetailsComponent extends LightningElement {
 	_disabledEmailsString;
 
 	_isChangeRequestMode = false;
+	_isGroupTransferMode = false;
+	_isGroupParticipantMode = false;
+	_changeRequestType = '';
 
 	_displayTransferContainer = false;
 	_tempParticipant = {};
@@ -60,7 +70,7 @@ export default class GroupDetailsComponent extends LightningElement {
 	_requestedContactName = '';
 	_displayFinalSubmitTransferButton = false;
 
-	_additionalIconsStyle = ' margin-top: -2px;';
+	_additionalIconsStyle = 'margin-top: -2px;';
 
 	connectedCallback() {
 		console.log('GroupDetailsComponent connectedCallback');
@@ -97,22 +107,31 @@ export default class GroupDetailsComponent extends LightningElement {
 				this._displayGroupDefinition= result.displayGroupDefinition;
 				this._displayAccordions = result.displayAccordions;
 
-				this._isChangeRequestMode = result.isChangeRequestMode;
-
 				this._displayFinalCancel = result.displayFinalCancel;
 				this._displayRegistrationSubmit = result.displayRegistrationSubmit;
 				this._displayAddMoreTicketsButton = result.displayAddMoreTicketsButton;
+
+				this._isChangeRequestMode = result.isChangeRequestMode;
+				this._changeRequestType = result.changeRequestType;
+				this._isGroupTransferMode = this._changeRequestType === 'Group Registration Transfer';
+				this._isGroupParticipantMode = false;
+				if (this._changeRequestType === 'Individual Participant Group Registration Cancellation') {
+					this._isGroupParticipantMode = true;
+					this._displayFinalCancel = false;
+					this._displayFinalReturn = true;
+				}
 
 				this._subGroupList = result.subGroupList;
 				this._disabledEmails = result.disabledEmails;
 				this._disabledEmailsString = JSON.stringify(this._disabledEmails);
 				// this._displayNoRegistrationMessage = result.displayNoRegistrationMessage;
 
+				this._communityContactId = result.communityContactId;
 				this._tempParticipant = {};
 			})
 			.catch(error=>{
-				console.log('GroupDetails component');
-				console.log('getGroupDetails Error: ' + JSON.stringify(error));
+				console.log('groupDetailsComponent [getGroupDetails] error: ', error);
+				console.log('groupDetailsComponent [getGroupDetails] error: ' + JSON.stringify(error));
 				this._isError = true;
 				this._isSpinner = false;
 			})
@@ -353,11 +372,14 @@ export default class GroupDetailsComponent extends LightningElement {
 		this._displayTransferContainer = false;
 	}
 
+	handleFinalReturn() {
+		this.dispatchEvent(new CustomEvent('gdcomponentreturn'));
+		this._displayTransferContainer = false;
+	}
 
 	//	Submit	// Registration Flow
 	handleClickSubmitRegistrationFlow() {
 		console.log('handleClickSubmitRegistrationFlow');
-
 		clickSubmitRegistrationFlow({params: {
 			// groupDetails: JSON.stringify(this.recordId),
 			subGroupList: JSON.stringify(this._subGroupList),
@@ -386,6 +408,52 @@ export default class GroupDetailsComponent extends LightningElement {
 		var tempSubGroupList = JSON.parse(JSON.stringify(this._subGroupList));
 		tempSubGroupList[accordionIndex].accordionIsExpanded = !tempSubGroupList[accordionIndex].accordionIsExpanded;
 		this._subGroupList = tempSubGroupList;
+
+	}
+
+	handleClickOnRequestCancellation(event) {
+		var subGroupIndex = event.currentTarget.dataset.key;
+		var subGroupId = event.currentTarget.dataset.id;
+		var participantIndex = event.currentTarget.dataset.index;
+		this._displayTransferContainer = false;
+
+		var currentParticipant = JSON.parse(JSON.stringify(this._subGroupList[subGroupIndex].subGroupParticipantList[participantIndex]));
+		this._isSpinner = true;
+
+		var tempParams = JSON.parse(this.params);
+
+		clickRequestCancellationGroupParticipant({params: {
+			subGroupId: subGroupId,
+			participantDetailsString: JSON.stringify(currentParticipant),
+			contactRecordId: this._communityContactId,
+			description: tempParams.crDescription
+			}}).then(result=>{
+
+				this._isSpinner = false;
+
+				if (result.result) {
+					this.showSuccessToast(result.message);
+				}
+				if (!result.result) {
+					console.log('handleClickOnRequestCancellation result: ', result);
+					this.showErrorToast(result.message);
+					return;
+				}
+
+				var changeRequestName = result.changeRequestName;
+
+				var crDetails = {crId: '', crName: changeRequestName, crDescription: '', crContactId: '', crContactEmail: '', crContactName: ''};
+				currentParticipant.isOldTransferExist = true;
+				currentParticipant.oldTransferDetails = crDetails;
+
+				this._subGroupList[subGroupIndex].subGroupParticipantList[participantIndex] = currentParticipant;
+			})
+			.catch(error=>{
+				console.log('groupDetailsLeaderComponent [handleClickOnRequestCancellation] error: ', error);
+				console.log('groupDetailsLeaderComponent [handleClickOnRequestCancellation] error: ' + JSON.stringify(error));
+				this._isError = true;
+				this._isSpinner = false;
+			})
 
 	}
 

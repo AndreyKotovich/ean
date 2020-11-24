@@ -225,8 +225,8 @@
 
     <!--    =================SCREEN BANK TRANSFER PAYMENT METHOD====================-->
     <div id="bank-transfer-screen" hidden="hidden" class="slds-text-heading_small">
-        <div id="BankTransferCredentials" hidden="hidden"><c:BankTransferCredentials/></div>
-        <div id="BankTransferRegistration" hidden="hidden"><c:BankTransferRegistration/></div>
+        <div id="BankTransferCredentials" hidden="hidden"><c:BankTransferCredentials /></div>
+        <div id="BankTransferRegistration" hidden="hidden"><c:BankTransferRegistration /></div>
         <a onclick="savePdf()">Download as PDF</a>
     </div>
     

@@ -6,10 +6,6 @@
     <picklistValues>
         <picklist>Abstract_Topic__c</picklist>
         <values>
-            <fullName>ALS and frontotemporal dementia</fullName>
-            <default>false</default>
-        </values>
-        <values>
             <fullName>Aging and dementia</fullName>
             <default>false</default>
         </values>
@@ -31,10 +27,6 @@
         </values>
         <values>
             <fullName>Clinical neurophysiology</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Cognitive neurology%2Fneuropsychology</fullName>
             <default>false</default>
         </values>
         <values>
@@ -79,10 +71,6 @@
         </values>
         <values>
             <fullName>Movement disorders</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Multiple Sclerosis and related disorders</fullName>
             <default>false</default>
         </values>
         <values>
@@ -1283,10 +1271,6 @@
     <picklistValues>
         <picklist>Topics__c</picklist>
         <values>
-            <fullName>ALS and frontotemporal dementia</fullName>
-            <default>false</default>
-        </values>
-        <values>
             <fullName>Aging and dementia</fullName>
             <default>false</default>
         </values>
@@ -1308,10 +1292,6 @@
         </values>
         <values>
             <fullName>Clinical neurophysiology</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Cognitive neurology%2Fneuropsychology</fullName>
             <default>false</default>
         </values>
         <values>
@@ -1356,10 +1336,6 @@
         </values>
         <values>
             <fullName>Movement disorders</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Multiple Sclerosis and related disorders</fullName>
             <default>false</default>
         </values>
         <values>

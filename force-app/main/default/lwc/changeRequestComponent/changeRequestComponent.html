@@ -41,12 +41,12 @@
 									<table class="slds-table slds-table_bordered slds-table_cell-buffer" style="overflow: hidden; table-layout: fixed;">
 										<thead>
 											<tr class="slds-text-title_caps" style="cursor: default;">
-												<th style="width: 14%;" scope="col"><div class="slds-truncate">Name</div></th>
-												<th style="width: 23%;" scope="col"><div class="slds-truncate">Type</div></th>
+												<th style="width: 12%;" scope="col"><div class="slds-truncate">Name</div></th>
+												<th style="width: 29%;" scope="col"><div class="slds-truncate">Type</div></th>
 												<th style="width: 20%;" scope="col"><div class="slds-truncate">Event Name</div></th>
 												<th style="width: 9%;" scope="col"><div class="slds-truncate">Status</div></th>
-												<th style="width: 15%;" scope="col"><div class="slds-truncate">Requested Time</div></th>
-												<th style="width: 9%;" scope="col"><div class="slds-truncate"></div></th>
+												<th style="width: 13%;" scope="col"><div class="slds-truncate">Requested Time</div></th>
+												<th style="width: 7%;" scope="col"><div class="slds-truncate"></div></th>
 											</tr>
 										</thead>
 										<tbody>
@@ -104,6 +104,7 @@
 							onsubmitsolotransfer = {handleSubmitSoloTransfer}
 							onsubmitgroupcancellation = {handleSubmitGroupCancellation}
 							onsubmitgrouptransfer = {handleSubmitGroupTransfer}
+							onsubmitgroupparticipantcancellation = {handleGroupParticipantCancellation}
 							>
 						</c-my-registrations-component>
 					</div>
@@ -158,11 +159,12 @@
 					</div>
 				</template>
 
-				<template if:true={_displayGroupTransferContainer}>
+				<template if:true={_displayGroupDetailsContainer}>
 					<div style="height: 440px;">
 						<c-group-details-component
 							params = {_paramsString}
-							onfinalsubmitgrouptransfer = {handleGroupTransferFinalSubmitClick}
+							onfinalsubmitgrouptransfer = {handleGroupDetailsFinalSubmitClick}
+							ongdcomponentreturn = {connectedCallback}
 							ongdcomponentterminate = {initialPositiveSettings}>
 						</c-group-details-component>
 					</div>

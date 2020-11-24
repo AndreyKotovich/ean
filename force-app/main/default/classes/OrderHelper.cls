@@ -214,11 +214,26 @@ public without sharing class OrderHelper {
             SELECT Id, Status__c, Paid_Amount__c, Total_amount__c, 
                 (
                     SELECT Id, Name__c, Amount__c, Total_amount__c, Quantity__c, Paid__c, 
-                        Discount_Amount__c, Discount__c, Refund_Amount__c 
+                        Discount_Amount__c, Discount__c, Refund_Amount__c,
+                        Contact_Name__c
                     FROM Order_Items__r 
                 ) 
             FROM Order__c 
             WHERE Id =:Id];
+    }
+
+    @AuraEnabled
+    public static Map<String, Object> getCancellationSettings(String Id) {
+
+        Map<String, Object> result = new Map<String, Object>{'orderList' => getOrderInfo(Id)};
+
+        List<Change_Request__c> changeRequests = !String.isBlank(Id) ? [
+            SELECT Id, Name FROM Change_Request__c WHERE Type__c = 'Individual Participant Group Registration Cancellation'
+            AND (Status__c = 'Requested' OR Status__c = 'In Progress' OR Status__c = 'Approved') AND Order__c =:Id LIMIT 1
+        ] : new List<Change_Request__c>();
+
+        result.put('displayContactColumn', !changeRequests.isEmpty());
+        return result;
     }
 
     @AuraEnabled

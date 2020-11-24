@@ -10,7 +10,7 @@
     <filters>
         <field>Status__c</field>
         <operation>equals</operation>
-        <value>Accpeted</value>
+        <value>Accepted</value>
     </filters>
     <label>My Review Assignment</label>
 </ListView>

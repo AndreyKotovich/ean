@@ -44,9 +44,8 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 	_requestedContactName = '';
 	_whereclause = '';
 
-	_displayGroupTransferContainer = false;
-	_selectedGroupIdForTransfer = '';
-	
+	_displayGroupDetailsContainer = false;
+	_selectedGroupIdForChangeRequests = '';
 	
 	_paramsString;
 
@@ -81,8 +80,8 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 		this._requestedContactName = '';
 		this._displayTransferFinalConfirmButton = false;
 
-		this._displayGroupTransferContainer = false;
-		this._selectedGroupIdForTransfer = '';
+		this._displayGroupDetailsContainer = false;
+		this._selectedGroupIdForChangeRequests = '';
 	}
 
 	initialPositiveSettings() {
@@ -100,8 +99,8 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 		this._selectedSoloTransferParticipantId = '';
 		// this.connectedCallback();
 
-		this._displayGroupTransferContainer = false;
-		this._selectedGroupIdForTransfer = '';
+		this._displayGroupDetailsContainer = false;
+		this._selectedGroupIdForChangeRequests = '';
 	}
 
 	connectedCallback() {
@@ -159,9 +158,10 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 	}
 
 	//	'Solo Registration Cancellation'
-	//	'Group Registration Cancellation'
+	//	'Full Group Registration Cancellation'
 	//	'Solo Registration Transfer'
 	//	'Group Registration Transfer'
+	//	'Individual Participant Group Registration Cancellation'
 	handleNextClick() {
 		console.log('handleNextClick this._selectedCRType: ', this._selectedCRType);
 		this._displayNewChangeRequestButton = false;
@@ -176,7 +176,13 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 		params.contactRecordId = this.recordId;
 		this._paramsString = JSON.stringify(params);
 
-		var redirectToMyRegistrationsPage = ['Solo Registration Cancellation', 'Group Registration Cancellation', 'Solo Registration Transfer', 'Group Registration Transfer'];
+		var redirectToMyRegistrationsPage = [
+			'Solo Registration Cancellation',
+			'Full Group Registration Cancellation',
+			'Solo Registration Transfer',
+			'Group Registration Transfer',
+			'Individual Participant Group Registration Cancellation'
+		];
 
 		if (redirectToMyRegistrationsPage.includes(this._selectedCRType)) {
 			this._displayMainPanel = false;
@@ -366,23 +372,23 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 		params.selectedGroupId = selectedGroupId;
 		this._paramsString = JSON.stringify(params);
 
-		this._selectedGroupIdForTransfer = selectedGroupId;
+		this._selectedGroupIdForChangeRequests = selectedGroupId;
 		this._displayMyRegistrationsComponent = false;
-		this._displayGroupTransferContainer = true;
+		this._displayGroupDetailsContainer = true;
 		this._displayChangeRequestCancelButton = false;
 	}
 
 
-	handleGroupTransferFinalSubmitClick(event) {
-		console.log('handleGroupTransferFinalSubmitClick');
+	handleGroupDetailsFinalSubmitClick(event) {
+		console.log('handleGroupDetailsFinalSubmitClick');
 		var eventparams = event.detail.eventparams;
-		this._displayGroupTransferContainer = false;
+		this._displayGroupDetailsContainer = false;
 
 		this._isSpinner = true;
 		submitGroupTransfer({params: {
 			eventparams: eventparams,
 			crDescription: this._crDescription,
-			selectedGroupId: this._selectedGroupIdForTransfer,
+			selectedGroupId: this._selectedGroupIdForChangeRequests,
 			communityContactId: this._communityContactId,
 			}}).then(result=>{
 				console.log('result: ', result);
@@ -399,14 +405,30 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 				this.connectedCallback();
 			})
 			.catch(error=>{
-				console.log('handleGroupTransferFinalSubmitClick');
-				console.log('handleGroupTransferFinalSubmitClick Error: ' + JSON.stringify(error));
+				console.log('handleGroupDetailsFinalSubmitClick');
+				console.log('handleGroupDetailsFinalSubmitClick Error: ' + JSON.stringify(error));
 				this._isError = true;
 				this._isSpinner = false;
 			})
 	}
 
+	//	GROUP INDIVIDUAL PARTICIPANT CANCELLATION BLOCK
+	handleGroupParticipantCancellation(event) {
+		const selectedGroupId = event.detail.selectedGroupId;
+		console.log('handleGroupParticipantCancellation selectedGroupId: ', selectedGroupId);
 
+		var params = {};
+		params.selectedCRType = this._selectedCRType;
+		params.contactRecordId = this.recordId;
+		params.selectedGroupId = selectedGroupId;
+		params.crDescription = this._crDescription;
+		this._paramsString = JSON.stringify(params);
+
+		this._selectedGroupIdForChangeRequests = selectedGroupId;
+		this._displayMyRegistrationsComponent = false;
+		this._displayGroupDetailsContainer = true;
+		this._displayChangeRequestCancelButton = false;
+	}
 
 	showSuccessToast(msg) {
 		const evt = new ShowToastEvent({

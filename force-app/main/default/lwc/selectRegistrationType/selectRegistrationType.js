@@ -138,11 +138,9 @@ export default class SelectRegistrationType extends NavigationMixin(LightningEle
         this.isSpinner = true;
         Promise.all([this.validateGroupDuplicates()])
             .then(results => {
-                console.log('results', JSON.stringify(results));
                 let validation = {result: true};
 
                 for(let result of results){
-                    console.log('result', result);
                     if(!result.result){
                         validation = result;
                         break;

@@ -37,6 +37,10 @@ public without sharing class EventRegistrationController {
                         SELECT Id
                         FROM Event_Participations__r
                         WHERE Status__c != 'Canceled'
+                ),
+                (
+                        SELECT Id
+                        FROM Event_Registration_Groups__r
                 )
                 FROM Event_Exhibitor__c
                 WHERE Contact__c = :contactId
@@ -368,26 +372,15 @@ public without sharing class EventRegistrationController {
 
     }
 
-    @AuraEnabled public static List<Event_Registration_Group__c> getContactGroupsForEvent(String contactId, String eventId){
-        Set<Event_Registration_Group__c> contactGroupsForEvent = new Set<Event_Registration_Group__c>();
-        Map<Id, Event_Registration_Group__c> allContactGroups = new Map<Id, Event_Registration_Group__c>([
-                SELECT Id, Name, Event_Exhibitor__c
-                FROM Event_Registration_Group__c
-                WHERE Contact__c = :contactId
-        ]);
-
+    @AuraEnabled public static Boolean validateGroupName(String eventId, String groupName){
         List<Participant__c> participants = [
-                SELECT Id, Event_custom__c, Event_Registration_Sub_Group__r.Event_Registration_Group__c
+                SELECT Id
                 FROM Participant__c
-                WHERE Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c = :contactId
-                AND Event_custom__c = :eventId
+                WHERE Event_custom__c = :eventId
+                AND Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name = :groupName
         ];
 
-        for(Participant__c p : participants){
-            contactGroupsForEvent.add(allContactGroups.get(p.Event_Registration_Sub_Group__r.Event_Registration_Group__c));
-        }
-
-        return new List<Event_Registration_Group__c>(contactGroupsForEvent);
+        return participants.isEmpty();
     }
 
     @AuraEnabled public static List<String> getEventPersonaInfo(String eventId, String contactId){

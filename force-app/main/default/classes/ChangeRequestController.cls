@@ -4,9 +4,12 @@ public without sharing class ChangeRequestController {
 	public static final String PICKLIST_FIELD_API_NAME = 'Type__c';
 
 	public static final String CR_TYPE_SOLO_CANCELLATION = 'Solo Registration Cancellation';
-	public static final String CR_TYPE_GROUP_CANCELLATION = 'Group Registration Cancellation';
+	public static final String CR_TYPE_GROUP_CANCELLATION = 'Full Group Registration Cancellation';
 	public static final String CR_TYPE_SOLO_TRANSFER = 'Solo Registration Transfer';
 	public static final String CR_TYPE_GROUP_TRANSFER = 'Group Registration Transfer';
+	public static final String CR_TYPE_GROUP_INDIVIDUAL_CANCELLATION = 'Individual Participant Group Registration Cancellation';
+
+	public static final Set<String> DISABLED_CR_TYPES_FOR_EAN_STAFF = new Set<String>{CR_TYPE_GROUP_INDIVIDUAL_CANCELLATION};
 
 	@AuraEnabled
 	public static Map<String, Object> getPreparedData(Map<String, Object> settings) {
@@ -49,6 +52,10 @@ public without sharing class ChangeRequestController {
 				changeRequestsList.add(cr);
 			}
 
+			List<Map<String, String>> picklistOptions = !String.isBlank(recordId)
+				? Utils.picklistValues(CHANGE_REQUEST_OBJECT_API_NAME, PICKLIST_FIELD_API_NAME, DISABLED_CR_TYPES_FOR_EAN_STAFF)
+				: Utils.picklistValues(CHANGE_REQUEST_OBJECT_API_NAME, PICKLIST_FIELD_API_NAME);
+
 			return new Map<String, Object>{
 				'result' => true,
 				//	DEBUG
@@ -60,16 +67,15 @@ public without sharing class ChangeRequestController {
 				'changeRequestsList' => changeRequestsList,
 				'displayNoRecordsMessage' => changeRequestsList.isEmpty(),
 				'displayChangeRequestsList' => !changeRequestsList.isEmpty(),
-				// 'requestsTypeListMap' => getPicklistValues(CHANGE_REQUEST_OBJECT_API_NAME, PICKLIST_FIELD_API_NAME),
-				'requestsTypeListMap' => Utils.picklistValues(CHANGE_REQUEST_OBJECT_API_NAME, PICKLIST_FIELD_API_NAME),
+				'requestsTypeListMap' => picklistOptions,
 				'componentLabel' => executedNotAtCommunity ? 'Community User Change Requests' : 'My Change Requests',
 				'displayTopButtons' => !executedNotAtCommunity,
 				'displayBottomButtons' => executedNotAtCommunity
 			};
 
 		} catch (Exception e) {
-			system.debug('ChangeRequestController getPreparedData ERROR message: ' + e.getMessage());
-			system.debug('ChangeRequestController getPreparedData ERROR messageStack: ' + e.getStackTraceString());
+			system.debug('ChangeRequestController [getPreparedData] Error: ' + e.getMessage());
+			system.debug('ChangeRequestController [getPreparedData] Stack: ' + e.getStackTraceString());
 			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString()};
 		}
 	}
@@ -85,8 +91,8 @@ public without sharing class ChangeRequestController {
 			update selectedChangeRequest;
 			return new Map<String, Object>{'result' => true, 'message' => 'Change Request: ' + selectedChangeRequest[0].Name + ' successfully revoked.'};
 		} catch (Exception e) {
-			system.debug('ChangeRequestController clickOnRevoke ERROR message: ' + e.getMessage());
-			system.debug('ChangeRequestController clickOnRevoke ERROR messageStack: ' + e.getStackTraceString());
+			system.debug('ChangeRequestController [clickOnRevoke] Error: ' + e.getMessage());
+			system.debug('ChangeRequestController [clickOnRevoke] Stack: ' + e.getStackTraceString());
 			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString()};
 		}
 	}
@@ -117,8 +123,8 @@ public without sharing class ChangeRequestController {
 				'message' => 'Change Request: ' + newChangeRequest.Name + ' successfully created.'
 			};
 		} catch (Exception e) {
-			system.debug('ChangeRequestController submitSoloCancellation ERROR message: ' + e.getMessage());
-			system.debug('ChangeRequestController submitSoloCancellation ERROR messageStack: ' + e.getStackTraceString());
+			system.debug('ChangeRequestController [submitSoloCancellation] Error: ' + e.getMessage());
+			system.debug('ChangeRequestController [submitSoloCancellation] Stack: ' + e.getStackTraceString());
 			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString()};
 		}
 	}
@@ -157,8 +163,8 @@ public without sharing class ChangeRequestController {
 				'message' => 'Change Request: ' + newChangeRequest.Name + ' successfully created.'
 			};
 		} catch (Exception e) {
-			system.debug('ChangeRequestController submitGroupCancellation ERROR message: ' + e.getMessage());
-			system.debug('ChangeRequestController submitGroupCancellation ERROR messageStack: ' + e.getStackTraceString());
+			system.debug('ChangeRequestController [submitGroupCancellation] Error: ' + e.getMessage());
+			system.debug('ChangeRequestController [submitGroupCancellation] Stack: ' + e.getStackTraceString());
 			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString()};
 		}
 	}
@@ -208,8 +214,8 @@ public without sharing class ChangeRequestController {
 			};
 
 		} catch (Exception e) {
-			system.debug('ChangeRequestController submitSoloTransfer ERROR message: ' + e.getMessage());
-			system.debug('ChangeRequestController submitSoloTransfer ERROR messageStack: ' + e.getStackTraceString());
+			system.debug('ChangeRequestController [submitSoloTransfer] Error: ' + e.getMessage());
+			system.debug('ChangeRequestController [submitSoloTransfer] Stack: ' + e.getStackTraceString());
 			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString()};
 		}
 	}
@@ -262,27 +268,11 @@ public without sharing class ChangeRequestController {
 			};
 
 		} catch (Exception e) { 
-			system.debug('!!! ERROR !!! : ' + e.getMessage());
-			system.debug('!!! ERROR !!! : ' + e.getStackTraceString());
-			return new Map<String, Object>{'result' => false, 'message' => e.getStackTraceString()};
+			system.debug('ChangeRequestController [finalSubmitTransferGroup] Error: ' + e.getMessage());
+			system.debug('ChangeRequestController [finalSubmitTransferGroup] Stack: ' + e.getStackTraceString());
+			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString()};
 		}
 	}
-
-
-	//	Moved to UTILS Apex class
-	// public static List<Map<String, String>> getPicklistValues(String objectName, String fieldName){
-	// 	Schema.SObjectType s = Schema.getGlobalDescribe().get(objectName);
-	// 	Schema.DescribeSObjectResult r = s.getDescribe();
-	// 	Map<String,Schema.SObjectField> fields = r.fields.getMap();
-	// 	Schema.DescribeFieldResult fieldResult = fields.get(fieldName).getDescribe();
-	// 	List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
-
-	// 	List<Map<String, String>> listValues = new List<Map<String, String>>();
-	// 	for(Schema.PicklistEntry pickListVal : ple){
-	// 		listValues.add(new Map<String, String>{'label' => pickListVal.getLabel(), 'value' => pickListVal.getValue()});
-	// 	}
-	// 	return listValues;
-	// }
 
 	public class ChangeRequestWrap {
 		@AuraEnabled public String crId { get; set; }

@@ -1,6 +1,7 @@
 import { LightningElement, api, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import getOrderInfo from "@salesforce/apex/OrderHelper.getOrderInfo";
+// import getOrderInfo from "@salesforce/apex/OrderHelper.getOrderInfo";
+import getCancellationSettings from "@salesforce/apex/OrderHelper.getCancellationSettings";
 import cancelOrder from "@salesforce/apex/OrderHelper.cancelOrder";
 
 export default class CancelOrder extends LightningElement {
@@ -17,25 +18,28 @@ export default class CancelOrder extends LightningElement {
     @track infoOrder;
     @track orderItem;
 
+    @track displayContactColumn = false;
+
     invokeCallout() {
         this.infoOrder = {};
         this.orderItem = [];
         this.isSpinner = true;
-        getOrderInfo({ Id: this._recordId})
+        getCancellationSettings({ Id: this._recordId})
             .then(res => {
                 this.isSpinner = false;
                 console.log('getOrderInfo res', res);
-                if (res.length > 0) {
-                    this.infoOrder = res[0];
+                if (res.orderList.length > 0) {
+                    this.infoOrder = res.orderList[0];
                     if (this.infoOrder.Status__c === 'Paid' && this.infoOrder.Paid_Amount__c === 0) {
                         this.dispatchToast('Error', 'Order returned in full.', 'Error');
                         this.dispatchEvent(new CustomEvent('closeQuickAction', {}));
                     }
-                    this.orderItem = res[0].Order_Items__r;
+                    this.orderItem = res.orderList[0].Order_Items__r;
                     this.orderItem.forEach(e => {
                         e.Refund_Amount__c = e.Refund_Amount__c || 0;
                         e.maxRef = e.Total_amount__c - e.Refund_Amount__c;
                     });
+                    this.displayContactColumn = res.displayContactColumn;
                 }
             })
             .catch(error => {

@@ -11,9 +11,19 @@
     </div>
 
     <div class="slds-grid slds-wrap slds-border_bottom">
-        <div class="slds-col slds-size_5-of-12 slds-text-title_caps slds-var-p-left_medium">
-            <span>NAME</span>
-        </div>
+        <template if:false={displayContactColumn}>
+            <div class="slds-col slds-size_5-of-12 slds-text-title_caps slds-var-p-left_medium">
+                <span>NAME</span>
+            </div>
+        </template>
+        <template if:true={displayContactColumn}>
+            <div class="slds-col slds-size_3-of-12 slds-text-title_caps slds-var-p-left_medium">
+                <span>NAME</span>
+            </div>
+            <div class="slds-col slds-size_2-of-12 slds-text-title_caps slds-var-p-left_medium">
+                <span>Contact</span>
+            </div>
+        </template>
         <div class="slds-col slds-size_1-of-12 slds-text-title_caps slds-var-p-left_medium">
             <span>AMOUNT</span>
         </div>
@@ -36,9 +46,20 @@
 
     <template for:each={orderItem} for:item="item">
         <div class="slds-grid slds-wrap slds-m-top_small" key={item.Id}>
-            <div class="slds-col slds-size_5-of-12 slds-align-middle slds-text-align_left slds-var-p-left_medium">
-                <span>{item.Name__c}</span>
-            </div>
+            <template if:false={displayContactColumn}>
+                <div class="slds-col slds-size_5-of-12 slds-align-middle slds-text-align_left slds-var-p-left_medium">
+                    <span>{item.Name__c}</span>
+                </div>
+            </template>
+            <template if:true={displayContactColumn}>
+                <div class="slds-col slds-size_3-of-12 slds-align-middle slds-text-align_left slds-var-p-left_medium">
+                    <span>{item.Name__c}</span>
+                </div>
+                <div class="slds-col slds-size_2-of-12 slds-align-middle slds-var-p-left_medium">
+                    <!-- <span>{item.Event_Participation__r.Contact__r.Name}{item.Session_Participation__r.Contact__r.Name}</span> -->
+                    <span>{item.Contact_Name__c}</span>
+                </div>
+            </template>
             <div class="slds-col slds-size_1-of-12 slds-align-middle slds-var-p-left_medium">
                 <lightning-formatted-number value={item.Amount__c} format-style="currency" currency-code="EUR">
                 </lightning-formatted-number>

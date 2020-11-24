@@ -234,7 +234,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>false</active>
+        <active>true</active>
         <criteriaItems>
             <field>Email_Activity__c.Type__c</field>
             <operation>equals</operation>
@@ -257,7 +257,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>false</active>
+        <active>true</active>
         <criteriaItems>
             <field>Email_Activity__c.Type__c</field>
             <operation>equals</operation>
@@ -280,7 +280,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>false</active>
+        <active>true</active>
         <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Event registration&apos;) &amp;&amp; NOT(ISNULL(Order__c))</formula>
         <triggerType>onCreateOrTriggeringUpdate</triggerType>
     </rules>
@@ -308,7 +308,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>false</active>
+        <active>true</active>
         <criteriaItems>
             <field>Email_Activity__c.Type__c</field>
             <operation>equals</operation>
@@ -331,7 +331,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>false</active>
+        <active>true</active>
         <criteriaItems>
             <field>Email_Activity__c.Email_Sent__c</field>
             <operation>equals</operation>
@@ -350,7 +350,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>false</active>
+        <active>true</active>
         <criteriaItems>
             <field>Email_Activity__c.Email_Sent__c</field>
             <operation>equals</operation>
@@ -397,7 +397,7 @@
             <type>FieldUpdate</type>
         </actions>
         <active>true</active>
-        <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Sub group is submited&apos;) &amp;&amp; (Contact__r.FirstName != &apos;Undefined&apos;) &amp;&amp; (Contact__r.LastName != &apos;Participant&apos;)</formula>
+        <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Group participant submited&apos;) &amp;&amp; (Contact__r.FirstName != &apos;Undefined&apos;) &amp;&amp; (Contact__r.LastName != &apos;Participant&apos;)</formula>
         <triggerType>onCreateOrTriggeringUpdate</triggerType>
     </rules>
     <rules>
@@ -411,7 +411,7 @@
             <type>FieldUpdate</type>
         </actions>
         <active>true</active>
-        <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Sub group is submited&apos;) &amp;&amp; (Contact__r.FirstName == &apos;Undefined&apos;) &amp;&amp; (Contact__r.LastName == &apos;Participant&apos;)</formula>
+        <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Undefined group participant submited&apos;) &amp;&amp; (Contact__r.FirstName == &apos;Undefined&apos;) &amp;&amp; (Contact__r.LastName == &apos;Participant&apos;)</formula>
         <triggerType>onCreateOrTriggeringUpdate</triggerType>
     </rules>
     <rules>
@@ -424,7 +424,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>false</active>
+        <active>true</active>
         <criteriaItems>
             <field>Email_Activity__c.Email_Sent__c</field>
             <operation>equals</operation>

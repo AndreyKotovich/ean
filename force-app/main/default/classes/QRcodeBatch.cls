@@ -15,18 +15,20 @@ public without sharing class QRcodeBatch implements Database.Batchable<Participa
             participantIds.add(participant.Id);
             participantQRcodeFileNames.add('QR code ' + participant.Name + '.png');
         }
-        List<ContentDocumentLink> conDocLinks = [
-            SELECT Id, ContentDocumentId FROM ContentDocumentLink WHERE LinkedEntityId IN :participantIds
-        ];
-        List<String> contentDocumentIds = new List<String>();
-        for (ContentDocumentLink conDocLink : conDocLinks) {
-            contentDocumentIds.add(conDocLink.ContentDocumentId);
-        }
-        List<ContentDocument> contentDocuments = [
-            SELECT Id FROM ContentDocument WHERE Id IN :contentDocumentIds AND Title IN :participantQRcodeFileNames
-        ];
-        if (contentDocuments.size() > 0) {
-            delete contentDocuments;
+        if (participantIds.size() > 0) {
+            List<ContentDocumentLink> conDocLinks = [
+                SELECT Id, ContentDocumentId FROM ContentDocumentLink WHERE LinkedEntityId IN :participantIds
+            ];
+            List<String> contentDocumentIds = new List<String>();
+            for (ContentDocumentLink conDocLink : conDocLinks) {
+                contentDocumentIds.add(conDocLink.ContentDocumentId);
+            }
+            List<ContentDocument> contentDocuments = [
+                SELECT Id FROM ContentDocument WHERE Id IN :contentDocumentIds AND Title IN :participantQRcodeFileNames
+            ];
+            if (contentDocuments.size() > 0) {
+                delete contentDocuments;
+            }
         }
         return participants;
     }

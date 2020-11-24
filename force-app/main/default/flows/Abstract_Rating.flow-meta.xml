@@ -5,7 +5,7 @@
         <name>Assign_List_of_Authors</name>
         <label>Assign List of Authors</label>
         <locationX>832</locationX>
-        <locationY>409</locationY>
+        <locationY>400</locationY>
         <assignmentItems>
             <assignToReference>ListAuthors</assignToReference>
             <operator>Add</operator>
@@ -337,7 +337,7 @@
         <name>ReviewScreen</name>
         <label>ReviewScreen</label>
         <locationX>671</locationX>
-        <locationY>587</locationY>
+        <locationY>588</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -470,7 +470,7 @@
         </fields>
         <fields>
             <name>ConflictText</name>
-            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;font-size: 14px; color: rgb(62, 62, 60);&quot;&gt;&lt;u&gt;Conflict of Interest&lt;/u&gt;&lt;/b&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;&lt;u&gt;Conflict of Interest&lt;/u&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;If you have a conflict of interest, please decline this review.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <fields>
@@ -503,6 +503,30 @@
             </inputParameters>
             <isRequired>true</isRequired>
             <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <fields>
+            <name>ConflictComment</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>ConflictComment</elementReference>
+            </defaultValue>
+            <fieldText>Can you describe the conflict of interest?</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>false</isRequired>
+            <validationRule>
+                <errorMessage>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0);&quot;&gt;Enter less than 255 characters.&lt;/span&gt;&lt;/p&gt;</errorMessage>
+                <formulaExpression>LEN({!ConflictComment})&lt;=255</formulaExpression>
+            </validationRule>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>AcceptToggle.value</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>false</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
         </fields>
         <fields>
             <name>RatingText</name>
@@ -538,6 +562,30 @@
             <fieldText>Please rate this abstract</fieldText>
             <fieldType>RadioButtons</fieldType>
             <isRequired>true</isRequired>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>AcceptToggle.value</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Comments</name>
+            <defaultValue>
+                <stringValue>{!Loop_Assigned_Abstracts.Comments__c}</stringValue>
+            </defaultValue>
+            <fieldText>Do you have any comments?</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <helpText>&lt;p&gt;Please not that your comments will be forwarded to the abstract submitter. &lt;/p&gt;</helpText>
+            <isRequired>false</isRequired>
+            <validationRule>
+                <errorMessage>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;Enter less than &lt;/span&gt;&lt;span style=&quot;color: rgb(255, 0, 0);&quot;&gt;32768&lt;/span&gt;&lt;span style=&quot;color: rgb(255, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt; characters.&lt;/span&gt;&lt;/p&gt;</errorMessage>
+                <formulaExpression>LEN({!Comments})&lt;=32768</formulaExpression>
+            </validationRule>
             <visibilityRule>
                 <conditionLogic>and</conditionLogic>
                 <conditions>
@@ -620,26 +668,6 @@
             </visibilityRule>
         </fields>
         <fields>
-            <name>Comments</name>
-            <defaultValue>
-                <stringValue>{!Loop_Assigned_Abstracts.Comments__c}</stringValue>
-            </defaultValue>
-            <fieldText>Do you have any comments?</fieldText>
-            <fieldType>LargeTextArea</fieldType>
-            <helpText>&lt;p&gt;Please not that your comments will be forwarded to the abstract submitter. &lt;/p&gt;</helpText>
-            <isRequired>false</isRequired>
-            <visibilityRule>
-                <conditionLogic>and</conditionLogic>
-                <conditions>
-                    <leftValueReference>AcceptToggle.value</leftValueReference>
-                    <operator>EqualTo</operator>
-                    <rightValue>
-                        <booleanValue>true</booleanValue>
-                    </rightValue>
-                </conditions>
-            </visibilityRule>
-        </fields>
-        <fields>
             <name>SubmitRating</name>
             <extensionName>flowruntime:toggle</extensionName>
             <fieldType>ComponentInstance</fieldType>
@@ -696,7 +724,7 @@
         </connector>
         <fields>
             <name>SuccessText</name>
-            <fieldText>&lt;p&gt;&lt;b&gt;The abstract {!Get_Abstract.Title__c} has been successfully rated!&lt;/b&gt;&lt;/p&gt;&lt;p&gt;To continue the rating process, click &lt;i&gt;Next&lt;/i&gt;.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;To change your rating, click &lt;/span&gt;&lt;i style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;Previous&lt;/i&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If you want to stop the rating process and continue another time, press &lt;i&gt;Esc&lt;/i&gt; on your keyboard or close this window. &lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;b style=&quot;color: rgb(0, 0, 0);&quot;&gt;The abstract {!Get_Abstract.Title__c} has been successfully rated!&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;To continue the rating process, click &lt;/span&gt;&lt;i style=&quot;color: rgb(0, 0, 0);&quot;&gt;Next&lt;/i&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;To change your rating, click &lt;/span&gt;&lt;i style=&quot;color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;Previous&lt;/i&gt;&lt;span style=&quot;color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;If you want to stop the rating process and continue another time, press &lt;/span&gt;&lt;i style=&quot;color: rgb(0, 0, 0);&quot;&gt;Esc&lt;/i&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt; on your keyboard or close this window.&lt;/span&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <visibilityRule>
                 <conditionLogic>and</conditionLogic>
@@ -711,7 +739,7 @@
         </fields>
         <fields>
             <name>RejectedSuccessText</name>
-            <fieldText>&lt;p&gt;&lt;b&gt;Thank you for stating that there is a conflict of interest. &lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;The abstract &lt;i&gt;{!Get_Abstract.Title__c}&lt;/i&gt; has been rejected for review and will be assigned to someone else. &lt;/b&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;b style=&quot;color: rgb(0, 0, 0);&quot;&gt;Thank you for stating that there is a conflict of interest. &lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);&quot;&gt;The abstract &lt;i&gt;{!Get_Abstract.Title__c}&lt;/i&gt; has been rejected for review and will be assigned to someone else. &lt;/b&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <visibilityRule>
                 <conditionLogic>and</conditionLogic>
@@ -737,7 +765,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>SuccessText_0</name>
-            <fieldText>&lt;p&gt;&lt;b&gt;You have rated all abstracts!&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;To change your previous rating, click &lt;/span&gt;&lt;i style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;Previous&lt;/i&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;If you have to yet submitted your ratings, you can review them in the community. &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;b style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;Do not forget to submit all your ratings before the deadline. &lt;/b&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;b style=&quot;color: rgb(0, 0, 0);&quot;&gt;You have rated all abstracts!&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;To change your previous rating, click &lt;/span&gt;&lt;i style=&quot;color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;Previous&lt;/i&gt;&lt;span style=&quot;color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;If you have not yet submitted your ratings, you can review and change them in the community. &lt;/p&gt;&lt;p&gt;&lt;b&gt;Do not forget to submit your ratings before the deadline.&amp;nbsp;&lt;/b&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <showFooter>true</showFooter>

@@ -2,6 +2,7 @@
 <CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Reviewer_Compact_Layout</fullName>
     <fields>Event__c</fields>
+    <fields>Name</fields>
     <fields>Status__c</fields>
     <fields>Review_Capacity__c</fields>
     <label>Reviewer Compact Layout</label>

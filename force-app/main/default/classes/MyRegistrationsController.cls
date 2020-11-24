@@ -1,16 +1,18 @@
 public without sharing class MyRegistrationsController {
 
 	public static final String STATUS_PAID = 'Paid';					//	on order and on 'my registrations'
-	public static final String STATUS_NOT_PAID = 'Not Paid';			//	on 'my registrations'
+	// public static final String STATUS_NOT_PAID = 'Not Paid';			//	on 'my registrations'
+	public static final String STATUS_NOT_PAID = 'Payment Pending';			//	on 'my registrations'
 	public static final String STATUS_PARTIAL_PAID = 'Partial Paid';	//	on 'my registrations'
 	public static final String STATUS_NO_ORDERS = 'No Orders';			//	on 'my registrations'
 
 	public static final String SYSTEM_GROUP_CONTACT_NAME = 'Undefined Participant';
 
 	public static final String CR_TYPE_SOLO_CANCELLATION = 'Solo Registration Cancellation';
-	public static final String CR_TYPE_GROUP_CANCELLATION = 'Group Registration Cancellation';
+	public static final String CR_TYPE_GROUP_CANCELLATION = 'Full Group Registration Cancellation';
 	public static final String CR_TYPE_SOLO_TRANSFER = 'Solo Registration Transfer';
 	public static final String CR_TYPE_GROUP_TRANSFER = 'Group Registration Transfer';
+	public static final String CR_TYPE_GROUP_INDIVIDUAL_CANCELLATION = 'Individual Participant Group Registration Cancellation';
 
 	public static final String MY_REGISTRATIONS_TABLE_LABEL = 'My Registrations';
 	public static final String MY_REGISTERED_GROUPS_TABLE_LABEL = 'My Registered Groups';
@@ -180,9 +182,9 @@ public without sharing class MyRegistrationsController {
 			};
 
 		} catch (Exception e) { 
-			system.debug('!!! ERROR !!! : ' + e.getMessage());
-			system.debug('!!! ERROR !!! : ' + e.getStackTraceString());
-			return new Map<String, Object>{'result' => false, 'message' => e.getStackTraceString()};
+			system.debug('MyRegistrationsController [getMyRegistrations] Error: ' + e.getMessage());
+			system.debug('MyRegistrationsController [getMyRegistrations] Stack: ' + e.getStackTraceString());
+			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString()};
 		}
 	}
 
@@ -266,8 +268,9 @@ public without sharing class MyRegistrationsController {
 
 		queryString += String.isBlank(changeRequestType) ? '(Contact__c =:communityContactId OR Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c =:communityContactId) '
 			: changeRequestType == CR_TYPE_SOLO_CANCELLATION || changeRequestType == CR_TYPE_SOLO_TRANSFER ? 'Contact__c =:communityContactId '
-				: changeRequestType == CR_TYPE_GROUP_CANCELLATION || changeRequestType == CR_TYPE_GROUP_TRANSFER ? 'Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c =:communityContactId '
-					: '';	// TEST ERROR 
+				: changeRequestType == CR_TYPE_GROUP_CANCELLATION || changeRequestType == CR_TYPE_GROUP_TRANSFER || changeRequestType == CR_TYPE_GROUP_INDIVIDUAL_CANCELLATION
+					? 'Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c =:communityContactId '
+						: '';	// TEST ERROR 
 
 		queryString += 'AND RecordTypeId !=:g2mRT ';
 		queryString += 'AND Status__c !=\'Canceled\' ';

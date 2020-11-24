@@ -355,6 +355,7 @@ public without sharing class GroupDetailsLeaderController {
 		try {
 			String groupId = params.containsKey('groupId') ? String.valueOf(params.get('groupId')) : '';
 			String groupName = params.containsKey('groupName') ? String.valueOf(params.get('groupName')) : '';
+			String eventName = params.containsKey('eventName') ? String.valueOf(params.get('eventName')) : '';
 
 			if (String.isBlank(groupId) || String.isBlank(groupName))
 				return new Map<String, Object>{'result' => false, 'message' => 'Not Exists All Params. /' + groupId + ' / ' + groupName + ' / '};
@@ -364,7 +365,19 @@ public without sharing class GroupDetailsLeaderController {
 				Name = groupName
 			);
 
-			return new Map<String, Object>{'result' => true, 'message' => ' Successfully updated group name.'};
+			List<Order__c> otherGroupOrders = [
+				SELECT Id, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name
+				FROM Order__c
+				WHERE Event_custom__c != null
+				AND Event_custom__r.Name !=:eventName
+				AND Event_Registration_Sub_Group__c != null
+				AND Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name !=:groupName
+			];
+			Set<String> disabledGroupNames = new Set<String>();
+			for (Order__c otherGroupOrder : otherGroupOrders) disabledGroupNames.add(otherGroupOrder.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name);
+
+
+			return new Map<String, Object>{'result' => true, 'message' => ' Successfully updated group name.', 'disabledGroupNames' => disabledGroupNames};
 
 		} catch (Exception e) { 
 			system.debug('GroupDetailsLeaderController Error: ' + e.getMessage());

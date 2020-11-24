@@ -70,7 +70,6 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 				this._disabledEmailsThisGroup = result.disabledEmailsThisGroup;
 				this.combineDisabledEmails();
 				this._disabledGroupNames = result.disabledGroupNames;
-				console.log('this._disabledGroupNames: ', this._disabledGroupNames);
 
 				this._groupId = result.groupDetails.groupId;
 				this._groupName = result.groupDetails.groupName;
@@ -533,6 +532,7 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 				if (buttonsSettings.enableAddInviteButtons) {	// order is paid
 					if (currentParticipant.newContactId) buttonsSettings.displayAddButton = true;
 					if (!currentParticipant.newContactId) buttonsSettings.displayInviteButton = true;
+					if (!currentParticipant.newContactEmail) buttonsSettings.displayInviteButton = false;
 				}
 
 				if (buttonsSettings.enableWarningMessage) {
@@ -622,11 +622,11 @@ export default class GroupDetailsLeaderComponent extends LightningElement {
 					this.showErrorToast(result.message);
 					return;
 				}
+				this._disabledGroupNames = result.disabledGroupNames;
 				this._displayGroupNameButtons = false;
 				this._isGroupNameEmpty = false;
 				this._isGroupNameReserved = false;
 				this._groupNameInitial = '' + this._groupName;
-
 			})
 			.catch(error=>{
 				console.log('groupDetailsLeaderComponent error: ', error);

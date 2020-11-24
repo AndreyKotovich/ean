@@ -44,6 +44,19 @@ private class GroupDetailsLeaderControllerTest {
 		Map<String, Object> result = GroupDetailsLeaderController.getGroupDetails(new Map<String, String>{'contactRecordId' => '' + firstGroupLeader.Id, 'groupId' => '' + group1.Id});
 
 		system.debug('TEST result: ' + JSON.serialize(result));
+		System.assertEquals(true, Boolean.valueOf(result.get('result')));
+
+		result = GroupDetailsLeaderController.addButtonClick(new Map<String, Object>());
+		System.assertEquals(false, Boolean.valueOf(result.get('result')));
+
+		result = GroupDetailsLeaderController.inviteButtonClick(new Map<String, Object>());
+		System.assertEquals(false, Boolean.valueOf(result.get('result')));
+
+		result = GroupDetailsLeaderController.saveButtonClick(new Map<String, Object>());
+		System.assertEquals(false, Boolean.valueOf(result.get('result')));
+
+		result = GroupDetailsLeaderController.groupNameSave(new Map<String, Object>());
+		System.assertEquals(false, Boolean.valueOf(result.get('result')));
 
 	}
 }

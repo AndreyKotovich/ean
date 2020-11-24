@@ -91,7 +91,7 @@ export default class MyRegistrationsComponent extends NavigationMixin(LightningE
 			return;
 		}
 
-		if (this._selectedCRType == 'Group Registration Cancellation') {
+		if (this._selectedCRType == 'Full Group Registration Cancellation') {
 			this.dispatchEvent(new CustomEvent('submitgroupcancellation', { bubbles: true, detail: { selectedGroupId: registrationGroupId } }));
 		}
 
@@ -99,6 +99,9 @@ export default class MyRegistrationsComponent extends NavigationMixin(LightningE
 			this.dispatchEvent(new CustomEvent('submitgrouptransfer', { bubbles: true, detail: { selectedGroupId: registrationGroupId } }));
 		}
 
+		if (this._selectedCRType == 'Individual Participant Group Registration Cancellation') {
+			this.dispatchEvent(new CustomEvent('submitgroupparticipantcancellation', { bubbles: true, detail: { selectedGroupId: registrationGroupId } }));
+		}
 	}
 
 	navigateToRecordPage(id) {
