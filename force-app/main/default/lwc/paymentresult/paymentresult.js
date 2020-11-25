@@ -1,7 +1,7 @@
 import {LightningElement, track} from 'lwc';
 import getPaymentInfoByRequestId from '@salesforce/apex/PaymentHttpRequest.getPaymentInfoByRequestId';
 import insertLog from '@salesforce/apex/PaymentHttpRequest.insertLog';
-import determineSuccessScreen from '@salesforce/apex/OrderUtils.determineSuccessScreen';
+import determineSuccessScreen from '@salesforce/apex/OrderUtils.determineSuccessScreen'; //TODO
 export default class Paymentresult extends LightningElement {
     @track showErrorMessage = false;
     @track errorMessage = 'Error';
@@ -65,11 +65,11 @@ export default class Paymentresult extends LightningElement {
         determineSuccessScreen({orderId:orderId})
             .then(result=>{
                 let title, message;
-                if(result === 'ORDER'){
+                if(result.type === 'ORDER'){
                     title = 'Your payment was received, thank you!';
                     message = '';
                     this.showSuccessScreen(title, message);
-                } else if(result === 'ORDER_WITH_APP_FORM'){
+                } else if(result.type === 'ORDER_WITH_APP_FORM'){
                     title = 'Thank you for your payment. Your application has been submitted for review.';
                     message = 'If you do not hear back from us within 10 working days, please contact us at <a href="mailto:membership@ean.org">membership@ean.org</a>.';
                     this.showSuccessScreen(title, message);

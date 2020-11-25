@@ -41,27 +41,38 @@ public without sharing class OrderUtils {
             update order;
         }
     }
-    @AuraEnabled public static String determineSuccessScreen(String orderId){
+    @AuraEnabled public static Map<String, Object> determineSuccessScreen(String orderId){
+        Map<String, Object> resultMap = new Map<String, Object>();
         String result = 'ORDER';
+        List<Order__c> order = [SELECT Id, Type__c, Total_amount__c, Invoice_Number__c, (SELECT Id, Membership__c, Membership__r.Name FROM Applications_Forms__r LIMIT 1) FROM Order__c WHERE Id = :orderId];
+        resultMap.put('order', order);
 
-        List<Application_form__c> appForms = [
-            SELECT Id, Order__c, Order__r.Type__c, Membership__c, Membership__r.Name
-            FROM Application_form__c
-            WHERE Order__c = :orderId
-            LIMIT 1
-        ];
+        if(!order.isEmpty()){
 
-        if (appForms.isEmpty()) return result;
+            if (order[0].Applications_Forms__r.isEmpty()){
 
-        //  part of 'Membership Renewal'
-        if (appForms[0].Order__c != null && appForms[0].Membership__c != null && appForms[0].Order__r.Type__c == 'Renewal' && appForms[0].Membership__r.Name != 'Student Membership') return result;
+                if(order[0].Type__c == 'Event registration'){
+                    result = 'EVENT_REGISTRATION';
+                }
 
-        //  old logic
-        // List<Application_form__c> appForms = [SELECT Id FROM Application_form__c WHERE Order__c = :orderId];
-        if(!appForms.isEmpty()){
-            result+='_WITH_APP_FORM';
+            } else {
+                //  part of 'Membership Renewal'
+                if (order[0].Applications_Forms__r[0].Membership__c != null && order[0].Type__c == 'Renewal' &&
+                        order[0].Applications_Forms__r[0].Membership__r.Name != 'Student Membership') {
+                    resultMap.put('type', result);
+                    return resultMap;
+                }
+
+                result+='_WITH_APP_FORM';
+            }
+
+        } else {
+            //TODO Error
         }
-        return result;
+
+        resultMap.put('type', result);
+
+        return resultMap;
     }
     @AuraEnabled public static void updateOrderItems(String orderId, List<Order_Item__c> orderItems){
         List<Order_Item__c> existedOrderItems = [SELECT Id FROM Order_Item__c WHERE Order_Custom__c = :orderId];

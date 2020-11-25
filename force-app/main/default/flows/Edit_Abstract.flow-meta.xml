@@ -1128,6 +1128,8 @@
             </value>
         </filters>
         <object>PicklistValueInfo</object>
+        <sortField>Label</sortField>
+        <sortOrder>Asc</sortOrder>
         <valueField>Value</valueField>
     </dynamicChoiceSets>
     <dynamicChoiceSets>
@@ -1825,7 +1827,7 @@
         </fields>
         <fields>
             <name>EditImagesText_0_0</name>
-            <fieldText>&lt;p&gt;Below you can see the images you have added to your abstract. &lt;/p&gt;&lt;p&gt;You have the option to adjust where they should be located in the abstract. You can also replace them by uploading a new picture.&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;Below you can see the images you have added to your abstract.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <visibilityRule>
                 <conditionLogic>or</conditionLogic>
@@ -2131,7 +2133,7 @@
         </connector>
         <fields>
             <name>EditImagesText</name>
-            <fieldText>&lt;p&gt;Below you can see the images you have added to your abstract. &lt;/p&gt;&lt;p&gt;You have the option to adjust where they should be located in the abstract. You can also replace them by uploading a new picture.&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;Below you can see the images you have added to your abstract.&lt;/p&gt;&lt;p&gt;You have the option to adjust where they should be located in the abstract.&lt;/p&gt;&lt;p&gt;You can also remove pictures, if needed.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <visibilityRule>
                 <conditionLogic>or</conditionLogic>
@@ -2620,7 +2622,7 @@
         </connector>
         <fields>
             <name>EditImagesText_0</name>
-            <fieldText>&lt;p&gt;Below you can see the images you have added to your abstract. &lt;/p&gt;&lt;p&gt;You have the option to adjust where they should be located in the abstract. You can also replace them by uploading a new picture.&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;Below you can see the images you have added to your abstract.&lt;/p&gt;&lt;p&gt;You have the option to adjust where they should be located in the abstract. &lt;/p&gt;&lt;p&gt;You can also replace or add pictures by uploading a new picture.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <visibilityRule>
                 <conditionLogic>or</conditionLogic>

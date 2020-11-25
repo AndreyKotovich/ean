@@ -496,6 +496,19 @@ public without sharing class PaymentHttpRequest {
         List<Order__c> order = [SELECT Id, Name, Contact__r.FirstName, Contact__r.LastName, Invoice_Number__c, Total_amount__c FROM Order__c WHERE Id = :orderId];
         return order;
     }
+    
+    @RemoteAction public static void updatePaymentMethodForOrder(String orderId, String method) {
+        try {
+            String paymentMethod = method == 'card-method' ? 'creditcard' : 
+                method == 'paypal-method' ? 'paypal' : 
+                method == 'bank-transfer-method'? 'Bank Transfer' :  '';
+
+            update new Order__c(Id = orderId, Payment_Method__c = paymentMethod);
+        } catch (Exception e) {
+            System.debug('catch ' + e.getMessage());
+        }     
+    }
+
     @AuraEnabled public static String getCommunityHomeUrlAuraEnabled(){
         if([SELECT Id, IsSandbox, Name FROM Organization LIMIT 1].IsSandbox){
             return getCommunityOriginUrl('Community');

@@ -188,7 +188,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>true</active>
+        <active>false</active>
         <criteriaItems>
             <field>Email_Activity__c.Type__c</field>
             <operation>equals</operation>
@@ -211,7 +211,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>true</active>
+        <active>false</active>
         <criteriaItems>
             <field>Email_Activity__c.Type__c</field>
             <operation>equals</operation>
@@ -234,7 +234,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>true</active>
+        <active>false</active>
         <criteriaItems>
             <field>Email_Activity__c.Type__c</field>
             <operation>equals</operation>
@@ -331,7 +331,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>true</active>
+        <active>false</active>
         <criteriaItems>
             <field>Email_Activity__c.Email_Sent__c</field>
             <operation>equals</operation>
@@ -350,7 +350,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>true</active>
+        <active>false</active>
         <criteriaItems>
             <field>Email_Activity__c.Email_Sent__c</field>
             <operation>equals</operation>
@@ -373,7 +373,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>true</active>
+        <active>false</active>
         <criteriaItems>
             <field>Email_Activity__c.Type__c</field>
             <operation>equals</operation>
@@ -424,7 +424,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>true</active>
+        <active>false</active>
         <criteriaItems>
             <field>Email_Activity__c.Email_Sent__c</field>
             <operation>equals</operation>
@@ -447,7 +447,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>true</active>
+        <active>false</active>
         <criteriaItems>
             <field>Email_Activity__c.Type__c</field>
             <operation>equals</operation>
@@ -470,7 +470,7 @@
             <name>Email_sent</name>
             <type>FieldUpdate</type>
         </actions>
-        <active>true</active>
+        <active>false</active>
         <criteriaItems>
             <field>Email_Activity__c.Email_Sent__c</field>
             <operation>equals</operation>

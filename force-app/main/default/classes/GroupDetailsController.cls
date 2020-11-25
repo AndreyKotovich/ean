@@ -6,6 +6,8 @@ public without sharing class GroupDetailsController {
 	public static final String CR_TYPE_GROUP_INDIVIDUAL_CANCELLATION = 'Individual Participant Group Registration Cancellation';
 	public static final String CR_TYPE_GROUP_TRANSFER = 'Group Registration Transfer';
 
+	public static final Set<String> ALLOWED_PARTICIPANT_STATUSES = new Set<String>{'Registered', 'Pending', 'Registered Draft'};
+
 	public static String communityContactId = '';
 	//	COMMUNITY PAGE: GROUP DETAILS
 	@AuraEnabled
@@ -221,6 +223,7 @@ public without sharing class GroupDetailsController {
 	}
 
 	public static void getGroupParticipations() {
+
 		Id g2mRT = Schema.SObjectType.Participant__c.getRecordTypeInfosByDeveloperName().get('G2M').getRecordTypeId();
 		groupParticipations = [
 			SELECT Id, Name, Participant_Email__c, Contact__c, Contact__r.Name, Contact__r.Email, Status__c,
@@ -237,6 +240,7 @@ public without sharing class GroupDetailsController {
 			AND Event_Registration_Sub_Group__r.Event_Registration_Group__c =:transferGroupId
 			AND Contact__c != null
 			AND Event_custom__c != null
+			AND Status__c IN :ALLOWED_PARTICIPANT_STATUSES
 			ORDER BY Event_Registration_Sub_Group__r.CreatedDate, LastModifiedDate
 		];
 	}
@@ -512,6 +516,7 @@ public without sharing class GroupDetailsController {
 		return JSON.serialize(selectedParticipants);
 	}
 
+	//	DEPRECATED
 	@AuraEnabled
 	public static Map<String, Object> clickSubmitSubGroupParticipants(Map<String, Object> params) {
 		try {
@@ -524,7 +529,8 @@ public without sharing class GroupDetailsController {
 			if (String.isBlank(subGroupDetails.subGroupId) || subGroupDetails.subGroupParticipantList == null || subGroupDetails.subGroupParticipantList.isEmpty())
 				return new Map<String, Object>{'result' => false, 'message' => 'Not Exists All Params. ' + subGroupDetails.subGroupId + ' / ' + subGroupDetails.subGroupParticipantList + ' / '};
 
-			List<Event_Registration_Sub_Group__c> subGroup = [SELECT Id, Name, Is_Locked__c FROM Event_Registration_Sub_Group__c WHERE Id =:subGroupDetails.subGroupId LIMIT 1];
+			// List<Event_Registration_Sub_Group__c> subGroup = [SELECT Id, Name, Is_Locked__c FROM Event_Registration_Sub_Group__c WHERE Id =:subGroupDetails.subGroupId LIMIT 1];
+			List<Event_Registration_Sub_Group__c> subGroup = [SELECT Id, Name FROM Event_Registration_Sub_Group__c WHERE Id =:subGroupDetails.subGroupId LIMIT 1];
 			if (subGroup.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => 'Sub Group Not Found. Id: ' + subGroupDetails.subGroupId};
 
 			List<Contact> undefinedParticipant = [SELECT Id FROM Contact WHERE Name =:SYSTEM_GROUP_CONTACT_NAME LIMIT 1];
@@ -549,7 +555,7 @@ public without sharing class GroupDetailsController {
 				participantsToUpdate.add(participant);
 			}
 			update participantsToUpdate;
-			subGroup[0].Is_Locked__c = true;
+			// subGroup[0].Is_Locked__c = true;
 			update subGroup;
 
 			return new Map<String, Object>{

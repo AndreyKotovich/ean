@@ -1,6 +1,7 @@
 public without sharing class GroupDetailsLeaderController {
 
 	public static final String SYSTEM_GROUP_CONTACT_NAME = 'Undefined Participant';
+	public static final Set<String> ALLOWED_PARTICIPANT_STATUSES = new Set<String>{'Registered', 'Pending', 'Registered Draft'};
 
 	public static String undefinedParticipantId = '';
 
@@ -100,7 +101,6 @@ public without sharing class GroupDetailsLeaderController {
 	public static void getGroupParticipants(String contactRecordId, String groupId) {
 		Id g2mRT = Schema.SObjectType.Participant__c.getRecordTypeInfosByDeveloperName().get('G2M').getRecordTypeId();
 
-		Set<String> validStatuses = new Set<String>{'Pending', 'Registered', 'Registered Draft'};
 		groupParticipants = [
 			SELECT Id, Name, Participant_Email__c, Contact__c, Contact__r.Name, Contact__r.Email,
 				Event_custom__c, Event_custom__r.Name, Event_custom__r.End_Time__c, Event_custom__r.Start_Time__c,
@@ -116,7 +116,7 @@ public without sharing class GroupDetailsLeaderController {
 			AND Event_Registration_Sub_Group__r.Event_Registration_Group__c =:groupId
 			AND Contact__c != null
 			AND Event_custom__c != null
-			AND Status__c IN :validStatuses
+			AND Status__c IN :ALLOWED_PARTICIPANT_STATUSES
 			ORDER BY Event_Registration_Sub_Group__r.CreatedDate, Status__c ASC NULLS LAST, Participant_Email__c DESC NULLS LAST
 			// ORDER BY Event_Registration_Sub_Group__r.CreatedDate, Invitation_Status_In_Group__c DESC NULLS LAST, Participant_Email__c DESC NULLS LAST
 		];

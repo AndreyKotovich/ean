@@ -1007,6 +1007,8 @@
             </value>
         </filters>
         <object>PicklistValueInfo</object>
+        <sortField>Label</sortField>
+        <sortOrder>Asc</sortOrder>
         <valueField>Value</valueField>
     </dynamicChoiceSets>
     <dynamicChoiceSets>

@@ -6,7 +6,6 @@ public with sharing class EventRegistrationControllerTest {
         NewsletterSubscriptionController.isCreateSubscribersEnabled = false;
         Id sysAdminProfileId = [SELECT Id FROM Profile WHERE Name = 'System Administrator'].Id;
         UserRole userRole = [SELECT Id, DeveloperName FROM UserRole WHERE DeveloperName = 'Developer' LIMIT 1];
-        System.debug('userRole: '+userRole);
 
         User sysAdminUser = new User(
                 Alias = 'test', Email = 'ean_sysadmin@test.com',
@@ -15,8 +14,6 @@ public with sharing class EventRegistrationControllerTest {
                 TimeZoneSidKey = 'Europe/Berlin', Username = 'ean_sysadmin@test.com', UserRoleId = userRole.Id
         );
         insert sysAdminUser;
-
-        System.debug(sysAdminUser);
 
         System.runAs(sysAdminUser){
             List<Event__c> events = new List<Event__c>();
@@ -299,14 +296,12 @@ public with sharing class EventRegistrationControllerTest {
         generalData.put('contactId', contact.Id);
         List<Object> selectedSession = new List<Object>();
 
-        System.debug('sessionEventTicket: '+sessionEventTicket);
         if(!sessionEventTicket.isEmpty()){
             selectedSession.add(new Map<Object, Object>{'id' => sessionEventTicket[0].Id, 'price' => 35});
         }
 
         System.runAs(user){
             Map<String, Object> result = EventRegistrationController.insertEventParticipants(participantPriceMap, generalData, selectedSession);
-            System.debug('result: ' + result);
             System.assertEquals('Success', (String)result.get('message'));
             List<Participant__c> participants = [SELECT Id, (SELECT Id FROM Session_Participations__r) FROM Participant__c WHERE Contact__c = :contact.Id AND Event_custom__c = :event.Id];
             System.assert(!participants.isEmpty());
@@ -353,5 +348,44 @@ public with sharing class EventRegistrationControllerTest {
         System.assert(!participants.isEmpty());
 
         System.assert(![SELECT Id FROM Email_Activity__c].isEmpty());
+    }
+
+    @IsTest
+    public static void insertUpgradeDataTest(){
+        User user = [SELECT Id, ContactId FROM User WHERE Email = 'info@test.com'];
+        Contact contact = [SELECT Id FROM Contact WHERE Email = 'info@test.com' LIMIT 1];
+        Event__c event = [SELECT Id FROM Event__c LIMIT 1];
+        Participant__c participant = new Participant__c(Contact__c = contact.Id, Event_custom__c = event.Id);
+        insert participant;
+
+        Map<String, Object> data = new Map<String, Object>();
+        data.put('participant', participant.Id);
+
+        Map<Object, Object> generalData = new Map<Object, Object>();
+        generalData.put('eventId', event.Id);
+        generalData.put('contactId', contact.Id);
+        data.put('generalData', generalData);
+
+        List<Event_Ticket__c> sessionEventTicket = [
+                SELECT Id, Session__c
+                FROM Event_Ticket__c
+                WHERE Session__c != NULL
+                AND Ticket__c != NULL
+                AND Session__r.Event_custom__c = :event.Id
+        ];
+        List<Object> selectedSession = new List<Object>();
+        if(!sessionEventTicket.isEmpty()){
+            selectedSession.add(new Map<Object, Object>{'id' => sessionEventTicket[0].Id, 'price' => 35});
+        }
+        data.put('selectedSessions', selectedSession);
+
+        Map<String, Object> result = new Map<String, Object>();
+
+        System.runAs(user){
+            result = EventRegistrationController.insertUpgradeData(data);
+        }
+        List<Participant__c> participants = [SELECT Id, (SELECT Id FROM Session_Participations__r) FROM Participant__c WHERE Id  = :participant.Id];
+        System.assertEquals('Success', (String)result.get('message'));
+        System.assert(!participants[0].Session_Participations__r.isEmpty());
     }
 }
