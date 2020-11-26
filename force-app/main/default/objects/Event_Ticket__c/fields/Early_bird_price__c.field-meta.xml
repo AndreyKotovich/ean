@@ -7,6 +7,5 @@
     <required>false</required>
     <scale>2</scale>
     <trackTrending>false</trackTrending>
-    <type>Number</type>
-    <unique>false</unique>
+    <type>Currency</type>
 </CustomField>

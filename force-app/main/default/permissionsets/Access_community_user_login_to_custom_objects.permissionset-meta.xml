@@ -265,6 +265,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Abstract__c.Late_Breaking_Submission__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Abstract__c.Methods__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -1745,7 +1750,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Event__c.Abstract_Reviewers__c</field>
+        <field>Event__c.Abstract_Review_Deadline__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1840,6 +1845,16 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Event__c.Late_Breaking_Review_Deadline__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Event__c.Late_Breaking_Submission_Deadline__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Event__c.LogMeIn_Owner_Key__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -1852,6 +1867,16 @@
         <editable>false</editable>
         <field>Event__c.Mobile__c</field>
         <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Event__c.Number_of_Reviewers_Late_Breaking__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Event__c.Number_of_Reviewers__c</field>
+        <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
@@ -3785,6 +3810,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Ticket__c.Event_Country_Ticket__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Ticket__c.Is_Group_only__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -4101,6 +4131,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Visa_Letter__c.First_Name__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Visa_Letter__c.Gender__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Event_Country_Ticket__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>If checked, this ticket is available only for participants whose country of residence equal event venue country. 
+If checked, ignores all membership, country and persona rules.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>If checked, this ticket is available only for participants whose country of residence equal event venue country. 
+If checked, ignores all membership, country and persona rules.</inlineHelpText>
+    <label>Eligible for country of congress</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

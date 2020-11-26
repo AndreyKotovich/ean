@@ -30,6 +30,11 @@
                 <default>false</default>
                 <label>Closed</label>
             </value>
+            <value>
+                <fullName>Late Breaking Submission</fullName>
+                <default>false</default>
+                <label>Late Breaking Submission</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

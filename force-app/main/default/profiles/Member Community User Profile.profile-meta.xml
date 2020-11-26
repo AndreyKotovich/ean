@@ -173,6 +173,14 @@
         <enabled>false</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>CreateAndSendVisaLetter</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>CreateAndSendVisaLetterTest</apexClass>
+        <enabled>false</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>CreateChatterGroupHelper</apexClass>
         <enabled>false</enabled>
     </classAccesses>
@@ -194,6 +202,10 @@
     </classAccesses>
     <classAccesses>
         <apexClass>CreateMeetingLogMeInMock</apexClass>
+        <enabled>false</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>CustomLookUpController</apexClass>
         <enabled>false</enabled>
     </classAccesses>
     <classAccesses>
@@ -470,7 +482,7 @@
     </classAccesses>
     <classAccesses>
         <apexClass>PaymentHttpRequest</apexClass>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
         <apexClass>PaymentHttpRequestMock</apexClass>
@@ -678,6 +690,10 @@
     </classAccesses>
     <classAccesses>
         <apexClass>VisaLetterController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>VisaLetterControllerTest</apexClass>
         <enabled>false</enabled>
     </classAccesses>
     <classAccesses>
@@ -953,6 +969,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Abstract__c.Introduction__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Abstract__c.Late_Breaking_Submission__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -2382,7 +2403,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Event__c.Abstract_Reviewers__c</field>
+        <field>Event__c.Abstract_Review_Deadline__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -2477,6 +2498,16 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Event__c.Late_Breaking_Review_Deadline__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Event__c.Late_Breaking_Submission_Deadline__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Event__c.LogMeIn_Owner_Key__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -2488,6 +2519,16 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Event__c.Mobile__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Event__c.Number_of_Reviewers_Late_Breaking__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Event__c.Number_of_Reviewers__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -4432,6 +4473,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Ticket__c.Event_Country_Ticket__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Ticket__c.Is_Group_only__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -4752,6 +4798,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Visa_Letter__c.Gender__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Visa_Letter__c.Last_Name__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -4864,6 +4915,14 @@
     <flowAccesses>
         <enabled>false</enabled>
         <flow>MembershipRenewalPaymentReceived</flow>
+    </flowAccesses>
+    <flowAccesses>
+        <enabled>false</enabled>
+        <flow>MembershipRenewalStudentPaymentFailed</flow>
+    </flowAccesses>
+    <flowAccesses>
+        <enabled>false</enabled>
+        <flow>MembershipRenewalStudentPaymentSuccess</flow>
     </flowAccesses>
     <flowAccesses>
         <enabled>false</enabled>
@@ -5375,7 +5434,15 @@
     </pageAccesses>
     <pageAccesses>
         <apexPage>VisaLetter</apexPage>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
+    </pageAccesses>
+    <pageAccesses>
+        <apexPage>VisaLetterOne</apexPage>
+        <enabled>true</enabled>
+    </pageAccesses>
+    <pageAccesses>
+        <apexPage>VisaLetterSecond</apexPage>
+        <enabled>true</enabled>
     </pageAccesses>
     <pageAccesses>
         <apexPage>paymentHandle</apexPage>

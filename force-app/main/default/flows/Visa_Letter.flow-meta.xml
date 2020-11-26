@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <actionCalls>
+        <name>Attach_and_send_Visa_Letter</name>
+        <label>Attach and send Visa Letter</label>
+        <locationX>50</locationX>
+        <locationY>1238</locationY>
+        <actionName>CreateAndSendVisaLetter</actionName>
+        <actionType>apex</actionType>
+        <inputParameters>
+            <name>visaLetterIds</name>
+            <value>
+                <elementReference>visaLetterId</elementReference>
+            </value>
+        </inputParameters>
+    </actionCalls>
     <apiVersion>50.0</apiVersion>
     <choices>
         <name>CountryDefaultChoice</name>
@@ -144,9 +158,10 @@
         <name>Create_Visa_Letter</name>
         <label>Create Visa Letter</label>
         <locationX>50</locationX>
-        <locationY>998</locationY>
+        <locationY>1118</locationY>
+        <assignRecordIdToReference>visaLetterId</assignRecordIdToReference>
         <connector>
-            <targetReference>Visa_Letter_Information_3</targetReference>
+            <targetReference>Attach_and_send_Visa_Letter</targetReference>
         </connector>
         <inputAssignments>
             <field>Authority__c</field>
@@ -242,7 +257,6 @@
             </value>
         </inputAssignments>
         <object>Visa_Letter__c</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordCreates>
     <recordLookups>
         <name>Get_Contact</name>
@@ -417,7 +431,7 @@
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Create_Visa_Letter</targetReference>
+            <targetReference>Visa_Letter_Information_3</targetReference>
         </connector>
         <fields>
             <name>Passport_Number</name>
@@ -491,10 +505,13 @@
         <name>Visa_Letter_Information_3</name>
         <label>Visa Letter Information 3</label>
         <locationX>50</locationX>
-        <locationY>1118</locationY>
+        <locationY>998</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Create_Visa_Letter</targetReference>
+        </connector>
         <fields>
             <name>Thank_You</name>
             <fieldText>&lt;p&gt;Thank you for requesting the visa letter.&lt;/p&gt;</fieldText>
@@ -532,6 +549,23 @@
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>visaLetterId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+        <value>
+            <elementReference>$Flow.CurrentRecord</elementReference>
+        </value>
+    </variables>
+    <variables>
+        <name>visaLetters</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
 </Flow>

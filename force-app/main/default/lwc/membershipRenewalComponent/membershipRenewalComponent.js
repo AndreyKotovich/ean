@@ -1,5 +1,6 @@
 import { LightningElement } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getPreparedData from '@salesforce/apex/MembershipRenewalController.getPreparedData';
 import recalculateRenewalFee from '@salesforce/apex/MembershipRenewalController.recalculateRenewalFee';
 import deleteContentDocumentById from '@salesforce/apex/MembershipRenewalController.deleteContentDocumentById'
@@ -587,6 +588,14 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 				this._isSpinner = false;
 
 				if (!result.result) {
+					console.log('submitRenewal result: ', result);
+
+					//	'A user account with this email address already exists. If you need further assistance, please contact headoffice@ean.org.'
+					if (result.resultMessage) {
+						this.dispatchToast('Error', result.resultMessage, 'error');
+						return;
+					}
+
 					this._isError = true;
 					return;
 				}
@@ -618,5 +627,25 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 			}
 		});
 	}
-	
+
+	get displayMainBlock() {
+		if (!this._isSpinner) return 'display: block;';
+		return 'display: none;';
+	}
+
+	get isStep3Style() {
+		if (this._isStep3) return 'display: block;';
+		return 'display: none;';
+	}
+
+	dispatchToast(title, message, variant) {
+		this.dispatchEvent(
+			new ShowToastEvent({
+				title: title,
+				message: message,
+				variant: variant,
+			}),
+		);
+	}
+
 }

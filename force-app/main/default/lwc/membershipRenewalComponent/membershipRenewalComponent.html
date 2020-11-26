@@ -5,7 +5,8 @@
 		</div>
 	</template>
 
-	<template if:false={_isSpinner}>
+	<div style={displayMainBlock}>
+	<!-- <template if:false={_isSpinner}> -->
 		<template if:true={_isError}>
 			<div class="slds-text-heading_large slds-align_absolute-center slds-text-color_error">{_errorMessage}</div>
 		</template>
@@ -217,7 +218,8 @@
 								</template>
 
 								<!-- STEP 3 -->
-								<template if:true={_isStep3}>
+								<div style={isStep3Style}>
+								<!-- <template if:true={_isStep3}> -->
 
 									<div class="slds-m-top_x-small slds-m-bottom_x-small">
 										<c-ean-journals class="slds-text-align_left" onselect={handleJournalSelect} auto-populate={_selectedJournals}></c-ean-journals>
@@ -227,7 +229,6 @@
 									<div class="slds-grid slds-text-align_left" style="margin-left: -8px;">
 										<abbr title="required" class="slds-required">*</abbr>
 										<div><lightning-input data-id="terms-checkbox" type="checkbox" label="" name="terms" onchange={handleChangeEANTerms} checked={_agreeToEANTerms}></lightning-input></div>
-										<!-- <div><lightning-input data-id="terms-checkbox" type="checkbox" label="" name="terms" onchange={handleChangeEANTerms} checked={_agreeToEANTerms} required></lightning-input></div> -->
 										<div>
 											<p>I agree to the <a href="https://membership-application.ean.org/?module=terms" target="_blank">EAN Terms and Conditions for EAN online membership application and payment</a>.</p>
 										</div>
@@ -241,7 +242,8 @@
 									<br/>
 									<br/>
 
-								</template>
+								<!-- </template> -->
+								</div>
 
 							</div>
 						</lightning-card>
@@ -253,6 +255,7 @@
 				<div class="slds-align_absolute-center slds-text-heading_large slds-text-color_success">NEED TO APPROVE THE APP FORM</div>
 			</template>
 		</template>
-	</template>
+	<!-- </template> -->
+	</div>
 
 </template>

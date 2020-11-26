@@ -4,7 +4,7 @@ import {Utils} from "c/utils";
 // APEX
 import getContactInfo from "@salesforce/apex/EventRegistrationController.getContactInfo";
 import getCountries from "@salesforce/apex/membershipApplicationController.getCountries";
-import getContactMemberships from "@salesforce/apex/Utils.getContactMemberships";
+import getContactMemberships from "@salesforce/apex/EventRegistrationController.getContactMemberships";
 import getNotAvailableEventRegistrationEmails from "@salesforce/apex/EventRegistrationController.getNotAvailableEventRegistrationEmails";
 
 export default class ErParticipantsInitialization extends LightningElement {

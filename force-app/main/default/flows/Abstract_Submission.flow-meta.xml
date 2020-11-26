@@ -4,8 +4,8 @@
     <assignments>
         <name>Assign_Type_and_Topic</name>
         <label>Assign Type and Topic</label>
-        <locationX>380</locationX>
-        <locationY>806</locationY>
+        <locationX>411</locationX>
+        <locationY>780</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
             <operator>Assign</operator>
@@ -90,6 +90,13 @@
             <operator>Assign</operator>
             <value>
                 <elementReference>Topics_Pick</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Late_Breaking_Submission__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>SetLateBreakingCheckbox</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -497,8 +504,8 @@
     <assignments>
         <name>Enable_Word_Count_Error</name>
         <label>Enable Word Count Error</label>
-        <locationX>246</locationX>
-        <locationY>799</locationY>
+        <locationX>253</locationX>
+        <locationY>779</locationY>
         <assignmentItems>
             <assignToReference>ShowWordCountError</assignToReference>
             <operator>Assign</operator>
@@ -579,6 +586,20 @@
         <dataType>String</dataType>
         <value>
             <stringValue>0123Y000000MjVbQAK</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>TopicFieldId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Abstract__c.00N0E000007uo8z</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>TypeFieldId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Abstract__c.00N0E000007uHfg</stringValue>
         </value>
     </constants>
     <decisions>
@@ -666,24 +687,17 @@
         </rules>
     </decisions>
     <decisions>
-        <name>CheckSubmissionDeadline</name>
-        <label>CheckSubmissionDeadline</label>
-        <locationX>327</locationX>
-        <locationY>550</locationY>
+        <name>CheckSubmissionWindow</name>
+        <label>CheckSubmissionWindow</label>
+        <locationX>328</locationX>
+        <locationY>553</locationY>
         <defaultConnector>
             <targetReference>Deadline_passed_screen</targetReference>
         </defaultConnector>
-        <defaultConnectorLabel>Deadline Passed</defaultConnectorLabel>
+        <defaultConnectorLabel>Submission Closed</defaultConnectorLabel>
         <rules>
-            <name>Deadline_Not_Passed</name>
-            <conditionLogic>1 AND (2 OR 3)</conditionLogic>
-            <conditions>
-                <leftValueReference>$Flow.CurrentDateTime</leftValueReference>
-                <operator>LessThan</operator>
-                <rightValue>
-                    <elementReference>GetEvent.Abstract_Submission_Deadline__c</elementReference>
-                </rightValue>
-            </conditions>
+            <name>Submission_Open</name>
+            <conditionLogic>or</conditionLogic>
             <conditions>
                 <leftValueReference>GetEvent.Abstract_Submission__c</leftValueReference>
                 <operator>EqualTo</operator>
@@ -698,10 +712,17 @@
                     <stringValue>Public Submission Open</stringValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>GetEvent.Abstract_Submission__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Late Breaking Submission</stringValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>GetMembershipStatus</targetReference>
             </connector>
-            <label>Deadline Not Passed</label>
+            <label>Submission Open</label>
         </rules>
     </decisions>
     <decisions>
@@ -996,7 +1017,7 @@
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
             <value>
-                <stringValue>Abstract__c.00N0E000007uo8z</stringValue>
+                <elementReference>TopicFieldId</elementReference>
             </value>
         </filters>
         <filters>
@@ -1020,7 +1041,7 @@
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
             <value>
-                <stringValue>Abstract__c.00N0E000007uHfg</stringValue>
+                <elementReference>TypeFieldId</elementReference>
             </value>
         </filters>
         <filters>
@@ -1062,6 +1083,11 @@
         <name>Image3Name</name>
         <dataType>String</dataType>
         <expression>SUBSTITUTE(SUBSTITUTE({!FileUpload3.fileNames},&apos;[&apos;,&apos;&apos;),&apos;]&apos;,&apos;&apos;)</expression>
+    </formulas>
+    <formulas>
+        <name>SetLateBreakingCheckbox</name>
+        <dataType>Boolean</dataType>
+        <expression>ISPICKVAL({!GetEvent.Abstract_Submission__c}, &quot;Late Breaking Submission&quot;)</expression>
     </formulas>
     <formulas>
         <name>SetTopicDefaultChoice</name>
@@ -1151,7 +1177,7 @@
         <locationY>420</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>CheckSubmissionDeadline</targetReference>
+            <targetReference>CheckSubmissionWindow</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -1509,6 +1535,13 @@
                     <stringValue>Abstract__c</stringValue>
                 </value>
             </inputParameters>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <fields>
+            <name>Test</name>
+            <extensionName>c:CustomLookup</extensionName>
+            <fieldType>ComponentInstance</fieldType>
             <isRequired>true</isRequired>
             <storeOutputAutomatically>true</storeOutputAutomatically>
         </fields>
@@ -1975,8 +2008,8 @@
     <screens>
         <name>Fill_Abstract_Screen_0</name>
         <label>Review Abstract Screen</label>
-        <locationX>446</locationX>
-        <locationY>2835</locationY>
+        <locationX>442</locationX>
+        <locationY>2828</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2163,8 +2196,8 @@
     <screens>
         <name>Review_Abstract</name>
         <label>Review Abstract</label>
-        <locationX>161</locationX>
-        <locationY>2887</locationY>
+        <locationX>183</locationX>
+        <locationY>2931</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2944,7 +2977,7 @@
             <targetReference>Select_Event_Screen</targetReference>
         </connector>
     </start>
-    <status>Active</status>
+    <status>Draft</status>
     <variables>
         <name>AbstractAuthor</name>
         <dataType>SObject</dataType>

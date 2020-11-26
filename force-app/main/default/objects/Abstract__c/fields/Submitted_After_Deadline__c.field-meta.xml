@@ -2,7 +2,9 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Submitted_After_Deadline__c</fullName>
     <externalId>false</externalId>
-    <formula>Date_Submitted__c &gt; Event__r.Abstract_Submission_Deadline__c</formula>
+    <formula>(Date_Submitted__c &gt; Event__r.Abstract_Submission_Deadline__c &amp;&amp;  Late_Breaking_Submission__c = false)
+ || 
+(Date_Submitted__c &gt;  Event__r.Late_Breaking_Submission_Deadline__c &amp;&amp;  Late_Breaking_Submission__c = true)</formula>
     <label>Submitted After Deadline</label>
     <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>

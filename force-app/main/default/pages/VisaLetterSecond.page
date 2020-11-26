@@ -1,0 +1,114 @@
+<apex:page controller="VisaLetterController" renderAs="pdf" showHeader="false" sidebar="false" standardStylesheets="false"
+    applyBodyTag="false" applyHtmlTag="false">
+    <html>
+
+    <head>
+        <style>
+            #parent {
+                overflow: hidden;
+            }
+
+            .right {
+                width: 40%;
+                float: right;
+
+                /* text-align: center; */
+            }
+
+            .left {
+                width: 60%;
+                overflow: hidden;
+                margin-left: 100px
+                /* text-align: center; */
+            }
+        </style>
+    </head>
+
+    <body>
+        <apex:repeat value="{!visaLetters}" var="visaLetter">
+            <apex:image url="{!$Resource.VisaLetterHeader}" width="100%" height="100" />
+            <div style="margin-top: 50px; margin-bottom: 5px;">
+                <apex:outputText value="{!visaLetter.First_Name__c}" />&nbsp;<apex:outputText value="{!visaLetter.Last_Name__c}" />
+            </div>
+            <div style="margin-bottom: 5px;">
+                <apex:outputText value="{!visaLetter.Official_Street__c}" />
+                <br/>
+                <apex:outputText value="{!visaLetter.Official_ZIP_Postal_Code__c}" />,&nbsp;<apex:outputText value="{!visaLetter.Official_City__c}" />
+                <br/>
+                <apex:outputText value="{!visaLetter.Official_Country__c}" />
+            </div>
+            <div> Passport number:&nbsp;
+                <apex:outputText value="{!visaLetter.Passport_Number__c}" /> </div>
+            <div> Place of issue:&nbsp;
+                <apex:outputText value="{!visaLetter.Authority__c}" /> </div>
+            <div> Date of issue:&nbsp;
+                <apex:outputText value="{!dateBirth}" /> </div>
+            <div> Expiry date:&nbsp;
+                <apex:outputText value="{!dateIssue}" /> </div>
+            <div> Date of birth:&nbsp;
+                <apex:outputText value="{!dateExpiry}" /> </div>
+            <div style="margin-bottom: 50px;"> Place of birth:&nbsp;
+                <apex:outputText value="{!visaLetter.Place_of_Birth__c}" /> </div>
+
+            <div style="margin-bottom: 50px;">
+                <b>Congress Venue</b>
+                <br/> Austria Center Vienna, Internationales Amtssitz- und Konferenzzentrum Wien, AG
+                <br/> Bruno-Kreisky-Platz 1, 1220 Vienna, Austria
+                <br/>
+            </div>
+
+            <div style="margin-bottom: 10px; text-align: right;"> Vienna,&nbsp;
+                <apex:outputText value="{!dateVisaLetter}" />
+            </div>
+
+
+            <div style="margin-bottom: 10px;"> Dear&nbsp;<apex:outputText value="{!visaLetter.First_Name__c}" />&nbsp;<apex:outputText value="{!visaLetter.Last_Name__c}" />,</div>
+
+            <div>
+                <p style="text-align: justify;">The European Academy of Neurology is pleased to invite&nbsp;
+                    <apex:outputText value="{!visaLetter.First_Name__c}" />&nbsp;
+                    <apex:outputText value="{!visaLetter.Last_Name__c}" /> to actively participate in the 7th Congress of the European Academy of Neurology, taking place in Vienna,
+                    Austria from 19 June to 22 June 2021. The congress includes plenary sessions, symposia, focused workshops,
+                    oral presentations, poster session, ePresentations and educational sessions.</p>
+            </div>
+            <div>
+                <p style="text-align: justify;">Neither the European Academy of Neurology, nor the Registration Management, AIM Group International, will
+                    be responsible for any costs concerning travel, accommodation, congress registration and other costs
+                    incurred with the participation in the 7th EAN Congress 2021. Kindly note that&nbsp;
+                    <apex:outputText value="{!visaLetter.First_Name__c}" />&nbsp;
+                    <apex:outputText value="{!visaLetter.Last_Name__c}" /> is responsible for any costs related to&nbsp;
+                    <apex:outputText value="{!visaLetter.Gender__c}" /> participation. </p>
+            </div>
+
+
+
+            <div style="margin-bottom: 70px;">
+                <p>With best regards, </p>
+            </div>
+
+
+            <div id="parent">
+                <div class="right">
+                    <apex:image url="{!$Resource.VisaLetterSignatureSecond}" width="150" />
+                </div>
+                <div class="left">
+                    <apex:image url="{!$Resource.VisaLetterSignatureOne}" width="150" />
+                </div>
+
+            </div>
+
+            <div id="parent">
+
+                <div class="right">Tony Marson, MD, Prof
+                    <br/> EAN Programme Committee Chair</div>
+                <div class="left"> Claudio Bassetti,
+                    <br/> President of EAN </div>
+            </div>
+
+        </apex:repeat>
+
+
+    </body>
+
+    </html>
+</apex:page>

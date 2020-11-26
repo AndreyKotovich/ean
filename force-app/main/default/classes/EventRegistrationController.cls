@@ -3,7 +3,7 @@ public without sharing class EventRegistrationController {
     public static Event__c getEvent(String eventId) {
         Event__c event = [
                 SELECT Id, Name, Early_Bird_Deadline__c, Registration_Deadline__c, RecordType.DeveloperName,
-                        Start_Time__c, End_Time__c, Max_Participants__c, Registrations__c
+                        Start_Time__c, End_Time__c, Max_Participants__c, Registrations__c, Country__c
                 FROM Event__c
                 WHERE Id = :eventId
         ];
@@ -145,7 +145,7 @@ public without sharing class EventRegistrationController {
                 SELECT Id, Price__c, Early_bird_price__c, Event_custom__c, Ticket__c, Ticket__r.Name,
                         Ticket__r.Available_for_Memberships__c, Ticket__r.Available_for_Countries__c,
                         Ticket__r.Available_for_Personas__c, Ticket__r.Is_Group_only__c, 
-                        Ticket__r.Is_IPR_only__c, Participation__c
+                        Ticket__r.Is_IPR_only__c, Participation__c, Ticket__r.Event_Country_Ticket__c
                 FROM Event_Ticket__c
                 WHERE
                 Event_custom__c = :eventId
@@ -511,5 +511,19 @@ public without sharing class EventRegistrationController {
         if (emailActivities.size() > 0) {
             insert emailActivities;
         }
+    }
+
+    //Same as Utils.getContactMemberships but without sharing
+    @AuraEnabled
+    public static List<MembershipContactAssotiation__c> getContactMemberships(String contactId){
+        List<MembershipContactAssotiation__c> contactsMemberships = [
+                SELECT Id, Membership__r.Name, Membership__r.API__c, CreatedDate
+                FROM MembershipContactAssotiation__c
+                WHERE Contact__c = :contactId
+                AND IsActive__c = TRUE
+                ORDER BY CreatedDate DESC
+        ];
+
+        return contactsMemberships;
     }
 }

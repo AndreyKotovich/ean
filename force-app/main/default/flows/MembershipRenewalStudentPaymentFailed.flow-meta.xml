@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>50.0</apiVersion>
+    <decisions>
+        <name>Is_Renewal_Order</name>
+        <label>Is Renewal Order</label>
+        <locationX>168</locationX>
+        <locationY>331</locationY>
+        <defaultConnectorLabel>Not Renewal</defaultConnectorLabel>
+        <rules>
+            <name>Renewal_Order</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Order_Custom__r.Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Renewal</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Order</targetReference>
+            </connector>
+            <label>Renewal Order</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_Student_Form</name>
+        <label>Is Student Form</label>
+        <locationX>894</locationX>
+        <locationY>330</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Student_Form</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Application_Form.Membership__r.API__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>student_membership</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Waiting_For_Payment_form_status</targetReference>
+            </connector>
+            <label>Student Form</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Order_Total_Not_0</name>
+        <label>Order Total Not 0</label>
+        <locationX>530</locationX>
+        <locationY>328</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Order_Total_Not_Zero</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Order.Total_amount__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Application_Form</targetReference>
+            </connector>
+            <label>Order Total Not Zero</label>
+        </rules>
+    </decisions>
+    <interviewLabel>MembershipRenewalStudentPaymentFailed {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>MembershipRenewalStudentPaymentFailed</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Application_Form</name>
+        <label>Get Application Form</label>
+        <locationX>755</locationX>
+        <locationY>328</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Is_Student_Form</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Order__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Order.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Application_form__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Order</name>
+        <label>Get Order</label>
+        <locationX>371</locationX>
+        <locationY>327</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Order_Total_Not_0</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Order_Custom__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Order__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Set_Waiting_For_Payment_form_status</name>
+        <label>Set &apos;Waiting For Payment&apos; form status</label>
+        <locationX>902</locationX>
+        <locationY>521</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Application_Form.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Form_Status__c</field>
+            <value>
+                <stringValue>Waiting For Payment</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Application_form__c</object>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>50</locationY>
+        <connector>
+            <targetReference>Is_Renewal_Order</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Error</stringValue>
+            </value>
+        </filters>
+        <object>Transaction__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

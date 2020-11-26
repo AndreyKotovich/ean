@@ -91,10 +91,10 @@
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>Get_Application_Form_Record.Membership__r.Name</leftValueReference>
+                <leftValueReference>Get_Application_Form_Record.Membership__r.API__c</leftValueReference>
                 <operator>NotEqualTo</operator>
                 <rightValue>
-                    <stringValue>Student Membership</stringValue>
+                    <stringValue>student_membership</stringValue>
                 </rightValue>
             </conditions>
             <connector>

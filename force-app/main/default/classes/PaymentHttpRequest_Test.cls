@@ -166,14 +166,17 @@ public with sharing class PaymentHttpRequest_Test {
         Membership__c membership = new Membership__c(Name = 'Test1', API__c = 'test1');
         insert membership;
         Order__c order = [SELECT Id, Contact__c FROM Order__c WHERE Contact__r.LastName = 'test'];
-        System.assertEquals('ORDER', PaymentHttpRequest.determineSuccessScreen(order.Id));
+        System.assertEquals('ORDER', PaymentHttpRequest.determineSuccessScreen(order.Id).get('type'));
+        order.Type__c = 'Event registration';
+        update order;
+        System.assertEquals('EVENT_REGISTRATION', PaymentHttpRequest.determineSuccessScreen(order.Id).get('type'));
         Application_form__c appForm = new Application_form__c(
                 First_name__c = 'test', Last_name__c = 'testlast', Date_of_birth__c = Date.today(),
                 Gender__c = 'Male', Email__c = 'email@email.com', Nationality__c = 'United States',
                 Residency__c = 'United States', ZIP_Postal_code__c = '111', City__c = 'Test', Contact__c = order.Contact__c, Membership__c = membership.Id,
                 Profession__c = 'Other', Street__c = '123Street', Form_Status__c = 'Draft', Order__c = order.Id);
         insert appForm;
-        System.assertEquals('ORDER_WITH_APP_FORM', PaymentHttpRequest.determineSuccessScreen(order.Id));
+        System.assertEquals('ORDER_WITH_APP_FORM', PaymentHttpRequest.determineSuccessScreen(order.Id).get('type'));
     }
     @IsTest public static void generateBankCredsPdfDownloadLinkTest(){
         Order__c order = [SELECT Id FROM Order__c WHERE Contact__r.LastName = 'test'];

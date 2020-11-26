@@ -493,7 +493,7 @@ public without sharing class PaymentHttpRequest {
         }
     }
     @RemoteAction public static List<Order__c> getOrderInfo(String orderId) {
-        List<Order__c> order = [SELECT Id, Name, Contact__r.FirstName, Contact__r.LastName, Invoice_Number__c, Total_amount__c FROM Order__c WHERE Id = :orderId];
+        List<Order__c> order = [SELECT Id, Name, Contact__r.FirstName, Contact__r.LastName, Invoice_Number__c, Total_amount__c, CreatedDate FROM Order__c WHERE Id = :orderId];
         return order;
     }
     
@@ -590,7 +590,7 @@ public without sharing class PaymentHttpRequest {
         return result;
     }
 
-    @RemoteAction public static String determineSuccessScreen(String orderId){
+    @RemoteAction public static Map<String, Object> determineSuccessScreen(String orderId){
         return OrderUtils.determineSuccessScreen(orderId);
     }
 
@@ -598,7 +598,7 @@ public without sharing class PaymentHttpRequest {
         List<Order__c> order = getOrderInfo(orderId);
         String attachmentLink = 'javascript:void(0);';
         if(!order.isEmpty()){
-            Boolean isTypeOc = order[0].Invoice_Number__c.contains( 'EAN' + String.valueOf(Date.today().year()).right(2) + '-OC');
+            Boolean isTypeOc = order[0].Invoice_Number__c != null && order[0].Invoice_Number__c.contains( 'EAN' + String.valueOf(Date.today().year()).right(2) + '-OC');
             String template = !isTypeOc ? 'BankTransferCredentialsPdf' : 'BankTransferRegistrationPdf';
             PageReference defaultPage = new PageReference('/apex/' + template);
             
@@ -607,6 +607,8 @@ public without sharing class PaymentHttpRequest {
             defaultPage.getParameters().put('orderAmount', String.valueOf(order[0].Total_amount__c));
             defaultPage.getParameters().put('firstName', String.valueOf(order[0].Contact__r.FirstName));
             defaultPage.getParameters().put('lastName', String.valueOf(order[0].Contact__r.LastName));
+            String orderDeadline= order[0].CreatedDate.addDays(7).format('MM.dd.yyyy');
+            defaultPage.getParameters().put('orderDeadline', orderDeadline);
             Blob pageData;
             if (Test.isRunningTest()) {
                 pageData = Blob.valueOf('Unit.Test');
@@ -664,7 +666,7 @@ public without sharing class PaymentHttpRequest {
             if (ords.size() == 0 || ords[0].Transactions__r.size() == 0 || String.isBlank(ords[0].Transactions__r[0].Payment_Method__c)) {
                 return new Map<String, String> {
                     'status' => 'Error',
-                    'message' => 'The transaction is of the bank transfer type'
+                    'message' => 'Transaction for refund not found'
                 }; 
             }
 

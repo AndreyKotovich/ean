@@ -4,9 +4,9 @@
         <div>Your registration was received, and your order confirmation number is: <span class="order-name">{!$CurrentPage.parameters.orderInvoiceNumber}</span></div>
         <br/>
         <div>
-            To finalise your application, please transfer your total application fee of EUR 
-            <span class="order-amount">{!$CurrentPage.parameters.orderAmount}</span> to the following
-            account:
+            To finalise your registration, please transfer the outstanding amount of
+            <span class="order-amount">{!$CurrentPage.parameters.orderAmount}</span>€ to the following
+            account by <span class="order-deadline">{!$CurrentPage.parameters.orderDeadline}</span>:
         </div>
         <br/>
         <table id="" class="slds-table slds-table_cell-buffer slds-table_header-hidden">
@@ -32,7 +32,7 @@
                     <div class="slds-truncate" title=""><b>Bank:</b></div>
                 </td>
                 <td data-label="Quantity">
-                    <div class="slds-truncate" title=""></div>
+                    <div class="slds-truncate" title="">Oberoesterreichische Landesbank Aktiengesellschaft</div>
                 </td>
             </tr>
             <tr class="slds-hint-parent">
@@ -40,7 +40,7 @@
                     <div class="slds-truncate" title=""><b>IBAN:</b></div>
                 </td>
                 <td data-label="Quantity">
-                    <div class="slds-truncate" title="">AT78 5400 0003 1400 7659</div>
+                    <div class="slds-truncate" title="">AT83 5400 0002 1400 7650</div>
                 </td>
             </tr>
             <tr class="slds-hint-parent">
@@ -65,13 +65,13 @@
         <br/>
         <div>
             Please indicate your order confirmation number and your name <span class="customer-first-name">{!$CurrentPage.parameters.firstName}</span> 
-            <span class="customer-last-name">{!$CurrentPage.parameters.lastName}</span> on bank transfer documents for identification purposes.
+            <span class="customer-last-name">{!$CurrentPage.parameters.lastName}</span> on the bank transfer documents for identification purposes.
         </div>
         <br/>
         <div>
-            Please note that you are responsible for any bank charges that may incur. 
-            If the amount transferred to the account does not correspond to the amount stated on the order confirmation form, 
-            your registration will be regarded as incomplete.
+            Please note that you are responsible for any bank charges that may incur. If the amount transferred to the
+            account does not correspond to the amount stated on the order confirmation form, your registration will be
+            regarded as incomplete.
         </div>
         <br/>
         <div>

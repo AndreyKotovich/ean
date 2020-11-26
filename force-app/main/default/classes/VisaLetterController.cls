@@ -17,7 +17,7 @@ public class VisaLetterController {
 			SELECT 
 				Id, Name, Official_Country__c, Official_Street__c, Official_ZIP_Postal_Code__c, First_Name__c, Last_Name__c,
 				Official_City__c, Official_State_Province__c, Sex__c, Date_of_Birth__c, Date_of_Issue__c, Date_of_Expiry__c,
-				Passport_Number__c, Authority__c, Place_of_Birth__c 
+				Passport_Number__c, Authority__c, Place_of_Birth__c, Gender__c
 			FROM Visa_Letter__c
 			WHERE Id = : id
 		];
@@ -28,7 +28,8 @@ public class VisaLetterController {
 			dateExpiry = generateDate(visaLetters[0].Date_of_Expiry__c);
 		}
 	}
-
+	
+    @TestVisible
 	private string generateDate(Date dt) {
 		return (datetime.newInstance(dt.year(), dt.month(),dt.day())).format('MMMM dd, yyyy');
 	}

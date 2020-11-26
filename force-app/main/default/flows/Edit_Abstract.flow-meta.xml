@@ -527,6 +527,27 @@
         </value>
     </choices>
     <constants>
+        <name>ImageLocationFieldId1</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Abstract__c.00N1X000006eore</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>ImageLocationFieldId2</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Abstract__c.00N1X000006eorh</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>ImageLocationFieldId3</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Abstract__c.00N1X000006eork</stringValue>
+        </value>
+    </constants>
+    <constants>
         <name>InvitedRecordTypeId</name>
         <dataType>String</dataType>
         <value>
@@ -538,6 +559,20 @@
         <dataType>String</dataType>
         <value>
             <stringValue>0121X000000Ft2PQAS</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>TopicFieldId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Abstract__c.00N1X0000078R9p</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <name>TypeFieldId</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Abstract__c.00N1X000006eorz</stringValue>
         </value>
     </constants>
     <decisions>
@@ -634,8 +669,8 @@
         </rules>
     </decisions>
     <decisions>
-        <name>Check_Submission_Deadline</name>
-        <label>Check Submission Deadline</label>
+        <name>Check_Submission_Window</name>
+        <label>Check Submission Window</label>
         <locationX>409</locationX>
         <locationY>550</locationY>
         <defaultConnector>
@@ -643,7 +678,7 @@
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
-            <name>Too_Late_to_Submit</name>
+            <name>Submission_Closed</name>
             <conditionLogic>(1 AND 2) OR (3 AND 4) OR 5</conditionLogic>
             <conditions>
                 <leftValueReference>Get_Abstract.RecordTypeId</leftValueReference>
@@ -683,7 +718,7 @@
             <connector>
                 <targetReference>Deadline_passed_screen</targetReference>
             </connector>
-            <label>Too Late to Submit</label>
+            <label>Submission Closed</label>
         </rules>
     </decisions>
     <decisions>
@@ -1045,7 +1080,7 @@
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
             <value>
-                <stringValue>Abstract__c.00N1X000006eore</stringValue>
+                <elementReference>ImageLocationFieldId1</elementReference>
             </value>
         </filters>
         <filters>
@@ -1069,7 +1104,7 @@
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
             <value>
-                <stringValue>Abstract__c.00N1X000006eorh</stringValue>
+                <elementReference>ImageLocationFieldId2</elementReference>
             </value>
         </filters>
         <filters>
@@ -1093,7 +1128,7 @@
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
             <value>
-                <stringValue>Abstract__c.00N1X000006eork</stringValue>
+                <elementReference>ImageLocationFieldId3</elementReference>
             </value>
         </filters>
         <filters>
@@ -1117,7 +1152,7 @@
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
             <value>
-                <stringValue>Abstract__c.00N1X0000078R9p</stringValue>
+                <elementReference>TopicFieldId</elementReference>
             </value>
         </filters>
         <filters>
@@ -1141,7 +1176,7 @@
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
             <value>
-                <stringValue>Abstract__c.00N1X000006eorz</stringValue>
+                <elementReference>TypeFieldId</elementReference>
             </value>
         </filters>
         <filters>
@@ -1163,7 +1198,7 @@
             <field>EntityParticleId</field>
             <operator>EqualTo</operator>
             <value>
-                <stringValue>Abstract__c.00N1X000006eorz</stringValue>
+                <elementReference>TypeFieldId</elementReference>
             </value>
         </filters>
         <filters>
@@ -1183,6 +1218,11 @@
         <object>PicklistValueInfo</object>
         <valueField>Value</valueField>
     </dynamicChoiceSets>
+    <formulas>
+        <name>SetLateBreakingCheckbox</name>
+        <dataType>Boolean</dataType>
+        <expression>ISPICKVAL({!Get_Event.Abstract_Submission__c}, &quot;Late Breaking Submission&quot;)</expression>
+    </formulas>
     <formulas>
         <name>SetLocation1DefaultChoice</name>
         <dataType>String</dataType>
@@ -1301,7 +1341,7 @@
         <locationY>443</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Check_Submission_Deadline</targetReference>
+            <targetReference>Check_Submission_Window</targetReference>
         </connector>
         <faultConnector>
             <targetReference>Deadline_passed_screen</targetReference>

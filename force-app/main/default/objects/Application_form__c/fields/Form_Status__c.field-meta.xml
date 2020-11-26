@@ -43,6 +43,11 @@
                 <label>Declined</label>
             </value>
             <value>
+                <fullName>Waiting For Payment</fullName>
+                <default>false</default>
+                <label>Waiting For Payment</label>
+            </value>
+            <value>
                 <fullName>In Review</fullName>
                 <default>false</default>
                 <isActive>false</isActive>

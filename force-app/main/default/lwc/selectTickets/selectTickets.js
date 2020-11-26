@@ -148,7 +148,8 @@ export default class SelectTickets extends LightningElement {
                     Is_IPR_only__c,
                     Available_for_Countries__c,
                     Available_for_Memberships__c,
-                    Available_for_Personas__c
+                    Available_for_Personas__c,
+                    Event_Country_Ticket__c
                 } = ticket.Ticket__r;
 
                 ticket.price = this.getTicketPrice(ticket);
@@ -156,12 +157,21 @@ export default class SelectTickets extends LightningElement {
                 if (this.registrationType === "solo") {
                     if (Is_Group_only__c || Is_IPR_only__c) continue;
 
+                    if(Event_Country_Ticket__c){
+                        if(!!this.eanEvent.Country__c && this._userInfo.contact && this._userInfo.contact.Residency__c &&
+                            this._userInfo.contact.Residency__c === this.eanEvent.Country__c){
+                            ticketArr.push(ticket);
+                            continue;
+                        } else {
+                            continue;
+                        }
+                    }
+
                     if (!this.isTicketAvailableForPersona(ticket.Ticket__r)) {
                         continue;
                     } else {
                         if (!!Available_for_Personas__c) {
                             ticketArr.push(ticket);
-                            // this.individualTickets.push(ticket);
                             continue;
                         }
                     }
@@ -170,7 +180,6 @@ export default class SelectTickets extends LightningElement {
 
                     if (!Available_for_Memberships__c) {
                         ticketArr.push(ticket);
-                        // this.individualTickets.push(ticket);
                     } else {
                         for (let membership of this._userInfo.memberships) {
                             if (
@@ -179,7 +188,6 @@ export default class SelectTickets extends LightningElement {
                                 )
                             ) {
                                 ticketArr.push(ticket);
-                                // this.individualTickets.push(ticket);
                                 break;
                             }
                         }
@@ -188,7 +196,6 @@ export default class SelectTickets extends LightningElement {
                 } else if (this.registrationType === "group") {
                     if (!Is_Group_only__c) continue;
                     ticketArr.push(ticket);
-                    // this.groupTickets.push(ticket);
                 } else if (this.registrationType === "ipr") {
                     if (!Is_IPR_only__c) continue;
                     ticketArr.push(ticket);

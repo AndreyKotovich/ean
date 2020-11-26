@@ -44,7 +44,8 @@ public without sharing class OrderUtils {
     @AuraEnabled public static Map<String, Object> determineSuccessScreen(String orderId){
         Map<String, Object> resultMap = new Map<String, Object>();
         String result = 'ORDER';
-        List<Order__c> order = [SELECT Id, Type__c, Total_amount__c, Invoice_Number__c, (SELECT Id, Membership__c, Membership__r.Name FROM Applications_Forms__r LIMIT 1) FROM Order__c WHERE Id = :orderId];
+        List<Order__c> order = [SELECT Id, Type__c, Total_amount__c, Invoice_Number__c, Event_custom__r.www__c,
+        (SELECT Id, Membership__c, Membership__r.Name FROM Applications_Forms__r LIMIT 1) FROM Order__c WHERE Id = :orderId];
         resultMap.put('order', order);
 
         if(!order.isEmpty()){
@@ -67,7 +68,7 @@ public without sharing class OrderUtils {
             }
 
         } else {
-            //TODO Error
+            result = 'ERROR';
         }
 
         resultMap.put('type', result);

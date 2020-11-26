@@ -232,8 +232,7 @@ public class CertificatePDFGenerator {
         Messaging.SingleEmailMessage errorEmail = new Messaging.SingleEmailMessage();
         errorEmail.setSubject('New Certificate sending error');
         String[] emailIds = new String[]{
-                // 'ilya.litovchik@succraft.com'
-                'vitaly.serebrekov@succraft.com'
+                'ilya.litovchik@succraft.com'
         };
         errorEmail.setToAddresses(emailIds);
         errorEmail.setPlainTextBody('Error Description: \n Message:' + e.getMessage() + '\n Line Number: ' + e.getLineNumber() + '\n Stack Trace: ' + e.getStackTraceString());

@@ -69,6 +69,13 @@
                 <elementReference>Get_Lecture_Presentation.Contact__c</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecord.Late_Breaking_Submission__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>SetLateBreakingCheckbox</elementReference>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>Create_Abstract</targetReference>
         </connector>
@@ -222,7 +229,7 @@
         <defaultConnectorLabel>Previous Submission</defaultConnectorLabel>
         <rules>
             <name>Eligible_and_no_previous_submission</name>
-            <conditionLogic>1 AND 2 AND (3 OR 4)</conditionLogic>
+            <conditionLogic>1 AND 2 AND (3 OR 4 OR 5)</conditionLogic>
             <conditions>
                 <leftValueReference>Get_Lecture.Abstract__c</leftValueReference>
                 <operator>EqualTo</operator>
@@ -246,6 +253,13 @@
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Invited Submission Open</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Event.Abstract_Submission__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Late Breaking Submission</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -396,6 +410,11 @@
         <name>Image3Name</name>
         <dataType>String</dataType>
         <expression>SUBSTITUTE(SUBSTITUTE({!FileUpload3.fileNames},&apos;[&apos;,&apos;&apos;),&apos;]&apos;,&apos;&apos;)</expression>
+    </formulas>
+    <formulas>
+        <name>SetLateBreakingCheckbox</name>
+        <dataType>Boolean</dataType>
+        <expression>ISPICKVAL({!Get_Event.Abstract_Submission__c}, &quot;Late Breaking Submission&quot;)</expression>
     </formulas>
     <formulas>
         <name>SetTypeDefaultChoice</name>

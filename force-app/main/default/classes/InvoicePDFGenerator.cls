@@ -253,8 +253,7 @@ public class InvoicePDFGenerator {
             Messaging.SingleEmailMessage errorEmail = new Messaging.SingleEmailMessage();
             errorEmail.setSubject('New Invoice Number creation error');
             String[] emailIds = new String[]{
-                    // 'ezhi.sarosek@succraft.com'
-                    'vitaly.serebrekov@succraft.com'
+                    'ezhi.sarosek@succraft.com'
             };
             errorEmail.setToAddresses(emailIds);
             errorEmail.setPlainTextBody('Error Description: \n Message:' + e.getMessage() + '\n Line Number: ' + e.getLineNumber() + '\n Stack Trace: ' + e.getStackTraceString());

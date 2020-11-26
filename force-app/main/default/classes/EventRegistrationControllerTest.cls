@@ -388,4 +388,16 @@ public with sharing class EventRegistrationControllerTest {
         System.assertEquals('Success', (String)result.get('message'));
         System.assert(!participants[0].Session_Participations__r.isEmpty());
     }
+
+    @IsTest
+    public static void getContactMemberships(){
+        Contact contact = [SELECT Id FROM Contact WHERE Email = 'info@test.com' LIMIT 1];
+        Membership__c membership = new Membership__c(Name = 'Test Membership', API__c = 'test');
+        insert membership;
+        MembershipContactAssotiation__c membershipStatus = new MembershipContactAssotiation__c(Contact__c = contact.Id, Membership__c = membership.Id, Endless_Activation__c = true);
+        insert membershipStatus;
+
+        List<MembershipContactAssotiation__c> contactsMemebrships = EventRegistrationController.getContactMemberships(contact.Id);
+        System.assertEquals(membership.Id, contactsMemebrships[0].Membership__c);
+    }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Number_of_Reviewers_Late_Breaking__c</fullName>
+    <externalId>false</externalId>
+    <inlineHelpText>Late breaking abstracts will be reviewed by how many reviewers?</inlineHelpText>
+    <label>Number of Reviewers (Late Breaking)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

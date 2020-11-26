@@ -548,6 +548,8 @@
                             somethingWrongScreen.removeAttribute('hidden');
                         } else {
                             order = JSON.parse(JSON.stringify(result));
+                            console.log('CreatedDate', order[0].CreatedDate);
+                            let orderDeadline = formatDate(addDays(order[0].CreatedDate, 7));
                             document.querySelectorAll('.order-name').forEach(item => {
                                     console.log('orderInvoiceNumber', order[0]['Invoice_Number__c'])
                                     if (order[0].Invoice_Number__c && (order[0]['Invoice_Number__c']).indexOf('-OC-') > -1) {
@@ -566,6 +568,9 @@
                             });
                             document.querySelectorAll('.customer-last-name').forEach(item => {
                                 item.innerHTML = order[0]['Contact__r']['LastName'];
+                            });
+                            document.querySelectorAll('.order-deadline').forEach(item => {
+                                item.innerHTML = orderDeadline;
                             });
                             spinner.setAttribute('hidden', 'hidden');
                             document.getElementById("bank-transfer-screen").removeAttribute('hidden');
@@ -1040,7 +1045,9 @@
                 orderId,
                 function (result, event) {
                     let title, message;
-                    if(result.type === 'ORDER'){
+                    if(result.type === 'ERROR'){
+                        somethingWrongScreen.removeAttribute('hidden');
+                    } else if(result.type === 'ORDER'){
                         title = 'Your payment was received, thank you!';
                         message = '';
                         showSuccessScreen(title, message);
@@ -1050,15 +1057,26 @@
                         showSuccessScreen(title, message);
                     } else if(result.type === 'EVENT_REGISTRATION') {
                         let invoiceNumber = !!result.order && result.order.length > 0 ? result.order[0].Invoice_Number__c : 'NULL';
-                        title = 'Thank you for your EAN congress registration.';
-                        message = `Your registration was received, and your order confirmation number is: ${invoiceNumber}.` +
-                            `<br/>` +
-                            `Within the next few minutes you will receive a confirmation email as well as your invoice.` +
-                            `<br/>` +
-                            `If you do have any queries, do not hesitate to contact us via <a href="mailto:registration@ean.org">registration@ean.org</a>.` +
-                            `<br/` +
-                            `<span class="slds-text-body_small">Browse the EAN Congress Website here. (LINK)</span>`
-                        showSuccessScreen(title, message);
+                        let congressLink = !!result.order && result.order.length > 0 && result.order[0].Event_custom__r && !!result.order[0].Event_custom__r.www__c ? result.order[0].Event_custom__r.www__c : 'javascript:void(0)';
+                        let body =
+                            `<div class="slds-align_absolute-center">
+                                <div class="slds-grid slds-grid_vertical">
+                                    <div class="slds-text-align_left slds-col">
+                                        <div class="slds-text-heading_large slds-text-color_success">Thank you for your EAN congress registration.</div>
+                                    </div>
+                                    <div class="slds-text-align_left slds-col">
+                                        <div class="slds-text-heading_small slds-m-top--medium">Your registration was received, and your order confirmation number is: ${invoiceNumber}.</div>
+                                    </div>
+                                    <div class="slds-text-align_left slds-col">
+                                        <div class="slds-text-heading_small">If you do have any queries, do not hesitate to contact us via <a href="mailto:registration@ean.org">registration@ean.org</a>.</div>
+                                    </div>
+                                    <div class="slds-text-align_left slds-col">
+                                        <div class="slds-m-top--medium">Browse the EAN Congress Website <a href="${congressLink}" target="_blank">here</a>.</div>
+                                    </div>
+                                </div>
+                            </div>`
+                        successPaymentScreen.insertAdjacentHTML('afterbegin', body);
+                        successPaymentScreen.removeAttribute('hidden');
                     }
                 },
             );
@@ -1077,6 +1095,24 @@
                     }
                 },
                 {escape: false});
+        }
+
+        function addDays(date, days) {
+            let result = new Date(date);
+            result.setDate(result.getDate() + days);
+            return result;
+        }
+
+        function formatDate(date) {
+            let dd = date.getDate();
+            if (dd < 10) dd = '0' + dd;
+
+            let mm = date.getMonth() + 1;
+            if (mm < 10) mm = '0' + mm;
+
+            let yyyy = date.getFullYear();
+
+            return dd + '.' + mm + '.' + yyyy;
         }
     </script>
 </apex:page>

@@ -339,14 +339,24 @@ public without sharing class MembershipRenewalController {
 			}
 
 			// update contact record
-			update new Contact(
-				Id = currentContactId, Salutation = formSalutation, FirstName = formFirstName, LastName = formLastName,
-				Title = formPostNominalTitle, Birthdate = formDateOfBirth, Gender__c = formGender, Email = formEmail,
-				Nationality__c = formNationality, Residency__c = formCountryOfResidence, MailingStreet = formStreet,
-				MailingPostalCode = formZipPostalCode, MailingCity = formCity, Phone = formPhoneNumber,
-				AAN_Member__c = formIamAANMember, Retired__c = formIamRetired, Profession__c = formProfession,
-				Expected_Date_Of_Graduation__c = dateOfGraduation, License_issued__c = licenseIssuedDate
-			);
+			try {
+				update new Contact(
+					Id = currentContactId, Salutation = formSalutation, FirstName = formFirstName, LastName = formLastName,
+					Title = formPostNominalTitle, Birthdate = formDateOfBirth, Gender__c = formGender, Email = formEmail,
+					Nationality__c = formNationality, Residency__c = formCountryOfResidence, MailingStreet = formStreet,
+					MailingPostalCode = formZipPostalCode, MailingCity = formCity, Phone = formPhoneNumber,
+					AAN_Member__c = formIamAANMember, Retired__c = formIamRetired, Profession__c = formProfession,
+					Expected_Date_Of_Graduation__c = dateOfGraduation, License_issued__c = licenseIssuedDate
+				);
+			} catch (Exception e) {
+				String err = e.getMessage();
+				if(err.contains('[Birthdate]')){
+					err = 'Birthday cannot be in future.';
+				} else if(err.contains('already exists')){
+					err = 'A user account with this email address already exists. If you need further assistance, please contact headoffice@ean.org.';
+				}
+				return new Map<String, Object>{'result' => false, 'resultMessage' => err};
+			}
 
 			Datetime now = System.now();
 			Datetime thisYearStart = Datetime.newInstance(now.year(), 1, 1, 0, 0, 0);
@@ -374,7 +384,8 @@ public without sharing class MembershipRenewalController {
 			if (membershipApiName == API_STUDENT_MEMBERSHIP || membershipApiName == API_RR_MEMBERSHIP) {
 				attachFilesToForm(uploadedFilesPills, currentContactId, newApplicationForm.Id);
 			} else {
-				attachFilesFromPreviousForm(oldApplicationFormId, newApplicationForm.Id);
+				// Philipp: We do not need to copy files from previous application form.
+				// attachFilesFromPreviousForm(oldApplicationFormId, newApplicationForm.Id);
 			}
 
 			String approvalResultString = '';

@@ -163,9 +163,9 @@
                 <div>
                     <p style="text-align: justify;">Neither the European Academy of Neurology, nor the Registration Management, AIM Group International,
                         will be responsible for any costs concerning travel, accommodation, congress registration and other
-                        costs incurred with the participation in the 7th EAN Congress 2021. Kindly note that &nbsp;
+                        costs incurred with the participation in the 7th EAN Congress 2021. Kindly note that&nbsp;
                         <apex:outputText value="{!visaLetter.First_Name__c}" />&nbsp;
-                        <apex:outputText value="{!visaLetter.Last_Name__c}" /> is responsible for any costs related to &nbsp;
+                        <apex:outputText value="{!visaLetter.Last_Name__c}" /> is responsible for any costs related to&nbsp;
                         <apex:outputText value="{!visaLetter.Sex__c}" /> participation. </p>
                 </div>
 
