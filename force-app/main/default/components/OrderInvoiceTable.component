@@ -19,7 +19,8 @@
             <apex:repeat var="OrderItem" value="{!orderItems}">
                 <tr>
                     <td style="border-bottom: 1px solid #ddd;" data-label="Delegate name">
-                        <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!OrderItem.Event_Participation__r.Contact__r.FirstName} {!OrderItem.Event_Participation__r.Contact__r.LastName}, {!OrderItem.Event_Participation__r.Contact__r.Id}</div>
+                        <!-- <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!OrderItem.Event_Participation__r.Contact__r.FirstName} {!OrderItem.Event_Participation__r.Contact__r.LastName}, {!OrderItem.Event_Participation__r.Contact__r.Id}</div> -->
+                        <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!OrderItem.Event_Participation__r.Contact__r.FirstName} {!OrderItem.Event_Participation__r.Contact__r.LastName}</div>
                     </td>
                     <td style="border-bottom: 1px solid #ddd;" data-label="Ticket Type">
                         <div style="padding: 5px; margin: 0px; font-size: 11pt; {!IF(OrderItem.Session_Participation__r.Event_Ticket__r.Ticket__r.Name!='', '', 'display: none;')}">{!OrderItem.Session_Participation__r.Event_Ticket__r.Ticket__r.Name} ticket</div>

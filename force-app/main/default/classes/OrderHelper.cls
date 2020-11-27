@@ -16,8 +16,6 @@ public without sharing class OrderHelper {
         String eventId = (String)genData.get('eventId');
         String groupId = (String)genData.get('groupId');
         
-        Decimal priceTicket = (Decimal)genData.get('priceTicket');
-
         Map<Object,Object> discountInfo = genData.containsKey('discountInfo') ? 
             (Map<Object,Object>)genData.get('discountInfo') : new Map<Object,Object>();
             
@@ -117,62 +115,7 @@ public without sharing class OrderHelper {
 
     }
 
-    public static void cancelledOrder(Map<Id, Id> ordToChanges) {
-        try {
-            List<Order__c> ords = new List<Order__c>();
-            Map<Id, Decimal> ordPrice = new Map<Id, Decimal>();
-            List<Order__c> orders = [ 
-                SELECT Id, Contact__c,Payment_Invoice__c, Event_custom__c, Purchase_Type__c, Event_Registration_Sub_Group__c, Total_amount__c
-                FROM Order__c
-                WHERE Id IN :ordToChanges.keySet()
-            ];
-
-            for (Order__c o: orders) {
-                ordPrice.put(o.Id, o.Total_amount__c);
-
-                o.Change_Request__c = ordToChanges.get(o.Id);
-                o.Purchase_Type__c = 'Update';
-                
-                ords.add(o);
-                ords.add(
-                    new Order__c(
-                        Payment_Invoice__c = o.Id,
-                        Contact__c = o.Contact__c,
-                        Type__c = o.Type__c,
-                        Status__c = 'Cancelled',
-                        Event_custom__c = o.Event_custom__c,
-                        Purchase_Type__c = 'New',
-                        Event_Registration_Sub_Group__c = o.Event_Registration_Sub_Group__c,
-                        Change_Request__c = o.Change_Request__c
-                    )
-                );
-            }
-
-            upsert ords;
-
-            List<Order_Item__c> ordItems = new List<Order_Item__c>();
-            String orderRefunedId, orderCancelledId;
-            for (Order__c o : ords) {
-                if (!String.isBlank(o.Payment_Invoice__c)) {
-                    orderCancelledId = o.Id;
-                    orderRefunedId = o.Payment_Invoice__c;
-                    ordItems.add( 
-                        new Order_Item__c(
-                            Order_Custom__c = o.Id,
-                            Amount__c =  (-1) * ordPrice.get(o.Payment_Invoice__c),
-                            Quantity__c = 1
-                        )
-                    );  
-                }
-            }
-            insert ordItems;
-
-            refundTransaction(orderRefunedId, orderCancelledId);
-
-        } catch(Exception e) {
-            System.debug('The following exception has occurred: ' + e.getMessage());
-        }
-    }
+    public static void cancelledOrder(Map<Id, Id> ordToChanges) { System.debug('cancelledOrder method expired'); }
 
     @future(callout=true)
 	public static void refundTransaction(String orderRefunedId, String orderCancelledId) {
@@ -182,24 +125,23 @@ public without sharing class OrderHelper {
     @AuraEnabled
     public static Map<String, Object> getSoloParticipatCommunityButtonsInitData(Id participantId) {
         List<Participant__c> participants = [SELECT Id, Event_custom__c, (SELECT Id, Order_Custom__c, Order_Custom__r.Status__c FROM Order_Items__r) FROM Participant__c WHERE Id = :participantId];
-
-        if (participants.size() > 0) {
+		if (participants.size() > 0) {
             String status;
             Boolean displayDoPaymentButton = false;
             if (participants[0].Order_Items__r.size() > 0 && !String.isBlank(participants[0].Order_Items__r[0].Order_Custom__c)){
                 status = participants[0].Order_Items__r[0].Order_Custom__r.Status__c;
                 if (status != 'Paid') {
                     displayDoPaymentButton = true;
-                }                
+                }
+				return new Map<String, Object> {
+                    'id' => participants[0].Order_Items__r[0].Order_Custom__c,
+                    'status' => status,
+                    'eventId' => participants[0].Event_custom__c,
+                    'displayCancelButton' => false,
+                    'displayUpgradeButton' => true,
+                    'displayDoPaymentButton' => displayDoPaymentButton
+            	};                
             }
-            return new Map<String, Object> {
-                'id' => participants[0].Order_Items__r[0].Order_Custom__c,
-                'status' => status,
-                'eventId' => participants[0].Event_custom__c,
-                'displayCancelButton' => false,
-                'displayUpgradeButton' => true,
-                'displayDoPaymentButton' => displayDoPaymentButton
-            };
         }
         return new Map<String, Object> {
             'displayCancelButton' => false,

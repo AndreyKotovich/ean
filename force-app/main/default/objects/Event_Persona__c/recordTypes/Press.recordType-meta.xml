@@ -13,5 +13,9 @@
             <fullName>confirmed</fullName>
             <default>false</default>
         </values>
+        <values>
+            <fullName>created</fullName>
+            <default>false</default>
+        </values>
     </picklistValues>
 </RecordType>

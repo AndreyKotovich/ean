@@ -24,6 +24,31 @@
         </value>
     </choices>
     <decisions>
+        <name>Is_Participant_Registered</name>
+        <label>Is Participant Registered</label>
+        <locationX>380</locationX>
+        <locationY>278</locationY>
+        <defaultConnector>
+            <targetReference>Visa_Letter_Requested</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Event_Participation.Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Registered</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Contact</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Is_Visa_Letter_already_requested</name>
         <label>Is Visa Letter already requested</label>
         <locationX>182</locationX>
@@ -46,31 +71,6 @@
                 <targetReference>Visa_Letter_Information</targetReference>
             </connector>
             <label>No</label>
-        </rules>
-    </decisions>
-    <decisions>
-        <name>Is_Visa_Letter_Checkbox_True</name>
-        <label>Is Visa Letter Checkbox True</label>
-        <locationX>380</locationX>
-        <locationY>278</locationY>
-        <defaultConnector>
-            <targetReference>Visa_Letter_Requested</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Yes</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>Get_Event_Participation.Visa_Letter__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Get_Contact</targetReference>
-            </connector>
-            <label>Yes</label>
         </rules>
     </decisions>
     <dynamicChoiceSets>
@@ -286,7 +286,7 @@
         <locationY>158</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Is_Visa_Letter_Checkbox_True</targetReference>
+            <targetReference>Is_Participant_Registered</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -529,8 +529,8 @@
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <fields>
-            <name>Visa_Letter_Checkbox_Not_Requested</name>
-            <fieldText>&lt;p&gt;The visa letter has not been requested when registering for the event.&lt;/p&gt;</fieldText>
+            <name>Visa_Letter_Not_Paid</name>
+            <fieldText>&lt;p&gt;The event registration has not been paid yet.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <showFooter>true</showFooter>
@@ -543,7 +543,7 @@
             <targetReference>Get_Event_Participation</targetReference>
         </connector>
     </start>
-    <status>Draft</status>
+    <status>Active</status>
     <variables>
         <name>recordId</name>
         <dataType>String</dataType>

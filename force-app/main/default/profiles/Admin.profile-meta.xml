@@ -4906,6 +4906,10 @@
     </flowAccesses>
     <flowAccesses>
         <enabled>false</enabled>
+        <flow>Invited_Persons_Notification</flow>
+    </flowAccesses>
+    <flowAccesses>
+        <enabled>false</enabled>
         <flow>JBSystemFlow_CampaignMember</flow>
     </flowAccesses>
     <flowAccesses>
@@ -4959,6 +4963,10 @@
     <flowAccesses>
         <enabled>false</enabled>
         <flow>Solo_registration_success</flow>
+    </flowAccesses>
+    <flowAccesses>
+        <enabled>false</enabled>
+        <flow>Speaker_Notification</flow>
     </flowAccesses>
     <flowAccesses>
         <enabled>false</enabled>

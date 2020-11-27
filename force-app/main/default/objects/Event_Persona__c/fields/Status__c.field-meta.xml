@@ -20,6 +20,11 @@
                 <default>false</default>
                 <label>cancelled</label>
             </value>
+            <value>
+                <fullName>created</fullName>
+                <default>true</default>
+                <label>created</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>
