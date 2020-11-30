@@ -1,4 +1,5 @@
 /* 1cm = 38px */
+/* 1mm = 3.8px */
 /* Badge 342px 494px */
 /* https://developer.salesforce.com/docs/atlas.en-us.pages.meta/pages/pages_output_pdf_supported_fonts.htm */
 * {
@@ -19,17 +20,22 @@
 
 :root {
   --font-nexa: "Nexa", Arial, Helvetica, sans-serif;
-  --page-max-width: 798px; /* 21cm */
-  --badge-width: 342px; /* 9cm */
-  --badge-height: 494px; /* 13cm */
-  --cut-padding: 19px;
+  --page-max-width: 798px; /* 210mm */
+  --badge-width: 368.6px; /* 97mm */
+  --badge-height: 509.2px; /* 134mm */
+  --badge-header-height: 186.2px; /* 49mm */
+  --badge-footer-height-lg: 102.6px; /* 27mm */
+  --badge-padding: 26.6px; /* 7mm */
+  --badge-padding-xs: 19px; /* 7mm */
+  --cut-padding: 11.4px; /* 3mm */
   --cut-line-width: 1px;
+
   
-  --color-cut-line: rgb(117, 6, 41);
+  --color-cut-line: rgb(174, 20, 131);
   --color-accent: rgb(221, 202, 0);
   --color-white: rgb(255, 255, 255);
   --color-dark: rgb(7, 7, 7);
-  --color-danger: rgb(170, 38, 49);
+  --color-danger: rgb(227, 7, 19);
   --color-firm: rgb(0, 125, 198);
   --color-firm-dark: rgb(0, 67, 154);
   --color-full: rgb(20, 65, 139);
@@ -49,9 +55,12 @@
   --color-technical-staff: rgb(255, 241, 175);
   --color-hostess: rgb(255, 241, 175);
   --color-exhibitor: rgb(194, 103, 57);
-  --color-meeting-only: rgb(240, 230, 180);
+  --color-meeting-only: rgb(240, 210, 196);
   --color-membership-type: rgb(0, 67, 154);
   --color-date: rgb(209, 214, 218);
+  --color-wi-fi: rgb(235, 12, 124);
+  --color-gradient-dark: rgb(8, 80, 145);
+  --color-gradient-light: rgb(0, 125, 198);
 }
 
 sup {
@@ -63,7 +72,7 @@ sup {
 **  BACKGROUND COLOR
 */
 .background_firm-gradient {
-  background: linear-gradient(90deg, var(--color-firm-dark) 0%,var(--color-firm) 100%);
+  background: linear-gradient(55deg, var(--color-gradient-dark) 0%,var(--color-gradient-light) 100%);
 }
 
 .background-color_white {
@@ -170,6 +179,10 @@ sup {
   color: var(--color-accent);
 }
 
+.font-color_wi-fi {
+  color: var(--color-wi-fi);
+}
+
 
 /*
 **  PAGE
@@ -230,6 +243,10 @@ sup {
 
 .page_line-full {
   width: 100%;
+}
+
+.page_line-lg {
+  height: 3px;
 }
 
 .page_row {
@@ -294,37 +311,14 @@ sup {
   margin-top: -6px;
 }
 
-.page_apps {
+.page_app {
   display: flex;
 }
 
-.page_ean_app {
+.page_app_logo {
   width: 50px;
   height: 50px;
-  background-color: var(--color-firm);
-  border-radius: 5px;
   margin-right: 4px;
-}
-
-.page_ean_logo {
-  display: block;
-  width: 30px;
-  height: 30px;
-  margin-left: 10px;
-  margin-top: 5px;
-  filter: brightness(0) invert(1);
-}
-
-.page_ean_label {
-  text-align: center;
-  font-size: 12px;
-  line-height: 1;
-  color: var(--color-white);
-}
-
-.page_ean_label span {
-  font-size: 13px;
-  color: var(--color-accent);
 }
 
 .page_store {
@@ -361,23 +355,26 @@ sup {
 .badge_header {
   display: flex;
   width: 100%;
+  height: calc(var(--cut-padding) + var(--cut-line-width) + var(--badge-header-height));
 }
 
 .badge_header_col {
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
   width: 50%;
   height: 100%;
-  padding-top: calc(var(--cut-padding) + var(--cut-line-width) + 52px);
-  padding-bottom: 10px;
+  padding-bottom: var(--badge-padding-xs);
 }
 
 .badge_header_col:first-child {
-  padding-left: calc(var(--cut-padding) + var(--cut-line-width) + 19px);
-  padding-right: 19px;
+  padding-left: calc(var(--cut-padding) + var(--cut-line-width) + var(--badge-padding));
+  padding-right: var(--badge-padding);
 }
 
 .badge_header_col:last-child {
-  padding-left: 19px;
-  padding-right: calc(var(--cut-padding) + var(--cut-line-width) + 19px);
+  padding-left: var(--badge-padding);
+  padding-right: calc(var(--cut-padding) + var(--cut-line-width) + var(--badge-padding));
 }
 
 .badge_header_title_wrapper {
@@ -409,7 +406,7 @@ sup {
 }
 
 .badge_header_content {
-  font-size: 11px;
+  font-size: 10px;
   line-height: 1.1;
   margin-bottom: 8px;
 }
@@ -419,7 +416,7 @@ sup {
 }
 
 .badge_header_content:first-child {
-  max-width: 110px;
+  max-width: 100px;
 }
 
 .badge_header_content:last-child {
@@ -446,46 +443,32 @@ sup {
   position: relative;
   width: 50%;
   height: 100%;
-  padding-top: 19px;
+  padding-top: 32.3px;
   padding-bottom: 10px;
 }
 
 .badge_body_col:first-child {
-  padding-left: calc(var(--cut-padding) + var(--cut-line-width) + 19px);
-  padding-right: 19px;
+  padding-left: calc(var(--cut-padding) + var(--cut-line-width) + var(--badge-padding));
+  padding-right: var(--badge-padding);
 }
 
 .badge_body_col:last-child {
-  padding-left: 19px;
-  padding-right: calc(var(--cut-padding) + var(--cut-line-width) + 19px);
+  padding-left: var(--badge-padding);
+  padding-right: calc(var(--cut-padding) + var(--cut-line-width) + var(--badge-padding));
 }
 
 .badge_body_title,
-.badge_body_subtitle,
-.badge_body_label {
-  font-size: 26px;
-  line-height: 1;
-}
-
-.badge_body_title {
-  font-size: 26px;
-}
-
-.badge_body_title:first-child {
-  margin-top: 0;
+.badge_body_subtitle {
+  font-size: 24pt;
+  line-height: 23pt;
 }
 
 .badge_body_subtitle {
-  font-size: 20px;
-  margin: 8px 0;
-}
-
-.badge_body_subtitle:last-child {
-  margin-bottom: 0;
+  font-size: 15pt;
 }
 
 .badge_body_label {
-  font-size: 16px;
+  font-size: 10.2pt;
 }
 
 .badge_body_label:last-child {
@@ -497,7 +480,7 @@ sup {
   justify-content: flex-end;
   align-items: flex-end;
   position: absolute;
-  bottom: calc(100% + 10px);
+  bottom: calc(100% + 11.4px);
 }
 
 .badge_body_qr_wrapper {
@@ -505,7 +488,7 @@ sup {
   width: 57px;
   height: 57px;
   overflow: hidden;
-  margin-left: 10px;
+  margin-left: var(--badge-padding-xs);
 }
 
 .badge_body_qr {
@@ -541,11 +524,11 @@ sup {
 }
 
 .badge_footer_col:first-child .badge_body_code {
-  right: 19px;
+  right: var(--badge-padding);
 }
 
 .badge_footer_col:last-child .badge_body_code {
-  right: calc(var(--cut-padding) + var(--cut-line-width) + 19px);
+  right: calc(var(--cut-padding) + var(--cut-line-width) + var(--badge-padding));
 }
 
 .badge_footer_line {
@@ -555,27 +538,30 @@ sup {
 }
 
 .badge_footer_line-lg {
-  height: 133px;
+  height: var(--badge-footer-height-lg);
 }
 
 .badge_footer_col:first-child .badge_footer_line {
-  padding-left: calc(var(--cut-padding) + var(--cut-line-width) + 19px);
-  padding-right: 19px;
+  padding-left: calc(var(--cut-padding) + var(--cut-line-width) + var(--badge-padding));
+  padding-right: var(--badge-padding);
 }
 
 .badge_footer_col:last-child .badge_footer_line {
-  padding-left: 19px;
-  padding-right: calc(var(--cut-padding) + var(--cut-line-width) + 19px);
+  padding-left: var(--badge-padding);
+  padding-right: calc(var(--cut-padding) + var(--cut-line-width) + var(--badge-padding));
 }
 
 .badge_footer_line:last-child {
+  padding-bottom: calc(var(--cut-padding) + var(--cut-line-width) + 7.6px);
+}
+
+.badge_footer_line-lg:last-child {
   padding-bottom: calc(var(--cut-padding) + var(--cut-line-width));
 }
 
 .badge_footer_label {
-  font-size: 16px;
-  line-height: 1;
-  padding: 5px 0;
+  font-size: 10.2pt;
+  line-height: 19px;
 }
 
 
@@ -622,11 +608,11 @@ sup {
 }
 
 .badge_cutline_circle_left {
-  left: 10px;
+  left: 13.6px;
 }
 
 .badge_cutline_circle_right {
-  right: 10px;
+  right: 13.6px;
 }
 
 .badge_cutline_center {

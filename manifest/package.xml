@@ -36,6 +36,7 @@
         <members>*</members>
           <members>EAN_Email_templates/EAN_Order_for_event_participation_paid</members>
           <members>EAN_Email_templates/EAN_Order_for_refund_transaction</members>
+          <members>EAN_Email_templates/Change_Request</members>
         <name>EmailTemplate</name>
     </types>
     <types>

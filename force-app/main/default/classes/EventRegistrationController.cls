@@ -163,9 +163,31 @@ public without sharing class EventRegistrationController {
             insert eventGroupInformation;
         }
 
+        if(eventGroupInformation.Event_Exhibitor__c != null){
+            createIPRBadge(eventGroupInformation);
+        }
+
         Event_Registration_Sub_Group__c subGroup = new Event_Registration_Sub_Group__c(Event_Registration_Group__c = eventGroupInformation.Id);
         insert subGroup;
         return subGroup.Id;
+    }
+
+    public static void createIPRBadge(Event_Registration_Group__c eventGroup){
+        List<Event_Exhibitor__c> exhibitor = [SELECT Id, Event_custom__c FROM Event_Exhibitor__c WHERE Id =: eventGroup.Event_Exhibitor__c];
+        List<RecordType> exhibitorRT = [SELECT Id FROM RecordType WHERE SobjectType = 'Event_Badge__c' AND DeveloperName = 'Exhibitor_Badge'];
+        if(!exhibitor.isEmpty()){
+            Event_Badge__c badge = new Event_Badge__c(
+                    Event_Registration_Group__c = eventGroup.Id,
+                    Event_custom__c = exhibitor[0].Event_custom__c,
+                    Company__c = eventGroup.Name,
+                    Footer_Definitions__c = 'Non-Member',
+                    RecordTypeId = exhibitorRT[0].Id
+            );
+            insert badge;
+            List<NamedCredential> namedCredentials = [SELECT DeveloperName, Endpoint FROM NamedCredential WHERE DeveloperName = 'QR_Code_Generator_Link'];
+            badge.QR_code__c = namedCredentials[0].Endpoint + '/chart?chs=200x200&cht=qr&chl=' + Url.getOrgDomainUrl().toExternalForm() + '/' + badge.Id;
+            update badge;
+        }
     }
 
     @AuraEnabled
@@ -383,12 +405,12 @@ public without sharing class EventRegistrationController {
         return participants.isEmpty();
     }
 
-    @AuraEnabled public static List<String> getEventPersonaInfo(String eventId, String contactId){
-        List<String> roles  = new List<String>();
+    @AuraEnabled public static Map<String, Object> getEventPersonaInfo(String eventId, String contactId){
+        Map<String, Object> roleEventPersonaMap = new Map<String, Object>();
         List<Event_Persona__c> eventPersonas = [SELECT Id, RecordType.Name, RecordType.DeveloperName FROM Event_Persona__c WHERE Event_custom__c = :eventId AND Contact__c = :contactId];
 
         for(Event_Persona__c ep : eventPersonas){
-            roles.add(ep.RecordType.DeveloperName);
+            roleEventPersonaMap.put(ep.RecordType.DeveloperName, ep);
         }
 
         List<Speaker__c> speaker = [
@@ -399,11 +421,12 @@ public without sharing class EventRegistrationController {
                 AND Eligible_for_Speaker_Ticket__c = TRUE
         ];
 
+        System.debug('speaker: '+speaker);
         if(!speaker.isEmpty()){
-            roles.add('Speaker');
+            roleEventPersonaMap.put('Speaker', speaker[0]);
         }
 
-        return roles;
+        return roleEventPersonaMap;
     }
 
     @AuraEnabled public static List<String> getNotAvailableEventRegistrationEmails(List<String> eventsIds){
@@ -458,7 +481,8 @@ public without sharing class EventRegistrationController {
 
     @AuraEnabled public static void sendInvoiceToGroupLeader(List<String> orderIds) {
         List<Order__c> orders = [
-            SELECT Id, Contact__r.Email, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Id, Event_custom__c
+            SELECT Id, Contact__r.Email, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Id, Event_custom__c,
+            (SELECT Id, Total_amount__c, Name__c, Event_Participation__r.Contact__r.Name FROM Order_Items__r)
             FROM Order__c
             WHERE Id IN :orderIds
         ];
@@ -489,28 +513,79 @@ public without sharing class EventRegistrationController {
         }
         List<Email_Activity__c> emailActivities = new List<Email_Activity__c>();
         for (Order__c order : groupCreatedOrders) {
-            Email_Activity__c emailActivity = new Email_Activity__c(
-                Contact__c = order.Contact__c,
-                Event_Custom__c = order.Event_custom__c,
-                Order__c = order.Id,
-                Send_To_Email__c = order.Contact__r.Email,
-                Type__c = 'Group registration success'
-            );
-            emailActivities.add(emailActivity);
+            Boolean isAllOrderItemsSame = checkOrderItemsEquality(order);
+            if (isAllOrderItemsSame) {
+                Email_Activity__c emailActivity = new Email_Activity__c(
+                    Contact__c = order.Contact__c,
+                    Event_Custom__c = order.Event_custom__c,
+                    Order__c = order.Id,
+                    Send_To_Email__c = order.Contact__r.Email,
+                    Type__c = 'Group registration success with same orderItems'
+                );
+                emailActivities.add(emailActivity);
+            } else {
+                Email_Activity__c emailActivity = new Email_Activity__c(
+                    Contact__c = order.Contact__c,
+                    Event_Custom__c = order.Event_custom__c,
+                    Order__c = order.Id,
+                    Send_To_Email__c = order.Contact__r.Email,
+                    Type__c = 'Group registration success'
+                );
+                emailActivities.add(emailActivity);
+            }
         }
         for (Order__c order : groupAddedParticipantsOrders) {
-            Email_Activity__c emailActivity = new Email_Activity__c(
-                Contact__c = order.Contact__c,
-                Event_Custom__c = order.Event_custom__c,
-                Order__c = order.Id,
-                Send_To_Email__c = order.Contact__r.Email,
-                Type__c = 'Group participants added'
-            );
-            emailActivities.add(emailActivity);
+            Boolean isAllOrderItemsSame = checkOrderItemsEquality(order);
+            if (isAllOrderItemsSame) {
+                Email_Activity__c emailActivity = new Email_Activity__c(
+                    Contact__c = order.Contact__c,
+                    Event_Custom__c = order.Event_custom__c,
+                    Order__c = order.Id,
+                    Send_To_Email__c = order.Contact__r.Email,
+                    Type__c = 'Group participants added with same orderItems'
+                );
+                emailActivities.add(emailActivity);
+            } else {
+                Email_Activity__c emailActivity = new Email_Activity__c(
+                    Contact__c = order.Contact__c,
+                    Event_Custom__c = order.Event_custom__c,
+                    Order__c = order.Id,
+                    Send_To_Email__c = order.Contact__r.Email,
+                    Type__c = 'Group participants added'
+                );
+                emailActivities.add(emailActivity);
+            }
         }
         if (emailActivities.size() > 0) {
             insert emailActivities;
         }
+    }
+
+    private static Boolean checkOrderItemsEquality(Order__c order) {
+        Boolean isAllOrderItemsSame = true;
+        Decimal orderItemAmount;
+        String orderItemName;
+        String orderItemContact;
+        for (Order_Item__c orderItem : order.Order_Items__r) {
+            if (orderItemAmount == null) {
+                orderItemAmount = orderItem.Total_amount__c;
+            } else if (orderItemAmount != orderItem.Total_amount__c) {
+                isAllOrderItemsSame = false;
+            }
+            if (orderItemName == null) {
+                orderItemName = orderItem.Name__c;
+            } else if (orderItemName != orderItem.Name__c) {
+                isAllOrderItemsSame = false;
+            }
+            if (String.isNotBlank(orderItem.Event_Participation__c)) {
+                if (orderItemContact == null) {
+                    orderItemContact = orderItem.Event_Participation__r.Contact__c;
+                } else if (orderItemContact != orderItem.Event_Participation__r.Contact__c) {
+                    isAllOrderItemsSame = false;
+                }
+            }
+        }
+        return isAllOrderItemsSame;
     }
 
     //Same as Utils.getContactMemberships but without sharing

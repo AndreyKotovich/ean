@@ -309,9 +309,9 @@ public class InvoicePDFGenerator {
         update sessionParticipants;
     }
 
-    public static void insertEmailActivity(List<Id> orderIds) {
+    public static void sendEmailOrderPaidSoloRegBT(List<Id> orderIds) {
         List<Order__c> orders = [
-            SELECT Id, Contact__r.Email, Event_custom__c, Type__c FROM Order__c WHERE Id IN :orderIds
+            SELECT Id, Contact__r.Email, Event_custom__c, Type__c, Payment_Method__c FROM Order__c WHERE Id IN :orderIds
         ];
         List<Email_Activity__c> emailActivities = new List<Email_Activity__c>();
         for (Order__c order : orders) {
@@ -320,7 +320,84 @@ public class InvoicePDFGenerator {
                 Event_Custom__c = order.Event_custom__c,
                 Order__c = order.Id,
                 Send_To_Email__c = order.Contact__r.Email,
-                Type__c = order.Type__c
+                Type__c = 'Solo event registration order paid BT'
+            );
+            emailActivities.add(emailActivity);
+        }
+        if (emailActivities.size() > 0) {
+            insert emailActivities;
+        }
+    }
+
+    public static void sendEmailOrderPaidGroupRegBT(List<Id> orderIds) {
+        List<Order__c> orders = [
+            SELECT Id, Contact__r.Email, Event_custom__c, Type__c, Payment_Method__c,
+            (SELECT Id, Total_amount__c, Name__c, Event_Participation__r.Contact__r.Name FROM Order_Items__r)
+            FROM Order__c 
+            WHERE Id IN :orderIds
+        ];
+        List<Email_Activity__c> emailActivities = new List<Email_Activity__c>();
+        for (Order__c order : orders) {
+            Boolean isAllOrderItemsSame = true;
+            Decimal orderItemAmount;
+            String orderItemName;
+            String orderItemContact;
+            for (Order_Item__c orderItem : order.Order_Items__r) {
+                if (orderItemAmount == null) {
+                    orderItemAmount = orderItem.Total_amount__c;
+                } else if (orderItemAmount != orderItem.Total_amount__c) {
+                    isAllOrderItemsSame = false;
+                }
+                if (orderItemName == null) {
+                    orderItemName = orderItem.Name__c;
+                } else if (orderItemName != orderItem.Name__c) {
+                    isAllOrderItemsSame = false;
+                }
+                if (String.isNotBlank(orderItem.Event_Participation__c)) {
+                    if (orderItemContact == null) {
+                        orderItemContact = orderItem.Event_Participation__r.Contact__c;
+                    } else if (orderItemContact != orderItem.Event_Participation__r.Contact__c) {
+                        isAllOrderItemsSame = false;
+                    }
+                }
+            }
+            if (isAllOrderItemsSame) {
+                Email_Activity__c emailActivity = new Email_Activity__c(
+                    Contact__c = order.Contact__c,
+                    Event_Custom__c = order.Event_custom__c,
+                    Order__c = order.Id,
+                    Send_To_Email__c = order.Contact__r.Email,
+                    Type__c = 'Group eventReg order paid BT with the same orderItems'
+                );
+                emailActivities.add(emailActivity);
+            } else {
+                Email_Activity__c emailActivity = new Email_Activity__c(
+                    Contact__c = order.Contact__c,
+                    Event_Custom__c = order.Event_custom__c,
+                    Order__c = order.Id,
+                    Send_To_Email__c = order.Contact__r.Email,
+                    Type__c = 'Group event registration order paid BT'
+                );
+                emailActivities.add(emailActivity);
+            }
+        }
+        if (emailActivities.size() > 0) {
+            insert emailActivities;
+        }
+    }
+
+    public static void sendInvoiceSoloRegBT(List<Id> orderIds) {
+        List<Order__c> orders = [
+            SELECT Id, Contact__r.Email, Event_custom__c, Type__c, Payment_Method__c FROM Order__c WHERE Id IN :orderIds
+        ];
+        List<Email_Activity__c> emailActivities = new List<Email_Activity__c>();
+        for (Order__c order : orders) {
+            Email_Activity__c emailActivity = new Email_Activity__c(
+                Contact__c = order.Contact__c,
+                Event_Custom__c = order.Event_custom__c,
+                Order__c = order.Id,
+                Send_To_Email__c = order.Contact__r.Email,
+                Type__c = 'Solo event registration BT'
             );
             emailActivities.add(emailActivity);
         }

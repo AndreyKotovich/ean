@@ -4,9 +4,12 @@
         <name>Attach_and_send_Visa_Letter</name>
         <label>Attach and send Visa Letter</label>
         <locationX>50</locationX>
-        <locationY>1238</locationY>
+        <locationY>1118</locationY>
         <actionName>CreateAndSendVisaLetter</actionName>
         <actionType>apex</actionType>
+        <connector>
+            <targetReference>Visa_Letter_Information_3</targetReference>
+        </connector>
         <inputParameters>
             <name>visaLetterIds</name>
             <value>
@@ -128,6 +131,14 @@
         <object>PicklistValueInfo</object>
         <valueField>Label</valueField>
     </dynamicChoiceSets>
+    <dynamicChoiceSets>
+        <name>Gender</name>
+        <dataType>Picklist</dataType>
+        <displayField xsi:nil="true"/>
+        <object xsi:nil="true"/>
+        <picklistField>Gender__c</picklistField>
+        <picklistObject>Visa_Letter__c</picklistObject>
+    </dynamicChoiceSets>
     <formulas>
         <name>SetCountryDefaultChoice</name>
         <dataType>String</dataType>
@@ -158,7 +169,7 @@
         <name>Create_Visa_Letter</name>
         <label>Create Visa Letter</label>
         <locationX>50</locationX>
-        <locationY>1118</locationY>
+        <locationY>998</locationY>
         <assignRecordIdToReference>visaLetterId</assignRecordIdToReference>
         <connector>
             <targetReference>Attach_and_send_Visa_Letter</targetReference>
@@ -200,6 +211,12 @@
             </value>
         </inputAssignments>
         <inputAssignments>
+            <field>Gender__c</field>
+            <value>
+                <elementReference>Gender_Picklist</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
             <field>Last_Name__c</field>
             <value>
                 <elementReference>Last_Name</elementReference>
@@ -219,6 +236,9 @@
         </inputAssignments>
         <inputAssignments>
             <field>Official_Country__c</field>
+            <value>
+                <elementReference>Country</elementReference>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <field>Official_State_Province__c</field>
@@ -248,12 +268,6 @@
             <field>Place_of_Birth__c</field>
             <value>
                 <elementReference>Place_of_Birth</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Sex__c</field>
-            <value>
-                <elementReference>Sex</elementReference>
             </value>
         </inputAssignments>
         <object>Visa_Letter__c</object>
@@ -370,24 +384,14 @@
             <isRequired>true</isRequired>
         </fields>
         <fields>
-            <name>Country</name>
-            <choiceReferences>CountryDefaultChoice</choiceReferences>
-            <choiceReferences>CountryGlobalPicklistChoice</choiceReferences>
-            <dataType>String</dataType>
-            <defaultSelectedChoiceReference>CountryDefaultChoice</defaultSelectedChoiceReference>
-            <fieldText>Country</fieldText>
-            <fieldType>DropdownBox</fieldType>
-            <isRequired>true</isRequired>
-        </fields>
-        <fields>
-            <name>Official_State_Province</name>
+            <name>Official_Street</name>
             <dataType>String</dataType>
             <defaultValue>
-                <elementReference>Get_Contact.MailingState</elementReference>
+                <elementReference>Get_Contact.MailingStreet</elementReference>
             </defaultValue>
-            <fieldText>Official State/Province</fieldText>
+            <fieldText>Official Street</fieldText>
             <fieldType>InputField</fieldType>
-            <isRequired>false</isRequired>
+            <isRequired>true</isRequired>
         </fields>
         <fields>
             <name>Official_ZIP_Postal_Code</name>
@@ -410,14 +414,24 @@
             <isRequired>true</isRequired>
         </fields>
         <fields>
-            <name>Official_Street</name>
+            <name>Country</name>
+            <choiceReferences>CountryDefaultChoice</choiceReferences>
+            <choiceReferences>CountryGlobalPicklistChoice</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>CountryDefaultChoice</defaultSelectedChoiceReference>
+            <fieldText>Country</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Official_State_Province</name>
             <dataType>String</dataType>
             <defaultValue>
-                <elementReference>Get_Contact.MailingStreet</elementReference>
+                <elementReference>Get_Contact.MailingState</elementReference>
             </defaultValue>
-            <fieldText>Official Street</fieldText>
+            <fieldText>Official State/Province</fieldText>
             <fieldType>InputField</fieldType>
-            <isRequired>true</isRequired>
+            <isRequired>false</isRequired>
         </fields>
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
@@ -431,7 +445,7 @@
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Visa_Letter_Information_3</targetReference>
+            <targetReference>Create_Visa_Letter</targetReference>
         </connector>
         <fields>
             <name>Passport_Number</name>
@@ -458,13 +472,11 @@
             <isRequired>true</isRequired>
         </fields>
         <fields>
-            <name>Sex</name>
+            <name>Gender_Picklist</name>
+            <choiceReferences>Gender</choiceReferences>
             <dataType>String</dataType>
-            <defaultValue>
-                <elementReference>Get_Contact.Gender__c</elementReference>
-            </defaultValue>
-            <fieldText>Sex</fieldText>
-            <fieldType>InputField</fieldType>
+            <fieldText>Gender</fieldText>
+            <fieldType>DropdownBox</fieldType>
             <isRequired>true</isRequired>
         </fields>
         <fields>
@@ -505,13 +517,10 @@
         <name>Visa_Letter_Information_3</name>
         <label>Visa Letter Information 3</label>
         <locationX>50</locationX>
-        <locationY>998</locationY>
+        <locationY>1238</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
-        <connector>
-            <targetReference>Create_Visa_Letter</targetReference>
-        </connector>
         <fields>
             <name>Thank_You</name>
             <fieldText>&lt;p&gt;Thank you for requesting the visa letter.&lt;/p&gt;</fieldText>

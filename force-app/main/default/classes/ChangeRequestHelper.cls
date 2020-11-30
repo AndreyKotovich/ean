@@ -71,20 +71,20 @@ public without sharing class ChangeRequestHelper {
 			emailActivity.Type__c = changeRequest.Type__c;
 			emailActivities.add(emailActivity);
 		}
-		for (Change_Request__c changeRequest : changeRequestsTransferApproved) {
-			Email_activity__c emailActivity = new Email_activity__c();
-			emailActivity.Change_Request__c = changeRequest.Id;
-			emailActivity.Contact__c = changeRequest.TransferToContact__c;
-			if (String.isNotBlank(contactsMap.get(changeRequest.TransferToContact__c).Email)) {
-				emailActivity.Send_To_Email__c = contactsMap.get(changeRequest.TransferToContact__c).Email;
-			} else {
-				emailActivity.Send_To_Email__c = changeRequest.TransferToEmail__c;
-			}
-			emailActivity.Event_custom__c = changeRequest.Event_custom__c;
-			emailActivity.Event_Participation__c = changeRequest.Event_Participation__c;
-			emailActivity.Type__c = 'QR code for transfered participant';
-			emailActivities.add(emailActivity);
-		}
+		// for (Change_Request__c changeRequest : changeRequestsTransferApproved) {
+		// 	Email_activity__c emailActivity = new Email_activity__c();
+		// 	emailActivity.Change_Request__c = changeRequest.Id;
+		// 	emailActivity.Contact__c = changeRequest.TransferToContact__c;
+		// 	if (String.isNotBlank(contactsMap.get(changeRequest.TransferToContact__c).Email)) {
+		// 		emailActivity.Send_To_Email__c = contactsMap.get(changeRequest.TransferToContact__c).Email;
+		// 	} else {
+		// 		emailActivity.Send_To_Email__c = changeRequest.TransferToEmail__c;
+		// 	}
+		// 	emailActivity.Event_custom__c = changeRequest.Event_custom__c;
+		// 	emailActivity.Event_Participation__c = changeRequest.Event_Participation__c;
+		// 	emailActivity.Type__c = 'QR code for transfered participant';
+		// 	emailActivities.add(emailActivity);
+		// }
 		insert emailActivities;
 	}
 }

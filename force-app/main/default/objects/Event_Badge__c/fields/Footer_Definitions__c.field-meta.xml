@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Footer_Definitions__c</fullName>
+    <externalId>false</externalId>
+    <label>Footer Definitions</label>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Associate Member</fullName>
+                <default>false</default>
+                <label>Associate Member</label>
+            </value>
+            <value>
+                <fullName>Corresponding</fullName>
+                <default>false</default>
+                <label>Corresponding</label>
+            </value>
+            <value>
+                <fullName>Day of the week</fullName>
+                <default>false</default>
+                <label>Day of the week</label>
+            </value>
+            <value>
+                <fullName>EAN Head Office</fullName>
+                <default>false</default>
+                <label>EAN Head Office</label>
+            </value>
+            <value>
+                <fullName>Exhibitor</fullName>
+                <default>false</default>
+                <label>Exhibitor</label>
+            </value>
+            <value>
+                <fullName>Faculty</fullName>
+                <default>false</default>
+                <label>Faculty</label>
+            </value>
+            <value>
+                <fullName>Fellow of the EAN</fullName>
+                <default>false</default>
+                <label>Fellow of the EAN</label>
+            </value>
+            <value>
+                <fullName>Full</fullName>
+                <default>false</default>
+                <label>Full</label>
+            </value>
+            <value>
+                <fullName>Hostess</fullName>
+                <default>false</default>
+                <label>Hostess</label>
+            </value>
+            <value>
+                <fullName>Meeting only</fullName>
+                <default>false</default>
+                <label>Meeting only</label>
+            </value>
+            <value>
+                <fullName>Non-Member</fullName>
+                <default>false</default>
+                <label>Non-Member</label>
+            </value>
+            <value>
+                <fullName>Panel Management Group Member</fullName>
+                <default>false</default>
+                <label>Panel Management Group Member</label>
+            </value>
+            <value>
+                <fullName>Press</fullName>
+                <default>false</default>
+                <label>Press</label>
+            </value>
+            <value>
+                <fullName>Resident &amp; Research Member</fullName>
+                <default>false</default>
+                <label>Resident &amp; Research Member</label>
+            </value>
+            <value>
+                <fullName>Student Member</fullName>
+                <default>false</default>
+                <label>Student Member</label>
+            </value>
+            <value>
+                <fullName>Technical Staff</fullName>
+                <default>false</default>
+                <label>Technical Staff</label>
+            </value>
+            <value>
+                <fullName>None</fullName>
+                <default>false</default>
+                <label>None</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>8</visibleLines>
+</CustomField>

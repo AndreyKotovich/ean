@@ -80,6 +80,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         initializedParticipants: []
     };
     participantRole = '';
+    eventPersonaId = ''; // id of record event persona or speaker
     freeTicketAmount = 0;
     hasOnlineTickets = false; // indicates if the any of selected tickets is online
 
@@ -216,6 +217,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             initializedParticipants: []
         };
         this.participantRole = '';
+        this.eventPersonaId = '';
         this.selectedSessions = [];
         this.selectedServices = {
             visaLetter: false,
@@ -250,6 +252,8 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         console.log('event.detail.groupIndividualTickets', JSON.stringify(event.detail.groupIndividualTickets));
         this.participantsInitialization = event.detail.groupIndividualTickets;
         this.participantRole = event.detail.participantRole;
+        this.eventPersonaId = event.detail.eventPersonaId;
+        console.log('eventPersonaId', JSON.stringify(this.eventPersonaId));
         this.userInfo = event.detail.userInfo;
         this.freeTicketAmount = event.detail.freeAmount;
         this.hasOnlineTickets = event.detail.isOnlineTicket;
@@ -440,7 +444,9 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                             Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
                             Visa_Letter__c: this.selectedServices.visaLetter,
                             Status__c: 'Pending',
-                            Role__c: this.participantRole
+                            Role__c: this.participantRole,
+                            Lecture_Presentation__c: this.participantRole === 'Invited_Speaker' ? this.eventPersonaId : '',
+                            Event_Persona__c: !!this.participantRole && this.participantRole !== 'Invited_Speaker' ? this.eventPersonaId : ''
                         },
                         price: this.priceTicket
                     });
@@ -481,7 +487,9 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                                 Visa_Letter__c: this.selectedServices.visaLetter,
                                 Status__c: 'Pending',
                                 Contact__c: participant.contact.Id ? participant.contact.Id : '',
-                                Role__c: participant.participantRole
+                                Role__c: participant.participantRole,
+                                Lecture_Presentation__c: !!participant.participantRole && participant.participantRole === 'Invited_Speaker' ? participant.eventPersonaId : '',
+                                Event_Persona__c: !!participant.participantRole && participant.participantRole !== 'Invited_Speaker' ? participant.eventPersonaId : ''
                             },
                             price: participant.priceTicket
                         });

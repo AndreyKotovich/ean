@@ -320,7 +320,7 @@
     </processMetadataValues>
     <processType>Workflow</processType>
     <startElementReference>isChangedDecision2_myRule_1_Form_Status_c</startElementReference>
-    <status>Active</status>
+    <status>Obsolete</status>
     <variables>
         <name>myCollection_myRule_1_A1recipientIds</name>
         <dataType>String</dataType>

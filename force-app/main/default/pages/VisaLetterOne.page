@@ -26,7 +26,7 @@
 
     <body>
         <apex:repeat value="{!visaLetters}" var="visaLetter">
-            <apex:image url="{!$Resource.VisaLetterHeader}" width="100%" height="100" />
+            <apex:image url="{!$Resource.Banner}" width="100%" height="100" />
             <div style="margin-top: 50px; margin-bottom: 50px;">
                 TO THE AUSTRIAN EMBASSY
             </div>

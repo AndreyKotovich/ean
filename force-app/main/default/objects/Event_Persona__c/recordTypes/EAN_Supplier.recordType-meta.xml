@@ -14,7 +14,7 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>created</fullName>
+            <fullName>invited</fullName>
             <default>false</default>
         </values>
     </picklistValues>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>QR_code__c</fullName>
+    <description>Filled by qr code generator batch or in the end of event registration. Used in Qr-code link field</description>
     <externalId>false</externalId>
     <label>QR-code</label>
     <required>false</required>

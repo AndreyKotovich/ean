@@ -10,6 +10,7 @@
     <columns>Submitter__c</columns>
     <columns>OWNER.FIRST_NAME</columns>
     <columns>OWNER.LAST_NAME</columns>
+    <columns>Abstract_Presenter__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
 </ListView>

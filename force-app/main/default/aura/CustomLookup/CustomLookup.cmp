@@ -3,10 +3,11 @@
     <aura:attribute name="selectedRecord" type="sObject" default="{}" description="Use,for store SELECTED sObject Record"/>
     <aura:attribute name="listOfSearchRecords" type="List" description="Use,for store the list of search records which returns from apex class"/>
     <aura:attribute name="SearchKeyWord" type="string"/>
-    <aura:attribute name="objectAPIName" type="string" default=""/>
     <aura:attribute name="IconName" type="string" default="standard:contact"/>
     <aura:attribute name="label" type="string" default=""/>
     <aura:attribute name="Message" type="String" default=""/>
+    <aura:attribute name="checkedPresenter" type="Boolean" default="false" access="global"/>
+    <aura:attribute name="selectedRecordId" type="String" default="false" access="global"/>
     
     <!--declare events hendlers-->  
     <aura:handler name="oSelectedRecordEvent" event="c:SelectedsObjectRecordEvent" action="{!c.handleComponentEvent}"/>

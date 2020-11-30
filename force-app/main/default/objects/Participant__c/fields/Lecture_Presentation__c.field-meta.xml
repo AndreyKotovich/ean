@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lecture_Presentation__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Says that this participant is Lecture Presentation (Speaker) on selected event</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Says that this participant is Lecture Presentation (Speaker) on selected event</inlineHelpText>
+    <label>Lecture Presentation</label>
+    <referenceTo>Speaker__c</referenceTo>
+    <relationshipLabel>Event Participations</relationshipLabel>
+    <relationshipName>Event_Participations</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

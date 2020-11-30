@@ -257,21 +257,252 @@ public without sharing class ParticipantTriggerHelper {
         }
     }
 
+    public static final String SYSTEM_GROUP_CONTACT_NAME = 'Undefined Participant';
+    public static final Id personaPressRTId = Schema.SObjectType.Event_Persona__c.getRecordTypeInfosByDeveloperName().get('Press').getRecordTypeId();
+
     public static void createBadges(List<String> participantIds) {
         List<Participant__c> participants = [
-            SELECT Id, (SELECT Id FROM Event_Badges__r) FROM Participant__c WHERE Id IN :participantIds
+            SELECT Id, Event_Exhibitor__c, Event_custom__c,
+                Contact__c, Contact__r.Name, Contact__r.FirstName, Contact__r.LastName, Contact__r.Residency__c, Contact__r.MailingCity,
+                Contact__r.Prescriber__c, Event_Persona__c, Event_Persona__r.RecordTypeId,
+                Contact__r.AccountId, Contact__r.Account.Name,
+                Contact__r.Membership_Status__c,
+                // Contact__r.Flag_EAN_Full_Member__c, Contact__r.Flag_EAN_Corresponding_Member__c, Contact__r.Flag_EAN_Fellow_of_the_EAN__c, 
+                // Contact__r.Flag_EAN_Resident_Research_Member__c, Contact__r.Flag_EAN_Associate_Member__c, Contact__r.Flag_EAN_Student_Member__c, 
+                Event_Registration_Sub_Group__c, Event_Registration_Sub_Group__r.Event_Registration_Group__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name,
+                (SELECT Id FROM Event_Badges__r)
+            FROM Participant__c
+            WHERE Id IN :participantIds
         ];
+
         List<Event_Badge__c> badges = new List<Event_Badge__c>();
         for (Participant__c participant : participants) {
-            if (participant.Event_Badges__r.size() == 0) {
-                Event_Badge__c badge = new Event_Badge__c();
-                badge.Event_Participation__c = participant.Id;
-                badges.add(badge);
+
+            if (!participant.Event_Badges__r.isEmpty()) continue;
+
+            Event_Badge__c badge = new Event_Badge__c();
+            badge.Event_Participation__c = participant.Id;
+            badge.Event_custom__c = participant.Event_custom__c;
+            badge.Country__c = participant.Contact__r.Residency__c;
+            badge.City__c = participant.Contact__r.MailingCity;
+            badge.FirstName__c = participant.Contact__r.FirstName;
+            badge.LastName__c = participant.Contact__r.LastName;
+            badge.Non_Prescriber_Info__c = participant.Contact__r.Prescriber__c;
+
+            if (participant.Contact__r.AccountId != null) badge.Company__c = participant.Contact__r.Account.Name;
+
+            if (participant.Event_Registration_Sub_Group__c != null) {
+                badge.Label__c = participant.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name;
+                badge.Event_Registration_Group__c = participant.Event_Registration_Sub_Group__r.Event_Registration_Group__c;
+            }
+            List<String> footerDefinitionsList = generateFooterValues(participant);
+            if (footerDefinitionsList.isEmpty()) footerDefinitionsList.add('None');
+            String footerDefinitionsString = String.join(footerDefinitionsList, ';');
+            badge.Footer_Definitions__c = footerDefinitionsString;
+
+            //  TODO Event Event_Participation_Role__c (ePoster presenter, ePresentation presenter, Tournament candidate)
+
+            badges.add(badge);
+        }
+
+        if(!badges.isEmpty()) insert badges;
+    }
+
+    public static List<String> generateFooterValues(Participant__c participant) {
+        List<String> values = new List<String>();
+
+        if (participant.Event_Exhibitor__c != null) {
+            values.add('Exhibitor');
+            return values;
+        }
+
+        if (participant.Contact__r.Membership_Status__c == 'EAN Full Member') { values.add('Full');
+        } else if (participant.Contact__r.Membership_Status__c == 'EAN Corresponding Member') { values.add('Corresponding');
+        } else if (participant.Contact__r.Membership_Status__c == 'Fellow of EAN') { values.add('Fellow of the EAN');
+        } else if (participant.Contact__r.Membership_Status__c == 'EAN Resident and Research Member') { values.add('Resident & Research Member');
+        } else if (participant.Contact__r.Membership_Status__c == 'EAN Associate Member') { values.add('Associate Member');
+        } else if (participant.Contact__r.Membership_Status__c == 'EAN Student Member') { values.add('Student Member');
+        } else if (participant.Contact__r.Name != SYSTEM_GROUP_CONTACT_NAME) { values.add('Non-Member'); }
+
+        if (participant.Event_Persona__c != null && participant.Event_Persona__r.RecordTypeId == personaPressRTId) {
+            values.add('Press');
+        }
+
+        //  TODO
+        // Day of the week
+        // Faculty
+        // Meeting only
+        // Panel Management Group Member
+
+        return values;
+    }
+
+    public static void updateEventPersonas_delete(List<Participant__c> deletedParticipants){
+        Set<Id> eventPersonaId = new Set<Id>();
+        Set<Id> lecturePresentationId = new Set<Id>();
+
+        for(Participant__c participant : deletedParticipants){
+            if(participant.Lecture_Presentation__c != null){
+                lecturePresentationId.add(participant.Lecture_Presentation__c);
+            }
+            if(participant.Event_Persona__c != null){
+                eventPersonaId.add(participant.Event_Persona__c);
             }
         }
-        if(badges.size() > 0) {
-            insert badges;
+
+        List<Event_Persona__c> eventPersonas = [SELECT Id, Status__c FROM Event_Persona__c WHERE Id IN :eventPersonaId AND Status__c != ''];
+        List<Speaker__c> speakers = [SELECT Id, Status__c FROM Speaker__c WHERE Id IN :lecturePresentationId];
+
+        if(!eventPersonas.isEmpty()){
+
+            for(Event_Persona__c ep : eventPersonas){
+                ep.Status__c = '';
+            }
+
+            update eventPersonas;
         }
+
+        if(!speakers.isEmpty()){
+
+            for(Speaker__c s : speakers){
+                s.Status__c = '';
+            }
+
+            update speakers;
+        }
+
+    }
+
+    public static void updateEventPersonas_insert_undelete(List<Participant__c> insertedParticipants){
+        Map<String, String> statusesMap = new Map<String, String>{
+                'Registered'=>'confirmed',
+                'Pending'=>'invited',
+                'Canceled'=>'cancelled'
+        };
+        Set<Id> eventPersonaId = new Set<Id>();
+        Set<Id> lecturePresentationId = new Set<Id>();
+
+        for(Participant__c participant : insertedParticipants){
+            if(participant.Lecture_Presentation__c != null){
+                lecturePresentationId.add(participant.Lecture_Presentation__c);
+            }
+            if(participant.Event_Persona__c != null){
+                eventPersonaId.add(participant.Event_Persona__c);
+            }
+        }
+
+        Map<Id, Event_Persona__c> eventPersonasMap = new Map<Id, Event_Persona__c>([SELECT Id, Status__c FROM Event_Persona__c WHERE Id IN :eventPersonaId]);
+        Map<Id, Speaker__c> speakersMap = new Map<Id, Speaker__c>([SELECT Id, Status__c FROM Speaker__c WHERE Id IN :lecturePresentationId]);
+
+        Map<Id, Event_Persona__c> eventPersonasMapDML = new Map<Id, Event_Persona__c>();
+        Map<Id, Speaker__c> speakersMapDML = new Map<Id, Speaker__c>();
+
+        for(Participant__c participant : insertedParticipants){
+            if(participant.Lecture_Presentation__c != null && participant.Status__c != null && speakersMap.containsKey(participant.Lecture_Presentation__c)){
+                String status = statusesMap.containsKey(participant.Status__c) ? statusesMap.get(participant.Status__c) : '';
+
+                if(status != speakersMap.get(participant.Lecture_Presentation__c).Status__c){
+                    Speaker__c speaker = speakersMap.get(participant.Lecture_Presentation__c);
+                    speaker.Status__c = status;
+                    speakersMapDML.put(speaker.Id, speaker);
+                }
+            }
+            if(participant.Event_Persona__c != null && participant.Status__c != null && eventPersonasMap.containsKey(participant.Event_Persona__c)){
+                String status = statusesMap.containsKey(participant.Status__c) ? statusesMap.get(participant.Status__c) : '';
+
+                if(status != eventPersonasMap.get(participant.Event_Persona__c).Status__c){
+                    Event_Persona__c eventPersona = eventPersonasMap.get(participant.Event_Persona__c);
+                    eventPersona.Status__c = status;
+                    eventPersonasMapDML.put(eventPersona.Id, eventPersona);
+                }
+            }
+        }
+
+        if(!eventPersonasMapDML.isEmpty())  update eventPersonasMapDML.values();
+
+        if(!speakersMapDML.isEmpty())       update speakersMapDML.values();
+    }
+
+    public static void updateEventPersonas_update(List<Participant__c> newParticipants, List<Participant__c> oldParticipants){
+        Map<String, String> statusesMap = new Map<String, String>{
+                'Registered'=>'confirmed',
+                'Pending'=>'invited',
+                'Canceled'=>'cancelled'
+        };
+        Set<Id> eventPersonaId = new Set<Id>();
+        Set<Id> lecturePresentationId = new Set<Id>();
+        Set<Participant__c> deleteParticipants = new Set<Participant__c>();
+
+        for(Integer i = 0; i < newParticipants.size(); i++){
+
+            if(newParticipants[i].Lecture_Presentation__c != null){
+                lecturePresentationId.add(newParticipants[i].Lecture_Presentation__c);
+            }
+            if(newParticipants[i].Event_Persona__c != null){
+                eventPersonaId.add(newParticipants[i].Event_Persona__c);
+            }
+
+            if(oldParticipants[i].Lecture_Presentation__c != newParticipants[i].Lecture_Presentation__c){
+
+                if(oldParticipants[i].Lecture_Presentation__c != null){
+                    deleteParticipants.add(oldParticipants[i]);
+                }
+
+            }
+
+            if(oldParticipants[i].Event_Persona__c != newParticipants[i].Event_Persona__c){
+
+                if(oldParticipants[i].Event_Persona__c != null){
+                    deleteParticipants.add(oldParticipants[i]);
+                }
+
+            }
+        }
+
+        Set<Participant__c> participantsNotNeedToDelete = new Set<Participant__c>();
+
+        for(Participant__c participant : deleteParticipants){
+            if(participant.Event_Persona__c !=null && eventPersonaId.contains(participant.Event_Persona__c)){
+                participantsNotNeedToDelete.add(participant);
+            }
+            if (participant.Lecture_Presentation__c!=null && lecturePresentationId.contains(participant.Lecture_Presentation__c)){
+                participantsNotNeedToDelete.add(participant);
+            }
+        }
+
+        if(!deleteParticipants.isEmpty()){
+            updateEventPersonas_delete(new List<Participant__c>(deleteParticipants));
+        }
+
+        Map<Id, Event_Persona__c> eventPersonasMap = new Map<Id, Event_Persona__c>([SELECT Id, Status__c FROM Event_Persona__c WHERE Id IN :eventPersonaId]);
+        Map<Id, Speaker__c> speakersMap = new Map<Id, Speaker__c>([SELECT Id, Status__c FROM Speaker__c WHERE Id IN :lecturePresentationId]);
+
+        Map<Id, Event_Persona__c> eventPersonasMapDML = new Map<Id, Event_Persona__c>();
+        Map<Id, Speaker__c> speakersMapDML = new Map<Id, Speaker__c>();
+
+        for(Participant__c participant : newParticipants){
+            if(participant.Lecture_Presentation__c != null && participant.Status__c != null && speakersMap.containsKey(participant.Lecture_Presentation__c)){
+                String status = statusesMap.containsKey(participant.Status__c) ? statusesMap.get(participant.Status__c) : '';
+
+                if(status != speakersMap.get(participant.Lecture_Presentation__c).Status__c){
+                    Speaker__c speaker = speakersMap.get(participant.Lecture_Presentation__c);
+                    speaker.Status__c = status;
+                    speakersMapDML.put(speaker.Id, speaker);
+                }
+            }
+            if(participant.Event_Persona__c != null && participant.Status__c != null && eventPersonasMap.containsKey(participant.Event_Persona__c)){
+                String status = statusesMap.containsKey(participant.Status__c) ? statusesMap.get(participant.Status__c) : '';
+
+                if(status != eventPersonasMap.get(participant.Event_Persona__c).Status__c){
+                    Event_Persona__c eventPersona = eventPersonasMap.get(participant.Event_Persona__c);
+                    eventPersona.Status__c = status;
+                    eventPersonasMapDML.put(eventPersona.Id, eventPersona);
+                }
+            }
+        }
+
+        if(!eventPersonasMapDML.isEmpty())  update eventPersonasMapDML.values();
+        if(!speakersMapDML.isEmpty())       update speakersMapDML.values();
     }
 
     // public static void startQRcodeBatch() {

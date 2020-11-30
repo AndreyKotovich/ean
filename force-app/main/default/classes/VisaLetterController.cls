@@ -4,6 +4,7 @@ public class VisaLetterController {
 	public String dateBirth { get; set; }
 	public String dateIssue { get; set; }
 	public String dateExpiry { get; set; }
+	public String country { get; set; }
 
 	public VisaLetterController() {
 		visaLetters = new List<Visa_Letter__c>();
@@ -12,7 +13,7 @@ public class VisaLetterController {
 		dateBirth = '';
 		dateIssue = '';
 		dateExpiry = '';
-
+		country = '';
 		visaLetters = [
 			SELECT 
 				Id, Name, Official_Country__c, Official_Street__c, Official_ZIP_Postal_Code__c, First_Name__c, Last_Name__c,
@@ -26,7 +27,17 @@ public class VisaLetterController {
 			dateBirth = generateDate(visaLetters[0].Date_of_Birth__c);
 			dateIssue = generateDate(visaLetters[0].Date_of_Issue__c);            
 			dateExpiry = generateDate(visaLetters[0].Date_of_Expiry__c);
+
+			Map<String, String> countryMap = new Map<String, String>();
+			Schema.DescribeFieldResult field = Contact.MailingCountryCode.getDescribe();
+
+			for (Schema.PicklistEntry f : field.getPicklistValues()) {
+				countryMap.put(f.getValue(), f.getLabel());
+			}
+
+			country = countryMap.containsKey(visaLetters[0].Official_Country__c) ? countryMap.get(visaLetters[0].Official_Country__c) : '';
 		}
+
 	}
 	
     @TestVisible

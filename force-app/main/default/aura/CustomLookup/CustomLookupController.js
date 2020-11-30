@@ -5,7 +5,9 @@
              $A.util.addClass(forOpen, 'slds-is-open');
              $A.util.removeClass(forOpen, 'slds-is-close');
          // Get Default 5 Records order by createdDate DESC  
-          var getInputkeyWord = '';
+          var getInputkeyWord = component.get("v.SearchKeyWord");
+          if(getInputkeyWord == null || getInputkeyWord == undefined)
+            getInputkeyWord = '';
           helper.searchHelper(component,event,getInputkeyWord);
      },
      onblur : function(component,event,helper){       
@@ -38,12 +40,16 @@
      clear :function(component,event,heplper){
           var pillTarget = component.find("lookup-pill");
           var lookUpTarget = component.find("lookupField"); 
+          var outputText = component.find("output"); 
          
           $A.util.addClass(pillTarget, 'slds-hide');
           $A.util.removeClass(pillTarget, 'slds-show');
          
           $A.util.addClass(lookUpTarget, 'slds-show');
           $A.util.removeClass(lookUpTarget, 'slds-hide');
+
+          $A.util.addClass(outputText, 'slds-hide');
+          $A.util.removeClass(outputText, 'slds-show');
        
           component.set("v.SearchKeyWord",null);
           component.set("v.listOfSearchRecords", null );
@@ -67,6 +73,13 @@
          var lookUpTarget = component.find("lookupField");
              $A.util.addClass(lookUpTarget, 'slds-hide');
              $A.util.removeClass(lookUpTarget, 'slds-show');  
+
+         var outputText = component.find("output"); 
+             $A.util.addClass(outputText, 'slds-show');
+             $A.util.removeClass(outputText, 'slds-hide');
+
+             component.set("v.checkedPresenter", selectedAccountGetFromEvent.deleted1__c);
+             component.set("v.selectedRecordId", selectedAccountGetFromEvent.Id);
        
      },
 })

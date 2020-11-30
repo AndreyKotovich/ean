@@ -6,6 +6,8 @@
     <columns>Total_amount__c</columns>
     <columns>Ticket__c</columns>
     <columns>Discount__c</columns>
+    <columns>Name__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
+    <language>en_US</language>
 </ListView>

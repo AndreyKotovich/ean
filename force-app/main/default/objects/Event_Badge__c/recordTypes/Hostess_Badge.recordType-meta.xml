@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Hostess_Badge</fullName>
+    <active>true</active>
+    <description>Firstname Lastname City, Country</description>
+    <label>Hostess Badge</label>
+    <picklistValues>
+        <picklist>Footer_Definitions__c</picklist>
+        <values>
+            <fullName>Associate Member</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Corresponding</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Day of the week</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EAN Head Office</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Exhibitor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Faculty</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Fellow of the EAN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Full</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Hostess</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Meeting only</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Non-Member</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>None</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Panel Management Group Member</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Press</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Resident %26 Research Member</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Student Member</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Technical Staff</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Label_type__c</picklist>
+        <values>
+            <fullName>Danger</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

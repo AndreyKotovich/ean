@@ -1,5 +1,4 @@
-trigger Participant on Participant__c (after insert, before insert, before update) {
-    
+trigger Participant on Participant__c (after insert, before insert, before update, after update, after delete, after undelete ) {
     if (Trigger.isAfter && Trigger.isInsert) {
         List<String> soloParticipantIds = new List<String>();
         List<String> groupParticipantIds = new List<String>();
@@ -28,4 +27,23 @@ trigger Participant on Participant__c (after insert, before insert, before updat
     if (Trigger.isBefore && Trigger.isUpdate) {
         ParticipantTriggerHelper.checkQRCode(Trigger.newMap, Trigger.oldMap);
     }
+
+
+    //UPDATE EVENT PERSONAS PART
+
+    if(Trigger.isAfter && Trigger.isInsert){
+        ParticipantTriggerHelper.updateEventPersonas_insert_undelete(Trigger.new);
+    }
+    if(Trigger.isAfter && Trigger.isUpdate){
+        ParticipantTriggerHelper.updateEventPersonas_update(Trigger.new, Trigger.old);
+    }
+    if(Trigger.isAfter && Trigger.isDelete){
+        ParticipantTriggerHelper.updateEventPersonas_delete(Trigger.old);
+    }
+    if(Trigger.isAfter && Trigger.isUndelete){
+        ParticipantTriggerHelper.updateEventPersonas_insert_undelete(Trigger.new);
+    }
+
+
+
 }

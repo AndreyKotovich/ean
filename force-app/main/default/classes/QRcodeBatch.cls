@@ -9,7 +9,7 @@ public without sharing class QRcodeBatch implements Database.Batchable<Participa
     public List<Participant__c> start(Database.BatchableContext bc) {
         String statusRegistered = 'Registered';
         List<Participant__c> participants = [
-            SELECT Id, Name, Event_custom__c, Participant_Email__c, QR_Code_needed__c, Contact__r.Email, Badge_Retrieval__c, Event_Ticket__r.Participation__c, (SELECT Id FROM Event_Badges__r)
+            SELECT Id, Name, Event_custom__c, Participant_Email__c, QR_Code_needed__c, Contact__r.Email, Badge_Retrieval__c, Event_Ticket__r.Participation__c, (SELECT Id, QR_code__c FROM Event_Badges__r)
             FROM Participant__c 
             WHERE QR_Code_needed__c = true AND Status__c = :statusRegistered
         ];
@@ -61,7 +61,8 @@ public without sharing class QRcodeBatch implements Database.Batchable<Participa
             //Generate QR code
             String networkId = Network.getNetworkId();
             String QRGeneratorLink = 'callout:QR_Code_Generator_Link/chart?chs=200x200&cht=qr&chl=';
-            Map<String, ContentVersion> conVerToparticipantIdsMap = new Map<String, ContentVersion>();
+            Map<Participant__c, ContentVersion> participantToConVerMap = new Map<Participant__c, ContentVersion>();
+
             for (Participant__c participant : participants) {
                 if (!participantWithQRCodeMap.containsKey(participant.Id)){
                     String Link = QRGeneratorLink + URL.getSalesforceBaseUrl().toExternalForm().replace('my.salesforce.com', 'lightning.force.com/lightning/r/Event_Badge__c').replace('salesforce.com', 'lightning.force.com/lightning/r/Event_Badge__c') + '/' + participant.Event_Badges__r[0].Id  + '/view';
@@ -78,30 +79,42 @@ public without sharing class QRcodeBatch implements Database.Batchable<Participa
                         conVer.PathOnClient = 'QR code ' + participant.Name + '.png';
                         conVer.Title = 'QR code ' + participant.Name + '.png';
                         conVer.VersionData = response.getBodyAsBlob();
-                        conVerToparticipantIdsMap.put(participant.Id, conVer);
-                    }  
-
+                        participantToConVerMap.put(participant, conVer);
+                    }
                 }
             }
-            if (conVerToparticipantIdsMap.size() > 0) {
-                insert conVerToparticipantIdsMap.values();
+            if (participantToConVerMap.size() > 0) {
+                insert participantToConVerMap.values();
+
                 List<String> conVerIds = new List<String>();
-                for (ContentVersion conVer : conVerToparticipantIdsMap.values()) {
+
+                for (ContentVersion conVer : participantToConVerMap.values()) {
                     conVerIds.add(conVer.Id);
                 }
+
                 Map<ID, ContentVersion> conVersMap = new Map<ID, ContentVersion>([
                     SELECT Id, ContentDocumentId, Title FROM ContentVersion WHERE Id IN :conVerIds
                     ]);
                 List<ContentDocumentLink> conDocLinks = new List<ContentDocumentLink>();
-                for (String participantId : conVerToparticipantIdsMap.keySet()) {
+                List<Event_Badge__c> badgesToUpdate = new List<Event_Badge__c>();
+                String orgUrl = Url.getOrgDomainUrl().toExternalForm();
+
+                for (Participant__c participant : participantToConVerMap.keySet()) {
                     ContentDocumentLink conDocLink = New ContentDocumentLink();
-                    conDocLink.LinkedEntityId = participantId;
-                    conDocLink.ContentDocumentId = conVersMap.get(conVerToparticipantIdsMap.get(participantId).Id).ContentDocumentId;
+                    conDocLink.LinkedEntityId = participant.Id;
+                    conDocLink.ContentDocumentId = conVersMap.get(participantToConVerMap.get(participant).Id).ContentDocumentId;
                     conDocLink.shareType = 'V';
                     conDocLink.Visibility='AllUsers';
                     conDocLinks.add(conDocLink);
+
+                    if(!participant.Event_Badges__r.isEmpty() && participant.Event_Badges__r[0].QR_code__c == null){
+                        badgesToUpdate.add(new Event_Badge__c(Id = participant.Event_Badges__r[0].Id, QR_code__c = orgUrl + '/sfc/servlet.shepherd/version/download/'+participantToConVerMap.get(participant).Id));
+                    }
+
                 }
+
                 insert conDocLinks;
+                update badgesToUpdate;
             }
         } else if (this.step == 'Send email with QR code') {
             List<Email_Activity__c> emailActivities = new List<Email_Activity__c>();

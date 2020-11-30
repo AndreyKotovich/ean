@@ -1,0 +1,11 @@
+<apex:page id="massPrintBadges"
+           standardController="Event_Badge__c"
+           extensions="MassPrintBadgesController"
+           recordSetVar="badgeRecords"
+           sideBar="false"
+           action="{!urlRedirection}">
+    <apex:form >
+        <script>
+        </script>
+    </apex:form>
+</apex:page>

@@ -25,6 +25,54 @@
         <template>EAN_Email_templates/Solo_registration_cancellation</template>
     </alerts>
     <alerts>
+        <fullName>EAN_Event_registration_for_participant_in_subGroup</fullName>
+        <description>EAN: Event registration for participant in subGroup</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/EAN_Registr_for_participant_in_subGroup</template>
+    </alerts>
+    <alerts>
+        <fullName>EAN_Event_registration_for_undefined_participant_in_subGroup</fullName>
+        <description>EAN: Event registration for undefined participant in subGroup</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/EAN_RegisrForUndefinedParticipInSubGr</template>
+    </alerts>
+    <alerts>
+        <fullName>EAN_GroupRegistrationSuccessSameOrderIt</fullName>
+        <description>EAN:Group registration success with same orderItems</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/EAN_GroupRegistrationSuccessSameOrderIt</template>
+    </alerts>
+    <alerts>
+        <fullName>EAN_Group_event_registration_order_paid_BT</fullName>
+        <description>EAN: Group event registration order paid Bank Transfer</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/EAN_GroupEventRegistrationOrderPaidBT</template>
+    </alerts>
+    <alerts>
         <fullName>EAN_Group_participants_added</fullName>
         <description>EAN: Group participants added</description>
         <protected>false</protected>
@@ -37,8 +85,8 @@
         <template>EAN_Email_templates/EAN_Group_participants_added</template>
     </alerts>
     <alerts>
-        <fullName>EAN_Order_for_event_participation_paid</fullName>
-        <description>EAN: Order for event participation paid</description>
+        <fullName>EAN_Group_participants_added_with_same_orderItems</fullName>
+        <description>EAN:Group participants added with same orderItems</description>
         <protected>false</protected>
         <recipients>
             <field>Send_To_Email__c</field>
@@ -46,7 +94,19 @@
         </recipients>
         <senderAddress>noreply@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
-        <template>EAN_Email_templates/EAN_Order_for_event_participation_paid</template>
+        <template>EAN_Email_templates/EAN_GroupParticipantsAddedSameOrderIt</template>
+    </alerts>
+    <alerts>
+        <fullName>EAN_Order_for_event_participation_paid_Card_or_PayPal</fullName>
+        <description>EAN: Order for event participation paid Card or PayPal</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/EAN_OrderForEventParticipPaidCardPP</template>
     </alerts>
     <alerts>
         <fullName>EAN_Order_for_refund_transaction</fullName>
@@ -97,8 +157,8 @@
         <template>EAN_Email_templates/EAN_Reminder_for_opened_orders</template>
     </alerts>
     <alerts>
-        <fullName>EAN_Send_email_to_participant_when_SubGroup_is_submited</fullName>
-        <description>EAN: Send email to participant when SubGroup is submited</description>
+        <fullName>EAN_Solo_event_registration_BT</fullName>
+        <description>EAN: Solo event registration BT</description>
         <protected>false</protected>
         <recipients>
             <field>Send_To_Email__c</field>
@@ -106,11 +166,11 @@
         </recipients>
         <senderAddress>noreply@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
-        <template>EAN_Email_templates/Regisration_for_participant_in_subGroup</template>
+        <template>EAN_Email_templates/EAN_Solo_event_registration_BT</template>
     </alerts>
     <alerts>
-        <fullName>EAN_Send_email_to_undefined_participant_when_SubGroup_is_submited</fullName>
-        <description>EAN: Send email to undefined participant when SubGroup is submited</description>
+        <fullName>EAN_Solo_event_registration_order_paid_BT</fullName>
+        <description>EAN: Solo event registration order paid Bank Transfer</description>
         <protected>false</protected>
         <recipients>
             <field>Send_To_Email__c</field>
@@ -118,7 +178,7 @@
         </recipients>
         <senderAddress>noreply@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
-        <template>EAN_Email_templates/RegisrForUndefinedParticipantInSubGroup</template>
+        <template>EAN_Email_templates/EAN_SoloEventRegistrationOrderPaidBT</template>
     </alerts>
     <alerts>
         <fullName>EAN_Solo_regisration_success</fullName>
@@ -131,6 +191,18 @@
         <senderAddress>noreply@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/EAN_Solo_regisration_success</template>
+    </alerts>
+    <alerts>
+        <fullName>Ean_GroupEventRegOrderPaid_BT_WithSameOrderItems</fullName>
+        <description>Ean: Group eventReg order paid BT with the same orderItems</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>noreply@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/EANGroupEventRegOrderPaidBTSameOrderIt</template>
     </alerts>
     <alerts>
         <fullName>Group_Registration_Transfer</fullName>
@@ -225,6 +297,62 @@
         <triggerType>onCreateOrTriggeringUpdate</triggerType>
     </rules>
     <rules>
+        <fullName>EAN%3A Event registration for participant in subGroup</fullName>
+        <actions>
+            <name>EAN_Event_registration_for_participant_in_subGroup</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Group participant submited&apos;) &amp;&amp; (Contact__r.FirstName != &apos;Undefined&apos;) &amp;&amp; (Contact__r.LastName != &apos;Participant&apos;)</formula>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A Event registration for undefined participant in subGroup</fullName>
+        <actions>
+            <name>EAN_Event_registration_for_undefined_participant_in_subGroup</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Undefined group participant submited&apos;) &amp;&amp; (Contact__r.FirstName == &apos;Undefined&apos;) &amp;&amp; (Contact__r.LastName == &apos;Participant&apos;)</formula>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A Group event registration order paid Bank Transfer</fullName>
+        <actions>
+            <name>EAN_Group_event_registration_order_paid_BT</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Group event registration order paid BT&apos;) &amp;&amp; NOT(ISNULL(Order__c))</formula>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A Group eventReg order paid BT with the same orderItems</fullName>
+        <actions>
+            <name>Ean_GroupEventRegOrderPaid_BT_WithSameOrderItems</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Group eventReg order paid BT with the same orderItems&apos;) &amp;&amp; NOT(ISNULL(Order__c))</formula>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
         <fullName>EAN%3A Group participants added</fullName>
         <actions>
             <name>EAN_Group_participants_added</name>
@@ -239,6 +367,29 @@
             <field>Email_Activity__c.Type__c</field>
             <operation>equals</operation>
             <value>Group participants added</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Email_Activity__c.Email_Sent__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A Group participants added with same orderItems</fullName>
+        <actions>
+            <name>EAN_Group_participants_added_with_same_orderItems</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>Email_Activity__c.Type__c</field>
+            <operation>equals</operation>
+            <value>Group participants added with same orderItems</value>
         </criteriaItems>
         <criteriaItems>
             <field>Email_Activity__c.Email_Sent__c</field>
@@ -271,9 +422,9 @@
         <triggerType>onCreateOrTriggeringUpdate</triggerType>
     </rules>
     <rules>
-        <fullName>EAN%3A Order for event participation paid</fullName>
+        <fullName>EAN%3A Group registration success with same orderItems</fullName>
         <actions>
-            <name>EAN_Order_for_event_participation_paid</name>
+            <name>EAN_GroupRegistrationSuccessSameOrderIt</name>
             <type>Alert</type>
         </actions>
         <actions>
@@ -281,7 +432,30 @@
             <type>FieldUpdate</type>
         </actions>
         <active>true</active>
-        <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Event registration&apos;) &amp;&amp; NOT(ISNULL(Order__c))</formula>
+        <criteriaItems>
+            <field>Email_Activity__c.Type__c</field>
+            <operation>equals</operation>
+            <value>Group registration success with same orderItems</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Email_Activity__c.Email_Sent__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>EAN%3A Order for event participation paid Card or PayPal</fullName>
+        <actions>
+            <name>EAN_Order_for_event_participation_paid_Card_or_PayPal</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <formula>(Email_Sent__c == False) &amp;&amp; (OR(Type__c == &apos;Event registration creditcard&apos;,Type__c == &apos;Event registration paypal&apos;)) &amp;&amp; NOT(ISNULL(Order__c))</formula>
         <triggerType>onCreateOrTriggeringUpdate</triggerType>
     </rules>
     <rules>
@@ -387,9 +561,9 @@
         <triggerType>onCreateOrTriggeringUpdate</triggerType>
     </rules>
     <rules>
-        <fullName>EAN%3A Send email to participant when subGroup submited</fullName>
+        <fullName>EAN%3A Solo event registration BT</fullName>
         <actions>
-            <name>EAN_Send_email_to_participant_when_SubGroup_is_submited</name>
+            <name>EAN_Solo_event_registration_BT</name>
             <type>Alert</type>
         </actions>
         <actions>
@@ -397,13 +571,22 @@
             <type>FieldUpdate</type>
         </actions>
         <active>true</active>
-        <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Group participant submited&apos;) &amp;&amp; (Contact__r.FirstName != &apos;Undefined&apos;) &amp;&amp; (Contact__r.LastName != &apos;Participant&apos;)</formula>
+        <criteriaItems>
+            <field>Email_Activity__c.Type__c</field>
+            <operation>equals</operation>
+            <value>Solo event registration BT</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Email_Activity__c.Email_Sent__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
         <triggerType>onCreateOrTriggeringUpdate</triggerType>
     </rules>
     <rules>
-        <fullName>EAN%3A Send email to undefined participant when subGroup submited</fullName>
+        <fullName>EAN%3A Solo event registration order paid Bank Transfer</fullName>
         <actions>
-            <name>EAN_Send_email_to_undefined_participant_when_SubGroup_is_submited</name>
+            <name>EAN_Solo_event_registration_order_paid_BT</name>
             <type>Alert</type>
         </actions>
         <actions>
@@ -411,7 +594,7 @@
             <type>FieldUpdate</type>
         </actions>
         <active>true</active>
-        <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Undefined group participant submited&apos;) &amp;&amp; (Contact__r.FirstName == &apos;Undefined&apos;) &amp;&amp; (Contact__r.LastName == &apos;Participant&apos;)</formula>
+        <formula>(Email_Sent__c == False) &amp;&amp; (Type__c == &apos;Solo event registration order paid BT&apos;) &amp;&amp; NOT(ISNULL(Order__c))</formula>
         <triggerType>onCreateOrTriggeringUpdate</triggerType>
     </rules>
     <rules>

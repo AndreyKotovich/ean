@@ -599,7 +599,7 @@ public without sharing class PaymentHttpRequest {
         String attachmentLink = 'javascript:void(0);';
         if(!order.isEmpty()){
             Boolean isTypeOc = order[0].Invoice_Number__c != null && order[0].Invoice_Number__c.contains( 'EAN' + String.valueOf(Date.today().year()).right(2) + '-OC');
-            String template = !isTypeOc ? 'BankTransferCredentialsPdf' : 'BankTransferRegistrationPdf';
+            String template = isTypeOc ? 'BankTransferRegistrationPdf' : 'BankTransferCredentialsPdf';
             PageReference defaultPage = new PageReference('/apex/' + template);
             
             defaultPage.getParameters().put('orderName', order[0].Name);

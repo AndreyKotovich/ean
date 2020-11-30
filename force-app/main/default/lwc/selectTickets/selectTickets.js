@@ -117,7 +117,7 @@ export default class SelectTickets extends LightningElement {
             .then((results) => {
                 console.log('results: ' + JSON.stringify(results));
                 this.allEventTickets = [...results[0]];
-                this._userInfo.contactEventPersonaRoles = [...results[1]];
+                this._userInfo.roleEventPersonaMap = results[1];
                 return this.sortTicketsByRegType();
             })
             .then(() => {
@@ -313,12 +313,12 @@ export default class SelectTickets extends LightningElement {
 
         if (!!!ticket.Available_for_Personas__c) result = true;
 
-        if (!result && ticket.Available_for_Personas__c && this._userInfo.contactEventPersonaRoles) {
+        if (!result && ticket.Available_for_Personas__c && this._userInfo.roleEventPersonaMap) {
             console.log('inside');
             console.log('inside', ticket.Available_for_Personas__c);
-            console.log('inside2', this._userInfo.contactEventPersonaRoles);
+            console.log('inside2', this._userInfo.roleEventPersonaMap);
 
-            for (let role of this._userInfo.contactEventPersonaRoles) {
+            for (let role of Object.keys(this._userInfo.roleEventPersonaMap)) {
                 if (ticket.Available_for_Personas__c.includes(role)) {
                     result = true;
                     break;
@@ -380,6 +380,7 @@ export default class SelectTickets extends LightningElement {
     }
 
     handleNextClick() {
+
         if(this.showTicketsRadioGroup){
             this.getSelectedTickets();
         }
@@ -399,14 +400,17 @@ export default class SelectTickets extends LightningElement {
                 participantRole = 'Individual_Participant';
             }
 
+            let eventPersonaId = '';
+
             if (this.registrationType === 'solo' && !!eventTicket.Ticket__r.Available_for_Personas__c) {
-                participantRole = 'Individual Participant';
-                for (let role of this._userInfo.contactEventPersonaRoles) {
+                for (let role of Object.keys(this._userInfo.roleEventPersonaMap)) {
                     if (eventTicket.Ticket__r.Available_for_Personas__c.includes(role)) {
                         if (role === 'Press') participantRole = 'Press';
                         if (role === 'Invited_Person') participantRole = 'Invited_Persons';
                         if (role === 'Grant_Winner') participantRole = 'Scholarship_Bursaries';
                         if (role === 'Speaker') participantRole = 'Invited_Speaker';
+
+                        eventPersonaId = !!participantRole && !!this._userInfo.roleEventPersonaMap[role] ? this._userInfo.roleEventPersonaMap[role].Id : '';
                         break;
                     }
                 }
@@ -423,7 +427,8 @@ export default class SelectTickets extends LightningElement {
                     groupIndividualTickets: this._groupIndividualTickets,
                     userInfo: this._userInfo,
                     freeAmount: this.registrationType === 'ipr' ? this.availableFreeIPRAmount : 0,
-                    isOnlineTicket: isOnlineTicket
+                    isOnlineTicket: isOnlineTicket,
+                    eventPersonaId: eventPersonaId
                 }
             });
             this.dispatchEvent(selectEvent);

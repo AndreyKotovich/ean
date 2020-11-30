@@ -1,6 +1,6 @@
 <aura:component>
 
-  <aura:attribute name="page" type="Object"/>
+  <!-- <aura:attribute name="page" type="Object"/> -->
   <aura:attribute name="badge" type="Object"/>
   <aura:attribute name="labelClass" type="String"/>
   <aura:attribute name="footerLines" type="List"/>
@@ -15,13 +15,13 @@
 
           <div class="badge_header_title_wrapper">
             <div class="badge_header_title font-color_white">ean<br/>congress</div>
-            <div class="badge_header_place">{!v.page.city}<br/>{!v.page.year}</div>
+            <div class="badge_header_place">{!v.badge.cityEvent}<br/>{!v.badge.year}</div>
           </div>
 
           <div class="badge_header_subtitle_wrapper">
             <div class="badge_header_content_wrapper">
-              <div class="badge_header_content font-color_white">{!v.page.count}<sup>{!v.page.countPostfix}</sup>&nbsp;{!v.page.name}</div>
-              <div class="badge_header_content font-color_white">{!v.page.date}</div>
+              <div class="badge_header_content font-color_white">{!v.badge.count}<sup>{!v.badge.countPostfix}</sup>&nbsp;{!v.badge.name}</div>
+              <div class="badge_header_content font-color_white">{!v.badge.date}</div>
             </div>
             <img class="badge_header_logo_wrapper" src="{!$Resource.BadgeDetail + '/ean_logo.png'}"/>
           </div>

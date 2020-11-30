@@ -26,7 +26,7 @@
 
     <body>
         <apex:repeat value="{!visaLetters}" var="visaLetter">
-            <apex:image url="{!$Resource.VisaLetterHeader}" width="100%" height="100" />
+            <apex:image url="{!$Resource.Banner}" width="100%" height="100" />
             <div style="margin-top: 50px; margin-bottom: 5px;">
                 <apex:outputText value="{!visaLetter.First_Name__c}" />&nbsp;<apex:outputText value="{!visaLetter.Last_Name__c}" />
             </div>
@@ -35,7 +35,7 @@
                 <br/>
                 <apex:outputText value="{!visaLetter.Official_ZIP_Postal_Code__c}" />,&nbsp;<apex:outputText value="{!visaLetter.Official_City__c}" />
                 <br/>
-                <apex:outputText value="{!visaLetter.Official_Country__c}" />
+                <apex:outputText value="{!country}" />
             </div>
             <div> Passport number:&nbsp;
                 <apex:outputText value="{!visaLetter.Passport_Number__c}" /> </div>
