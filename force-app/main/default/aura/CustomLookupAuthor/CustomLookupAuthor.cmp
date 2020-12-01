@@ -1,7 +1,9 @@
-<aura:component controller="CustomLookUpAuthorController" implements="lightning:availableForFlowScreens,force:hasRecordId" access="global">
+<aura:component controller="CustomLookUpAuthorController" implements="lightning:availableForFlowScreens,lightning:availableForFlowActions,force:appHostable,force:hasRecordId,force:lightningQuickAction" access="global">
     <!--declare attributes--> 
+    <aura:attribute name="AbstractRecordVariable" type="Abstract__c" default="{}" />
     <aura:attribute name="selectedRecord" type="sObject" default="{}" />
     <aura:attribute name="listOfSearchRecords" type="List" />
+    <aura:attribute name="associations" type="Abstract_Author__c[]" />
     <aura:attribute name="listOfSelectedRecords" type="List" />
     <aura:attribute name="SearchKeyWord" type="string" default="" />
     <aura:attribute name="IconName" type="string" default="standard:contact"/>
@@ -9,6 +11,7 @@
     <aura:attribute name="Message" type="String" default=""/>
     <aura:attribute name="selectedRecordId" type="String" default="" access="global"/>
     <aura:attribute name="pillsVisible" type="Boolean" default="false"/>
+    <aura:attribute name="maxAuthors" type="Integer" default="25" />
     
     <!--declare events hendlers-->  
     <aura:handler name="oSelectedRecordEvent" event="c:SelectedsObjectRecordEvent" action="{!c.handleComponentEvent}"/>
@@ -16,13 +19,7 @@
     <!-- pills of selected records -->
     <aura:if isTrue="{!v.pillsVisible}">
         <div aura:id="lookup-pill" class="slds-pill_container">
-            <aura:iteration items="{!v.listOfSelectedRecords}" var="singlePillRec">
-                <lightning:pill class="pillSize" label="{!v.singlePillRec.Name}" name="{!v.singlePillRec.Name}" onremove="{! c.deletePill }">
-                    <aura:set attribute="media">
-                        <lightning:icon iconName="{!v.IconName}" size="small" alternativeText="{!v.IconName}"/>
-                    </aura:set>
-                </lightning:pill>
-            </aura:iteration>
+            <lightning:pillContainer items="{!v.listOfSelectedRecords}" onitemremove="{!c.deletePill}"></lightning:pillContainer>
        </div>
     </aura:if>
     
@@ -50,5 +47,12 @@
                 <c:CustomLookupAuthorResult oRecord="{!singleRec}" IconName="{!v.IconName}"/>
             </aura:iteration>
         </ul>
+    </div>
+
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+
+    <div aura:id="newElement" class="slds-p-top_xx-large slds-show">
+        <lightning:formattedText value="If you cannot find the author in the search, " />
+        <lightning:button variant="base" label="please create a new author" title="Add new author" onclick="{! c.createAuthor }"/>
     </div>
 </aura:component>

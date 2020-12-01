@@ -89,6 +89,7 @@
 
         undelete newManagementMember;
 
+        test.startTest();
         g.Enable_synchronization__c = true;
         g.Enable_management_group__c = true;
         update g;
@@ -117,6 +118,7 @@
         delete newMembers[1];
         collMember = [SELECT Id, MemberId, CollaborationGroupId FROM CollaborationGroupMember WHERE MemberId = :u.Id];
         System.assertEquals(1, collMember.size());
+        test.stopTest();
     }
 
     @IsTest public static void updateGroupMembersTest(){

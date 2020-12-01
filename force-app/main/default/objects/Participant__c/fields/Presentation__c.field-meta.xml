@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Presentation__c</fullName>
+    <externalId>false</externalId>
+    <label>Presentation</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>ePoster presenter</fullName>
+                <default>false</default>
+                <label>ePoster presenter</label>
+            </value>
+            <value>
+                <fullName>ePresentation presenter</fullName>
+                <default>false</default>
+                <label>ePresentation presenter</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

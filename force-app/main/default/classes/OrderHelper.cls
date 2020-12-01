@@ -32,7 +32,9 @@ public without sharing class OrderHelper {
             (List<DiscountHelper.TicketWrapper>)JSON.deserialize(JSON.serialize(discountInfo.get('tickets')), List<DiscountHelper.TicketWrapper>.class) : 
             new List<DiscountHelper.TicketWrapper>();     
 
-        String invoiceNum = 'EAN' + String.valueOf(Date.today().year()).right(2) + '-OC-%';
+        // String invoiceNum = 'EAN' + String.valueOf(Date.today().year()).right(2) + '-OC-%';
+        //  https://jira.towa-digital.com/browse/EANER-19   use EAN21-F-#### (= Invoice Number) 
+        String invoiceNum = 'EAN' + String.valueOf(Date.today().year()).right(2) + '-F-%';
         Integer oIEANNumber = 0;
         List<Order__c> oIEAN = [
             SELECT Invoice_Number__c

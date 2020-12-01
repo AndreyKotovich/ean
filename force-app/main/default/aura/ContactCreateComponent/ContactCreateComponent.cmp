@@ -1,0 +1,8 @@
+<aura:component>
+    <lightning:input name="FirstName" label="First Name" />
+    <lightning:input name="LastName" label="Last Name" />
+    <lightning:input type="email" name="Email" value="" label="Email" />
+    <lightning:input name="Department" label="Department" />
+    <lightning:input name="City" label="City" />
+    <lightning:input name="Country" label="Country" />
+</aura:component>

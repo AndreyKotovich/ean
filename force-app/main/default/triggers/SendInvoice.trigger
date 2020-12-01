@@ -22,8 +22,7 @@ trigger SendInvoice on Order__c (after update, after insert) {
                 //  type 'Upgrade' ???
                 if (orderType == 'Event registration') {
                     eventOrderIds.add(i);
-                    if (String.isBlank(Trigger.newMap.get(i).Event_Registration_Sub_Group__c)
-                        && Trigger.newMap.get(i).Payment_Method__c == 'Bank Transfer') {
+                    if (String.isBlank(Trigger.newMap.get(i).Event_Registration_Sub_Group__c)) {
                             soloEventRegOrderPaidIds.add(i);
                     } else if (String.isNotBlank(Trigger.newMap.get(i).Event_Registration_Sub_Group__c)
                         && Trigger.newMap.get(i).Payment_Method__c == 'Bank Transfer') {
@@ -59,8 +58,7 @@ trigger SendInvoice on Order__c (after update, after insert) {
                     && Trigger.newMap.get(i).Payment_Method__c == 'Bank Transfer') {
                         soloEventRegOrderBTIds.add(i);
                 } else if (String.isBlank(Trigger.newMap.get(i).Event_Registration_Sub_Group__c)
-                    && Trigger.newMap.get(i).Status__c == 'Paid'
-                    && Trigger.newMap.get(i).Payment_Method__c == 'Bank Transfer') {
+                    && Trigger.newMap.get(i).Status__c == 'Paid') {
                         soloEventRegOrderPaidIds.add(i);
                 } else if (String.isNotBlank(Trigger.newMap.get(i).Event_Registration_Sub_Group__c)
                     && Trigger.newMap.get(i).Status__c == 'Paid'
@@ -80,7 +78,7 @@ trigger SendInvoice on Order__c (after update, after insert) {
             InvoicePDFGenerator.sendInvoiceSoloRegBT(soloEventRegOrderBTIds);
         }
         if (!soloEventRegOrderPaidIds.isEmpty()) {
-            InvoicePDFGenerator.sendEmailOrderPaidSoloRegBT(soloEventRegOrderPaidIds);
+            InvoicePDFGenerator.sendEmailOrderPaidSoloReg(soloEventRegOrderPaidIds);
         }
         if (!groupEventRegOrderPaidIds.isEmpty()) {
             InvoicePDFGenerator.sendEmailOrderPaidGroupRegBT(groupEventRegOrderPaidIds);

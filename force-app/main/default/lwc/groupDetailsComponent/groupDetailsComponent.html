@@ -139,17 +139,6 @@
 											<div style="display: inline-block; vertical-align: top; padding-top: 1px;"><lightning-icon icon-name="utility:right" size="x-small"></lightning-icon></div>
 											<div class="accordion-title">{subGroup.accordionTitle}</div>
 										</div>
-										<template if:true={subGroup.enableSubmitButton}>
-											<div style="display: inline-block;">
-												<!-- (TBD: SUBMIT SUBGROUP BUTTON) -->
-
-												<!-- <a style="text-decoration: underline; color: #007DC6; font-weight: bold; cursor: pointer;"
-													data-id={subGroup.subGroupId} onclick={handleSubmitSubGroupParticipants}>
-													Submit Participants
-												</a> -->
-
-											</div>
-										</template>
 									</div>
 								</template>
 								<template if:true={subGroup.accordionIsExpanded}>
@@ -158,16 +147,6 @@
 											<div style="display: inline-block; vertical-align: top; padding-top: 1px;"><lightning-icon icon-name="utility:down" size="x-small"></lightning-icon></div>
 											<div class="accordion-title">{subGroup.accordionTitle}</div>
 										</div>
-										<template if:true={subGroup.enableSubmitButton}>
-											<div style="display: inline-block;">
-
-												<!-- <a style="text-decoration: underline; color: #007DC6; font-weight: bold; cursor: pointer;"
-													data-id={subGroup.subGroupId} onclick={handleSubmitSubGroupParticipants}>
-													Submit Participants
-												</a> -->
-
-											</div>
-										</template>
 									</div>
 
 									<template for:each={subGroup.subGroupParticipantList} for:item="participant">
@@ -329,6 +308,11 @@
 						</div>
 					</template>
 				</div>
+
+				<template if:true={_displayNotAllowGroupTransferMessage}>
+					<br/>
+					<div class="slds-text-heading_large slds-align_absolute-center slds-text-color_error">{_notAllowGroupTransferMessage}</div>
+				</template>
 
 			</template>
 		</template>

@@ -1,3 +1,5 @@
 <design:component>
-    <design:attribute name="selectedRecordId" Label="Selected Author"/>
+    <design:attribute name="AbstractRecordVariable" Label="Select Abstracr Record variable" />
+    <design:attribute name="maxAuthors" Label="Max count of selected authors" />
+    <design:attribute name="associations" Label="List of junction objects" />
 </design:component>

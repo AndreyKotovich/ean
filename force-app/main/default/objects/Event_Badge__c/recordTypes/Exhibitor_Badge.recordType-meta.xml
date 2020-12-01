@@ -24,11 +24,7 @@
         </values>
         <values>
             <fullName>Exhibitor</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Faculty</fullName>
-            <default>false</default>
+            <default>true</default>
         </values>
         <values>
             <fullName>Fellow of the EAN</fullName>

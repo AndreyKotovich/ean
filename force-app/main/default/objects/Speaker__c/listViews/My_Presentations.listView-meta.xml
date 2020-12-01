@@ -2,7 +2,6 @@
 <ListView xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>My_Presentations</fullName>
     <columns>NAME</columns>
-    <columns>Presenter__c</columns>
     <columns>Lecture__c</columns>
     <columns>Eligible_for_Invited_Submission__c</columns>
     <filterScope>Everything</filterScope>

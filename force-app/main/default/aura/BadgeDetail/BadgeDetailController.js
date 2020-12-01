@@ -95,9 +95,9 @@
       } else if (item.label == 'Tournament candidate') {
         line.lineClass += ' background-color_tournament-candidate';
         line.labelClass += ' font-color_white';
-
-      } else {
-        line.lineClass += ' background-color_date';
+        
+      } else if (item.label == 'Day of the week') {
+        line.lineClass += ' background-color_press';
         line.labelClass += ' font-color_dark';
         let d = new Date();
 
@@ -107,6 +107,10 @@
 
         let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         line.label = `${days[d.getDay()]}, ${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+
+      } else {
+        line.lineClass += ' background-color_date';
+        line.labelClass += ' font-color_dark';
       }
 
       footerLines.push(line);

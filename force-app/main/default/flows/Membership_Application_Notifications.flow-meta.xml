@@ -538,11 +538,11 @@
                 <stringValue>NOW()</stringValue>
             </value>
         </processMetadataValues>
-        <name>formula_5_myWaitEvent_myWait_myRule_4_event_1_SA1_5231101877</name>
+        <name>formula_5_myWaitEvent_myWait_myRule_4_event_1_SA1_1482711427</name>
         <dataType>DateTime</dataType>
         <expression>NOW()</expression>
     </formulas>
-    <interviewLabel>Membership_Application_Notifications-5_InterviewLabel</interviewLabel>
+    <interviewLabel>Membership_Application_Notifications-7_InterviewLabel</interviewLabel>
     <label>Membership Application Notifications</label>
     <processMetadataValues>
         <name>ObjectType</name>
@@ -706,7 +706,7 @@
             </processMetadataValues>
             <field>ReminderDateTime</field>
             <value>
-                <elementReference>formula_5_myWaitEvent_myWait_myRule_4_event_1_SA1_5231101877</elementReference>
+                <elementReference>formula_5_myWaitEvent_myWait_myRule_4_event_1_SA1_1482711427</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -811,6 +811,78 @@
                 <stringValue>Task</stringValue>
             </value>
         </inputAssignments>
+        <inputAssignments>
+            <processMetadataValues>
+                <name>dataType</name>
+                <value>
+                    <stringValue>ID</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>isRequired</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideLabel</name>
+                <value>
+                    <stringValue>Related To ID</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideReferenceTo</name>
+                <value>
+                    <stringValue>Abstract__c;Account;Application_form__c;Asset;AssetRelationship;Campaign;Case;CommSubscriptionConsent;ContactRequest;Contract;DelegatedAccount;GW_Volunteers__Volunteer_Hours__c;GW_Volunteers__Volunteer_Job__c;GW_Volunteers__Volunteer_Shift__c;ListEmail;Location;Opportunity;Order;PartyConsent;Product2;Register_of_Interest__c;Reviewer__c;Solution;Speaker_Event__c;et4ae5__Triggered_Send_Execution__c</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>rightHandSideType</name>
+                <value>
+                    <stringValue>Reference</stringValue>
+                </value>
+            </processMetadataValues>
+            <field>WhatId</field>
+            <value>
+                <elementReference>myVariable_current.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <processMetadataValues>
+                <name>dataType</name>
+                <value>
+                    <stringValue>ID</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>isRequired</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideLabel</name>
+                <value>
+                    <stringValue>Name ID</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideReferenceTo</name>
+                <value>
+                    <stringValue>Contact;Lead</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>rightHandSideType</name>
+                <value>
+                    <stringValue>Reference</stringValue>
+                </value>
+            </processMetadataValues>
+            <field>WhoId</field>
+            <value>
+                <elementReference>myVariable_current.Contact__c</elementReference>
+            </value>
+        </inputAssignments>
         <object>Task</object>
     </recordCreates>
     <startElementReference>isChangedDecision2_myRule_1_Form_Status_c</startElementReference>
@@ -900,13 +972,13 @@
             <inputParameters>
                 <name>TimeOffsetUnit</name>
                 <value>
-                    <stringValue>Hours</stringValue>
+                    <stringValue>Days</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>TimeOffset</name>
                 <value>
-                    <numberValue>1.0</numberValue>
+                    <numberValue>14.0</numberValue>
                 </value>
             </inputParameters>
             <label>myWaitEvent_myWait_myRule_4_event_0</label>
@@ -940,13 +1012,13 @@
             <inputParameters>
                 <name>TimeOffsetUnit</name>
                 <value>
-                    <stringValue>Hours</stringValue>
+                    <stringValue>Days</stringValue>
                 </value>
             </inputParameters>
             <inputParameters>
                 <name>TimeOffset</name>
                 <value>
-                    <numberValue>1.0</numberValue>
+                    <numberValue>28.0</numberValue>
                 </value>
             </inputParameters>
             <label>myWaitEvent_myWait_myRule_4_event_1</label>

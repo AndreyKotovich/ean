@@ -1,4 +1,4 @@
-<aura:component implements="force:hasRecordId,force:lightningQuickAction">
+<aura:component implements="force:hasRecordId,force:lightningQuickAction" controller="BadgeController" >
     <aura:attribute name="recordId" type="Id" />
     <aura:html tag="style">
         .slds-modal__container{

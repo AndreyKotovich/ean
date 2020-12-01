@@ -16,7 +16,16 @@ public with sharing class BadgeControllerTest {
             RecordTypeId = exhibitorRTId
         );
 
-
         insert badge;
+        
+        List<Map<String,Object>> badges = BadgeController.getTemplateBadge(new List<String>{badge.Id});
+        System.assertEquals(1, badges.size());
+        
+        List<Event_Badge__c> bgs = [SELECT Id, Requested_For_Print_Or_Preview__c FROM Event_Badge__c WHERE Id =:badge.Id];
+        
+        System.assertEquals(1, bgs.size());        
+        System.assertEquals(true, bgs[0].Requested_For_Print_Or_Preview__c);
+        
+        
     }
 }

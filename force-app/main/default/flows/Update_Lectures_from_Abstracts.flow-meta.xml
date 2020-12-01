@@ -240,7 +240,6 @@
         <queriedFields>Session__c</queriedFields>
         <queriedFields>Event__c</queriedFields>
         <queriedFields>Title__c</queriedFields>
-        <queriedFields>Presenter__c</queriedFields>
         <queriedFields>RecordTypeId</queriedFields>
         <queriedFields>Name</queriedFields>
         <queriedFields>Abstract_Presenter__c</queriedFields>

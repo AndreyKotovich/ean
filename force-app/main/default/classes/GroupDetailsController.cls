@@ -119,7 +119,8 @@ public without sharing class GroupDetailsController {
 			'displayAddMoreTicketsButton' => false,
 			'disabledEmails' => new List<String>(),
 			'isChangeRequestMode' => false,
-			'communityContactId' => communityContactId
+			'communityContactId' => communityContactId,
+			'displayNotAllowGroupTransferMessage' => false
 		};
 	}
 
@@ -218,7 +219,8 @@ public without sharing class GroupDetailsController {
 			'displayRegistrationSubmit' => false,
 			'isChangeRequestMode' => !String.isBlank(selectedCRType),
 			'changeRequestType' => !String.isBlank(selectedCRType) ? selectedCRType : '',
-			'communityContactId' => communityContactId
+			'communityContactId' => communityContactId,
+			'displayNotAllowGroupTransferMessage' => subGroupList.isEmpty() && !String.isBlank(selectedCRType) && selectedCRType == CR_TYPE_GROUP_TRANSFER
 		};
 	}
 
@@ -377,42 +379,21 @@ public without sharing class GroupDetailsController {
 		//		disableTransfersInGroup
 		//		participantIdToChangeRequest
 	public static void lockSubgroups(String selectedCRType) {
-		//	disable edit participants if 'subgroup' is locked OR 'subgroup order status' == 'Open'
 		List<Order__c> orders = !orderedSubGroupIds.isEmpty() ? 
-			// [SELECT Id, Name, Status__c, Event_Registration_Sub_Group__c, Event_Registration_Sub_Group__r.Is_Locked__c FROM Order__c WHERE Event_Registration_Sub_Group__c IN :orderedSubGroupIds]
 			[SELECT Id, Name, Status__c, Event_Registration_Sub_Group__c FROM Order__c WHERE Event_Registration_Sub_Group__c IN :orderedSubGroupIds]
 			: new List<Order__c>();
 
 		for (Order__c order : orders) {
 			if (!subGroupIdToDetailsWrap.containsKey('' + order.Event_Registration_Sub_Group__c)) continue;
 
-			//	NEW LOGIC
-			// SubGroupDetailsWrap subGroupDetails = subGroupIdToDetailsWrap.get('' + order.Event_Registration_Sub_Group__c);
-			// List<SubGroupParticipantWrap> subGroupParticipantList = subGroupDetails.subGroupParticipantList;
-
-			//	disableTransfersInGroup	IS USED ONLY at 'Group Transfer Request'
-			// Boolean disabledToEdit = (!(order.Status__c == 'Paid' && !order.Event_Registration_Sub_Group__r.Is_Locked__c) || disableTransfersInGroup);
-			// subGroupIdToDetailsWrap.get('' + order.Event_Registration_Sub_Group__c).disabledToEdit = disabledToEdit;
-
 			//	NEW logic for 'Group Registration Transfer':	remove subgroups with not paid orders
-			if (selectedCRType == CR_TYPE_GROUP_TRANSFER && (order.Status__c != 'Paid' || order.Status__c != 'Partially Cancelled')) {
+			if (selectedCRType == CR_TYPE_GROUP_TRANSFER && (order.Status__c != 'Paid' && order.Status__c != 'Partially Cancelled')) {
 				subGroupIdToDetailsWrap.remove('' + order.Event_Registration_Sub_Group__c);
 				Integer subGroupIndex = orderedSubGroupIds.indexOf('' + order.Event_Registration_Sub_Group__c);
 				if (subGroupIndex > -1) orderedSubGroupIds.remove(subGroupIndex);
 				continue;
 			}
 			orderSubGroupIdToOrder.put('' + order.Event_Registration_Sub_Group__c, order);
-
-
-			//	OLD logic for 'Group Registration Transfer':	remove not locked subgroups
-			// if (selectedCRType == CR_TYPE_GROUP_TRANSFER
-			// 	&&
-			// 	(!disabledToEdit || subGroupIdToDetailsWrap.get('' + order.Event_Registration_Sub_Group__c).subGroupExistingParticipants != subGroupIdToDetailsWrap.get('' + order.Event_Registration_Sub_Group__c).subGroupMaxParticipants)) {
-			// 	subGroupIdToDetailsWrap.remove('' + order.Event_Registration_Sub_Group__c);
-
-			// 	Integer subGroupIndex = orderedSubGroupIds.indexOf('' + order.Event_Registration_Sub_Group__c);
-			// 	if (subGroupIndex > -1) orderedSubGroupIds.remove(subGroupIndex);
-			// }
 		}
 	}
 
@@ -421,52 +402,21 @@ public without sharing class GroupDetailsController {
 	//	collect 'disabledEmails'	// REMOVERD
 	public static void genereteAccordionsAndSubmitButton() {
 
-		//	NEW LOGIC
-		// List<Order__c> orders = !orderedSubGroupIds.isEmpty() ? [
-		// 		SELECT Id, Name, Status__c, Event_Registration_Sub_Group__c
-		// 		FROM Order__c
-		// 		WHERE Event_Registration_Sub_Group__c IN :orderedSubGroupIds]
-		// 	: new List<Order__c>();
-
-		// Map<String, Order__c> orderSubGroupIdToOrder = new Map<String, Order__c>();
-		// for (Order__c order : orders) {
-		// 	orderSubGroupIdToOrder.put('' + order.Event_Registration_Sub_Group__c, order);
-		// }
-
-
 		Integer index = 0;
 		for (String subGroupId : orderedSubGroupIds) {
 			SubGroupDetailsWrap subGroupDetails = subGroupIdToDetailsWrap.get(subGroupId);
 
 			//	define titles on Accordions
 			Boolean isOrderExist = orderSubGroupIdToOrder.containsKey(subGroupId);
-			// Boolean isOrderPaid = isOrderExist;
 			Boolean isDisabledOrder = false;
 			//	NEW LOGIC
 			if (isOrderExist) {
 				Order__c order = orderSubGroupIdToOrder.get(subGroupId);
 				subGroupDetails.accordionTitle = 'Order: ' + order.Name + ' (Status: ' + (order.Status__c == 'Opened' ? 'Payment Pending' : order.Status__c) + ')';
-				// isOrderPaid = order.Status__c == 'Paid';
 				isDisabledOrder = order.Status__c == 'Cancelled' || order.Status__c == 'Closed';
 			} else {
 				subGroupDetails.accordionTitle = 'Order Not Found';
 			}
-
-			//	OLD LOGIC
-			// subGroupDetails.accordionTitle = 'Created: ' + subGroupDetails.createdDateString + ' ' + subGroupDetails.createdTimeString +
-			// (subGroupDetails.disabledToEdit ? ' (Locked)' : '');
-
-			//	logic for show button Submit to Lock Subgroup
-			//	if we have 'Undefined Participant' with empty Email in subgroup => then subgroup can't be locked
-			Boolean enableSubmitButton = !subGroupDetails.disabledToEdit;
-			for (SubGroupParticipantWrap subGroupParticipant : subGroupDetails.subGroupParticipantList) {
-				if (String.isBlank(subGroupParticipant.oldContactEmail)) {
-					enableSubmitButton = false;
-					break;
-				}
-			}
-			enableSubmitButton = !(!enableSubmitButton || subGroupDetails.disabledToEdit);
-			subGroupDetails.enableSubmitButton = enableSubmitButton && !isDisabledOrder;
 
 			subGroupDetails.accordionIsExpanded = true;
 			subGroupDetails.accordionIndex = index;			//	CUSTOM ACCORDIONS
@@ -515,62 +465,6 @@ public without sharing class GroupDetailsController {
 
 		return JSON.serialize(selectedParticipants);
 	}
-
-	//	DEPRECATED
-	@AuraEnabled
-	public static Map<String, Object> clickSubmitSubGroupParticipants(Map<String, Object> params) {
-		try {
-			String subGroupDetailsString = params.containsKey('subGroupDetails') ? String.valueOf(params.get('subGroupDetails')) : '';
-			system.debug('clickSubmitSubGroupParticipants');
-			system.debug('subGroupDetailsString: ' + subGroupDetailsString);
-
-			SubGroupDetailsWrap subGroupDetails = !String.isBlank(subGroupDetailsString) ? (SubGroupDetailsWrap) JSON.deserialize (subGroupDetailsString, SubGroupDetailsWrap.class) : new SubGroupDetailsWrap();
-
-			if (String.isBlank(subGroupDetails.subGroupId) || subGroupDetails.subGroupParticipantList == null || subGroupDetails.subGroupParticipantList.isEmpty())
-				return new Map<String, Object>{'result' => false, 'message' => 'Not Exists All Params. ' + subGroupDetails.subGroupId + ' / ' + subGroupDetails.subGroupParticipantList + ' / '};
-
-			// List<Event_Registration_Sub_Group__c> subGroup = [SELECT Id, Name, Is_Locked__c FROM Event_Registration_Sub_Group__c WHERE Id =:subGroupDetails.subGroupId LIMIT 1];
-			List<Event_Registration_Sub_Group__c> subGroup = [SELECT Id, Name FROM Event_Registration_Sub_Group__c WHERE Id =:subGroupDetails.subGroupId LIMIT 1];
-			if (subGroup.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => 'Sub Group Not Found. Id: ' + subGroupDetails.subGroupId};
-
-			List<Contact> undefinedParticipant = [SELECT Id FROM Contact WHERE Name =:SYSTEM_GROUP_CONTACT_NAME LIMIT 1];
-			if (subGroup.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => '"Undefined Participant" Not Found.'};
-
-			List<Participant__c> participantsToUpdate = new List<Participant__c>();
-			for (SubGroupParticipantWrap participantWrap : subGroupDetails.subGroupParticipantList) {
-
-				system.debug('participantWrap: ' + JSON.serialize(participantWrap));
-
-				Participant__c participant = new Participant__c();
-				participant.Id = participantWrap.participantId;
-				participant.Event_Registration_Sub_Group__c = subGroupDetails.subGroupId;
-				if (String.isBlank(participantWrap.newContactId) || participantWrap.newContactId == '' + undefinedParticipant[0].Id) {
-					participant.Contact__c = undefinedParticipant[0].Id;
-					participant.Participant_Email__c = participantWrap.newContactEmail;
-				} else {
-					participant.Contact__c = participantWrap.newContactId;
-					// participant.Participant_Email__c = '';
-					participant.Participant_Email__c = participantWrap.newContactEmail;
-				}
-				participantsToUpdate.add(participant);
-			}
-			update participantsToUpdate;
-			// subGroup[0].Is_Locked__c = true;
-			update subGroup;
-
-			return new Map<String, Object>{
-				'result' => true,
-				'message' => 'Succesfully Submited Participants. Emails will be send.'
-			};
-
-		} catch (Exception e) { 
-			system.debug('GroupDetailsController [clickSubmitSubGroupParticipants] Error: ' + e.getMessage());
-			system.debug('GroupDetailsController [clickSubmitSubGroupParticipants] Stack: ' + e.getStackTraceString());
-			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString()};
-
-		}
-	}
-
 
 	@AuraEnabled
 	public static Map<String, Object> clickRequestCancellationGroupParticipant(Map<String, Object> params) {

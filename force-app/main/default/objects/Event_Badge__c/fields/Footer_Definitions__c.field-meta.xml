@@ -35,11 +35,6 @@
                 <label>Exhibitor</label>
             </value>
             <value>
-                <fullName>Faculty</fullName>
-                <default>false</default>
-                <label>Faculty</label>
-            </value>
-            <value>
                 <fullName>Fellow of the EAN</fullName>
                 <default>false</default>
                 <label>Fellow of the EAN</label>
@@ -93,6 +88,26 @@
                 <fullName>None</fullName>
                 <default>false</default>
                 <label>None</label>
+            </value>
+            <value>
+                <fullName>Faculty</fullName>
+                <default>false</default>
+                <label>Faculty</label>
+            </value>
+            <value>
+                <fullName>ePoster presenter</fullName>
+                <default>false</default>
+                <label>ePoster presenter</label>
+            </value>
+            <value>
+                <fullName>ePresentation presenter</fullName>
+                <default>false</default>
+                <label>ePresentation presenter</label>
+            </value>
+            <value>
+                <fullName>Tournament candidate</fullName>
+                <default>false</default>
+                <label>Tournament candidate</label>
             </value>
         </valueSetDefinition>
     </valueSet>

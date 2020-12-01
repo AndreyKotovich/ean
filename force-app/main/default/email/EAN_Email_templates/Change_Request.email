@@ -17,7 +17,7 @@
             <body>
             <div>
                 <center>
-                    <img src = "{!$Resource.BannerTest}" height="100" align="center"/>
+                    <img src = "{!$Resource.Banner}" width="740px" height="100" align="center"/>
                 </center>
             </div>
             <div>
@@ -38,7 +38,7 @@
             </div>
             <div>
                 <p style="margin: 0px; font-size: 11pt;">
-                {!relatedTo.Event_custom__r.Name} - Congress of the European Academy of Neurology<br/>
+                {!relatedTo.Event_custom__r.Name} - {!relatedTo.Event_custom__r.Event_Number__c}th Congress of the European Academy of Neurology<br/>
                     <apex:outputText value="{0, date, d MMMM}">
                         <apex:param value="{!relatedTo.Event_custom__r.Start_Time__c}" /> 
                     </apex:outputText>
@@ -53,7 +53,7 @@
                 <h2 style="margin: 0px; font-size: 11pt; padding: 5px 0;">INVOICE – {!relatedTo.Invoice_Number__c}</h2>
             </div>
             <div>
-                <c:OrderInvoiceTable order="{!relatedTo.Id}" />
+                <c:OrderInvoiceCRTable order="{!relatedTo.Id}" />
             </div>
 
             <p style="margin: 0px; font-size: 9pt; position: fixed; bottom: 0; width:100%; text-align: center"><b>EAN Registration Management</b><br/>

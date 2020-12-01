@@ -47,7 +47,7 @@
         </values>
         <values>
             <fullName>Non-Member</fullName>
-            <default>false</default>
+            <default>true</default>
         </values>
         <values>
             <fullName>None</fullName>

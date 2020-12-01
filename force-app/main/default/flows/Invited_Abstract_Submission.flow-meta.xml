@@ -76,6 +76,13 @@
                 <elementReference>SetLateBreakingCheckbox</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecord.Abstract_Presenter__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Lecture_Presentation.Contact__c</elementReference>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>Create_Abstract</targetReference>
         </connector>
@@ -344,14 +351,6 @@
         </rules>
     </decisions>
     <dynamicChoiceSets>
-        <name>TopicsChoiceSet</name>
-        <dataType>Multipicklist</dataType>
-        <displayField xsi:nil="true"/>
-        <object xsi:nil="true"/>
-        <picklistField>Topics__c</picklistField>
-        <picklistObject>Abstract__c</picklistObject>
-    </dynamicChoiceSets>
-    <dynamicChoiceSets>
         <name>TypeChoice</name>
         <dataType>Picklist</dataType>
         <displayField xsi:nil="true"/>
@@ -554,7 +553,7 @@
         <object>Speaker__c</object>
         <queriedFields>Id</queriedFields>
         <queriedFields>Lecture__c</queriedFields>
-        <queriedFields>Presenter__c</queriedFields>
+        <queriedFields>Contact__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordUpdates>

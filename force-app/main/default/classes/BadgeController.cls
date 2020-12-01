@@ -104,4 +104,9 @@ public with sharing class BadgeController {
             return new List<Map<String,Object>>();
         }
     }
+
+    @AuraEnabled
+    public static String getUrl(){
+        return Url.getOrgDomainUrl().toExternalForm();
+    }
 }

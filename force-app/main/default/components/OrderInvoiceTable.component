@@ -20,15 +20,15 @@
             <apex:repeat var="OrderItem" value="{!orderItems}">
                 <tr>
                     <td style="border-bottom: 1px solid #ddd;" data-label="Delegate name">
-                        <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!OrderItem.Event_Participation__r.Contact__r.FirstName} {!OrderItem.Event_Participation__r.Contact__r.LastName}
-                            <span style="padding: 5px; {!IF(OrderItem.Event_Participation__r.Contact__r.Email != '', '', 'display: none;')}">, {!OrderItem.Event_Participation__r.Contact__r.Id}</span>
+                        <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!OrderItem.firstName} {!OrderItem.lastName}
+                            <span style="padding: 5px; {!IF(OrderItem.contactEmail != '', '', 'display: none;')}">, {!OrderItem.contactId}</span>
                             </div>
                     </td>
                     <td style="border-bottom: 1px solid #ddd;" data-label="Ticket Type">
-                        <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!OrderItem.Name__c}</div>
+                        <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!OrderItem.name}</div>
                     </td>
                     <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">
-                        <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!OrderItem.Total_amount__c}  &#8364;</div>
+                        <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!OrderItem.totalAmount}  &#8364;</div>
                     </td>
                 </tr>
             </apex:repeat>
@@ -40,7 +40,7 @@
                     <div style="padding: 5px; margin: 0px; font-size: 11pt;">Total</div>
                 </td>
                 <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">
-                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!orderTotalAmount}  &#8364;</div>
+                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!orderTotal}  &#8364;</div>
                 </td>
             </tr>
             <tr>
@@ -48,10 +48,10 @@
                     <div style="padding: 5px; margin: 0px; font-size: 11pt;"></div>
                 </td>
                 <td style="border-bottom: 1px solid #ddd;" data-label="Ticket Type">
-                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">VAT xx%</div>
+                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">VAT {!vatValue}%</div>
                 </td>
                 <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">
-                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">VAT  &#8364;</div>
+                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!vatAmount} &#8364;</div>
                 </td>
             </tr>
             <tr>
@@ -62,7 +62,7 @@
                     <div style="padding: 5px; margin: 0px; font-size: 11pt;"><b>Total incl. VAT</b></div>
                 </td>
                 <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">
-                    <div style="padding: 5px; margin: 0px; font-size: 11pt;"><b>Total incl. VAT  &#8364;</b></div>
+                    <div style="padding: 5px; margin: 0px; font-size: 11pt;"><b> {!orderTotalAmount} &#8364;</b></div>
                 </td>
             </tr>
         </tbody>
@@ -90,40 +90,40 @@
                     <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!orderItemsSize}</div>
                 </td>
                 <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">
-                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!orderItems[0].Total_amount__c}  &#8364;</div>
+                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!OrderItems[0].totalAmount}  &#8364;</div>
                 </td>
             </tr>
             <tr>
-                <td style="" data-label="Ticket Type">
+                <td style="" data-label="Delegate name">
                     <div style="padding: 5px; margin: 0px; font-size: 11pt;"></div>
                 </td>
-                <td style="border-bottom: 1px solid #ddd;" data-label="Amount">
+                <td style="border-bottom: 1px solid #ddd;" data-label="Ticket Type">
                     <div style="padding: 5px; margin: 0px; font-size: 11pt;">Total</div>
                 </td>
                 <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">
-                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!orderTotalAmount}  &#8364;</div>
+                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!orderTotal}  &#8364;</div>
                 </td>
             </tr>
             <tr>
-                <td style="" data-label="Ticket Type">
+                <td style="" data-label="Delegate name">
                     <div style="padding: 5px; margin: 0px; font-size: 11pt;"></div>
                 </td>
-                <td style="border-bottom: 1px solid #ddd;" data-label="Amount">
-                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">VAT xx%</div>
+                <td style="border-bottom: 1px solid #ddd;" data-label="Ticket Type">
+                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">VAT {!vatValue}%</div>
                 </td>
                 <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">
-                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">VAT  &#8364;</div>
+                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!vatAmount} &#8364;</div>
                 </td>
             </tr>
             <tr>
-                <td style="" data-label="Ticket Type">
+                <td style="" data-label="Delegate name">
                     <div style="padding: 5px; margin: 0px; font-size: 11pt;"></div>
                 </td>
-                <td style="border-bottom: 1px solid #ddd;" data-label="Amount">
+                <td style="border-bottom: 1px solid #ddd;" data-label="Ticket Type">
                     <div style="padding: 5px; margin: 0px; font-size: 11pt;"><b>Total incl. VAT</b></div>
                 </td>
                 <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">
-                    <div style="padding: 5px; margin: 0px; font-size: 11pt;"><b>Total incl. VAT  &#8364;</b></div>
+                    <div style="padding: 5px; margin: 0px; font-size: 11pt;"><b> {!orderTotalAmount} &#8364;</b></div>
                 </td>
             </tr>
         </tbody>

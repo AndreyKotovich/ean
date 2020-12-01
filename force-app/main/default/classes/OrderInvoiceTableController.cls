@@ -34,13 +34,14 @@ public with sharing class OrderInvoiceTableController {
 				oIW.quantity = oI.Quantity__c;
 				oIW.contactId = oI.Order_Custom__r.Contact__r.Id;
 				oIW.firstName = oI.Order_Custom__r.Contact__r.FirstName;
-				oIW.lastName = oI.Order_Custom__r.Contact__r.LastName;
+                oIW.lastName = oI.Order_Custom__r.Contact__r.LastName;
+                oIW.contactEmail = oI.Order_Custom__r.Contact__r.Email;
 				orderIs.add( oIW );
 				orderTotalAmount += oI.Total_amount__c;
 			}
 			if (orderTotalAmount > 0 && vatValue > 0) {
-				vatAmount = (orderTotalAmount * vatValue / 100).setScale(2);
-				orderTotal = (orderTotalAmount - vatAmount).setScale(2);                
+				orderTotal = (orderTotalAmount /(1 + vatValue / 100)).setScale(2);
+				vatAmount = (orderTotalAmount - orderTotal).setScale(2);                
 			}
 		}
 		return orderIs;
@@ -54,8 +55,7 @@ public with sharing class OrderInvoiceTableController {
 		public Decimal quantity { get; set; }
 		public String contactId { get; set; }
 		public String firstName { get; set; }
-		public String lastName { get; set; }
+        public String lastName { get; set; }
+        public String contactEmail { get; set; }
 	}
 }
-
- 

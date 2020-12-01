@@ -15,6 +15,17 @@
         </values>
     </picklistValues>
     <picklistValues>
+        <picklist>Presentation__c</picklist>
+        <values>
+            <fullName>ePoster presenter</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ePresentation presenter</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>Role__c</picklist>
         <values>
             <fullName>FW Convenor</fullName>

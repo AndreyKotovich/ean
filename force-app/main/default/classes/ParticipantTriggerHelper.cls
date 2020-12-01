@@ -114,18 +114,18 @@ public without sharing class ParticipantTriggerHelper {
             FROM Participant__c
             WHERE Id IN :getQRCodeParticipantsMap.keySet()
         ];
-        List<String> createBadgeParticipantIds = new List<String>();
+        // List<String> createBadgeParticipantIds = new List<String>();
         List<Participant__c> submitedGroupParticipants = new List<Participant__c>();
         for (Participant__c participant : QRCodeNeededParticipants) {
             if (participant.Event_Ticket__r.Participation__c == 'Onsite'
                 && String.isBlank(getQRCodeParticipantsMap.get(participant.Id).Event_Registration_Sub_Group__c)) {
                 getQRCodeParticipantsMap.get(participant.Id).QR_Code_needed__c = true;
-                createBadgeParticipantIds.add(participant.Id);
+                // createBadgeParticipantIds.add(participant.Id);
             } else if (participant.Event_Ticket__r.Participation__c == 'Onsite'
                     && String.isNotBlank(getQRCodeParticipantsMap.get(participant.Id).Event_Registration_Sub_Group__c)
                     && String.isNotBlank(participant.Contact__r.Email)) {
                 getQRCodeParticipantsMap.get(participant.Id).QR_Code_needed__c = true;
-                createBadgeParticipantIds.add(participant.Id);
+                // createBadgeParticipantIds.add(participant.Id);
             }
             if (String.isNotBlank(getQRCodeParticipantsMap.get(participant.Id).Event_Registration_Sub_Group__c)
                     && (String.isNotBlank(participant.Contact__r.Email) || String.isNotBlank(getQRCodeParticipantsMap.get(participant.Id).Participant_Email__c))) {
@@ -135,9 +135,11 @@ public without sharing class ParticipantTriggerHelper {
         if (submitedGroupParticipants.size() > 0) {
             sendEmailToSubmitedGroupParticipants(submitedGroupParticipants);
         }
-        if (createBadgeParticipantIds.size() > 0) {
-            createBadges(createBadgeParticipantIds);
-        }
+
+        //  moved to Trigger.isAfter && Trigger.isUpdate
+        // if (createBadgeParticipantIds.size() > 0) {
+        //     upsertBadges(createBadgeParticipantIds);
+        // }
     }
 
     public static void sendEmailToSubmitedGroupParticipants(List<Participant__c> submitedGroupParticipants) {
@@ -260,17 +262,15 @@ public without sharing class ParticipantTriggerHelper {
     public static final String SYSTEM_GROUP_CONTACT_NAME = 'Undefined Participant';
     public static final Id personaPressRTId = Schema.SObjectType.Event_Persona__c.getRecordTypeInfosByDeveloperName().get('Press').getRecordTypeId();
 
-    public static void createBadges(List<String> participantIds) {
+    public static void upsertBadges(List<String> participantIds) {
         List<Participant__c> participants = [
-            SELECT Id, Event_Exhibitor__c, Event_custom__c,
+            SELECT Id, Event_Exhibitor__c, Event_custom__c, Lecture_Presentation__c, Presentation__c, Tournament_Candidate__c,
                 Contact__c, Contact__r.Name, Contact__r.FirstName, Contact__r.LastName, Contact__r.Residency__c, Contact__r.MailingCity,
                 Contact__r.Prescriber__c, Event_Persona__c, Event_Persona__r.RecordTypeId,
-                Contact__r.AccountId, Contact__r.Account.Name,
-                Contact__r.Membership_Status__c,
-                // Contact__r.Flag_EAN_Full_Member__c, Contact__r.Flag_EAN_Corresponding_Member__c, Contact__r.Flag_EAN_Fellow_of_the_EAN__c, 
-                // Contact__r.Flag_EAN_Resident_Research_Member__c, Contact__r.Flag_EAN_Associate_Member__c, Contact__r.Flag_EAN_Student_Member__c, 
+                Contact__r.AccountId, Contact__r.Account.Name, Contact__r.Membership_Status__c,
+                Event_Ticket__c, Event_Ticket__r.Ticket__r.Event_Country_Ticket__c,
                 Event_Registration_Sub_Group__c, Event_Registration_Sub_Group__r.Event_Registration_Group__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name,
-                (SELECT Id FROM Event_Badges__r)
+                (SELECT Id FROM Event_Badges__r ORDER BY LastModifiedDate DESC LIMIT 1)
             FROM Participant__c
             WHERE Id IN :participantIds
         ];
@@ -278,9 +278,10 @@ public without sharing class ParticipantTriggerHelper {
         List<Event_Badge__c> badges = new List<Event_Badge__c>();
         for (Participant__c participant : participants) {
 
-            if (!participant.Event_Badges__r.isEmpty()) continue;
+            Id badgeId = participant.Event_Badges__r.isEmpty() ? null : participant.Event_Badges__r[0].Id;
 
             Event_Badge__c badge = new Event_Badge__c();
+            badge.Id = badgeId;
             badge.Event_Participation__c = participant.Id;
             badge.Event_custom__c = participant.Event_custom__c;
             badge.Country__c = participant.Contact__r.Residency__c;
@@ -299,13 +300,10 @@ public without sharing class ParticipantTriggerHelper {
             if (footerDefinitionsList.isEmpty()) footerDefinitionsList.add('None');
             String footerDefinitionsString = String.join(footerDefinitionsList, ';');
             badge.Footer_Definitions__c = footerDefinitionsString;
-
-            //  TODO Event Event_Participation_Role__c (ePoster presenter, ePresentation presenter, Tournament candidate)
-
             badges.add(badge);
         }
 
-        if(!badges.isEmpty()) insert badges;
+        if(!badges.isEmpty()) upsert badges;
     }
 
     public static List<String> generateFooterValues(Participant__c participant) {
@@ -324,15 +322,14 @@ public without sharing class ParticipantTriggerHelper {
         } else if (participant.Contact__r.Membership_Status__c == 'EAN Student Member') { values.add('Student Member');
         } else if (participant.Contact__r.Name != SYSTEM_GROUP_CONTACT_NAME) { values.add('Non-Member'); }
 
-        if (participant.Event_Persona__c != null && participant.Event_Persona__r.RecordTypeId == personaPressRTId) {
-            values.add('Press');
-        }
+        if (participant.Event_Persona__c != null && participant.Event_Persona__r.RecordTypeId == personaPressRTId) values.add('Press');
+        if (participant.Lecture_Presentation__c != null) values.add('Faculty');
+        if (!String.isBlank(participant.Presentation__c)) values.add(participant.Presentation__c);  //  ePoster presenter, ePresentation presenter
+        if (participant.Tournament_Candidate__c == true) values.add('Tournament Candidate');        //  Tournament candidate
+        if (participant.Event_Ticket__c != null && participant.Event_Ticket__r.Ticket__r.Event_Country_Ticket__c == true) values.add('Day of the week');
 
         //  TODO
-        // Day of the week
-        // Faculty
-        // Meeting only
-        // Panel Management Group Member
+        //  Panel Management Group Member
 
         return values;
     }

@@ -26,11 +26,6 @@ MyRegistrationsController.cls</description>
                 <label>Full Group Registration Cancellation</label>
             </value>
             <value>
-                <fullName>Solo Registration Transfer</fullName>
-                <default>false</default>
-                <label>Solo Registration Transfer</label>
-            </value>
-            <value>
                 <fullName>Group Registration Transfer</fullName>
                 <default>false</default>
                 <label>Group Registration Transfer</label>
@@ -39,6 +34,12 @@ MyRegistrationsController.cls</description>
                 <fullName>Individual Participant Group Registration Cancellation</fullName>
                 <default>false</default>
                 <label>Individual Participant Group Registration Cancellation</label>
+            </value>
+            <value>
+                <fullName>Solo Registration Transfer</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Solo Registration Transfer</label>
             </value>
         </valueSetDefinition>
     </valueSet>

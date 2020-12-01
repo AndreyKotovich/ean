@@ -309,13 +309,14 @@ public class InvoicePDFGenerator {
         update sessionParticipants;
     }
 
-    public static void sendEmailOrderPaidSoloRegBT(List<Id> orderIds) {
+    public static void sendEmailOrderPaidSoloReg(List<Id> orderIds) {
         List<Order__c> orders = [
             SELECT Id, Contact__r.Email, Event_custom__c, Type__c, Payment_Method__c FROM Order__c WHERE Id IN :orderIds
         ];
         List<Email_Activity__c> emailActivities = new List<Email_Activity__c>();
         for (Order__c order : orders) {
-            Email_Activity__c emailActivity = new Email_Activity__c(
+            if (order.Payment_Method__c == 	'Bank Transfer') {
+                Email_Activity__c emailActivity = new Email_Activity__c(
                 Contact__c = order.Contact__c,
                 Event_Custom__c = order.Event_custom__c,
                 Order__c = order.Id,
@@ -323,6 +324,17 @@ public class InvoicePDFGenerator {
                 Type__c = 'Solo event registration order paid BT'
             );
             emailActivities.add(emailActivity);
+            } else if (order.Payment_Method__c == 	'paypal'
+                        || order.Payment_Method__c == 	'creditcard') {
+                Email_Activity__c emailActivity = new Email_Activity__c(
+                Contact__c = order.Contact__c,
+                Event_Custom__c = order.Event_custom__c,
+                Order__c = order.Id,
+                Send_To_Email__c = order.Contact__r.Email,
+                Type__c = 'Event registration ' + order.Payment_Method__c
+            );
+            emailActivities.add(emailActivity);
+            }
         }
         if (emailActivities.size() > 0) {
             insert emailActivities;

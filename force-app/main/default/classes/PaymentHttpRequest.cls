@@ -493,7 +493,7 @@ public without sharing class PaymentHttpRequest {
         }
     }
     @RemoteAction public static List<Order__c> getOrderInfo(String orderId) {
-        List<Order__c> order = [SELECT Id, Name, Contact__r.FirstName, Contact__r.LastName, Invoice_Number__c, Total_amount__c, CreatedDate FROM Order__c WHERE Id = :orderId];
+        List<Order__c> order = [SELECT Id, Name, Contact__r.FirstName, Contact__r.LastName, Invoice_Number__c, Total_amount__c, Payment_Method__c, CreatedDate FROM Order__c WHERE Id = :orderId];
         return order;
     }
     
@@ -598,7 +598,10 @@ public without sharing class PaymentHttpRequest {
         List<Order__c> order = getOrderInfo(orderId);
         String attachmentLink = 'javascript:void(0);';
         if(!order.isEmpty()){
-            Boolean isTypeOc = order[0].Invoice_Number__c != null && order[0].Invoice_Number__c.contains( 'EAN' + String.valueOf(Date.today().year()).right(2) + '-OC');
+            // Boolean isTypeOc = order[0].Invoice_Number__c != null && order[0].Invoice_Number__c.contains( 'EAN' + String.valueOf(Date.today().year()).right(2) + '-OC');
+            //  https://jira.towa-digital.com/browse/EANER-19   use EAN21-F-#### (= Invoice Number) 
+            Boolean isTypeOc = order[0].Invoice_Number__c != null && order[0].Invoice_Number__c.contains( 'EAN' + String.valueOf(Date.today().year()).right(2) + '-F');
+
             String template = isTypeOc ? 'BankTransferRegistrationPdf' : 'BankTransferCredentialsPdf';
             PageReference defaultPage = new PageReference('/apex/' + template);
             

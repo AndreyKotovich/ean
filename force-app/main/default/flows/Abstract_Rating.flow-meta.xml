@@ -4,8 +4,8 @@
     <assignments>
         <name>Assign_List_of_Authors</name>
         <label>Assign List of Authors</label>
-        <locationX>832</locationX>
-        <locationY>400</locationY>
+        <locationX>899</locationX>
+        <locationY>402</locationY>
         <assignmentItems>
             <assignToReference>ListAuthors</assignToReference>
             <operator>Add</operator>
@@ -115,7 +115,7 @@
         <collectionReference>Get_Authors</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
-            <targetReference>Assign_List_of_Authors</targetReference>
+            <targetReference>Get_Author_Details</targetReference>
         </nextValueConnector>
         <noMoreValuesConnector>
             <targetReference>ReviewScreen</targetReference>
@@ -159,6 +159,34 @@
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>Abstract__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Author_Details</name>
+        <label>Get Author Details</label>
+        <locationX>782</locationX>
+        <locationY>307</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Assign_List_of_Authors</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Loop_Authors.Abstract_Author__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Contact</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>FirstName</queriedFields>
+        <queriedFields>LastName</queriedFields>
+        <queriedFields>Email</queriedFields>
+        <queriedFields>Official_Department_Name__c</queriedFields>
+        <queriedFields>MailingCity</queriedFields>
+        <queriedFields>MailingCountry</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
@@ -782,12 +810,12 @@
     <textTemplates>
         <name>AuthorDetails</name>
         <isViewedAsPlainText>false</isViewedAsPlainText>
-        <text>&lt;ul&gt;&lt;li&gt;{!Loop_Authors.Author_First_Name__c} {!Loop_Authors.Author_Last_Name__c}, {!Loop_Authors.Author_Department__c}, {!Loop_Authors.Author_Country__c}&lt;/li&gt;&lt;/ul&gt;</text>
+        <text>&lt;ul&gt;&lt;li&gt;{!Get_Author_Details.FirstName} {!Get_Author_Details.LastName}, {!Get_Author_Details.Official_Department_Name__c}, {!Get_Author_Details.MailingCountry}&lt;/li&gt;&lt;/ul&gt;</text>
     </textTemplates>
     <textTemplates>
         <name>PresenterDetails</name>
         <isViewedAsPlainText>false</isViewedAsPlainText>
-        <text>&lt;ul&gt;&lt;li&gt;{!Get_Abstract.Presenter_First_Name__c} {!Get_Abstract.Presenter_Last_Name__c}, {!Get_Abstract.Presenter_Department__c}, {!Get_Abstract.Presenter_Country__c}&lt;/li&gt;&lt;/ul&gt;</text>
+        <text>&lt;ul&gt;&lt;li&gt;{!Get_Abstract.Abstract_Presenter__r.FirstName} {!Get_Abstract.Abstract_Presenter__r.LastName}, {!Get_Abstract.Abstract_Presenter__r.Official_Department_Name__c} {!Get_Abstract.Abstract_Presenter__r.MailingCountry}&lt;/li&gt;&lt;/ul&gt;</text>
     </textTemplates>
     <variables>
         <name>ListAuthors</name>

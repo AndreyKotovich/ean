@@ -16,7 +16,7 @@
         </values>
         <values>
             <fullName>Day of the week</fullName>
-            <default>false</default>
+            <default>true</default>
         </values>
         <values>
             <fullName>EAN Head Office</fullName>
@@ -24,10 +24,6 @@
         </values>
         <values>
             <fullName>Exhibitor</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Faculty</fullName>
             <default>false</default>
         </values>
         <values>

@@ -74,6 +74,18 @@
             <fullName>Technical Staff</fullName>
             <default>false</default>
         </values>
+        <values>
+            <fullName>Tournament candidate</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ePoster presenter</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ePresentation presenter</fullName>
+            <default>false</default>
+        </values>
     </picklistValues>
     <picklistValues>
         <picklist>Label_type__c</picklist>

@@ -54,7 +54,9 @@ public with sharing class OrderHelperTest {
         ];
         
         System.assertEquals(55, orders[0].Total_amount__c);
-        System.assertEquals('EAN' + String.valueOf(Date.today().year()).right(2) + '-OC-000001', orders[0].Invoice_Number__c);
+        // System.assertEquals('EAN' + String.valueOf(Date.today().year()).right(2) + '-OC-000001', orders[0].Invoice_Number__c);
+        //  https://jira.towa-digital.com/browse/EANER-19   use EAN21-F-#### (= Invoice Number) 
+        System.assertEquals('EAN' + String.valueOf(Date.today().year()).right(2) + '-F-000001', orders[0].Invoice_Number__c);
         System.assertEquals(2, orders[0].Order_Items__r.size());
 
     }

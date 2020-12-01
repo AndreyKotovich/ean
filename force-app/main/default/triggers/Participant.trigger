@@ -12,7 +12,7 @@ trigger Participant on Participant__c (after insert, before insert, before updat
             participantIds.add(participant.Id);
         }
         if (participantIds.size() > 0) {
-            ParticipantTriggerHelper.createBadges(participantIds);
+            ParticipantTriggerHelper.upsertBadges(participantIds);
         }
         if(soloParticipantIds.size() > 0) {
             ParticipantTriggerHelper.soloParticipantRegistration(soloParticipantIds);
@@ -36,6 +36,12 @@ trigger Participant on Participant__c (after insert, before insert, before updat
     }
     if(Trigger.isAfter && Trigger.isUpdate){
         ParticipantTriggerHelper.updateEventPersonas_update(Trigger.new, Trigger.old);
+
+        //  Update Info on Badge records
+        List<String> participantIds = new List<String>();
+        for (Participant__c participant : Trigger.new) participantIds.add(participant.Id);
+        ParticipantTriggerHelper.upsertBadges(participantIds);
+
     }
     if(Trigger.isAfter && Trigger.isDelete){
         ParticipantTriggerHelper.updateEventPersonas_delete(Trigger.old);
