@@ -28,6 +28,7 @@ public with sharing class Utils {
         return contactsMemberships;
     }
 
+    @AuraEnabled
     public static List<Map<String, String>> picklistValues(String objectName, String fieldName) {
         return picklistValues(objectName, fieldName, new Set<String>());
     }

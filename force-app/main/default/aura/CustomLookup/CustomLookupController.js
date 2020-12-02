@@ -1,4 +1,8 @@
 ({
+  doInit: function(component, event, helper){
+    helper.getContact(component);
+    helper.getAddresses(component);
+  },
     onfocus : function(component,event,helper){
         $A.util.addClass(component.find("mySpinner"), "slds-show");
          var forOpen = component.find("searchRes");
@@ -50,6 +54,10 @@
 
           $A.util.addClass(outputText, 'slds-hide');
           $A.util.removeClass(outputText, 'slds-show');
+
+          var bottomText = component.find("newElement");
+                    $A.util.addClass(bottomText, 'slds-show');
+                    $A.util.removeClass(bottomText, 'slds-hide');
        
           component.set("v.SearchKeyWord",null);
           component.set("v.listOfSearchRecords", null );
@@ -72,7 +80,11 @@
          
          var lookUpTarget = component.find("lookupField");
              $A.util.addClass(lookUpTarget, 'slds-hide');
-             $A.util.removeClass(lookUpTarget, 'slds-show');  
+             $A.util.removeClass(lookUpTarget, 'slds-show'); 
+             
+             var bottomText = component.find("newElement");
+                    $A.util.addClass(bottomText, 'slds-hide');
+                    $A.util.removeClass(bottomText, 'slds-show');
 
          var outputText = component.find("output"); 
              $A.util.addClass(outputText, 'slds-show');
@@ -82,4 +94,17 @@
              component.set("v.selectedRecordId", selectedAccountGetFromEvent.Id);
        
      },
+
+     createPresenter : function(component, event, helper) {
+      component.set("v.showModal", true);
+    },
+
+    cancel : function(component, event, helper) {
+      component.set("v.showModal", false);
+    },
+
+    save : function(component, event, helper) {
+      helper.createContact(component)
+      component.set("v.showModal", false);
+    }
 })

@@ -6,7 +6,6 @@
 	</template>
 
 	<div style={displayMainBlock}>
-	<!-- <template if:false={_isSpinner}> -->
 		<template if:true={_isError}>
 			<div class="slds-text-heading_large slds-align_absolute-center slds-text-color_error">{_errorMessage}</div>
 		</template>
@@ -54,12 +53,16 @@
 
 										</div>
 									</div>
+
+									<br/>
+									<p>If you would like to change your membership category, click <a href={_communityUpdateUrl}>here</a> to proceed with upgrade.</p>
 								</div>
 
 								<!-- STEP 1 -->
 								<template if:true={_isStep1}>
 									<!-- <div slot="title"> -->
 									<div style="color: #007DC6; font-size: 16px; font-weight: bolder;">
+										<br/>
 										<div style="display: inline-block;">Please review / enter your data</div>
 									</div>
 
@@ -83,17 +86,25 @@
 									<lightning-input data-id="form-zip-postal-code" name="zipPostalCode" type="text" label="ZIP/Postal code" onchange={handleChangeZipPostalCode} value={_formZipPostalCode} placeholder="" max-length="20" required></lightning-input>
 									<lightning-input data-id="form-city" name="city" type="text" label="City" onchange={handleChangeCity} value={_formCity} placeholder="" max-length="80" required></lightning-input>
 									<lightning-input name="phone" type="text" label="Phone number" onchange={handleChangePhone} value={_formPhoneNumber} placeholder="" max-length="20"></lightning-input>
+									<lightning-combobox data-id="form-profession" name="profession" label="Profession" options={_availableProfessions} onchange={handleChangeProfession} required value={_formProfession}></lightning-combobox>
 
-									<template if:true={_allowAANMemberDiscount}>
+									<template if:true={_displayAANMemberCheckbox}>
 										<br/>
 										<lightning-input name="iamaanmember" type="checkbox" label="I am AAN Member" onchange={handleChangeIamAANMember} checked={_formIamAANMember}></lightning-input>
 										<p style="margin-left: 22px;">AAN members from outside Europe get a 10% discount on EAN membership. Members from EAN member countries get a 10% discount on AAN membership.</p>
 									</template>
 									<br/>
-									<lightning-input name="iamretired" type="checkbox" label="I am Retired" onchange={handleChangeIamRetired} checked={_formIamRetired}></lightning-input>
 
-									<!-- EANMR-24 -->
-									<template if:true={_allowRetiredDiscount}>
+									<template if:true={_enableIamRetiredCheckbox}>
+										<lightning-input name="iamretired" type="checkbox" label="I am Retired" onchange={handleChangeIamRetired} checked={_formIamRetired}></lightning-input>
+									</template>
+									<!-- EANMR-69 -->
+									<!-- <template if:false={_enableIamRetiredCheckbox}>
+										<lightning-input name="iamretired" type="checkbox" label="I am Retired" disabled checked={_formIamRetired}></lightning-input>
+									</template> -->
+
+									<!-- EANMR-24 EANMR-69 -->
+									<template if:true={_enableIamRetiredCheckbox}>
 										<p style="margin-left: 22px;">Neurologists who are retired from their professional career get a 50% discount on their EAN membership fee.</p>
 										<p style="margin-left: 22px;">(50% discount cannot be combined with other with other 50% reduction)</p>
 									</template>
@@ -109,7 +120,7 @@
 								<template if:true={_isStep2}>
 									<br/>
 									<!-- Version 1 – Resident and Research Members -->
-									<template if:true={_displayLicenseIssued}>
+									<template if:true={_isRRFSMembership}>
 
 										<div class="slds-grid slds-grid_vertical">
 											<div class="slds-col">
@@ -130,16 +141,20 @@
 												placeholder="" required field-level-help="Please indicate the actual or expected date of graduation for your most recent degree."
 												class="dateOfGraduation">
 											</lightning-input>
-											<template if:true={_displayDateOfGraduationUpdateMessage}>
-												<br/>
-												<p>Thank you for your support throughout {_currentYearString}!</p>
-												<p>If you have received your latest degree (MD or PhD) more than 3 years</p>
-												<p>ago, and/or obtained your license to practice medicine more than 15 years</p>
-												<p>ago, your membership is due for an upgrade.</p>
-												<p>Please <span style="text-decoration: underline;">upgrade to Full/Corresponding membership here</span><a href={_communityUpdateUrl}> Upgrade Membership</a>.</p>
-												<p>We hope you remain active part of EAN community!</p>
-												<br/>
+
+											<template if:true={_displayStep2ErrorDatesMessage}>
+												<div class="slds-form-element__help" id="error-message-rrfs">
+													<br/>
+													<p style="color: #C23934;">Thank you for your support throughout {_currentYearString}!</p>
+													<p style="color: #C23934;">If you have received your latest degree (MD or PhD) more than 3 years</p>
+													<p style="color: #C23934;">ago, and/or obtained your license to practice medicine more than 15 years</p>
+													<p style="color: #C23934;">ago, your membership is due for an upgrade.</p>
+													<p style="color: #C23934;">Please <span style="text-decoration: underline;">upgrade to Full/Corresponding membership here</span><a href={_communityUpdateUrl}> Upgrade Membership</a>.</p>
+													<p style="color: #C23934;">We hope you remain active part of EAN community!</p>
+													<br/>
+												</div>
 											</template>
+
 											<lightning-input name="licenseIssuedDate" type="date" label="License issued" onchange={handleChangeLicenseIssued} value={_licenseIssuedDate}
 												placeholder="" required field-level-help="Please indicate the actual or expected date of issue of the license to practice medicine."
 												class="licenseIssuedDate">
@@ -150,7 +165,7 @@
 									</template>
 
 									<!-- Version 2 – Student Members -->
-									<template if:false={_displayLicenseIssued}>
+									<template if:true={_isStudentMembership}>
 
 										<div class="slds-grid slds-grid_vertical">
 											<div class="slds-col">
@@ -167,12 +182,14 @@
 												placeholder="" required field-level-help="Please indicate the expected date of graduation."
 												class="dateOfGraduation">
 											</lightning-input>
-											<template if:true={_displayDateOfGraduationUpdateMessage}>
-												<br/>
-												<p>Thank you for your support throughout {_currentYearString}!</p>
-												<p>If you have already graduated, you are no longer eligible for Student membership.</p>
-												<p>Please <span style="text-decoration: underline;">upgrade to Resident & Research membership here</span><a href={_communityUpdateUrl}> Upgrade Membership</a>.</p>
-												<p>We hope you remain active part of EAN community!</p>
+											<template if:true={_displayStep2ErrorDatesMessage}>
+												<div class="slds-form-element__help" id="error-message-student">
+													<br/>
+													<p style="color: #C23934;">Thank you for your support throughout {_currentYearString}!</p>
+													<p style="color: #C23934;">If you have already graduated, you are no longer eligible for Student membership.</p>
+													<p style="color: #C23934;">Please <span style="text-decoration: underline;">upgrade to Resident & Research membership here</span><a href={_communityUpdateUrl}> Upgrade Membership</a>.</p>
+													<p style="color: #C23934;">We hope you remain active part of EAN community!</p>
+												</div>
 											</template>
 											<br/>
 										</div>
@@ -198,13 +215,13 @@
 										</div>
 									</div>
 									<!-- Version 1 – Resident and Research Members -->
-									<template if:true={_displayLicenseIssued}>
+									<template if:true={_isRRFSMembership}>
 										<div class="slds-col slds-m-bottom_small slds-m-top_x-small">
 											<span style="color: rgb(105, 105, 105);">Please upload a confirmation of your ongoing or completed training in neurology or PhD studies in English. For eligibility criteria please see above.</span>
 										</div>
 									</template>
 									<!-- Version 2 – Student Members -->
-									<template if:false={_displayLicenseIssued}>
+									<template if:true={_isStudentMembership}>
 										<div class="slds-col slds-m-bottom_small slds-m-top_x-small">
 											<span style="color: rgb(105, 105, 105);">Please upload a confirmation of your ongoing undergraduate studies in English/student ID to verify your student status.</span>
 										</div>
@@ -219,8 +236,7 @@
 
 								<!-- STEP 3 -->
 								<div style={isStep3Style}>
-								<!-- <template if:true={_isStep3}> -->
-
+									<br/>
 									<div class="slds-m-top_x-small slds-m-bottom_x-small">
 										<c-ean-journals class="slds-text-align_left" onselect={handleJournalSelect} auto-populate={_selectedJournals}></c-ean-journals>
 									</div>
@@ -242,7 +258,6 @@
 									<br/>
 									<br/>
 
-								<!-- </template> -->
 								</div>
 
 							</div>
@@ -251,11 +266,14 @@
 				</div>
 			</template>
 			<template if:true={_displayTotalZeroBlock}>
-				<div class="slds-align_absolute-center slds-text-heading_large slds-text-color_success">Thank you for your interest in becoming a member of EAN !</div>
-				<div class="slds-align_absolute-center slds-text-heading_large slds-text-color_success">NEED TO APPROVE THE APP FORM</div>
+				<div class="slds-align_absolute-center slds-text-heading_medium slds-text-color_success">
+					Thank you for providing information and documents necessary for your {_nextYearString} <template if:true={_isStudentMembership}>Student</template> membership renewal.
+				</div>
+				<div class="slds-align_absolute-center slds-text-heading_medium slds-text-color_success">
+					The Membership Department will review your eligibility and confirm your renewal shortly.
+				</div>
 			</template>
 		</template>
-	<!-- </template> -->
 	</div>
 
 </template>

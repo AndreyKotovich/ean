@@ -144,7 +144,7 @@ export default class ErParticipantsInitialization extends LightningElement {
         this._participantsInitialization.initializedParticipants[index].ticketName = event.detail.ticketName;
         this._participantsInitialization.initializedParticipants[index].pillLabel = event.detail.ticketName + ' - ' + event.detail.priceTicket + ' €';
         this._participantsInitialization.initializedParticipants[index].showPill = true;
-        this._participantsInitialization.initializedParticipants[index].foundContact = false; //TODO remane foundContact
+        this._participantsInitialization.initializedParticipants[index].foundContact = false;
         this._participantsInitialization.initializedParticipants[index].participantRole = event.detail.participantRole;
         this._participantsInitialization.initializedParticipants[index].eventPersonaId = event.detail.eventPersonaId;
         this._participantsInitialization.initializedParticipants[index].isOnlineTicket = event.detail.isOnlineTicket;
@@ -158,7 +158,7 @@ export default class ErParticipantsInitialization extends LightningElement {
     handleRemoveTicket(event){
         let index = event.target.dataset.index;
         this._participantsInitialization.initializedParticipants[index].showPill = false;
-        this._participantsInitialization.initializedParticipants[index].foundContact = true; //TODO remane foundContact
+        this._participantsInitialization.initializedParticipants[index].foundContact = true;
         this._participantsInitialization.initializedParticipants[index].selectedTicket = '';
         this._participantsInitialization.initializedParticipants[index].ticketId = '';
         this._participantsInitialization.initializedParticipants[index].priceTicket = '';

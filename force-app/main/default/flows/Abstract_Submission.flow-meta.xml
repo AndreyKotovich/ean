@@ -764,8 +764,8 @@
     <decisions>
         <name>PresenterFound</name>
         <label>PresenterFound</label>
-        <locationX>462</locationX>
-        <locationY>1988</locationY>
+        <locationX>472</locationX>
+        <locationY>2016</locationY>
         <defaultConnector>
             <targetReference>AssignStage40</targetReference>
         </defaultConnector>
@@ -784,25 +784,6 @@
                 <targetReference>Update_Abstract_with_Presenter_0</targetReference>
             </connector>
             <label>Assign Presenter</label>
-        </rules>
-        <rules>
-            <name>Create_Presenter_Outcome</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>NewPresenterEmail.value</leftValueReference>
-                <operator>NotEqualTo</operator>
-                <rightValue>
-                    <stringValue/>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>selectedRecordId</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue/>
-                </rightValue>
-            </conditions>
-            <label>Create Presenter</label>
         </rules>
     </decisions>
     <decisions>
@@ -1236,8 +1217,8 @@
     <recordUpdates>
         <name>Update_Abstract_with_Presenter_0</name>
         <label>Update Abstract with Presenter</label>
-        <locationX>581</locationX>
-        <locationY>2087</locationY>
+        <locationX>869</locationX>
+        <locationY>2078</locationY>
         <connector>
             <targetReference>AssignStage40</targetReference>
         </connector>
@@ -1395,7 +1376,7 @@
             <inputParameters>
                 <name>maxAuthors</name>
                 <value>
-                    <numberValue>10.0</numberValue>
+                    <numberValue>25.0</numberValue>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -1479,6 +1460,12 @@
                     <elementReference>selectedRecordId</elementReference>
                 </value>
             </inputParameters>
+            <inputParameters>
+                <name>AbstractRecordVariable</name>
+                <value>
+                    <elementReference>AbstractRecordVariable</elementReference>
+                </value>
+            </inputParameters>
             <isRequired>true</isRequired>
             <outputParameters>
                 <assignToReference>checkedPresenter</assignToReference>
@@ -1488,38 +1475,6 @@
                 <assignToReference>selectedRecordId</assignToReference>
                 <name>selectedRecordId</name>
             </outputParameters>
-        </fields>
-        <fields>
-            <name>PresenterNotFoundDisplay</name>
-            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;&lt;i&gt;If you cannot find the presenter &lt;/i&gt;&lt;/b&gt;&lt;i&gt;in the search, please create a new presenter by entering the email here:&lt;/i&gt;&lt;/p&gt;</fieldText>
-            <fieldType>DisplayText</fieldType>
-            <visibilityRule>
-                <conditionLogic>and</conditionLogic>
-                <conditions>
-                    <leftValueReference>selectedRecordId</leftValueReference>
-                    <operator>IsNull</operator>
-                    <rightValue>
-                        <booleanValue>true</booleanValue>
-                    </rightValue>
-                </conditions>
-            </visibilityRule>
-        </fields>
-        <fields>
-            <name>NewPresenterEmail</name>
-            <extensionName>flowruntime:email</extensionName>
-            <fieldType>ComponentInstance</fieldType>
-            <isRequired>true</isRequired>
-            <storeOutputAutomatically>true</storeOutputAutomatically>
-            <visibilityRule>
-                <conditionLogic>and</conditionLogic>
-                <conditions>
-                    <leftValueReference>selectedRecordId</leftValueReference>
-                    <operator>IsNull</operator>
-                    <rightValue>
-                        <booleanValue>true</booleanValue>
-                    </rightValue>
-                </conditions>
-            </visibilityRule>
         </fields>
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
@@ -2921,7 +2876,7 @@
             <targetReference>Select_Event_Screen</targetReference>
         </connector>
     </start>
-    <status>Draft</status>
+    <status>Active</status>
     <variables>
         <name>AbstractAuthor</name>
         <dataType>SObject</dataType>
@@ -2945,14 +2900,6 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
         <objectType>Abstract_Author__c</objectType>
-    </variables>
-    <variables>
-        <name>AbstractAuthorsAssociations</name>
-        <dataType>SObject</dataType>
-        <isCollection>true</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>AbstractAuthorAssociation__c</objectType>
     </variables>
     <variables>
         <name>AbstractCreated</name>

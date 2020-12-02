@@ -4,7 +4,6 @@ import getPicklistValues from "@salesforce/apex/EventRegistrationController.getP
 import getEventTicketsLabels from "@salesforce/apex/EventRegistrationController.getEventTicketsLabels";
 import getDiscountApex from "@salesforce/apex/DiscountHelper.getDiscount";
 export default class ErSummarize extends LightningElement {
-    // TODO skip step if there are no items
 
     @api
     get selections() {

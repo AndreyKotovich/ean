@@ -566,6 +566,9 @@
                                         document.getElementById("BankTransferCredentials").removeAttribute('hidden');
                                     }
                             });
+                            document.querySelectorAll('.order-name1').forEach(item => {
+                                item.innerHTML = '"' + order[0]['Name'] + '"';
+                            });
                             document.querySelectorAll('.order-amount').forEach(item => {
                                 item.innerHTML = order[0]['Total_amount__c'];
                             });

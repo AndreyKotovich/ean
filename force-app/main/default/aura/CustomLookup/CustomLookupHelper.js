@@ -31,4 +31,108 @@
           $A.enqueueAction(action);
       
       },
+
+      createContact : function(component){
+        var action = component.get("c.createContact");
+        var FirstName = component.get("v.FirstName");
+        var LastName = component.get("v.LastName");
+        var Email = component.get("v.Email");
+        var Department = component.get("v.Department");
+        var City = component.get("v.City");
+        var Country = component.get("v.Country");
+
+        action.setParams({
+              'FirstNameString': FirstName,
+              'LastNameString' : LastName,
+              'EmailString' : Email,
+              'Department' : Department,
+              'City' : City,
+              'Country' : Country
+            });
+
+            action.setCallback(this, function(response) {
+                var state = response.getState();
+                if (state === "SUCCESS") {
+                    var newContact = response.getReturnValue();
+                    component.set("v.selectedRecord" , newContact); 
+                    component.set("v.selectedRecordId", newContact.Id);
+                    component.set("v.checkedPresenter", newContact.deleted1__c);
+
+                    var forclose = component.find("lookup-pill");
+                        $A.util.addClass(forclose, 'slds-show');
+                        $A.util.removeClass(forclose, 'slds-hide');
+              
+                    var forclose = component.find("searchRes");
+                        $A.util.addClass(forclose, 'slds-is-close');
+                        $A.util.removeClass(forclose, 'slds-is-open');
+                    
+                    var lookUpTarget = component.find("lookupField");
+                        $A.util.addClass(lookUpTarget, 'slds-hide');
+                        $A.util.removeClass(lookUpTarget, 'slds-show'); 
+                    
+                        var bottomText = component.find("newElement");
+                        $A.util.addClass(bottomText, 'slds-hide');
+                        $A.util.removeClass(bottomText, 'slds-show');
+                }
+                else{
+                    console.log(response.getState());
+                }
+            });
+
+            $A.enqueueAction(action);
+      },
+
+      getContact : function(component){
+        var AbstractRecordVariable = component.get("v.AbstractRecordVariable");
+        AbstractRecordVariable = JSON.parse(JSON.stringify(AbstractRecordVariable));
+
+        var action = component.get("c.getContact");
+        action.setParams({
+          'abstractId': AbstractRecordVariable.Id
+        });
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                var contact = response.getReturnValue();
+                contact = JSON.parse(JSON.stringify(contact));
+                if(contact != null){
+                    component.set("v.selectedRecord" , contact); 
+
+                    var forclose = component.find("lookup-pill");
+                    $A.util.addClass(forclose, 'slds-show');
+                    $A.util.removeClass(forclose, 'slds-hide');
+
+                    var lookUpTarget = component.find("lookupField");
+                    $A.util.addClass(lookUpTarget, 'slds-hide');
+                    $A.util.removeClass(lookUpTarget, 'slds-show');
+
+                    var bottomText = component.find("newElement");
+                    $A.util.addClass(bottomText, 'slds-hide');
+                    $A.util.removeClass(bottomText, 'slds-show');
+                }
+            }
+            else{
+                console.log(response.getState());
+            }
+ 
+        });
+        $A.enqueueAction(action);
+      },
+
+      getAddresses : function(component){
+        var action = component.get("c.getMailingCountries");
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                var countries = response.getReturnValue();
+                countries = JSON.parse(JSON.stringify(countries));
+                component.set("v.Countries", countries);
+                component.set("v.Country", countries[0]);
+            }
+            else{
+                console.log(response.getState());
+            }
+        });
+        $A.enqueueAction(action);
+      }
 })

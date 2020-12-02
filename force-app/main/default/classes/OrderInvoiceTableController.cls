@@ -30,12 +30,16 @@ public with sharing class OrderInvoiceTableController {
 				oIW.id = oI.Id;
 				oIW.name = oI.Name__c;
 				oIW.amount = oI.Amount__c;
-				oIW.totalAmount  = (oI.Total_amount__c - (oI.Total_amount__c * vatValue / 100)).setScale(2);
+				oIW.totalAmount  = (oI.Total_amount__c / (1 + vatValue / 100)).setScale(2);
 				oIW.quantity = oI.Quantity__c;
 				oIW.contactId = oI.Order_Custom__r.Contact__r.Id;
 				oIW.firstName = oI.Order_Custom__r.Contact__r.FirstName;
                 oIW.lastName = oI.Order_Custom__r.Contact__r.LastName;
-                oIW.contactEmail = oI.Order_Custom__r.Contact__r.Email;
+				oIW.contactEmail = oI.Order_Custom__r.Contact__r.Email;
+				oIW.participantLastName = oI.Event_Participation__r.Contact__r.LastName;
+				oIW.participantFirstName = oI.Event_Participation__r.Contact__r.FirstName;
+				oIW.participantContactId = oI.Event_Participation__r.Contact__r.Id;
+				oIW.participantContactEmail = oI.Event_Participation__r.Contact__r.Email;
 				orderIs.add( oIW );
 				orderTotalAmount += oI.Total_amount__c;
 			}
@@ -56,6 +60,10 @@ public with sharing class OrderInvoiceTableController {
 		public String contactId { get; set; }
 		public String firstName { get; set; }
         public String lastName { get; set; }
-        public String contactEmail { get; set; }
+		public String contactEmail { get; set; }
+		public String participantLastName { get; set; }
+		public String participantFirstName { get; set; }
+		public String participantContactId { get; set; }
+		public String participantContactEmail { get; set; }
 	}
 }

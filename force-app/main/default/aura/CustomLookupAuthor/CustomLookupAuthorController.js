@@ -1,4 +1,8 @@
 ({
+  doInit: function(component, event, helper){
+    helper.getContacts(component);
+    helper.getAddresses(component);
+  },
     onfocus : function(component,event,helper){
       var listOfSelectedRecords = component.get("v.listOfSelectedRecords");
       $A.util.addClass(component.find("mySpinner"), "slds-show");
@@ -69,6 +73,10 @@
         var forclose = component.find("searchRes");
         $A.util.addClass(forclose, 'slds-show');
         $A.util.removeClass(forclose, 'slds-hide');
+
+        var bottomText = component.find("newElement");
+        $A.util.addClass(bottomText, 'slds-show');
+        $A.util.removeClass(bottomText, 'slds-hide');
       }
     },
      
@@ -92,7 +100,6 @@
         Abstract_Author__c : selectedRecord.Id
       });
       component.set("v.associations" , associations); 
-      console.log(associations);
 
       listOfSelectedRecords.push({
         type: 'icon',
@@ -116,6 +123,10 @@
         if(listOfSelectedRecords.length > maxAuthors - 1){
           $A.util.addClass(forclose, 'slds-hide');
           $A.util.removeClass(forclose, 'slds-show');
+
+          var bottomText = component.find("newElement");
+          $A.util.addClass(bottomText, 'slds-hide');
+          $A.util.removeClass(bottomText, 'slds-show');
         }
 
       var outputText = component.find("output"); 
@@ -126,26 +137,15 @@
     },
 
     createAuthor : function(component, event, helper) {
-      var modalBody;
-      var modalFooter;
-        $A.createComponents([
-          ["c:ContactCreateComponent",{}],
-          ["c:ContactCreateFooter",{}]
-        ],
-           function(components, status) {
-               if (status === "SUCCESS") {
-                modalBody = components[0];
-                modalFooter = components[1];
-                   component.find('overlayLib').showCustomModal({
-                      header: "Create Author",
-                      body: modalBody,
-                      footer: modalFooter,
-                      showCloseButton: true,
-                      closeCallback: function() {
-                          alert('You closed the alert!');
-                      }
-                   })
-               }
-           });
+      component.set("v.showModal", true);
+    },
+
+    cancel : function(component, event, helper) {
+      component.set("v.showModal", false);
+    },
+
+    save : function(component, event, helper) {
+      helper.createContact(component)
+      component.set("v.showModal", false);
     }
 })

@@ -1383,6 +1383,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Event_Badge__c.Badge_Retrieval__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Event_Badge__c.Barcode__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -2964,6 +2969,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Participant__c.Event_Exhibitor__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Participant__c.Event_Group_Name__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>

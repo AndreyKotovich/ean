@@ -1,5 +1,12 @@
 <aura:component controller="CustomLookUpAuthorController" implements="lightning:availableForFlowScreens,lightning:availableForFlowActions,force:appHostable,force:hasRecordId,force:lightningQuickAction" access="global">
     <!--declare attributes--> 
+    <aura:attribute name="FirstName" type="string" default="" />
+    <aura:attribute name="LastName" type="string" default="" />
+    <aura:attribute name="Email" type="string" default="" />
+    <aura:attribute name="Department" type="string" default="" />
+    <aura:attribute name="City" type="string" default="" />
+    <aura:attribute name="Country" type="string" default="" />
+
     <aura:attribute name="AbstractRecordVariable" type="Abstract__c" default="{}" />
     <aura:attribute name="selectedRecord" type="sObject" default="{}" />
     <aura:attribute name="listOfSearchRecords" type="List" />
@@ -12,6 +19,10 @@
     <aura:attribute name="selectedRecordId" type="String" default="" access="global"/>
     <aura:attribute name="pillsVisible" type="Boolean" default="false"/>
     <aura:attribute name="maxAuthors" type="Integer" default="25" />
+    <aura:attribute name="showModal" type="Boolean" default="false" />
+    <aura:attribute name="Countries" type="String[]" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     
     <!--declare events hendlers-->  
     <aura:handler name="oSelectedRecordEvent" event="c:SelectedsObjectRecordEvent" action="{!c.handleComponentEvent}"/>
@@ -49,7 +60,44 @@
         </ul>
     </div>
 
-    <lightning:overlayLibrary aura:id="overlayLib"/>
+    <aura:if isTrue="{!v.showModal}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                        onclick="{! c.hideModel }"
+                        alternativeText="close"
+                        variant="bare-inverse"
+                        class="slds-modal__close"/>
+
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                            Create Author
+                        </h2>
+                </header>
+                <!--Modal/Popup Box Body Starts here-->
+                
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning:input name="input1" value="{! v.FirstName}" label="First Name" />
+                    <lightning:input name="input1" value="{! v.LastName}" required="true" label="Last Name" />
+                    <lightning:input type="email" name="email1" value="{! v.Email}" label="Email" />
+                    <lightning:input name="input1" value="{! v.Department}" label="Department" />
+                    <lightning:input name="input1" value="{! v.City}" label="City" />
+                    <lightning:select name="select" label="Country" value="{! v.Country}">
+                        <aura:iteration items="{!v.Countries}" var="country">
+                                <option text="{!country}"></option>
+                            </aura:iteration>
+                    </lightning:select>
+                </div>
+                
+                <!--Modal/Popup Box Footer Starts here-->
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.cancel }"/>
+                    <lightning:button variant="brand" label="OK" title="OK" onclick="{!c.save}"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
 
     <div aura:id="newElement" class="slds-p-top_xx-large slds-show">
         <lightning:formattedText value="If you cannot find the author in the search, " />

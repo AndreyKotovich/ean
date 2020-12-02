@@ -54,11 +54,19 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 	_allowAANMemberDiscount = false;
 	_allowRetiredDiscount = false;
 
+	_displayAANMemberCheckbox = false;
+	_retiredDiscountMinDate;
+	_enableIamRetiredCheckbox = false;
+
 	_enableEditFromDateOfBirth = false;
 	_availableSalutations = [];				//	picklist
 	_availableGenders = [];					//	picklist
 	_availableNationalities = [];			//	picklist
 	_availableCountryOfResidences = [];		//	picklist
+	_availableProfessions = [];				//	picklist
+
+	_isRRFSMembership = false;
+	_isStudentMembership = false;
 
 	//	EANMR-15, EANMR-16	// STEP 2
 	_enableGraduationAndLicenseStep = false;
@@ -71,10 +79,11 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 
 	_isValidDateOfGraduation = false;
 	_isValidLicenseIssuedDate = false;
-	_dateOfGraduationErrorMessage = 'Will Be Defined In Callback';
+	// _dateOfGraduationErrorMessage = 'Will Be Defined In Callback';
 	_licenseIssuedDateErrorMessage = 'License issued must be in future OR not longer than TODAY MINUS 15 YEARS';
 
-	_displayDateOfGraduationUpdateMessage = false;
+	_displayStep2ErrorDatesMessage = false;
+	// _displayDateOfGraduationUpdateMessage = false;
 	_displayLicenseIssuedDateUpdateMessage = false;	// not used (perhaps will be used in future, like '_displayDateOfGraduationUpdateMessage')
 
 	_uploadedFilesPills = [];
@@ -153,7 +162,10 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 				this._formProfession = result.formProfession;
 
 				this._allowAANMemberDiscount = result.allowAANMemberDiscount;
+				this._displayAANMemberCheckbox = result.displayAANMemberCheckbox;
 				this._allowRetiredDiscount = result.allowRetiredDiscount;
+				this._retiredDiscountMinDate = result.retiredDiscountMinDate;
+				this._enableIamRetiredCheckbox = result.enableIamRetiredCheckbox;
 
 				this._enableEditFromDateOfBirth = result.enableEditFromDateOfBirth;
 				this._enableNextButtonStep1 = result.enableNextButtonStep1;
@@ -180,6 +192,11 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 					this._availableCountryOfResidences.push({label: countryOfResidencesListMap[i].label, value: countryOfResidencesListMap[i].value});
 				}
 
+				var professionsListMap = result.availableProfessions;
+				for (var i = 0 ; i < professionsListMap.length ; i++) {
+					this._availableProfessions.push({label: professionsListMap[i].label, value: professionsListMap[i].value});
+				}
+
 				//	EANMR-15, EANMR-16	// STEP 2
 				this._enableGraduationAndLicenseStep = result.enableGraduationAndLicenseStep;
 				this._minimumDateOfGraduation = result.minimumDateOfGraduation;
@@ -189,16 +206,15 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 				this._displayDateOfGraduation = result.displayDateOfGraduation;
 				this._displayLicenseIssued = result.displayLicenseIssued;
 
-				this._dateOfGraduationErrorMessage = this._membershipApiName === 'resident_and_research_membership'
-					? 'Will be defined by EAN! (validation 3 years)'
-						: 'If you have already graduated, you are no longer eligible for student Membership. Please proceed to upgrade your Membership. (validation future)';
+				if (this._membershipApiName === 'resident_and_research_membership') this._isRRFSMembership = true;
+				if (this._membershipApiName === 'student_membership') this._isStudentMembership = true;
+
+				// this._dateOfGraduationErrorMessage = this._membershipApiName === 'resident_and_research_membership'
+				// 	? 'Will be defined by EAN! (validation 3 years)'
+				// 		: 'If you have already graduated, you are no longer eligible for student Membership. Please proceed to upgrade your Membership. (validation future)';
 
 				this.applyAANandRetiredDiscounts();
 
-				//	DEVELOP MOMENT
-				// this._isStep1 = false;
-				// this._isStep2 = false;
-				// this._isStep3 = true;
 			})
 			.catch(error=>{
 				console.log('MembershipRenewalComponent error: ', error);
@@ -270,6 +286,11 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 		this.validateEnableNextButtonStep1();
 	}
 
+	handleChangeProfession(event) {
+		this._formProfession = event.target.value;
+		this.validateEnableNextButtonStep1();
+	}
+
 	handleChangeIamAANMember(event) {
 		this._formIamAANMember = event.target.checked;
 		this.applyAANandRetiredDiscounts();
@@ -309,6 +330,9 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 				this._renewalFee = result.renewalFee;
 				this._totalRenewalFee = result.renewalFee;
 				this._allowAANMemberDiscount = result.allowAANMemberDiscount;
+				this._displayAANMemberCheckbox = result.displayAANMemberCheckbox;
+				if (!this._displayAANMemberCheckbox) this._formIamAANMember = false;
+
 				this._allowRetiredDiscount = result.allowRetiredDiscount;
 				this.applyAANandRetiredDiscounts();
 				this.validateEnableNextButtonStep1();
@@ -324,8 +348,13 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 
 	applyAANandRetiredDiscounts() {
 		let discountMultiplier = 1;
-		if (this._formIamAANMember && this._allowAANMemberDiscount) discountMultiplier = discountMultiplier - 0.1;
-		if (this._formIamRetired && this._allowRetiredDiscount) discountMultiplier = discountMultiplier - 0.5;
+		if (this._formIamAANMember && this._allowAANMemberDiscount && this._displayAANMemberCheckbox) discountMultiplier = discountMultiplier - 0.1;
+		if (this._formIamRetired && this._allowRetiredDiscount && this._enableIamRetiredCheckbox && this._formDateOfBirth) {
+			//	age of contact >= 65
+			if (this._formDateOfBirth <= this._retiredDiscountMinDate) {
+				discountMultiplier = discountMultiplier - 0.5;
+			}
+		}
 		this._totalRenewalFee = this._renewalFee * discountMultiplier;
 	}
 
@@ -344,6 +373,7 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 			&& this._formCity.length > 0
 			&& this._renewalFee !== 9999
 			&& this._totalRenewalFee !== 9999
+			&& this._formProfession.length > 0
 		) {
 			this._enableNextButtonStep1 = true;
 			return;
@@ -366,7 +396,8 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 		let street = this.template.querySelector('[data-id="form-street"]');
 		let zipPostalCode = this.template.querySelector('[data-id="form-zip-postal-code"]');
 		let city = this.template.querySelector('[data-id="form-city"]');
-		if ((!dateOfBirth1 && !dateOfBirth2) || !gender || !email || !nationality || !country || !street || !zipPostalCode || !city) return;
+		let profession = this.template.querySelector('[data-id="form-profession"]');
+		if ((!dateOfBirth1 && !dateOfBirth2) || !gender || !email || !nationality || !country || !street || !zipPostalCode || !city || !profession) return;
 
 		if (dateOfBirth1) {
 			if (this._formDateOfBirth) { dateOfBirth1.setCustomValidity(''); } else { dateOfBirth1.setCustomValidity('Complete this field.'); }
@@ -378,6 +409,7 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 		if (this._formStreet.length > 0) { street.setCustomValidity(''); } else { street.setCustomValidity('Complete this field.'); }
 		if (this._formZipPostalCode.length > 0) { zipPostalCode.setCustomValidity(''); } else { zipPostalCode.setCustomValidity('Complete this field.'); }
 		if (this._formCity.length > 0) { city.setCustomValidity(''); } else { city.setCustomValidity('Complete this field.'); }
+		if (this._formProfession.length > 0) { profession.setCustomValidity(''); } else { profession.setCustomValidity('Complete this field.'); }
 
 		if (dateOfBirth1) { dateOfBirth1.reportValidity(); }
 		gender.reportValidity();
@@ -387,6 +419,7 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 		street.reportValidity();
 		zipPostalCode.reportValidity();
 		city.reportValidity();
+		profession.reportValidity();
 	}
 
 
@@ -445,8 +478,56 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 	}
 
 	validateEnableNextButtonStep2() {
-		this.validateLicenseIssued();
-		this.validateDateOfGraduation();
+
+		//	validateDateOfGraduation
+		let dateOfGraduation = this.template.querySelector('.dateOfGraduation');
+		if (!this._displayDateOfGraduation) {
+			this._isValidDateOfGraduation = true;
+		} else {
+			this._isValidDateOfGraduation = true;
+			if (this._dateOfGraduation) {
+				if (this._dateOfGraduation < this._minimumDateOfGraduation) this._isValidDateOfGraduation = false;
+			} else { this._isValidDateOfGraduation = false; }
+			if (dateOfGraduation) {
+				if (this._dateOfGraduation) { dateOfGraduation.setCustomValidity(''); } else { dateOfGraduation.setCustomValidity('Complete this field.'); }
+				dateOfGraduation.reportValidity();
+			}
+		}
+		if (dateOfGraduation) {
+			if (this._isValidDateOfGraduation) dateOfGraduation.className = 'dateOfGraduation';
+			if (!this._isValidDateOfGraduation) dateOfGraduation.className = 'dateOfGraduation slds-has-error';
+		}
+
+		// "dateOfGraduation slds-has-error"
+
+		//	validateLicenseIssued
+		let licenseIssuedDate = this.template.querySelector('.licenseIssuedDate');
+		if (!this._displayLicenseIssued) {
+			this._isValidLicenseIssuedDate = true;
+		} else {
+			this._isValidLicenseIssuedDate = true;
+			if (this._licenseIssuedDate) {
+				if (this._licenseIssuedDate < this._minimumLicenseIssuedDate) this._isValidLicenseIssuedDate = false;
+			} else { this._isValidLicenseIssuedDate = false; }
+			if (licenseIssuedDate) {
+				if (this._licenseIssuedDate) { licenseIssuedDate.setCustomValidity(''); } else { licenseIssuedDate.setCustomValidity('Complete this field.'); }
+				licenseIssuedDate.reportValidity();
+			}
+		}
+		if (licenseIssuedDate) {
+			if (this._isValidLicenseIssuedDate) licenseIssuedDate.className = 'licenseIssuedDate';
+			if (!this._isValidLicenseIssuedDate) licenseIssuedDate.className = 'licenseIssuedDate slds-has-error';
+		}
+
+		if (this._dateOfGraduation && !this._isValidDateOfGraduation) {
+			this._displayStep2ErrorDatesMessage = true;
+		} else if (this._licenseIssuedDate && !this._isValidLicenseIssuedDate) {
+			this._displayStep2ErrorDatesMessage = true;
+		} else if (this._isValidDateOfGraduation && this._isValidLicenseIssuedDate) {
+			this._displayStep2ErrorDatesMessage = false;
+		}
+
+		//	step 3 final validation
 		if (!this._isError
 			&& this._isValidDateOfGraduation
 			&& this._isValidLicenseIssuedDate
@@ -459,51 +540,6 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 		this._enableNextButtonStep2 = false;
 		let buttonNextStepTwo = this.template.querySelector('button[name="button-next-step-two"]');
 		if (buttonNextStepTwo) buttonNextStepTwo.setAttribute('disabled');
-	}
-
-	validateLicenseIssued() {
-		if (!this._displayLicenseIssued) {
-			this._isValidLicenseIssuedDate = true;
-			return;
-		}
-
-		let licenseIssuedDate = this.template.querySelector('.licenseIssuedDate');
-		this._isValidLicenseIssuedDate = true;
-		let customValidityMessage = '';
-
-		if (this._licenseIssuedDate && this._licenseIssuedDate < this._minimumLicenseIssuedDate) customValidityMessage = this._licenseIssuedDateErrorMessage;
-
-		this._displayLicenseIssuedDateUpdateMessage = customValidityMessage !== '';
-
-		if (!this._licenseIssuedDate) customValidityMessage = 'Complete this field.';
-		if (customValidityMessage !== '') this._isValidLicenseIssuedDate = false;
-		if (licenseIssuedDate) {
-			licenseIssuedDate.setCustomValidity(customValidityMessage);
-			licenseIssuedDate.reportValidity();
-		}
-	}
-
-
-	validateDateOfGraduation() {
-		if (!this._displayDateOfGraduation) {
-			this._isValidDateOfGraduation = true;
-			return;
-		}
-
-		let dateOfGraduation = this.template.querySelector('.dateOfGraduation');
-		this._isValidDateOfGraduation = true;
-		let customValidityMessage = '';
-
-		if (this._dateOfGraduation && this._dateOfGraduation < this._minimumDateOfGraduation) customValidityMessage = this._dateOfGraduationErrorMessage;
-
-		this._displayDateOfGraduationUpdateMessage = customValidityMessage !== '';
-
-		if (!this._dateOfGraduation) customValidityMessage = 'Complete this field.';
-		if (customValidityMessage !== '') this._isValidDateOfGraduation = false;
-		if (dateOfGraduation) {
-			dateOfGraduation.setCustomValidity(customValidityMessage);
-			dateOfGraduation.reportValidity();
-		}
 	}
 
 	handleClickPrevButtonStep2() {

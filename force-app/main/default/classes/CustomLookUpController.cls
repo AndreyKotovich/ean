@@ -50,6 +50,56 @@ public class CustomLookUpController {
         return returnList;
     }
 
+    @AuraEnabled
+    public static Contact createContact(String FirstNameString, String LastNameString, String EmailString, String Department, String City, String Country){
+        Contact con = new Contact(
+            FirstName = FirstNameString, 
+            LastName = LastNameString, 
+            Email = EmailString, 
+            Department_Name__c = Department, 
+            MailingCity = City, 
+            MailingCountry = Country,
+            deleted1__c = true
+        );
+
+        insert con;
+
+        con = [SELECT Id, Name, deleted1__c FROM Contact WHERE Id =: con.Id].get(0);
+
+        return con;
+    }
+
+    @AuraEnabled
+    public static List<String> getMailingCountries(){
+        List<String> countries = new List<String>();
+
+        Schema.sObjectType objType = Contact.getSObjectType();
+        Schema.DescribeSObjectResult objDescribe = objType.getDescribe();
+        Map<String, Schema.SObjectField> fieldMap = objDescribe.fields.getMap();
+        List<Schema.PicklistEntry> values = fieldMap.get('MailingCountryCode').getDescribe().getPickListValues();
+
+        for (Schema.PicklistEntry v : values){
+            countries.add(v.getLabel());
+        }
+
+        System.debug('countries: ' + countries);
+
+        return countries;
+    }
+
+    @AuraEnabled
+    public static Contact getContact(String abstractId){
+        Abstract__c abstractRec = [SELECT Abstract_Presenter__c FROM Abstract__c WHERE Id =: abstractId].get(0);
+
+        List<Contact> contacts = [SELECT Id, Name FROM COntact WHERE Id =: abstractRec.Abstract_Presenter__c];
+        
+        if(contacts.size() > 0){
+            return contacts.get(0);
+        }else{
+            return null;
+        }
+    }
+
     private static void updateList(List<Contact> conList, AggregateResult[] groupedResults){
         if(groupedResults != null){
             for(Contact con : conList){

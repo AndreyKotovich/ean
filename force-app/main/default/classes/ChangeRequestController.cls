@@ -286,4 +286,18 @@ public without sharing class ChangeRequestController {
 		@AuraEnabled public Boolean enabledToRevoke { get; set; }
 	}
 
+	@AuraEnabled
+	public static List<Event_Registration_Group__c> getGroupLeaderInformation(Map<String, Object> settings){
+		String userId = '' + UserInfo.getUserId();
+
+		String recordId = settings.containsKey('recordId') ? String.valueOf(settings.get('recordId')) : '';
+
+		List<User> communityUser = !String.isBlank(recordId) ? [SELECT Id, ContactId, Contact.Name, Contact.Email, Contact.AccountId FROM User WHERE ContactId =:recordId LIMIT 1]
+				: [SELECT Id, ContactId, Contact.Name, Contact.Email, Contact.AccountId FROM User WHERE Id =:userId LIMIT 1];
+
+		List<Event_Registration_Group__c> contactGroups = [SELECT Id FROM Event_Registration_Group__c WHERE Contact__c = :communityUser[0].ContactId];
+
+		return contactGroups;
+	}
+
 }

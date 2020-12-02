@@ -74,10 +74,9 @@ export default class SelectTickets extends LightningElement {
     @track _ticketsAmount = 0;
     @track availableParticipantNumber = 0;
     @track _groupIndividualTickets = {};
-    @track isTicketTypeModal = false; //TODO AUTO POPULATE IT
+    @track isTicketTypeModal = false;
     @track isGroupIndividual = false;
 
-    // hideNextButton = false;
     allEventTickets = [];
     individualTickets = [];
     groupTickets = [];

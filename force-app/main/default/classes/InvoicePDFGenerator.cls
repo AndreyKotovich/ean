@@ -354,6 +354,9 @@ public class InvoicePDFGenerator {
             Decimal orderItemAmount;
             String orderItemName;
             String orderItemContact;
+            if (order.Order_Items__r.size() == 1) {
+                isAllOrderItemsSame = false;
+            }
             for (Order_Item__c orderItem : order.Order_Items__r) {
                 if (orderItemAmount == null) {
                     orderItemAmount = orderItem.Total_amount__c;

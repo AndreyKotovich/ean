@@ -6,6 +6,10 @@
   box-sizing: border-box;
 }
 
+@media print {
+  body {-webkit-print-color-adjust: exact;}
+}
+
 @page {
   size: 21cm 29.7cm; /* 798px 1128.6px */
   margin: 0.5cm;

@@ -20,8 +20,8 @@
             <apex:repeat var="OrderItem" value="{!orderItems}">
                 <tr>
                     <td style="border-bottom: 1px solid #ddd;" data-label="Delegate name">
-                        <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!OrderItem.firstName} {!OrderItem.lastName}
-                            <span style="padding: 5px; {!IF(OrderItem.contactEmail != '', '', 'display: none;')}">, {!OrderItem.contactId}</span>
+                        <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!OrderItem.participantFirstName} {!OrderItem.participantLastName}
+                            <span style="padding: 5px; {!IF(OrderItem.participantContactEmail != '', '', 'display: none;')}">, {!OrderItem.participantContactId}</span>
                             </div>
                     </td>
                     <td style="border-bottom: 1px solid #ddd;" data-label="Ticket Type">

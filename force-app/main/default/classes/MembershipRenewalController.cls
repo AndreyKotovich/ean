@@ -6,8 +6,13 @@ public without sharing class MembershipRenewalController {
 	public final static String API_RR_MEMBERSHIP = 'resident_and_research_membership';
 	public final static String API_STUDENT_MEMBERSHIP = 'student_membership';
 
-	public final static List<String> ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT = new List<String>{'B', 'C', 'D', 'E', 'F', ''};	//	EANMR-24	Lucia	at 12/11/2020
-	public final static List<String> API_ALLOWED_MEMBERS_TO_GET_AAN_DISCOUNT = new List<String>{API_FELLOW_EAN_MEMBERSHIP, API_CORRESPONDING_MEMBERSHIP, API_RR_MEMBERSHIP, API_STUDENT_MEMBERSHIP};
+	// public final static List<String> ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT = new List<String>{'B', 'C', 'D', 'E', 'F', ''};	//	EANMR-24	Lucia	at 12/11/2020
+	// public final static List<String> API_ALLOWED_MEMBERS_TO_GET_AAN_DISCOUNT = new List<String>{API_FELLOW_EAN_MEMBERSHIP, API_CORRESPONDING_MEMBERSHIP, API_RR_MEMBERSHIP, API_STUDENT_MEMBERSHIP};
+
+	//	EANMR-70	added API_FULL_MEMBERSHIP	changed to  'C', 'D'
+	public final static List<String> ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT = new List<String>{'C', 'D'};
+	public final static List<String> API_ALLOWED_MEMBERS_TO_GET_AAN_DISCOUNT = new List<String>{API_FELLOW_EAN_MEMBERSHIP, API_CORRESPONDING_MEMBERSHIP, API_RR_MEMBERSHIP, API_FULL_MEMBERSHIP};
+	public final static List<String> API_ALLOWED_MEMBERS_TO_DISPLAY_AAN_CHECKBOX = new List<String>{API_FELLOW_EAN_MEMBERSHIP, API_CORRESPONDING_MEMBERSHIP, API_RR_MEMBERSHIP, API_FULL_MEMBERSHIP};
 
 	public final static List<String> ALLOWED_REGIONS_TO_GET_RETIRED_DISCOUNT = new List<String>{'A', 'C'};					//	EANMR-4		David	at 05/11/2020
 	public final static List<String> API_ALLOWED_MEMBERS_TO_GET_RETIRED_DISCOUNT = new List<String>{API_FULL_MEMBERSHIP, API_CORRESPONDING_MEMBERSHIP, API_FELLOW_EAN_MEMBERSHIP};
@@ -74,6 +79,7 @@ public without sharing class MembershipRenewalController {
 			List<Map<String, String>> availableGenders = Utils.picklistValues('Contact', 'Gender__c');
 			List<Map<String, String>> availableNationalities = Utils.picklistValues('Contact', 'Nationality__c');
 			List<Map<String, String>> availableCountryOfResidences = Utils.picklistValues('Contact', 'Residency__c');
+			List<Map<String, String>> availableProfessions = Utils.picklistValues('Contact', 'Profession__c');
 
 			String formCountryOfResidence = !String.isBlank(membershipStatus.Contact__r.Residency__c) ? membershipStatus.Contact__r.Residency__c : '';
 			List<Country__mdt> countryList = !String.isBlank(formCountryOfResidence) ? [SELECT Id, Region__c FROM Country__mdt WHERE Country__c =:formCountryOfResidence LIMIT 1] : new List<Country__mdt>();
@@ -94,6 +100,8 @@ public without sharing class MembershipRenewalController {
 			String nextYearString = System.now().addYears(1).format('YYYY');
 			String communityHomeUrl = membershipApplicationController.getCommunityHomeUrl();
 
+			Date retiredDiscountMinDate = now.addYears(-65);
+
 			return new Map<String, Object>{
 				'result' => true,
 				'currentContactId' => '' + membershipStatus.Contact__c,
@@ -106,7 +114,7 @@ public without sharing class MembershipRenewalController {
 				'applicationFormId' => '' + membershipStatus.Application_form__c,
 				'renewalFee' => renewalFee,
 				'currentYearString' => currentYearString,
-				'nextYearString' => currentYearString,
+				'nextYearString' => nextYearString,
 				'communityHomeUrl' => communityHomeUrl,
 
 				//	EANMR-2, EANMR-5	//	STEP 1
@@ -123,18 +131,34 @@ public without sharing class MembershipRenewalController {
 				'formZipPostalCode' => !String.isBlank(membershipStatus.Contact__r.MailingPostalCode) ? membershipStatus.Contact__r.MailingPostalCode : '',
 				'formCity' => !String.isBlank(membershipStatus.Contact__r.MailingCity) ? membershipStatus.Contact__r.MailingCity : '',
 				'formPhoneNumber' => !String.isBlank(membershipStatus.Contact__r.Phone) ? membershipStatus.Contact__r.Phone : '',
-				'formIamAANMember' => Boolean.valueOf(membershipStatus.Contact__r.AAN_Member__c),
-				'formIamRetired' => Boolean.valueOf(membershipStatus.Contact__r.Retired__c),
+
+				//	EANMR-70	Checkbox should not be prefilled!
+				// 'formIamAANMember' => Boolean.valueOf(membershipStatus.Contact__r.AAN_Member__c),
+				'formIamAANMember' => false,
+
+				//	EANMR-69	The checkbox should NEVER be prefilled!
+				// 'formIamRetired' => Boolean.valueOf(membershipStatus.Contact__r.Retired__c),
+				'formIamRetired' => false,
 				'formProfession' => !String.isBlank(membershipStatus.Contact__r.Profession__c) ? membershipStatus.Contact__r.Profession__c : '',
 
 				'availableSalutations' => availableSalutations,
 				'availableGenders' => availableGenders,
 				'availableNationalities' => availableNationalities,
 				'availableCountryOfResidences' => availableCountryOfResidences,
+				'availableProfessions' => availableProfessions,
 
 				//	'allowAANMemberDiscount' also used as 'displayAANMemberCheckbox' in LWC component
 				'allowAANMemberDiscount' => API_ALLOWED_MEMBERS_TO_GET_AAN_DISCOUNT.contains(membershipStatus.Membership__r.API__c) && ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT.contains(membershipRegion),
+
+				//	EANMR-70
+				'displayAANMemberCheckbox' => API_ALLOWED_MEMBERS_TO_DISPLAY_AAN_CHECKBOX.contains(membershipStatus.Membership__r.API__c) && ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT.contains(membershipRegion),
+
+				//	EANMR-24
 				'allowRetiredDiscount' => API_ALLOWED_MEMBERS_TO_GET_RETIRED_DISCOUNT.contains(membershipStatus.Membership__r.API__c) && ALLOWED_REGIONS_TO_GET_RETIRED_DISCOUNT.contains(membershipRegion),
+
+				//	EANMR-69	Only if age of contact >= 65
+				'retiredDiscountMinDate' => retiredDiscountMinDate,
+				'enableIamRetiredCheckbox' => API_ALLOWED_MEMBERS_TO_GET_RETIRED_DISCOUNT.contains(membershipStatus.Membership__r.API__c),
 
 				'enableEditFromDateOfBirth' => membershipStatus.Contact__r.Birthdate == null,
 				'enableNextButtonStep1' => renewalFee != 9999,
@@ -143,16 +167,20 @@ public without sharing class MembershipRenewalController {
 				'enableGraduationAndLicenseStep' => enableGraduationAndLicenseStep,
 				'displayDateOfGraduation' => displayDateOfGraduation,
 				'minimumDateOfGraduation' => minimumDateOfGraduation,
-				'dateOfGraduation' => membershipStatus.Contact__r.Expected_Date_Of_Graduation__c,
 				'displayLicenseIssued' => displayLicenseIssued,
 				'minimumLicenseIssuedDate' => minimumLicenseIssuedDate,
-				'licenseIssuedDate' => membershipStatus.Contact__r.License_issued__c
+
+				// 'dateOfGraduation' => membershipStatus.Contact__r.Expected_Date_Of_Graduation__c,
+				// 'licenseIssuedDate' => membershipStatus.Contact__r.License_issued__c
+				// EANMR-72    "Date of Graduation" and "License issued" fields should NOT be prefilled
+				'dateOfGraduation' => null,
+				'licenseIssuedDate' => null
 			};
 
 
 		} catch (Exception e) {
-			system.debug('MembershipRenewalController getPreparedData ERROR message: ' + e.getMessage());
-			system.debug('MembershipRenewalController getPreparedData ERROR messageStack: ' + e.getStackTraceString());
+			system.debug('MembershipRenewalController [getPreparedData] ERROR message: ' + e.getMessage());
+			system.debug('MembershipRenewalController [getPreparedData] ERROR messageStack: ' + e.getStackTraceString());
 			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString()};
 		}
 	}
@@ -250,8 +278,10 @@ public without sharing class MembershipRenewalController {
 			return new Map<String, Object>{
 				'result' => true,
 				'renewalFee' => renewalFee,
-				//	'allowAANMemberDiscount' also used as 'displayAANMemberCheckbox' in LWC component
+				//	'allowAANMemberDiscount'
 				'allowAANMemberDiscount' => API_ALLOWED_MEMBERS_TO_GET_AAN_DISCOUNT.contains(membershipApiName) && ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT.contains(membershipRegion),
+				//	EANMR-70
+				'displayAANMemberCheckbox' => API_ALLOWED_MEMBERS_TO_DISPLAY_AAN_CHECKBOX.contains(membershipApiName) && ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT.contains(membershipRegion),
 				'allowRetiredDiscount' => API_ALLOWED_MEMBERS_TO_GET_RETIRED_DISCOUNT.contains(membershipApiName) && ALLOWED_REGIONS_TO_GET_RETIRED_DISCOUNT.contains(membershipRegion)
 			};
 
@@ -508,26 +538,27 @@ public without sharing class MembershipRenewalController {
 		if (!linksToInsert.isEmpty()) insert linksToInsert;
 	}
 
+	//	DEPRECATED
 	//	used for API_FELLOW_EAN_MEMBERSHIP and API_FULL_MEMBERSHIP and API_CORRESPONDING_MEMBERSHIP
-	public static void attachFilesFromPreviousForm(String oldApplicationFormId, Id newApplicationFormId) {
-		List<ContentDocumentLink> linksToInsert = new List<ContentDocumentLink>();
-		Set<Id> processedDocumentIdList = new Set<Id>();
-		if (String.isBlank(oldApplicationFormId) || newApplicationFormId == null) return;
+	// public static void attachFilesFromPreviousForm(String oldApplicationFormId, Id newApplicationFormId) {
+	// 	List<ContentDocumentLink> linksToInsert = new List<ContentDocumentLink>();
+	// 	Set<Id> processedDocumentIdList = new Set<Id>();
+	// 	if (String.isBlank(oldApplicationFormId) || newApplicationFormId == null) return;
 
-		List<ContentDocumentLink> existingLinks = [
-			SELECT Id, LinkedEntityId, Visibility, ContentDocumentId, ShareType FROM ContentDocumentLink WHERE LinkedEntityId =:oldApplicationFormId AND (NOT ContentDocument.Title LIKE :SKIP_ATTACH_FILES_LIKE)
-		];
+	// 	List<ContentDocumentLink> existingLinks = [
+	// 		SELECT Id, LinkedEntityId, Visibility, ContentDocumentId, ShareType FROM ContentDocumentLink WHERE LinkedEntityId =:oldApplicationFormId AND (NOT ContentDocument.Title LIKE :SKIP_ATTACH_FILES_LIKE)
+	// 	];
 
-		for (ContentDocumentLink existingLink : existingLinks) {
-			if (processedDocumentIdList.contains(existingLink.ContentDocumentId)) continue;
-			processedDocumentIdList.add(existingLink.ContentDocumentId);
+	// 	for (ContentDocumentLink existingLink : existingLinks) {
+	// 		if (processedDocumentIdList.contains(existingLink.ContentDocumentId)) continue;
+	// 		processedDocumentIdList.add(existingLink.ContentDocumentId);
 
-			existingLink.Id = null;
-			existingLink.LinkedEntityId = newApplicationFormId;
-			linksToInsert.add(existingLink);
-		}
+	// 		existingLink.Id = null;
+	// 		existingLink.LinkedEntityId = newApplicationFormId;
+	// 		linksToInsert.add(existingLink);
+	// 	}
 
-		if (!linksToInsert.isEmpty()) insert linksToInsert;
-	}
+	// 	if (!linksToInsert.isEmpty()) insert linksToInsert;
+	// }
 
 }

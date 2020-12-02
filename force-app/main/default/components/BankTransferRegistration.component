@@ -56,7 +56,7 @@
                     <div class="slds-truncate" title=""><b>Reference:</b></div>
                 </td>
                 <td data-label="Quantity">
-                    <div class="slds-truncate" title="">Order confirmation nr.  <span class="order-name">{!$CurrentPage.parameters.orderInvoiceNumber}</span>.
+                    <div class="slds-truncate" title="">Order confirmation nr.  <span class="order-name1">{!$CurrentPage.parameters.orderName}</span>.
                     </div>
                 </td>
             </tr>

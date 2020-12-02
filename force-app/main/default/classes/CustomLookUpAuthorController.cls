@@ -17,9 +17,59 @@ public with sharing class CustomLookUpAuthorController {
             sQuery = 'SELECT Id, Name, Account.Name, Email, Department_Name__c, MailingAddress FROM Contact WHERE Id IN: conIds';
         }else{
             // get contacts by searchKeyWord
-            sQuery =  'SELECT Id, Name, Account.Name, Email, Department_Name__c, MailingAddress FROM Contact WHERE Id NOT IN: selectedIds AND Email LIKE: searchKey ORDER BY createdDate DESC limit 5';
+            sQuery =  'SELECT Id, Name, Account.Name, Email, Department_Name__c, MailingAddress FROM Contact WHERE Id NOT IN: selectedIds AND (Email LIKE: searchKey OR Name LIKE: searchKey) ORDER BY createdDate DESC limit 5';
         }
 
         return (List<Contact>)Database.query(sQuery);
+    }
+
+    @AuraEnabled
+    public static Contact createContact(String FirstNameString, String LastNameString, String EmailString, String Department, String City, String Country){
+        Contact con = new Contact(
+            FirstName = FirstNameString, 
+            LastName = LastNameString, 
+            Email = EmailString, 
+            Department_Name__c = Department, 
+            MailingCity = City, 
+            MailingCountry = Country
+        );
+
+        insert con;
+
+        con = [SELECT Id, Name FROM Contact WHERE Id =: con.Id].get(0);
+
+        return con;
+    }
+
+    @AuraEnabled
+    public static List<Contact> getContacts(String abstractId){
+        List<Abstract_Author__c> abstractAuthors = [SELECT Abstract_Author__c FROM Abstract_Author__c WHERE Abstract__c =: abstractId];
+        List<Id> ids = new List<Id>();
+
+        for(Abstract_Author__c junction : abstractAuthors){
+            ids.add(junction.Abstract_Author__c);
+        }
+
+        List<Contact> contacts = [SELECT Id, Name FROM Contact WHERE Id IN : ids];
+
+        return contacts;
+    }
+
+    @AuraEnabled
+    public static List<String> getMailingCountries(){
+        List<String> countries = new List<String>();
+
+        Schema.sObjectType objType = Contact.getSObjectType();
+        Schema.DescribeSObjectResult objDescribe = objType.getDescribe();
+        Map<String, Schema.SObjectField> fieldMap = objDescribe.fields.getMap();
+        List<Schema.PicklistEntry> values = fieldMap.get('MailingCountryCode').getDescribe().getPickListValues();
+
+        for (Schema.PicklistEntry v : values){
+            countries.add(v.getLabel());
+        }
+
+        System.debug('countries: ' + countries);
+
+        return countries;
     }
 }

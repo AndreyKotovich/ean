@@ -2,6 +2,7 @@ import { LightningElement, track, api, wire } from 'lwc';
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { Utils } from "c/utils";
 import getExtraSessions from "@salesforce/apex/EventRegistrationController.getExtraSessions";
+import picklistValues from "@salesforce/apex/Utils.picklistValues";
 import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 
 export default class ExtraBooking extends LightningElement {
@@ -38,6 +39,7 @@ export default class ExtraBooking extends LightningElement {
     isEarlyBird = false;
     _selectedSessions = [];
     _selectedServices = {};
+    badgePicklistValues = [];
 
     @wire(getObjectInfo, { objectApiName: 'Contact' })
     objInfo({ data, error }) {
@@ -53,10 +55,12 @@ export default class ExtraBooking extends LightningElement {
         if (!this._selectedServices.hasOwnProperty('newsletter') && this.registrationType === 'solo') this._selectedServices.newsletter = this.userInfo.contact.Newsletter__c;
 
         let promise1 = getExtraSessions({ eventId: this.eanEvent.Id });
+        let promise2 = picklistValues({ objectName: 'Participant__c', fieldName: 'Badge_Retrieval__c' });
 
-        Promise.all([promise1])
+        Promise.all([promise1, promise2])
             .then(results => {
                 this.eventExtraSessions = results[0];
+                this.badgePicklistValues = results[1];
                 console.log('this.eventExtraSessions', this.eventExtraSessions)
                 if (Object.keys(results[0]).length === 0 && results[0].constructor === Object) {
                     // this.handleNextClick();
@@ -331,12 +335,13 @@ export default class ExtraBooking extends LightningElement {
         let dateNow = new Date();
         dateNow.setDate(dateNow.getDate() + 10);
 
-        //TODO picklist
-        if (dateNow.getTime() <= eventStartDay) {
-            options.push({ label: 'Pre-print by EAN', value: 'pre_print' });
+        for(let val of this.badgePicklistValues){
+            if(val.value === 'pre_print'){
+                if (dateNow.getTime() <= eventStartDay) options.push({ label: val.label, value: val.value });
+            } else {
+                options.push({ label: val.label, value: val.value });
+            }
         }
-
-        options.push({ label: 'Onsite print', value: 'onsite' });
 
         return options
     }

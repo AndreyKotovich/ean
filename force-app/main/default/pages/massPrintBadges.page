@@ -3,9 +3,14 @@
            extensions="MassPrintBadgesController"
            recordSetVar="badgeRecords"
            sideBar="false"
-           action="{!urlRedirection}">
+>
     <apex:form >
         <script>
+            if((typeof sforce != 'undefined') && sforce && (!!sforce.one)){
+                sforce.one.navigateToURL('{!redirectUrl}', true);
+            } else {
+                window.top.location.href = '{!redirectUrl}';
+            }
         </script>
     </apex:form>
 </apex:page>

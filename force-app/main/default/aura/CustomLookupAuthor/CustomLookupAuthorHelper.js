@@ -34,4 +34,144 @@
           $A.enqueueAction(action);
       
       },
+
+      createContact : function(component){
+        var action = component.get("c.createContact");
+        var FirstName = component.get("v.FirstName");
+        var LastName = component.get("v.LastName");
+        var Email = component.get("v.Email");
+        var Department = component.get("v.Department");
+        var City = component.get("v.City");
+        var Country = component.get("v.Country");
+
+        action.setParams({
+              'FirstNameString': FirstName,
+              'LastNameString' : LastName,
+              'EmailString' : Email,
+              'Department' : Department,
+              'City' : City,
+              'Country' : Country
+            });
+
+            action.setCallback(this, function(response) {
+                var state = response.getState();
+                if (state === "SUCCESS") {
+                    var newContact = response.getReturnValue();
+                    console.log(newContact);
+                    
+                    var AbstractRecordVariable = component.get("v.AbstractRecordVariable");
+                    AbstractRecordVariable = JSON.parse(JSON.stringify(AbstractRecordVariable));
+
+                    var listOfSelectedRecords = component.get("v.listOfSelectedRecords");
+                    listOfSelectedRecords = JSON.parse(JSON.stringify(listOfSelectedRecords));
+
+                    var associations = component.get("v.associations");
+                    associations.push({
+                      Abstract__c : AbstractRecordVariable.Id,
+                      Abstract_Author__c : newContact.Id
+                    });
+                    component.set("v.associations" , associations); 
+
+                    listOfSelectedRecords.push({
+                      type: 'icon',
+                      sobjectType: 'Contact',
+                      Id: newContact.Id,
+                      label: newContact.Name,
+                      iconName: 'standard:contact',
+                    });
+                    component.set("v.listOfSelectedRecords" , listOfSelectedRecords); 
+
+                    if(listOfSelectedRecords.length > 0){
+                      component.set("v.pillsVisible", true);
+                    }
+
+                    console.log(listOfSelectedRecords);
+                }
+                else{
+                    console.log(response.getState());
+                }
+            });
+
+            $A.enqueueAction(action);
+      },
+
+      getContacts : function(component){
+        var AbstractRecordVariable = component.get("v.AbstractRecordVariable");
+        AbstractRecordVariable = JSON.parse(JSON.stringify(AbstractRecordVariable));
+
+        var action = component.get("c.getContacts");
+        action.setParams({
+          'abstractId': AbstractRecordVariable.Id
+        });
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                var contacts = response.getReturnValue();
+                this.setContactsPills(component, contacts);
+            }
+            else{
+                console.log(response.getState());
+            }
+ 
+        });
+        $A.enqueueAction(action);
+      },
+
+      setContactsPills : function(component, contacts){
+        var pillsArray = [];
+
+        contacts.forEach(contact => {
+          pillsArray.push({
+            type: 'icon',
+            sobjectType: 'Contact',
+            Id: contact.Id,
+            label: contact.Name,
+            iconName: 'standard:contact',
+          });
+        })
+
+        component.set("v.listOfSelectedRecords" , pillsArray); 
+
+        if(pillsArray.length == 0){
+          component.set("v.pillsVisible", false);
+        }else if(pillsArray.length > 0){
+          component.set("v.pillsVisible", true);
+        }
+
+        var maxAuthors = component.get('v.maxAuthors');
+        if(pillsArray.length > maxAuthors - 1){
+          var forclose = component.find("searchRes");
+          $A.util.addClass(forclose, 'slds-hide');
+          $A.util.removeClass(forclose, 'slds-show');
+          
+          var bottomText = component.find("newElement");
+          $A.util.addClass(bottomText, 'slds-hide');
+          $A.util.removeClass(bottomText, 'slds-show');
+        }else{
+          var forclose = component.find("searchRes");
+          $A.util.addClass(forclose, 'slds-show');
+          $A.util.removeClass(forclose, 'slds-hide');
+
+          var bottomText = component.find("newElement");
+          $A.util.addClass(bottomText, 'slds-show');
+          $A.util.removeClass(bottomText, 'slds-hide');
+        }
+      },
+
+      getAddresses : function(component){
+        var action = component.get("c.getMailingCountries");
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                var countries = response.getReturnValue();
+                countries = JSON.parse(JSON.stringify(countries));
+                component.set("v.Countries", countries);
+                component.set("v.Country", countries[0]);
+            }
+            else{
+                console.log(response.getState());
+            }
+        });
+        $A.enqueueAction(action);
+      }
 })

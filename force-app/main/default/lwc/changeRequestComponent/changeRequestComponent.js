@@ -7,6 +7,7 @@ import submitSoloCancellation from '@salesforce/apex/ChangeRequestController.sub
 import submitGroupCancellation from '@salesforce/apex/ChangeRequestController.submitGroupCancellation';
 import submitSoloTransfer from '@salesforce/apex/ChangeRequestController.submitSoloTransfer';
 import submitGroupTransfer from '@salesforce/apex/ChangeRequestController.finalSubmitTransferGroup';
+import getGroupLeaderInformation from '@salesforce/apex/ChangeRequestController.getGroupLeaderInformation';
 
 export default class ChangeRequestComponent extends NavigationMixin(LightningElement) {
 	@api recordId;				// required to work as EAN Staff (Customer Contact Record Id)
@@ -52,6 +53,7 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 	_crTypes = [];
 	_selectedCRType;
 	_crDescription = '';
+	_isGroupLeader = false;
 
 	initialSettings() {
 		this._errorMessage = 'Something went wrong, please contact your system administrator.';
@@ -108,9 +110,12 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 		console.log('ChangeRequestComponent connectedCallback');
 		console.log('this.recordId: ', this.recordId);
 
-		getPreparedData({settings: {
-			recordId: this.recordId
-			}}).then(result=>{
+		let settings = {recordId: this.recordId};
+		Promise.all([
+			getPreparedData({settings: settings}),
+			getGroupLeaderInformation({settings: settings})
+		])
+			.then(([result, result2])=>{
 				console.log('result: ', result);
 				// this._callbackResult = result;
 				// this._callbackResultString = JSON.stringify(result);	// DELETE
@@ -120,6 +125,8 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 					this._isError = true;
 					return;
 				}
+
+				this._isGroupLeader = !!result2 && result2.length > 0;
 
 				this._isError = false;
 				this._communityContactId = result.communityContactId;
@@ -165,7 +172,6 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 	handleNextClick() {
 		console.log('handleNextClick this._selectedCRType: ', this._selectedCRType);
 		this._displayNewChangeRequestButton = false;
-		this._displayChangeRequestNextButton = false;
 		this._displayChangeRequestCancelButton = true;
 
 		let target = this.template.querySelector('[data-target-id="standardtextarea"]');
@@ -184,7 +190,12 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 			'Individual Participant Group Registration Cancellation'
 		];
 
-		if (redirectToMyRegistrationsPage.includes(this._selectedCRType)) {
+		let isValid = true;
+		if(isValid) isValid = redirectToMyRegistrationsPage.includes(this._selectedCRType);
+		if(isValid) isValid = this.validateCRSelection();
+
+		if (isValid) {
+			this._displayChangeRequestNextButton = false;
 			this._displayMainPanel = false;
 			this._displayMyRegistrationsComponent = true;
 			// navigateCommunityPage(targetPageName, id);
@@ -199,6 +210,27 @@ export default class ChangeRequestComponent extends NavigationMixin(LightningEle
 	handleChangeCRType(event) {
 		console.log('handleChangeCRType');
 		this._selectedCRType = event.detail.value;
+		this.validateCRSelection();
+	}
+
+	validateCRSelection(){
+		let isValid = false;
+
+		let groupLeaderCRTypes = [
+			'Full Group Registration Cancellation',
+			'Group Registration Transfer',
+			'Individual Participant Group Registration Cancellation'
+		];
+
+		if(!groupLeaderCRTypes.includes(this._selectedCRType) || groupLeaderCRTypes.includes(this._selectedCRType) && this._isGroupLeader){
+			isValid = true;
+		}
+
+		if(!isValid){
+			this.showErrorToast('You are not eligible for this type of Change Request');
+		}
+
+		return isValid;
 	}
 
 	handleClickOnRevoke(event) {

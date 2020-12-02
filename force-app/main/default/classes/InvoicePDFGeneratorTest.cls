@@ -48,9 +48,7 @@ public with sharing class InvoicePDFGeneratorTest {
         List<Order__c> orders = [
                 SELECT Id, Name
                 FROM Order__c
-                WHERE Contact__c = :c.Id
-                    AND Payment_Date__c = :Date.today().addDays(-17)
-                    AND Total_amount__c = 652 AND Status__c = 'Paid'
+                WHERE Id = :order.Id
         ];
         String expectedAttName = 'Invoice_' + orders[0].Name + '.pdf';
         List<ContentVersion> attachments = [SELECT Title FROM ContentVersion WHERE Title = :expectedAttName];
@@ -106,9 +104,7 @@ public with sharing class InvoicePDFGeneratorTest {
         List<Order__c> orders = [
                 SELECT Id, Name
                 FROM Order__c
-                WHERE Contact__c = :c.Id
-                AND Payment_Date__c = :Date.today().addDays(-17)
-                AND Total_amount__c = 652 AND Status__c = 'Paid'
+                WHERE Id = :order.Id
         ];
         String expectedAttName = 'Invoice_' + orders[0].Name + '.pdf';
         List<ContentVersion> attachments = [SELECT Title FROM ContentVersion WHERE Title = :expectedAttName];

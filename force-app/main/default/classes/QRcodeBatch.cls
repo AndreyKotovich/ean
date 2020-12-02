@@ -65,7 +65,7 @@ public without sharing class QRcodeBatch implements Database.Batchable<Participa
 
             for (Participant__c participant : participants) {
                 if (!participantWithQRCodeMap.containsKey(participant.Id)){
-                    String Link = QRGeneratorLink + URL.getSalesforceBaseUrl().toExternalForm().replace('my.salesforce.com', 'lightning.force.com/lightning/r/Event_Badge__c').replace('salesforce.com', 'lightning.force.com/lightning/r/Event_Badge__c') + '/' + participant.Event_Badges__r[0].Id  + '/view';
+                    String Link = QRGeneratorLink + URL.getSalesforceBaseUrl().toExternalForm() + '/' + participant.Event_Badges__r[0].Id;
                     Http http = new Http();
                     HttpRequest request = new HttpRequest();
                     request.setEndpoint(link);

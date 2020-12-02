@@ -54,16 +54,24 @@ public without sharing class EventRegistrationController {
         Savepoint sp = Database.setSavepoint();
         try {
             List<Participant__c> participants = new List<Participant__c>();
+            Set<Id> eventIds = new Set<Id>();
 
             for(Integer i = 0; i<participantPriceMap.size(); i++){
                 Participant__c p = (Participant__c)JSON.deserialize(JSON.serialize(participantPriceMap[i].get('participant')), Participant__c.class);
                 participantPriceMap[i].put('participant', p);
                 participants.add((Participant__c)participantPriceMap[i].get('participant'));
+                eventIds.add(((Participant__c)participantPriceMap[i].get('participant')).Event_custom__c);
             }
 
             Contact undefinedContact = getUndefinedParticipant();
-            Id congressRTId = Schema.SObjectType.Participant__c.getRecordTypeInfosByDeveloperName().get('Congress').getRecordTypeId();
-            System.debug('congressRTId ' + congressRTId);
+            Map<Id, Event__c> eventMap = new Map<Id, Event__c>([SELECT Id, RecordType.DeveloperName FROM Event__c WHERE Id IN :eventIds]);
+
+            List<RecordType> participantRTs = [SELECT Id, DeveloperName FROM RecordType WHERE SobjectType = 'Participant__c'];
+            Map<String, Id> devNameIdParticipantRTsMap = new Map<String, Id>();
+            for(RecordType rt : participantRTs){
+                devNameIdParticipantRTsMap.put(rt.DeveloperName, rt.Id);
+            }
+
             System.debug('undefinedContact ' + undefinedContact);
 
             if (undefinedContact == null) {
@@ -74,8 +82,10 @@ public without sharing class EventRegistrationController {
             }
 
             for (Participant__c participant : participants) {
-                participant.RecordTypeId = congressRTId;
-                //todo event record type
+                Event__c event = eventMap.get(participant.Event_custom__c);
+                String participantRecordTypeId = devNameIdParticipantRTsMap.containsKey(event.RecordType.DeveloperName) ? devNameIdParticipantRTsMap.get(event.RecordType.DeveloperName) : '';
+                participant.RecordTypeId = participantRecordTypeId;
+
                 if (participant.Contact__c == null) {
                     participant.Contact__c = undefinedContact.Id;
                 }

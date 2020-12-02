@@ -17,7 +17,6 @@ export default class EanJournals extends LightningElement {
                 for (let product of product2s) {
                     if (product.hasOwnProperty('Description')) {
                         if (product['Description'].includes('address above')) {
-                            //TODO replace in mem. app.
                             let res = product['Description'].replace('address above', 'address provided in your MyEAN contact information');
                             product['Description'] = res;
                         }

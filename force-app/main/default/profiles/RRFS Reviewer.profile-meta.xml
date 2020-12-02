@@ -329,6 +329,10 @@
         <enabled>false</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>GroupLinkController</apexClass>
+        <enabled>false</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>InviteAllController</apexClass>
         <enabled>false</enabled>
     </classAccesses>
@@ -394,6 +398,10 @@
     </classAccesses>
     <classAccesses>
         <apexClass>MassPrintBadgesController</apexClass>
+        <enabled>false</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>MassPrintBadgesControllerTest</apexClass>
         <enabled>false</enabled>
     </classAccesses>
     <classAccesses>
@@ -558,7 +566,7 @@
     </classAccesses>
     <classAccesses>
         <apexClass>RedirectToPaymentController</apexClass>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
         <apexClass>RedirectToPaymentController_Test</apexClass>
@@ -2228,6 +2236,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>Event_Badge__c.Badge_Retrieval__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Event_Badge__c.Barcode__c</field>
         <readable>true</readable>
@@ -3813,6 +3826,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>Participant__c.Event_Group_Name__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>Participant__c.Event_Persona__c</field>
         <readable>true</readable>
@@ -5005,10 +5023,6 @@
     <flowAccesses>
         <enabled>false</enabled>
         <flow>Terms_Conditions_Flow</flow>
-    </flowAccesses>
-    <flowAccesses>
-        <enabled>false</enabled>
-        <flow>Update_Abstract</flow>
     </flowAccesses>
     <flowAccesses>
         <enabled>false</enabled>

@@ -15,9 +15,6 @@ import updateParticipant from "@salesforce/apex/EventRegistrationController.upda
 import insertUpgradeData from "@salesforce/apex/EventRegistrationController.insertUpgradeData";
 
 export default class EventRegistrationApplication extends NavigationMixin(LightningElement) {
-    //TODO before participant insert check availability of participants
-    //TODO create session participants
-    //TODO participant available validation
     @track errorMessage = "Something went wrong, please contact your system administrator.";
     @track isSpinner = true;
     @track isError = false;
@@ -408,136 +405,149 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
 
     onFinishRegistration() {
         this.isSpinner = true;
-        let participants = [];
-        let call = this.registrationType !== "solo" ?
-            () => {
-                return insertRegistrationGroup({eventGroupInformation: this.eventGroupInformation, groupLeaderId: this.userInfo.contact.Id});
-            } : () => {
-                return new Promise((resolve) => {
-                    resolve();
-                });
-            };
-
-        call()
-            .then((result) => {
-                console.log('in call');
-                let generalData = {};
-                generalData = {...generalData, ...this.userInfo};
-                generalData.selectTicket = this.selectedTicket;
-                generalData.eventId = this.ean_event.Id;
-                generalData.priceTicket = this.priceTicket;
-                generalData.contactId = this.userInfo.contact.Id;
-                generalData.discountInfo = this.discountInfo;
-                generalData.selectedDates = this.selectedDates;
-
-                console.log('generalData', JSON.parse(JSON.stringify(generalData)));
-
-                let participantPriceArr = [];
-
-                if (this.registrationType === "solo") {
-                    participantPriceArr.push({
-                        participant: {
-                            sobjectType: "Participant__c",
-                            Contact__c: this.userInfo.contact.Id,
-                            Event_Ticket__c: generalData.selectTicket,
-                            Event_custom__c: this.ean_event.Id,
-                            Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
-                            Visa_Letter__c: this.selectedServices.visaLetter,
-                            Status__c: 'Pending',
-                            Role__c: this.participantRole,
-                            Lecture_Presentation__c: this.participantRole === 'Invited_Speaker' ? this.eventPersonaId : '',
-                            Event_Persona__c: !!this.participantRole && this.participantRole !== 'Invited_Speaker' ? this.eventPersonaId : ''
-                        },
-                        price: this.priceTicket
-                    });
-                } else {
-                    generalData.groupId = result;
-                    for (let i = 0; i < this.ticketsAmount; i++) {
-                        let obj = {
-                            sobjectType: "Participant__c",
-                            Event_custom__c: this.ean_event.Id,
-                            Event_Ticket__c: generalData.selectTicket,
-                            Event_Registration_Sub_Group__c: result,
-                            Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
-                            Visa_Letter__c: this.selectedServices.visaLetter,
-                            Status__c: 'Pending',
-                            Role__c: this.participantRole
-                        }
-
-                        if(this.registrationType === 'ipr'){
-                            obj.Event_Exhibitor__c = this.userInfo.iprInfo.Id
-                        }
-
-                        let price = this.freeTicketAmount > 0 && i+1 <= this.freeTicketAmount ? 0 : this.priceTicket;
-
-                        participantPriceArr.push({
-                            participant: obj,
-                            price: price
+        getEvent({eventId: this.ean_event.Id})
+            .then(eventCallResult => {
+                let participants = [];
+                let call = this.registrationType !== "solo" ?
+                    () => {
+                        return insertRegistrationGroup({eventGroupInformation: this.eventGroupInformation, groupLeaderId: this.userInfo.contact.Id});
+                    } : () => {
+                        return new Promise((resolve) => {
+                            resolve();
                         });
-                    }
+                    };
 
-                    for(let participant of this.participantsInitialization.initializedParticipants){
-                        participantPriceArr.push({
-                            participant: {
-                                sobjectType: "Participant__c",
-                                Event_custom__c: this.ean_event.Id,
-                                Event_Ticket__c: participant.selectedTicket,
-                                Event_Registration_Sub_Group__c: result,
-                                Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
-                                Visa_Letter__c: this.selectedServices.visaLetter,
-                                Status__c: 'Pending',
-                                Contact__c: participant.contact.Id ? participant.contact.Id : '',
-                                Role__c: participant.participantRole,
-                                Lecture_Presentation__c: !!participant.participantRole && participant.participantRole === 'Invited_Speaker' ? participant.eventPersonaId : '',
-                                Event_Persona__c: !!participant.participantRole && participant.participantRole !== 'Invited_Speaker' ? participant.eventPersonaId : ''
-                            },
-                            price: participant.priceTicket
-                        });
-                    }
-                }
-                console.log('participantPriceArr', participantPriceArr)
+                call()
+                    .then((result) => {
+                        console.log('in call');
+                        let generalData = {};
+                        generalData = {...generalData, ...this.userInfo};
+                        generalData.selectTicket = this.selectedTicket;
+                        generalData.eventId = this.ean_event.Id;
+                        generalData.priceTicket = this.priceTicket;
+                        generalData.contactId = this.userInfo.contact.Id;
+                        generalData.discountInfo = this.discountInfo;
+                        generalData.selectedDates = this.selectedDates;
 
-                let promiseArray = [];
-                promiseArray.push(insertEventParticipants({participantPriceMap: participantPriceArr, generalData: generalData, selectedSession: this.selectedSessions}));
+                        console.log('generalData', JSON.parse(JSON.stringify(generalData)));
 
-                if(this.registrationType === 'solo'){
-                    let updateContact = [{sobjectType: "Contact", Id: this.userInfo.contact.Id, Newsletter__c: this.selectedServices.newsletter}];
-                    promiseArray.push(updateContacts({contacts: updateContact}));
-                } else {
-                    promiseArray.push(new Promise((resolve)=>{
-                        resolve({status: 'Success'})
-                    }));
-                }
-                return Promise.all(promiseArray);
-            })
-            .then(([data, data2]) => {
-                this.isSpinner = false;
-                let msg = data.status !== 'Error' ? `You have successfully registered for the ${this.ean_event.Name}` : data.message;
-                this.dispatchToast(data.status, msg, data.status);
+                        let participantPriceArr = [];
 
-                console.log('data2', JSON.stringify(data2));
-                if(data2.status === 'Error'){
-                    this.dispatchToast(data2.status, data2.message, data2.status);
-                }
+                        if (this.registrationType === "solo") {
+                            participantPriceArr.push({
+                                participant: {
+                                    sobjectType: "Participant__c",
+                                    Contact__c: this.userInfo.contact.Id,
+                                    Event_Ticket__c: generalData.selectTicket,
+                                    Event_custom__c: this.ean_event.Id,
+                                    Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
+                                    Visa_Letter__c: this.selectedServices.visaLetter,
+                                    Status__c: 'Pending',
+                                    Role__c: this.participantRole,
+                                    Lecture_Presentation__c: this.participantRole === 'Invited_Speaker' ? this.eventPersonaId : '',
+                                    Event_Persona__c: !!this.participantRole && this.participantRole !== 'Invited_Speaker' ? this.eventPersonaId : ''
+                                },
+                                price: this.priceTicket
+                            });
+                        } else {
+                            generalData.groupId = result;
+                            for (let i = 0; i < this.ticketsAmount; i++) {
+                                let obj = {
+                                    sobjectType: "Participant__c",
+                                    Event_custom__c: this.ean_event.Id,
+                                    Event_Ticket__c: generalData.selectTicket,
+                                    Event_Registration_Sub_Group__c: result,
+                                    Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
+                                    Visa_Letter__c: this.selectedServices.visaLetter,
+                                    Status__c: 'Pending',
+                                    Role__c: this.participantRole
+                                }
 
-                console.log('data insertEventParticipants ', data);
+                                if(this.registrationType === 'ipr'){
+                                    obj.Event_Exhibitor__c = this.userInfo.iprInfo.Id
+                                }
 
-                if (data.status !== 'Error') {
-                    this[NavigationMixin.Navigate]({
-                        type: 'comm__namedPage',
-                        attributes: {
-                            pageName: 'payment-component'
-                        },
-                        state: {
-                            orderId: data.result[0].Id
+                                let price = this.freeTicketAmount > 0 && i+1 <= this.freeTicketAmount ? 0 : this.priceTicket;
+
+                                participantPriceArr.push({
+                                    participant: obj,
+                                    price: price
+                                });
+                            }
+
+                            for(let participant of this.participantsInitialization.initializedParticipants){
+                                participantPriceArr.push({
+                                    participant: {
+                                        sobjectType: "Participant__c",
+                                        Event_custom__c: this.ean_event.Id,
+                                        Event_Ticket__c: participant.selectedTicket,
+                                        Event_Registration_Sub_Group__c: result,
+                                        Badge_Retrieval__c: this.selectedServices.badgeRetrieval ? this.selectedServices.badgeRetrieval : '',
+                                        Visa_Letter__c: this.selectedServices.visaLetter,
+                                        Status__c: 'Pending',
+                                        Contact__c: participant.contact.Id ? participant.contact.Id : '',
+                                        Role__c: participant.participantRole,
+                                        Lecture_Presentation__c: !!participant.participantRole && participant.participantRole === 'Invited_Speaker' ? participant.eventPersonaId : '',
+                                        Event_Persona__c: !!participant.participantRole && participant.participantRole !== 'Invited_Speaker' ? participant.eventPersonaId : ''
+                                    },
+                                    price: participant.priceTicket
+                                });
+                            }
                         }
+                        console.log('participantPriceArr', participantPriceArr)
+
+                        let promiseArray = [];
+                        promiseArray.push(insertEventParticipants({participantPriceMap: participantPriceArr, generalData: generalData, selectedSession: this.selectedSessions}));
+
+                        if(this.registrationType === 'solo'){
+                            let updateContact = [{sobjectType: "Contact", Id: this.userInfo.contact.Id, Newsletter__c: this.selectedServices.newsletter}];
+                            promiseArray.push(updateContacts({contacts: updateContact}));
+                        } else {
+                            promiseArray.push(new Promise((resolve)=>{
+                                resolve({status: 'Success'})
+                            }));
+                        }
+
+                        if(eventCallResult.Max_Participants__c > eventCallResult.Registrations__c + participantPriceArr.length){
+                            return Promise.all(promiseArray);
+                        } else {
+                            throw {body: {message: 'There are not enough free seats at the event'}};
+                        }
+                    })
+                    .then(([data, data2]) => {
+                        this.isSpinner = false;
+                        let msg = data.status !== 'Error' ? `You have successfully registered for the ${this.ean_event.Name}` : data.message;
+                        this.dispatchToast(data.status, msg, data.status);
+
+                        console.log('data2', JSON.stringify(data2));
+                        if(data2.status === 'Error'){
+                            this.dispatchToast(data2.status, data2.message, data2.status);
+                        }
+
+                        console.log('data insertEventParticipants ', data);
+
+                        if (data.status !== 'Error') {
+                            this[NavigationMixin.Navigate]({
+                                type: 'comm__namedPage',
+                                attributes: {
+                                    pageName: 'payment-component'
+                                },
+                                state: {
+                                    orderId: data.result[0].Id
+                                }
+                            });
+                        }
+
+                    })
+                    .catch((error) => {
+                        this.handleError(error);
                     });
-                }
 
             })
-            .catch((error) => {
+            .catch(error =>{
                 this.handleError(error);
-            });
+            })
+
     }
 
     onFinishUpgrade(){
