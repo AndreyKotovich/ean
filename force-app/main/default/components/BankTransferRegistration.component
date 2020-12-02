@@ -1,7 +1,7 @@
 <apex:component id="BankTransferRegistration">
     <div id="bank-transfer-screen" class="slds-text-heading_small">
         <div class="slds-text-heading_large"><p><b>Thank you for your EAN congress registration.</b></p></div>
-        <div>Your registration was received, and your order confirmation number is: <span class="order-name">{!$CurrentPage.parameters.orderInvoiceNumber}</span></div>
+        <div>Your registration was received, and your order confirmation number is: <span class="order-name">{!$CurrentPage.parameters.orderName}</span></div>
         <br/>
         <div>
             To finalise your registration, please transfer the outstanding amount of

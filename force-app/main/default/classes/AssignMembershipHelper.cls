@@ -1,10 +1,18 @@
 public with sharing class AssignMembershipHelper {
     public static void assignMembership(List<Application_form__c> updatedForms){
+
+        //  part of 'Membership Renewal'
+        List<Membership__c> studentMemberhip = [SELECT Id FROM Membership__c WHERE API__c ='student_membership' LIMIT 1];
+        Id studentMemberhipId = !studentMemberhip.isEmpty() ? studentMemberhip[0].Id : null;
+
         List<MembershipContactAssotiation__c> mca = new List<MembershipContactAssotiation__c>();
         Date expDate;
-        Datetime startDateTime; //  part of 'Membership Renewal'
-        Datetime expDateTime;   //  part of 'Membership Renewal'
+
         for(Application_form__c af:updatedForms){
+
+            Datetime renewalStartDateTime; //  part of 'Membership Renewal'
+            Datetime renewalExpDateTime;   //  part of 'Membership Renewal'
+
             if(!Test.isRunningTest()){
                 if(Date.today().month() >= 10){
                     expDate = Date.newInstance(Date.today().year()+1,12,31);
@@ -13,8 +21,10 @@ public with sharing class AssignMembershipHelper {
                 }
 
                 //  part of 'Membership Renewal'
-                expDateTime = af.Renewal_End_Date__c;
-                startDateTime = af.Renewal_Start_Date__c;
+                renewalExpDateTime = af.Renewal_End_Date__c;
+                renewalStartDateTime = af.Renewal_Start_Date__c;
+                //  part of 'Membership Renewal': if it is not 'Student' then 'Membership_Status' record will be created from a Lightning Flow
+                if (af.Membership__c != studentMemberhipId && (renewalExpDateTime != null || renewalStartDateTime != null)) continue;
 
             } else {
                 expDate = Date.newInstance(Date.today().year()+1,12,31);
@@ -22,8 +32,8 @@ public with sharing class AssignMembershipHelper {
             if(af.Form_Status__c == 'Approved'){
                 mca.add(new MembershipContactAssotiation__c(
                     Contact__c = af.Contact__c, Membership__c = af.Membership__c, Application_form__c = af.Id,
-                    Start_Date__c = startDateTime != null ? startDateTime : Date.today(),   //  part of 'Membership Renewal'
-                    Expiration_date__c = expDateTime != null ? expDateTime : expDate,       //  changed for 'Membership Renewal'
+                    Start_Date__c = renewalStartDateTime != null ? renewalStartDateTime : Date.today(),   //  part of 'Membership Renewal'
+                    Expiration_date__c = renewalExpDateTime != null ? renewalExpDateTime : expDate,       //  changed for 'Membership Renewal'
                     Assignment_date__c = Date.today())
                 );
             }

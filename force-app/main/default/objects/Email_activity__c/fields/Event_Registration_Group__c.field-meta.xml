@@ -5,7 +5,8 @@
     <externalId>false</externalId>
     <label>Event Registration Group</label>
     <referenceTo>Event_Registration_Group__c</referenceTo>
-    <relationshipName>Email_activities</relationshipName>
+    <relationshipLabel>Email Activities</relationshipLabel>
+    <relationshipName>Email_Activities</relationshipName>
     <required>false</required>
     <trackTrending>false</trackTrending>
     <type>Lookup</type>

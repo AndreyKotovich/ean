@@ -558,7 +558,7 @@
 
                                     //  https://jira.towa-digital.com/browse/EANER-19   use EAN21-F-#### (= Invoice Number) 
                                     } else if (order[0].Invoice_Number__c && (order[0]['Invoice_Number__c']).indexOf('-F-') > -1) {
-                                        item.innerHTML = '"' + order[0]['Invoice_Number__c'] + '"';
+                                        item.innerHTML = '"' + order[0]['Name'] + '"';
                                         document.getElementById("BankTransferRegistration").removeAttribute('hidden');
 
                                     } else {

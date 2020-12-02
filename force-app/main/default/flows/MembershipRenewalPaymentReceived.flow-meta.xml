@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Update_Apps_To_Status_Approved</name>
+        <label>Update Apps To Status Approved</label>
+        <locationX>539</locationX>
+        <locationY>520</locationY>
+        <actionName>MembershipRenewalController</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>New_Membership_Status</targetReference>
+        </connector>
+        <inputParameters>
+            <name>recordIds</name>
+            <value>
+                <elementReference>Get_Application_Form_Record.Id</elementReference>
+            </value>
+        </inputParameters>
+    </actionCalls>
     <apiVersion>50.0</apiVersion>
     <decisions>
         <name>Is_Form_Exist</name>
@@ -26,8 +43,8 @@
     <decisions>
         <name>Is_Renewal_Form</name>
         <label>Is Renewal Form</label>
-        <locationX>760</locationX>
-        <locationY>546</locationY>
+        <locationX>532</locationX>
+        <locationY>304</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>RenewalAppForm</name>
@@ -40,7 +57,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>New_Membership_Status</targetReference>
+                <targetReference>Update_Apps_To_Status_Approved</targetReference>
             </connector>
             <label>RenewalAppForm</label>
         </rules>
@@ -127,8 +144,8 @@
     <recordCreates>
         <name>New_Membership_Status</name>
         <label>New Membership Status</label>
-        <locationX>1009</locationX>
-        <locationY>539</locationY>
+        <locationX>761</locationX>
+        <locationY>518</locationY>
         <inputAssignments>
             <field>Application_form__c</field>
             <value>

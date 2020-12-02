@@ -76,35 +76,4 @@ public with sharing class Utils {
         }
     }
 
-    //  TEMPORARY DEPRECATED (by Vitaly Serebrakov)
-
-	// /**
-	//  * @description								method for creating EAN_Settings__c (custom settings)
-	//  * @param Map<String, String> newSettings	custom setting name TO value
-	//  */
-	// public static void setEANSettings(Map<String, String> newSettings) {
-	// 	try {
-	// 		Map<String, EAN_Settings__c> result = new Map<String, EAN_Settings__c>();
-	// 		Map<String, EAN_Settings__c> allSettings = EAN_Settings__c.getAll();
-
-	// 		for (String settingKey : newSettings.keySet()) {
-	// 			if (settingKey != '' && settingKey != 'null') {
-	// 				if (allSettings.containsKey(settingKey)) {
-	// 					EAN_Settings__c item = allSettings.get(settingKey);
-	// 					item.Value__c = newSettings.get(settingKey);
-	// 					result.put(settingKey, item);
-	// 				}
-	// 				else {
-	// 					result.put(settingKey, new EAN_Settings__c(
-	// 						Name = settingKey,
-	// 						Value__c = newSettings.get(settingKey)
-	// 					));
-	// 				}
-	// 			}
-	// 		}
-	// 		if (!result.isEmpty()) upsert result.values();
-	// 	} catch (Exception e) { throw new PrivilegesException('Privileges Exception L69: ' + e.getMessage()); }
-	// }
-
-    // public with sharing class PrivilegesException extends Exception {}
 }

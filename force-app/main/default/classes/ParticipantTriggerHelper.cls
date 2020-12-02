@@ -142,29 +142,54 @@ public without sharing class ParticipantTriggerHelper {
         // }
     }
 
-    public static void sendEmailToSubmitedGroupParticipants(Map<Id, Participant__c> participantsMap) {
-        List<Participant__c> participants = [
-            SELECT Id, Event_custom__c, Participant_Email__c, Event_Registration_Sub_Group__c, Event_Ticket__r.Participation__c, Contact__r.Email
-            FROM Participant__c
-            WHERE Id IN :participantsMap.keySet()
-        ];
-        List<Email_activity__c> emailActivities = new List<Email_activity__c>();
-        for (Participant__c participant : participants) {
-            if (String.isNotBlank(participant.Event_Registration_Sub_Group__c)
-                    && (String.isNotBlank(participant.Contact__r.Email) || String.isNotBlank(participant.Participant_Email__c))) {
-                Email_activity__c emailActivity = new Email_activity__c();
-                emailActivity.Event_Participation__c = participant.Id;
-                emailActivity.Contact__c = participant.Contact__c;
-                emailActivity.Event_custom__c = participant.Event_custom__c;
-                if (String.isBlank(participant.Contact__r.Email)) {
-                    emailActivity.Send_to_email__c = participant.Participant_Email__c;
-                    emailActivity.Type__c = 'Undefined group participant submited';
-                } else {
-                    emailActivity.Send_to_email__c = participant.Contact__r.Email;
-                    emailActivity.Type__c = 'Group participant submited';
-                }
-                emailActivities.add(emailActivity);
+    public static void sendEmailToSubmitedGroupParticipants(Map<Id, Participant__c> newParticipantsMap, Map<Id, Participant__c> oldParticipantsMap) {
+        String statusRegistered = 'Registered';
+        Map<String, Participant__c> getQRCodeParticipantsMap = new Map<String, Participant__c>();
+        for (Participant__c participant : newParticipantsMap.values()) {
+            if (participant.Status__c == statusRegistered
+                    && oldParticipantsMap.get(participant.Id).Status__c != participant.Status__c) {
+                //Solo and Group participant status changed to registered
+                getQRCodeParticipantsMap.put(participant.Id, participant);
+            } else if (participant.Status__c == statusRegistered
+                    && participant.Contact__c != oldParticipantsMap.get(participant.Id).Contact__c) {
+                //Solo and Group participant contact changed
+                getQRCodeParticipantsMap.put(participant.Id, participant);
+            } else if (participant.Status__c == statusRegistered
+                    && String.isNotBlank(participant.Event_Registration_Sub_Group__c)
+                    && participant.Participant_Email__c != oldParticipantsMap.get(participant.Id).Participant_Email__c) {
+                //Group participant email changed
+                getQRCodeParticipantsMap.put(participant.Id, participant);
             }
+        }
+        List<Participant__c> QRCodeNeededParticipants = [
+            SELECT Id, Event_custom__c, Participant_Email__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name, Event_Ticket__r.Participation__c, Contact__r.Email
+            FROM Participant__c
+            WHERE Id IN :getQRCodeParticipantsMap.keySet()
+        ];
+                List<Participant__c> submitedGroupParticipants = new List<Participant__c>();
+        for (Participant__c participant : QRCodeNeededParticipants) {
+            if (String.isNotBlank(getQRCodeParticipantsMap.get(participant.Id).Event_Registration_Sub_Group__c)
+                    && (String.isNotBlank(participant.Contact__r.Email) || String.isNotBlank(getQRCodeParticipantsMap.get(participant.Id).Participant_Email__c))) {
+                submitedGroupParticipants.add(participant);
+            }
+        }
+        List<Email_activity__c> emailActivities = new List<Email_activity__c>();
+        for (Participant__c partisipant : submitedGroupParticipants) {
+            Email_activity__c emailActivity = new Email_activity__c();
+            emailActivity.Event_Participation__c = partisipant.Id;
+            emailActivity.Contact__c = partisipant.Contact__c;
+            emailActivity.Event_custom__c = partisipant.Event_custom__c;
+            emailActivity.JSON_body__c = JSON.serialize(partisipant);
+            emailActivity.Group_Name__c = partisipant.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name;
+            emailActivity.Event_Registration_Group__c = partisipant.Event_Registration_Sub_Group__r.Event_Registration_Group__c;
+            if (String.isBlank(partisipant.Contact__r.Email)) {
+                emailActivity.Send_to_email__c = partisipant.Participant_Email__c;
+                emailActivity.Type__c = 'Undefined group participant submited';
+            } else {
+                emailActivity.Send_to_email__c = partisipant.Contact__r.Email;
+                emailActivity.Type__c = 'Group participant submited';
+            }
+            emailActivities.add(emailActivity);
         }
         insert emailActivities;
     }

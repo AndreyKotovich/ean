@@ -683,7 +683,7 @@ public without sharing class PaymentHttpRequest {
             String paymentMethod = isPayPal ? 'paypal' : 'creditcard';
             String invoiceNum = 'EAN' + String.valueOf(Date.today().year()).right(2) + '-CN-%';
             Integer oIEANNumber;
-
+ 
             List<Transaction__c> oIEAN = [
                 SELECT Refund_Invoice__c
                 FROM Transaction__c
@@ -747,10 +747,10 @@ public without sharing class PaymentHttpRequest {
                     }
                 }
             });
-
+            if (String.isBlank(apiUrl)) { apiUrl = 'baseUrlWireCard_test';}
             Http http = new Http();
             HttpRequest request = new HttpRequest();
-            request.setEndpoint('callout:baseUrlWireCard_test');
+            request.setEndpoint('callout:' + apiUrl);
             request.setMethod('POST');
             request.setHeader('Content-Type', 'application/json');
             request.setHeader('Accept', 'application/json');

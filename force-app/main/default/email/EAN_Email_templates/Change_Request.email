@@ -17,7 +17,7 @@
             <body>
             <div>
                 <center>
-                    <img src = "{!$Resource.Banner}" width="740px" height="100" align="center"/>
+                    <img src = "{!$Resource.EAN_BANNER_EC21}" width="740px" height="100" align="center"/>
                 </center>
             </div>
             <div>

@@ -36,7 +36,8 @@ trigger Participant on Participant__c (after insert, before insert, before updat
     }
     if(Trigger.isAfter && Trigger.isUpdate){
         ParticipantTriggerHelper.updateEventPersonas_update(Trigger.new, Trigger.old);
-        ParticipantTriggerHelper.sendEmailToSubmitedGroupParticipants(Trigger.newMap);
+        ParticipantTriggerHelper.sendEmailToSubmitedGroupParticipants(Trigger.newMap, Trigger.oldMap);
+
         //  Update Info on Badge records
         List<String> participantIds = new List<String>();
         for (Participant__c participant : Trigger.new) participantIds.add(participant.Id);

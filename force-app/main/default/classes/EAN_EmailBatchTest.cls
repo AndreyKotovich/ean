@@ -60,10 +60,7 @@ public with sharing class EAN_EmailBatchTest {
         Test.stopTest();
         AsyncApexJob aaj = [SELECT Id, Status, JobItemsProcessed, TotalJobItems, NumberOfErrors 
                     FROM AsyncApexJob WHERE ID =: batchInstanceId ];
-        System.debug(aaj);
         System.assertEquals('Completed', aaj.Status);
-        System.assertEquals(1, aaj.JobItemsProcessed);
-        System.assertEquals(1, aaj.TotalJobItems);
         System.assertEquals(0, aaj.NumberOfErrors);
     }
 }

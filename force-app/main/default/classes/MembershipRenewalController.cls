@@ -27,7 +27,8 @@ public without sharing class MembershipRenewalController {
 	};
 
 	public final static String FORM_STATUS_FOR_STUDENT_MEMBERSHIP = 'Submitted';
-	public final static String FORM_STATUS_FOR_NOT_STUDENT_MEMBERSHIP = 'Approved';
+	// public final static String FORM_STATUS_FOR_NOT_STUDENT_MEMBERSHIP = 'Approved';
+	public final static String FORM_STATUS_FOR_NOT_STUDENT_MEMBERSHIP = 'Waiting For Payment';	//	EANMR-52
 
 	public final static String SKIP_ATTACH_FILES_LIKE = 'Certificate_%';
 
@@ -200,9 +201,11 @@ public without sharing class MembershipRenewalController {
 
 			Boolean alreadyExistMembershipStatusForNextYear = false;
 
+			Set<String> alreadyExistAppsStatusesForNextYear = new Set<String>{'Approved', 'Submitted', 'Complete', 'Waiting For Payment'};
+
 			for (MembershipContactAssotiation__c contactsMembership : contactsMemberships) {
 
-				if (contactsMembership.Renewal_Application_Form__c != null) {
+				if (contactsMembership.Renewal_Application_Form__c != null && alreadyExistAppsStatusesForNextYear.contains(contactsMembership.Renewal_Application_Form__c)) {
 					alreadyExistMembershipStatusForNextYear = true;
 					break;
 				}
@@ -423,6 +426,7 @@ public without sharing class MembershipRenewalController {
 			if (membershipApiName == API_STUDENT_MEMBERSHIP) {
 				approvalResultString = submitForApproval('' + newApplicationForm.Id);
 			} else {
+				//	EANMR-52 don't need any approval processes
 				Approval.LockResult lockResult = Approval.lock(newApplicationForm.Id, false);
 				approvalResultString = JSON.serialize(lockResult);
 			}
@@ -559,6 +563,57 @@ public without sharing class MembershipRenewalController {
 	// 	}
 
 	// 	if (!linksToInsert.isEmpty()) insert linksToInsert;
+	// }
+
+	@InvocableMethod(label='UpdateAppForm')
+	public static void updateAppForm(List<String> recordIds) {
+        system.debug('MembershipRenewalController [updateAppForm] recordIds: ' + JSON.serialize(recordIds));
+        if (recordIds.isEmpty()) return;
+        try {
+            Set<Id> recordIdsTemp = new Set<Id>();
+            for (String recordId : recordIds) {
+                recordIdsTemp.add(Id.valueOf(recordId));
+			}
+			
+			List<Id> recordIdsList = new List<Id>(recordIdsTemp);
+
+            List<Approval.UnlockResult> unlockResult = Approval.unlock(recordIdsList);
+			system.debug('MembershipRenewalController [updateAppForm] unlockResult: ' + JSON.serialize(unlockResult));
+
+			List<Application_form__c> formsToUpdate = new List<Application_form__c>();
+			for (Id recordId : recordIdsList) {
+				formsToUpdate.add(new Application_form__c(
+					Id = recordId,
+					Form_Status__c = 'Approved'
+				));
+			}
+			update formsToUpdate;
+
+            List<Approval.LockResult> lockResult = Approval.lock(recordIdsList);
+            system.debug('MembershipRenewalController [updateAppForm] lockResult: ' + JSON.serialize(lockResult));		
+
+
+		} catch (Exception e) {
+			system.debug('MembershipRenewalController [updateAppForm] ERROR message: ' + e.getMessage());
+			system.debug('MembershipRenewalController [updateAppForm] ERROR messageStack: ' + e.getStackTraceString());
+		}
+	}
+
+	// @InvocableMethod(label='Lock records')
+	// public static void LockRecords(List<String> recordIds) {
+    //     if (recordIds.isEmpty()) return;
+    //     try {
+    //         Set<String> recordIdsTemp = new Set<String>();
+    //         for (String recordId : recordIds) {
+    //             Id.valueOf(recordId);
+    //             recordIdsTemp.add(recordId);
+    //         }
+    //         List<Approval.LockResult> lockResult = Approval.lock(new List<String>(recordIdsTemp));
+    //         system.debug('MembershipRenewalController [LockRecords] lockResult: ' + JSON.serialize(lockResult));
+	// 	} catch (Exception e) {
+	// 		system.debug('MembershipRenewalController [LockRecords] ERROR message: ' + e.getMessage());
+	// 		system.debug('MembershipRenewalController [LockRecords] ERROR messageStack: ' + e.getStackTraceString());
+	// 	}
 	// }
 
 }
