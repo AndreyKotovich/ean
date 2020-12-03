@@ -2680,16 +2680,6 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>MembershipContactAssotiation__c.Do_Call_For_Renewal__c</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>MembershipContactAssotiation__c.Email_Activity__c</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
         <field>MembershipContactAssotiation__c.Endless_Activation__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -2712,11 +2702,6 @@
         <editable>false</editable>
         <field>MembershipContactAssotiation__c.IsActive__c</field>
         <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>MembershipContactAssotiation__c.Last_Call_For_Renewal_Date__c</field>
-        <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>

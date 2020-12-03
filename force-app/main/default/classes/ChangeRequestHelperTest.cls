@@ -76,7 +76,6 @@ public with sharing class ChangeRequestHelperTest {
         
         System.assertEquals(200, eAs.size());
         System.assertEquals(crs[0].Type__c, eAs[0].Type__c);
-        System.assertEquals(crs[0].Id, eAs[0].Change_Request__c);
         System.assertEquals(firstGroupLeader.Id, eAs[0].Contact__c);
         System.assertEquals(firstGroupLeader.Email, eAs[0].Send_To_Email__c);
     }

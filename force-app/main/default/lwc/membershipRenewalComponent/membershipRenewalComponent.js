@@ -129,6 +129,8 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 				this._isError = false;
 				this._isStep1 = true;
 
+				console.log('result.membershipStatusId: ', result.membershipStatusId);
+
 				this._currentContactId = result.currentContactId;
 				this._membershipId = result.membershipId;
 				this._membershipName = result.membershipName;
@@ -497,8 +499,6 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 			if (this._isValidDateOfGraduation) dateOfGraduation.className = 'dateOfGraduation';
 			if (!this._isValidDateOfGraduation) dateOfGraduation.className = 'dateOfGraduation slds-has-error';
 		}
-
-		// "dateOfGraduation slds-has-error"
 
 		//	validateLicenseIssued
 		let licenseIssuedDate = this.template.querySelector('.licenseIssuedDate');

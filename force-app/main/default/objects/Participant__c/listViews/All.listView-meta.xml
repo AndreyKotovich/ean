@@ -9,6 +9,7 @@
     <columns>Status__c</columns>
     <columns>Badge_Retrieval__c</columns>
     <columns>CREATED_DATE</columns>
+    <columns>QR_Code__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
 </ListView>

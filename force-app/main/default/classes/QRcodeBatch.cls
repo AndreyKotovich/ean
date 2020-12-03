@@ -74,7 +74,11 @@ public without sharing class QRcodeBatch implements Database.Batchable<Participa
                     HttpResponse response = http.send(request);
                     if (response.getStatusCode() == 200) {
                         ContentVersion conVer = new ContentVersion();
-                        conVer.NetworkId = ConnectApi.Communities.getCommunities().communities[0].Id;
+                        if (Test.isRunningTest()) {
+                            conVer.NetworkId = null;
+                        } else {
+                            conVer.NetworkId = ConnectApi.Communities.getCommunities().communities[0].Id;
+                        }                        
                         conVer.ContentLocation = 'S';
                         conVer.PathOnClient = 'QR code ' + participant.Name + '.png';
                         conVer.Title = 'QR code ' + participant.Name + '.png';

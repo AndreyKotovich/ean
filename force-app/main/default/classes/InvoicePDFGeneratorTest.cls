@@ -9,9 +9,9 @@ public with sharing class InvoicePDFGeneratorTest {
         insert c;
         Membership__c membership = new Membership__c(Name = 'Full Membership', API__c = 'full_membershipp');
         insert membership;
-        Order__c order = new Order__c(Contact__c=c.Id, Payment_Date__c = Date.today().addDays(-17), Purchase_Type__c = 'New');
+        Order__c order = new Order__c(Contact__c=c.Id, Payment_Date__c = Date.today().addDays(-17), Purchase_Type__c = 'New', Payment_Method__c = 'creditcard');
         insert order;
-        Order__c order2 = new Order__c(Contact__c=c.Id, Payment_Date__c = Date.today().addDays(-17), Purchase_Type__c = 'New', Invoice_Number__c = 'EIMF ' + String.valueOf(Date.today().year()) + '/0000');
+        Order__c order2 = new Order__c(Contact__c=c.Id, Payment_Date__c = Date.today().addDays(-17), Purchase_Type__c = 'New', Payment_Method__c = 'Bank Transfer', Invoice_Number__c = 'EIMF ' + String.valueOf(Date.today().year()) + '/0000');
         insert order2;
         Application_form__c appForm = new Application_form__c(
                 First_name__c = 'Test',
@@ -66,9 +66,9 @@ public with sharing class InvoicePDFGeneratorTest {
         insert c;
         Membership__c membership = new Membership__c(Name = 'Full Membership', API__c = 'full_membershipp');
         insert membership;
-        Order__c order = new Order__c(Contact__c=c.Id, Payment_Date__c = Date.today().addDays(-17), Purchase_Type__c = 'Update');
+        Order__c order = new Order__c(Contact__c=c.Id, Payment_Date__c = Date.today().addDays(-17), Purchase_Type__c = 'Update', Payment_Method__c = 'Bank Transfer');
         insert order;
-        Order__c order2 = new Order__c(Contact__c=c.Id, Payment_Date__c = Date.today().addDays(-17), Purchase_Type__c = 'Update', Invoice_Number__c = 'REIMF ' + String.valueOf(Date.today().year()) + '/0000');
+        Order__c order2 = new Order__c(Contact__c=c.Id, Payment_Date__c = Date.today().addDays(-17), Purchase_Type__c = 'Update', Payment_Method__c = 'creditcard', Invoice_Number__c = 'REIMF ' + String.valueOf(Date.today().year()) + '/0000');
         insert order2;
         Application_form__c appForm = new Application_form__c(
                 First_name__c = 'Test',
@@ -149,7 +149,96 @@ public with sharing class InvoicePDFGeneratorTest {
 
         insert orderItems;
 
+        ord.Status__c = 'Paid';        
+        ord.Payment_Method__c = 'Bank Transfer';
+        update ord;
+    }
+
+    @IsTest
+    public static void sendEmailOrderPaidGroupRegBTTest(){
+        Event__c event = new Event__c(Name = 'Test Event');
+        insert event;
+        Session__c session = new Session__c(Name = 'Test Session', Event_custom__c = event.Id, Type__c = 'Payable');
+        insert session;
+        Contact contact = new Contact(FirstName='Ilya', LastName='Litovchik');
+        insert contact;
+        Session_Participation__c sessionParticipation = new Session_Participation__c(Contact__c = contact.Id, Session__c = session.Id, Status__c = 'Pending');
+        insert sessionParticipation;
+
+        Event_Registration_Group__c group1 = new Event_Registration_Group__c(Name = 'Group1', Contact__c = contact.Id);
+		insert group1;
+
+		Event_Registration_Sub_Group__c subGroup = new Event_Registration_Sub_Group__c(Event_Registration_Group__c = group1.Id, Is_Locked__c = true);
+        insert subGroup;
+        
+        List<Participant__c> eventParticipation = new List<Participant__c>();
+
+        for(Integer i = 0; i < 5; i++){
+            eventParticipation.add(new Participant__c(Contact__c = contact.Id, Event_custom__c = event.Id, Status__c = 'Pending'));
+        }
+
+        insert eventParticipation;
+
+        Order__c ord = new Order__c();
+        ord.Status__c = 'Opened';
+        ord.Contact__c = contact.Id;
+        ord.Event_custom__c = event.Id;
+        ord.Type__c = 'Event registration';
+        ord.Payment_Method__c = 'Bank Transfer';
+        ord.Event_Registration_Sub_Group__c = subGroup.Id;
+        insert ord;
+
+        List<Order_Item__c> orderItems = new List<Order_Item__c>();
+
+        for(Participant__c participant : eventParticipation){
+            orderItems.add(new Order_Item__c(Order_Custom__c = ord.Id, Event_Participation__c = participant.Id, Quantity__c = 1, Amount__c = 10));
+        }
+
+        orderItems.add(new Order_Item__c(Order_Custom__c = ord.Id, Session_Participation__c = sessionParticipation.Id, Quantity__c = 1, Amount__c = 5));
+
+        insert orderItems;
+
         ord.Status__c = 'Paid';
+        update ord;
+    }
+
+    @IsTest
+    public static void sendInvoiceSoloRegBTTest(){
+        Event__c event = new Event__c(Name = 'Test Event');
+        insert event;
+        Session__c session = new Session__c(Name = 'Test Session', Event_custom__c = event.Id, Type__c = 'Payable');
+        insert session;
+        Contact contact = new Contact(FirstName='Ilya', LastName='Litovchik');
+        insert contact;
+        Session_Participation__c sessionParticipation = new Session_Participation__c(Contact__c = contact.Id, Session__c = session.Id, Status__c = 'Pending');
+        insert sessionParticipation;
+
+        List<Participant__c> eventParticipation = new List<Participant__c>();
+
+        for(Integer i = 0; i < 5; i++){
+            eventParticipation.add(new Participant__c(Contact__c = contact.Id, Event_custom__c = event.Id, Status__c = 'Pending'));
+        }
+
+        insert eventParticipation;
+
+        Order__c ord = new Order__c();
+        ord.Contact__c = contact.Id;
+        ord.Event_custom__c = event.Id;
+        ord.Type__c = 'Event registration';        
+        ord.Status__c = 'Opened';
+        insert ord;
+
+        List<Order_Item__c> orderItems = new List<Order_Item__c>();
+
+        for(Participant__c participant : eventParticipation){
+            orderItems.add(new Order_Item__c(Order_Custom__c = ord.Id, Event_Participation__c = participant.Id, Quantity__c = 1, Amount__c = 10));
+        }
+
+        orderItems.add(new Order_Item__c(Order_Custom__c = ord.Id, Session_Participation__c = sessionParticipation.Id, Quantity__c = 1, Amount__c = 5));
+
+        insert orderItems;
+
+        ord.Payment_Method__c = 'Bank Transfer';
         update ord;
     }
 

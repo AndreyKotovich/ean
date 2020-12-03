@@ -1065,7 +1065,7 @@
                         message = 'If you do not hear back from us within 10 working days, please contact us at <a href="mailto:membership@ean.org">membership@ean.org</a>.';
                         showSuccessScreen(title, message);
                     } else if(result.type === 'EVENT_REGISTRATION') {
-                        let invoiceNumber = !!result.order && result.order.length > 0 ? result.order[0].Invoice_Number__c : 'NULL';
+                        let invoiceNumber = !!result.order && result.order.length > 0 ? result.order[0].Name : 'NULL';
                         let congressLink = !!result.order && result.order.length > 0 && result.order[0].Event_custom__r && !!result.order[0].Event_custom__r.www__c ? result.order[0].Event_custom__r.www__c : 'javascript:void(0)';
                         let body =
                             `<div class="slds-align_absolute-center">

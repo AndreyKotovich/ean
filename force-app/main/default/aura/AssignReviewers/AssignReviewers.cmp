@@ -1,7 +1,36 @@
-<aura:component>
-    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+<aura:component controller="AssignRewiewersController" implements="flexipage:availableForAllPageTypes" access="global">
+    <aura:attribute name="abstracts" type="Object" />
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="numberOfReviewers" type="Integer" default="3"/>
+    <aura:attribute name="topics" type="String[]"/>
+    <aura:attribute name="selectedTopic" type="String"/>
+    <aura:attribute name="abstractListStage" type="Boolean" default="true" />
 
-    {!v.header}
-    {!v.body}
-    {!v.footer}
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+
+    <div class="slds-box slds-theme_default">
+        <!-- Abstract List section -->
+        <aura:if isTrue="{!v.abstractListStage}">
+            <lightning:input type="number" name="numberOfReviewers" value="{! v.numberOfReviewers}" maxlength="4" label="Number of Reviewers" />
+
+            <lightning:select name="selectTopic" label="Select topic" value="{!v.selectedTopic}" onchange="{! c.selectTopic }">
+                <aura:iteration items="{!v.topics}" var="topic">
+                    <option text="{!topic}" value="{!topic}" />
+                </aura:iteration>
+            </lightning:select>
+            
+            <br />
+
+            <lightning:datatable
+                columns = "{! v.columns }"
+                data = "{! v.abstracts }"
+                keyField = "id" 
+                hideCheckboxColumn = "false"/>
+
+            <br />
+
+            <lightning:button variant="brand" label="Assign Reviewers" title="Assign Reviewers" onclick="{! c.assignReviewers }" />
+        </aura:if>
+    </div>
+    
 </aura:component>

@@ -28,6 +28,10 @@ public without sharing class MembershipRenewalController {
 
 	public final static String FORM_STATUS_FOR_STUDENT_MEMBERSHIP = 'Submitted';
 	// public final static String FORM_STATUS_FOR_NOT_STUDENT_MEMBERSHIP = 'Approved';
+
+	public final static String FORM_STATUS_FOR_STUDENT_MEMBERSHIP_TOTAL_ZERO = 'Submitted';
+	public final static String FORM_STATUS_FOR_STUDENT_MEMBERSHIP_TOTAL_NOT_ZERO = 'Waiting For Payment';
+
 	public final static String FORM_STATUS_FOR_NOT_STUDENT_MEMBERSHIP = 'Waiting For Payment';	//	EANMR-52
 
 	public final static String SKIP_ATTACH_FILES_LIKE = 'Certificate_%';
@@ -53,7 +57,7 @@ public without sharing class MembershipRenewalController {
 					Contact__r.Email, Contact__r.Nationality__c, Contact__r.Residency__c,
 					Contact__r.MailingStreet, Contact__r.MailingPostalCode, Contact__r.MailingCity,
 					Contact__r.Phone, Contact__r.Expected_Date_Of_Graduation__c, Contact__r.License_issued__c,
-					Contact__r.AAN_Member__c, Contact__r.Retired__c, Contact__r.Profession__c, Renewal_Application_Form__c
+					Contact__r.AAN_Member__c, Contact__r.Retired__c, Contact__r.Profession__c, Renewal_Application_Form__c, Renewal_Application_Form__r.Form_Status__c
 				FROM MembershipContactAssotiation__c
 				WHERE Contact__c =:contactId
 				// AND Application_form__c != null
@@ -152,7 +156,7 @@ public without sharing class MembershipRenewalController {
 				'allowAANMemberDiscount' => API_ALLOWED_MEMBERS_TO_GET_AAN_DISCOUNT.contains(membershipStatus.Membership__r.API__c) && ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT.contains(membershipRegion),
 
 				//	EANMR-70
-				'displayAANMemberCheckbox' => API_ALLOWED_MEMBERS_TO_DISPLAY_AAN_CHECKBOX.contains(membershipStatus.Membership__r.API__c) && ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT.contains(membershipRegion),
+				'displayAANMemberCheckbox' => API_ALLOWED_MEMBERS_TO_DISPLAY_AAN_CHECKBOX.contains(membershipStatus.Membership__r.API__c),
 
 				//	EANMR-24
 				'allowRetiredDiscount' => API_ALLOWED_MEMBERS_TO_GET_RETIRED_DISCOUNT.contains(membershipStatus.Membership__r.API__c) && ALLOWED_REGIONS_TO_GET_RETIRED_DISCOUNT.contains(membershipRegion),
@@ -186,6 +190,17 @@ public without sharing class MembershipRenewalController {
 		}
 	}
 
+	//  priority 2: previous year
+	public static Map<String, Object> collectRenewalInfo(Id communityContactId) {
+		List<MembershipContactAssotiation__c> contactsMemberships = [
+			SELECT Id, Expiration_date__c, Membership__c, Membership__r.Name, Membership__r.API__c, Renewal_Application_Form__c, Renewal_Application_Form__r.Form_Status__c
+			FROM MembershipContactAssotiation__c
+			WHERE Contact__c =:communityContactId
+			// AND IsActive__c=true
+		];
+		return collectRenewalInfo(contactsMemberships);
+	}
+
 	public static Map<String, Object> collectRenewalInfo(List<MembershipContactAssotiation__c> contactsMemberships) {
 		try {
 			Datetime now = System.now();
@@ -205,7 +220,7 @@ public without sharing class MembershipRenewalController {
 
 			for (MembershipContactAssotiation__c contactsMembership : contactsMemberships) {
 
-				if (contactsMembership.Renewal_Application_Form__c != null && alreadyExistAppsStatusesForNextYear.contains(contactsMembership.Renewal_Application_Form__c)) {
+				if (contactsMembership.Renewal_Application_Form__c != null && alreadyExistAppsStatusesForNextYear.contains(contactsMembership.Renewal_Application_Form__r.Form_Status__c)) {
 					alreadyExistMembershipStatusForNextYear = true;
 					break;
 				}
@@ -233,7 +248,7 @@ public without sharing class MembershipRenewalController {
 
 				//  priority 2: previous year
 				if (contactsMembership.Expiration_date__c != null
-					&& contactsMembership.Expiration_date__c >= previousYearStart && contactsMembership.Expiration_date__c < nextYearStart
+					&& contactsMembership.Expiration_date__c >= previousYearStart && contactsMembership.Expiration_date__c < thisYearStart
 					&& membershipIndex < previousMembershipStatusIndex
 				) {
 					previousMembershipStatusToRenewalId = '' + contactsMembership.Id;
@@ -284,7 +299,7 @@ public without sharing class MembershipRenewalController {
 				//	'allowAANMemberDiscount'
 				'allowAANMemberDiscount' => API_ALLOWED_MEMBERS_TO_GET_AAN_DISCOUNT.contains(membershipApiName) && ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT.contains(membershipRegion),
 				//	EANMR-70
-				'displayAANMemberCheckbox' => API_ALLOWED_MEMBERS_TO_DISPLAY_AAN_CHECKBOX.contains(membershipApiName) && ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT.contains(membershipRegion),
+				'displayAANMemberCheckbox' => API_ALLOWED_MEMBERS_TO_DISPLAY_AAN_CHECKBOX.contains(membershipApiName),
 				'allowRetiredDiscount' => API_ALLOWED_MEMBERS_TO_GET_RETIRED_DISCOUNT.contains(membershipApiName) && ALLOWED_REGIONS_TO_GET_RETIRED_DISCOUNT.contains(membershipRegion)
 			};
 
@@ -406,7 +421,12 @@ public without sharing class MembershipRenewalController {
 				City__c = formCity, Phone_number__c = formPhoneNumber, Profession__c = formProfession,
 				Expected_Date_Of_Graduation__c = dateOfGraduation, License_issued__c = licenseIssuedDate,
 				Order__c = generatedOrderId, Contact__c = currentContactId,
-				Form_Status__c = membershipApiName == API_STUDENT_MEMBERSHIP ? FORM_STATUS_FOR_STUDENT_MEMBERSHIP : FORM_STATUS_FOR_NOT_STUDENT_MEMBERSHIP,
+
+				Form_Status__c = membershipApiName != API_STUDENT_MEMBERSHIP
+					? FORM_STATUS_FOR_NOT_STUDENT_MEMBERSHIP
+						: grandTotalRenewalFee == 0 ? FORM_STATUS_FOR_STUDENT_MEMBERSHIP_TOTAL_ZERO
+							: FORM_STATUS_FOR_STUDENT_MEMBERSHIP_TOTAL_NOT_ZERO,
+
 				Nationality__c = formNationality, Residency__c = formCountryOfResidence, Membership__c = membershipId,
 				AAN_Member__c = formIamAANMember, Retired__c = formIamRetired,
 				Role_in_department__c = prevMembershipStatus[0].Role__c,
@@ -424,11 +444,17 @@ public without sharing class MembershipRenewalController {
 			String approvalResultString = '';
 
 			if (membershipApiName == API_STUDENT_MEMBERSHIP) {
-				approvalResultString = submitForApproval('' + newApplicationForm.Id);
+				//	record will be locked in Lightning Flow
+				// approvalResultString = submitForApproval('' + newApplicationForm.Id);
 			} else {
-				//	EANMR-52 don't need any approval processes
 				Approval.LockResult lockResult = Approval.lock(newApplicationForm.Id, false);
 				approvalResultString = JSON.serialize(lockResult);
+			}
+
+			//	create transaction for ZERO amount order	(used for Students Membership)
+			if (grandTotalRenewalFee == 0) {
+				//	used for lock record in Lightning Flow
+				insert new Transaction__c(Amount__c = 0, Completion_Time_Stamp__c = now, JSONResponse__c = 'None', Order_Custom__c = generatedOrderId, Status__c = 'Success');
 			}
 
 			update new MembershipContactAssotiation__c(Id = membershipStatusId, Renewal_Application_Form__c = newApplicationForm.Id);
@@ -494,29 +520,25 @@ public without sharing class MembershipRenewalController {
 		}
 		insert orderItems;
 
-		//	create transaction for ZERO amount order
-		if (totalRenewalFee + journalsPrices == 0) {
-			insert new Transaction__c(Amount__c = 0, Completion_Time_Stamp__c = now, JSONResponse__c = 'None', Order_Custom__c = newOrder.Id, Status__c = 'Success');
-		}
-
 		return newOrder.Id;
 	}
 
-	public static String submitForApproval(String formId) {
-		String methodMessage = 'Success';
-		try {
-			String userId = UserInfo.getUserId();
-			Approval.ProcessSubmitRequest req1 = new Approval.ProcessSubmitRequest();
-			req1.setObjectId(formId);
-			req1.setSubmitterId(userId);
-			Approval.ProcessResult result = Approval.process(req1);
-		} catch (Exception e) {
-			methodMessage = 'Error Message: ' + e.getMessage() + ' StackTrace: ' + e.getStackTraceString();
-			system.debug('MembershipRenewalController [submitForApproval] Error: ' + e.getMessage());
-			system.debug('MembershipRenewalController [submitForApproval] StackTrace: ' + e.getStackTraceString());
-		}
-		return methodMessage;
-	}
+	//	DEPRECATED
+	// public static String submitForApproval(String formId) {
+	// 	String methodMessage = 'Success';
+	// 	try {
+	// 		String userId = UserInfo.getUserId();
+	// 		Approval.ProcessSubmitRequest req1 = new Approval.ProcessSubmitRequest();
+	// 		req1.setObjectId(formId);
+	// 		req1.setSubmitterId(userId);
+	// 		Approval.ProcessResult result = Approval.process(req1);
+	// 	} catch (Exception e) {
+	// 		methodMessage = 'Error Message: ' + e.getMessage() + ' StackTrace: ' + e.getStackTraceString();
+	// 		system.debug('MembershipRenewalController [submitForApproval] Error: ' + e.getMessage());
+	// 		system.debug('MembershipRenewalController [submitForApproval] StackTrace: ' + e.getStackTraceString());
+	// 	}
+	// 	return methodMessage;
+	// }
 
 	//	used for API_RR_MEMBERSHIP and API_STUDENT_MEMBERSHIP
 	public static void attachFilesToForm(List<Map <String, String>> uploadedFilesPills, String currentContactId, Id newApplicationFormId) {
@@ -542,42 +564,19 @@ public without sharing class MembershipRenewalController {
 		if (!linksToInsert.isEmpty()) insert linksToInsert;
 	}
 
-	//	DEPRECATED
-	//	used for API_FELLOW_EAN_MEMBERSHIP and API_FULL_MEMBERSHIP and API_CORRESPONDING_MEMBERSHIP
-	// public static void attachFilesFromPreviousForm(String oldApplicationFormId, Id newApplicationFormId) {
-	// 	List<ContentDocumentLink> linksToInsert = new List<ContentDocumentLink>();
-	// 	Set<Id> processedDocumentIdList = new Set<Id>();
-	// 	if (String.isBlank(oldApplicationFormId) || newApplicationFormId == null) return;
-
-	// 	List<ContentDocumentLink> existingLinks = [
-	// 		SELECT Id, LinkedEntityId, Visibility, ContentDocumentId, ShareType FROM ContentDocumentLink WHERE LinkedEntityId =:oldApplicationFormId AND (NOT ContentDocument.Title LIKE :SKIP_ATTACH_FILES_LIKE)
-	// 	];
-
-	// 	for (ContentDocumentLink existingLink : existingLinks) {
-	// 		if (processedDocumentIdList.contains(existingLink.ContentDocumentId)) continue;
-	// 		processedDocumentIdList.add(existingLink.ContentDocumentId);
-
-	// 		existingLink.Id = null;
-	// 		existingLink.LinkedEntityId = newApplicationFormId;
-	// 		linksToInsert.add(existingLink);
-	// 	}
-
-	// 	if (!linksToInsert.isEmpty()) insert linksToInsert;
-	// }
-
 	@InvocableMethod(label='UpdateAppForm')
 	public static void updateAppForm(List<String> recordIds) {
-        system.debug('MembershipRenewalController [updateAppForm] recordIds: ' + JSON.serialize(recordIds));
-        if (recordIds.isEmpty()) return;
-        try {
-            Set<Id> recordIdsTemp = new Set<Id>();
-            for (String recordId : recordIds) {
-                recordIdsTemp.add(Id.valueOf(recordId));
+		system.debug('MembershipRenewalController [updateAppForm] recordIds: ' + JSON.serialize(recordIds));
+		if (recordIds.isEmpty()) return;
+		try {
+			Set<Id> recordIdsTemp = new Set<Id>();
+			for (String recordId : recordIds) {
+				recordIdsTemp.add(Id.valueOf(recordId));
 			}
 			
 			List<Id> recordIdsList = new List<Id>(recordIdsTemp);
 
-            List<Approval.UnlockResult> unlockResult = Approval.unlock(recordIdsList);
+			List<Approval.UnlockResult> unlockResult = Approval.unlock(recordIdsList);
 			system.debug('MembershipRenewalController [updateAppForm] unlockResult: ' + JSON.serialize(unlockResult));
 
 			List<Application_form__c> formsToUpdate = new List<Application_form__c>();
@@ -589,8 +588,8 @@ public without sharing class MembershipRenewalController {
 			}
 			update formsToUpdate;
 
-            List<Approval.LockResult> lockResult = Approval.lock(recordIdsList);
-            system.debug('MembershipRenewalController [updateAppForm] lockResult: ' + JSON.serialize(lockResult));		
+			List<Approval.LockResult> lockResult = Approval.lock(recordIdsList);
+			system.debug('MembershipRenewalController [updateAppForm] lockResult: ' + JSON.serialize(lockResult));		
 
 
 		} catch (Exception e) {
@@ -598,22 +597,5 @@ public without sharing class MembershipRenewalController {
 			system.debug('MembershipRenewalController [updateAppForm] ERROR messageStack: ' + e.getStackTraceString());
 		}
 	}
-
-	// @InvocableMethod(label='Lock records')
-	// public static void LockRecords(List<String> recordIds) {
-    //     if (recordIds.isEmpty()) return;
-    //     try {
-    //         Set<String> recordIdsTemp = new Set<String>();
-    //         for (String recordId : recordIds) {
-    //             Id.valueOf(recordId);
-    //             recordIdsTemp.add(recordId);
-    //         }
-    //         List<Approval.LockResult> lockResult = Approval.lock(new List<String>(recordIdsTemp));
-    //         system.debug('MembershipRenewalController [LockRecords] lockResult: ' + JSON.serialize(lockResult));
-	// 	} catch (Exception e) {
-	// 		system.debug('MembershipRenewalController [LockRecords] ERROR message: ' + e.getMessage());
-	// 		system.debug('MembershipRenewalController [LockRecords] ERROR messageStack: ' + e.getStackTraceString());
-	// 	}
-	// }
 
 }

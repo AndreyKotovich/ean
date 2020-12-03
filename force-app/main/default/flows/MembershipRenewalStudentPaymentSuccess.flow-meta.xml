@@ -123,27 +123,6 @@
         <object>Order__c</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
-    <recordUpdates>
-        <name>Set_Submitted_form_status</name>
-        <label>Set &apos;Submitted&apos; form status</label>
-        <locationX>897</locationX>
-        <locationY>183</locationY>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>Get_Application_Form.Id</elementReference>
-            </value>
-        </filters>
-        <inputAssignments>
-            <field>Form_Status__c</field>
-            <value>
-                <stringValue>Submitted</stringValue>
-            </value>
-        </inputAssignments>
-        <object>Application_form__c</object>
-    </recordUpdates>
     <start>
         <locationX>50</locationX>
         <locationY>50</locationY>

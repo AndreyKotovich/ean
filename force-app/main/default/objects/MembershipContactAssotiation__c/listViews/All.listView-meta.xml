@@ -6,9 +6,6 @@
     <columns>Contact__c</columns>
     <columns>IsActive__c</columns>
     <columns>Expiration_date__c</columns>
-    <columns>Do_Call_For_Renewal__c</columns>
-    <columns>Email_Activity__c</columns>
-    <columns>Last_Call_For_Renewal_Date__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
     <language>en_US</language>
