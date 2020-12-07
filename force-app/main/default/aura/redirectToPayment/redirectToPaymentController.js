@@ -28,6 +28,7 @@
                             }
                         };
                         navService.navigate(pageReference);
+                        $A.get("e.force:closeQuickAction").fire();
                     }
                 }
             }

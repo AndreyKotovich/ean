@@ -492,11 +492,44 @@ public without sharing class PaymentHttpRequest {
             return returnStatement;
         }
     }
-    @RemoteAction public static List<Order__c> getOrderInfo(String orderId) {
-        List<Order__c> order = [SELECT Id, Name, Contact__r.FirstName, Contact__r.LastName, Invoice_Number__c, Total_amount__c, Payment_Method__c, CreatedDate FROM Order__c WHERE Id = :orderId];
-        return order;
+    // @RemoteAction public static List<Order__c> getOrderInfo(String orderId) {
+    //     List<Order__c> order = [SELECT Id, Name, Contact__r.FirstName, Contact__r.LastName, Invoice_Number__c, Total_amount__c, Payment_Method__c, CreatedDate FROM Order__c WHERE Id = :orderId];
+    //     return order;
+    // }
+    //  'Membership Renewal' updates
+
+    @RemoteAction public static Map<String, Object> getOrderInfo(String orderId) {
+        return getOrderInfoUpdated(orderId, true);
     }
-    
+
+    public static Map<String, Object> getOrderInfoUpdated(String orderId, Boolean insertEmailActivityForRenewal) {
+        Map<String, Object> result = new Map<String, Object>();
+        List<Order__c> order = [
+            SELECT Id, Name, Contact__c, Contact__r.Email, Contact__r.FirstName, Contact__r.LastName, Invoice_Number__c, Total_amount__c, Payment_Method__c, CreatedDate, Type__c
+            FROM Order__c
+            WHERE Id = :orderId
+        ];
+        String nextYearString = System.now().addYears(1).format('YYYY');
+        String orderType = !order.isEmpty() && !String.isBlank(order[0].Type__c) ? order[0].Type__c : '';
+        result.put('singleOrderInList', order);
+        result.put('nextYearString', nextYearString);
+        result.put('orderType', orderType);
+
+        if (orderType == 'Renewal' && insertEmailActivityForRenewal && !order.isEmpty() && order[0].Contact__c != null && order[0].Total_amount__c != 0) {
+            List<Email_Activity__c> existingEmailActivity = [SELECT Id FROM Email_Activity__c WHERE Contact__c =:order[0].Contact__c AND Order__c =:order[0].Id LIMIT 1];
+            if (!existingEmailActivity.isEmpty()) return result;
+            insert new Email_Activity__c(
+                Contact__c = order[0].Contact__c,
+                Order__c = order[0].Id,
+                // Email_Sent__c = !String.isBlank(order[0].Contact__r.Email),
+                Send_To_Email__c = order[0].Contact__r.Email,
+                Type__c = 'Membership Renewal Bank Transfer Payment Pending'
+            );
+        }
+
+        return result;
+    }
+
     @RemoteAction public static void updatePaymentMethodForOrder(String orderId, String method) {
         try {
             String paymentMethod = method == 'card-method' ? 'creditcard' : 
@@ -595,14 +628,20 @@ public without sharing class PaymentHttpRequest {
     }
 
     @RemoteAction public static String generateBankCredsPdfDownloadLink(String orderId){
-        List<Order__c> order = getOrderInfo(orderId);
+
+        //  'Membership Renewal' updates
+        Map<String, Object> orderInfo = getOrderInfoUpdated(orderId, false);   //  false == do not insert new Email_Activity record
+        List<Order__c> order = (List<Order__c>) orderInfo.get('singleOrderInList');
+        String nextYearString = String.valueOf(orderInfo.get('nextYearString'));
+        String orderType = String.valueOf(orderInfo.get('orderType'));
+
         String attachmentLink = 'javascript:void(0);';
         if(!order.isEmpty()){
             // Boolean isTypeOc = order[0].Invoice_Number__c != null && order[0].Invoice_Number__c.contains( 'EAN' + String.valueOf(Date.today().year()).right(2) + '-OC');
             //  https://jira.towa-digital.com/browse/EANER-19   use EAN21-F-#### (= Invoice Number) 
             Boolean isTypeOc = order[0].Invoice_Number__c != null && order[0].Invoice_Number__c.contains( 'EAN' + String.valueOf(Date.today().year()).right(2) + '-F');
-
             String template = isTypeOc ? 'BankTransferRegistrationPdf' : 'BankTransferCredentialsPdf';
+            if (orderType == 'Renewal') template = 'BankTransferRenewalCredentialsPdf';
             PageReference defaultPage = new PageReference('/apex/' + template);
             
             defaultPage.getParameters().put('orderName', order[0].Name);
@@ -612,6 +651,11 @@ public without sharing class PaymentHttpRequest {
             defaultPage.getParameters().put('lastName', String.valueOf(order[0].Contact__r.LastName));
             String orderDeadline= order[0].CreatedDate.addDays(7).format('MM.dd.yyyy');
             defaultPage.getParameters().put('orderDeadline', orderDeadline);
+
+            //  'Membership Renewal' updates
+            defaultPage.getParameters().put('nextYearString', nextYearString);
+            defaultPage.getParameters().put('orderType', orderType);
+
             Blob pageData;
             if (Test.isRunningTest()) {
                 pageData = Blob.valueOf('Unit.Test');

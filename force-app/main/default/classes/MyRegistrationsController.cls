@@ -25,6 +25,7 @@ public without sharing class MyRegistrationsController {
 	//	COMMUNITY COMPONENT: MY REGISTRAIONS
 	@AuraEnabled
 	public static Map<String, Object> getMyRegistrations(Map<String, Object> settings) {
+		Id communityContactId = null;
 		try {
 			String paramsString = settings.containsKey('params') ? String.valueOf(settings.get('params')) : '';
 			Map<String, String> params = !String.isBlank(paramsString) ? (Map<String, String>) JSON.deserialize(paramsString, Map<String, String>.class) : new Map<String, String>();
@@ -38,7 +39,7 @@ public without sharing class MyRegistrationsController {
 
 			List<User> communityUser = !String.isBlank(contactRecordId) ? [SELECT Id, ContactId, Contact.AccountId FROM User WHERE ContactId =:contactRecordId LIMIT 1]
 				: [SELECT Id, ContactId, Contact.AccountId FROM User WHERE Id =:userId LIMIT 1];
-			Id communityContactId = !Test.isRunningTest() ? communityUser[0].ContactId : Id.valueOf(contactRecordId);	//	Id accountId = communityUser[0].Contact.AccountId;
+			communityContactId = !Test.isRunningTest() ? communityUser[0].ContactId : Id.valueOf(contactRecordId);	//	Id accountId = communityUser[0].Contact.AccountId;
 
 			List<Participant__c> allMyParticipations = queryParticipants(communityContactId, selectedCRType);
 
@@ -184,7 +185,7 @@ public without sharing class MyRegistrationsController {
 		} catch (Exception e) { 
 			system.debug('MyRegistrationsController [getMyRegistrations] Error: ' + e.getMessage());
 			system.debug('MyRegistrationsController [getMyRegistrations] Stack: ' + e.getStackTraceString());
-			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString()};
+			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString(), 'contactId' => communityContactId};
 		}
 	}
 
@@ -278,7 +279,7 @@ public without sharing class MyRegistrationsController {
 		// queryString += 'AND (Status__c =\'Registered\' OR Status__c =\'Participated\')';
 		// queryString += 'AND Status__c !=\'Canceled\' AND Status__c !=\'Participated\'';
 
-		Map<String, SObject> allMyParticipationsMap = new Map<String, SObject>(Database.query(queryString));
+		Map<String, SObject> allMyParticipationsMap = String.isBlank(communityContactId) ? new Map<String, SObject>() : new Map<String, SObject>(Database.query(queryString));
 		if (String.isBlank(changeRequestType)) return (List<Participant__c>) allMyParticipationsMap.values();
 
 		//	part of logic to prevent SOLO requests (as a group member) if we have a Group Cancellation Request

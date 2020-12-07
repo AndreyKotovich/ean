@@ -1,14 +1,30 @@
 <aura:component controller="AssignRewiewersController" implements="flexipage:availableForAllPageTypes" access="global">
     <aura:attribute name="abstracts" type="Object" />
-    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="reviewers" type="Object" />
+    <aura:attribute name="abstractColumns" type="List"/>
+    <aura:attribute name="abstractColumnsToAssign" type="List"/>
+    <aura:attribute name="reviewerColumns" type="List"/>
     <aura:attribute name="numberOfReviewers" type="Integer" default="3"/>
     <aura:attribute name="topics" type="String[]"/>
     <aura:attribute name="selectedTopic" type="String"/>
+    <aura:attribute name="spinnerVisible" type="Boolean" default="false" />
     <aura:attribute name="abstractListStage" type="Boolean" default="true" />
+    <aura:attribute name="abstractAssignStage" type="Boolean" default="false" />
+    <aura:attribute name="notificationVisible" type="Boolean" default="false" />
+    <aura:attribute name="selectedRecords" type="List"/>
+    <aura:attribute name="assignedReviewers" type="List"/>
+    <aura:attribute name="selectedAbstract" type="Object" />
+    <aura:attribute name="notificationMessage" type="String" />
+
 
     <aura:handler name="init" value="{! this }" action="{! c.init }"/>
 
     <div class="slds-box slds-theme_default">
+        <!-- Spinner section -->
+        <aura:if isTrue="{!v.spinnerVisible}">
+            <lightning:spinner alternativeText="Loading" size="large" />
+        </aura:if>
+
         <!-- Abstract List section -->
         <aura:if isTrue="{!v.abstractListStage}">
             <lightning:input type="number" name="numberOfReviewers" value="{! v.numberOfReviewers}" maxlength="4" label="Number of Reviewers" />
@@ -22,15 +38,76 @@
             <br />
 
             <lightning:datatable
-                columns = "{! v.columns }"
+                columns = "{! v.abstractColumns }"
                 data = "{! v.abstracts }"
                 keyField = "id" 
-                hideCheckboxColumn = "false"/>
+                hideCheckboxColumn = "false" 
+                onrowselection="{! c.getSelectedRecords }"/>
 
             <br />
 
-            <lightning:button variant="brand" label="Assign Reviewers" title="Assign Reviewers" onclick="{! c.assignReviewers }" />
+            <lightning:button variant="brand" label="Manual Assign" title="Manual Assign" onclick="{! c.manualAssignReviewers }" />
+            <lightning:button variant="brand" label="Auto Assign" title="Auto Assign" onclick="{! c.autoAssignReviewers }" />
         </aura:if>
+
+        <!-- Abstract Assign section -->
+        <aura:if isTrue="{!v.abstractAssignStage}">
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_3-of-5">
+                    <!-- abstracts datatable -->
+                    <lightning:datatable
+                        columns = "{! v.abstractColumnsToAssign }"
+                        data = "{! v.selectedRecords }"
+                        keyField = "id" 
+                        hideCheckboxColumn = "true" 
+                        onrowaction = "{! c.getAbstractReviewers}"/>
+                </div>
+                <div class="slds-col slds-size_2-of-5">
+                    <!-- reviewers datatable -->
+                    <lightning:datatable
+                        aura:id="linesTable"
+                        columns = "{! v.reviewerColumns }"
+                        data = "{! v.reviewers }"
+                        keyField = "id" 
+                        hideCheckboxColumn = "false" 
+                        selectedRows = "{! v.assignedReviewers}"
+                        onrowselection="{! c.selectReviewer }"/>
+                </div>
+            </div>
+
+            <br />
+
+            <lightning:button variant="brand" label="Previous" title="Previous" onclick="{! c.previous }" />
+            <lightning:button variant="brand" label="Save" title="Save" onclick="{! c.save }" />
+        </aura:if>
+
+        <!--<aura:if isTrue="{!v.notificationVisible}">
+            <div class="demo-only" style="height:4rem">
+                <div class="slds-notify_container slds-is-relative">
+                    <div class="slds-notify slds-notify_toast slds-theme_error" role="status">
+                        <span class="slds-assistive-text">error</span>
+                        <span class="slds-icon_container slds-icon-utility-error slds-m-right_small slds-no-flex slds-align-top" title="Description of icon when needed">
+                            <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#error"></use>
+                            </svg>
+                        </span>
+                        <div class="slds-notify__content">
+                            <h2 class="slds-text-heading_small ">
+                                {! v.notificationMessage}
+                            </h2>
+                        </div>
+                        <div class="slds-notify__close">
+                            <button class="slds-button slds-button_icon slds-button_icon-inverse" title="Close">
+                                <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                    <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                                </svg>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aura:if>-->
     </div>
     
 </aura:component>

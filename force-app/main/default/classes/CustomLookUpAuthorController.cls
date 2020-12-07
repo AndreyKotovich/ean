@@ -25,20 +25,34 @@ public with sharing class CustomLookUpAuthorController {
 
     @AuraEnabled
     public static Contact createContact(String FirstNameString, String LastNameString, String EmailString, String Department, String City, String Country){
-        Contact con = new Contact(
-            FirstName = FirstNameString, 
-            LastName = LastNameString, 
-            Email = EmailString, 
-            Department_Name__c = Department, 
-            MailingCity = City, 
-            MailingCountry = Country
-        );
+        try{
+            Contact con = new Contact(
+                    FirstName = FirstNameString,
+                    LastName = LastNameString,
+                    Email = EmailString,
+                    Department_Name__c = Department,
+                    MailingCity = City,
+                    MailingCountry = Country
+            );
 
-        insert con;
+            insert con;
 
-        con = [SELECT Id, Name FROM Contact WHERE Id =: con.Id].get(0);
+            con = [SELECT Id, Name FROM Contact WHERE Id =: con.Id].get(0);
 
-        return con;
+            return con;
+        } catch (Exception e) {
+            String message = 'Something went wrong, please contact your system administrator';
+            System.debug('The following exception has occurred: ' + e.getMessage() +' on line number: ' + e.getLineNumber() + e.getStackTraceString() + e.getCause());
+
+            if(e.getMessage().contains('DUPLICATES_DETECTED')){
+                message = 'Please review inserted data, looks like contact with similar data already exist';
+            }
+
+            AuraHandledException auraError = new AuraHandledException(message);
+            auraError.setMessage(message);
+
+            throw auraError;
+        }
     }
 
     @AuraEnabled

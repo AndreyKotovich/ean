@@ -18,8 +18,7 @@ public with sharing class EAN_EmailBatchTest {
          for (Integer i=1; i <= 10; i++) {
              contacts.add(new Contact(
              LastName = 'Contact' + i,
-             FirstName = 'Test',
-             Email = 'test' + i + '@test.com'
+             FirstName = 'Test'
          ));
          }
         insert contacts;
@@ -32,13 +31,13 @@ public with sharing class EAN_EmailBatchTest {
                 insert regGroup;
                 regSubGroup = new Event_Registration_Sub_Group__c();
                 regSubGroup.Event_Registration_Group__c = regGroup.Id;
-                regSubGroup.Is_Locked__c = false;
+                // regSubGroup.Is_Locked__c = false;
                 insert regSubGroup;
             }
         }
         Event__c event = new Event__c();
-        event.Start_Time__c = Datetime.newInstance(Date.newInstance(2021, 10, 1), Time.newInstance(0, 0, 0, 0));
-        event.End_Time__c = Datetime.newInstance(Date.newInstance(2021, 10, 20), Time.newInstance(0, 0, 0, 0));
+        event.Start_Time__c = Datetime.newInstance(Date.today().addDays(40), Time.newInstance(0, 0, 0, 0));
+        event.End_Time__c = Datetime.newInstance(Date.today().addDays(50), Time.newInstance(0, 0, 0, 0));
         event.Name = 'Test event';
         insert event;
         List<Participant__c> participants = new List<Participant__c>();
@@ -62,5 +61,14 @@ public with sharing class EAN_EmailBatchTest {
                     FROM AsyncApexJob WHERE ID =: batchInstanceId ];
         System.assertEquals('Completed', aaj.Status);
         System.assertEquals(0, aaj.NumberOfErrors);
+        List<Email_Activity__c> emailActivities = [
+            SELECT Type__c, Event_Custom__r.Name
+            FROM Email_Activity__c
+        ];
+        System.assert(emailActivities.size() > 0);
+        for (Email_Activity__c emailActivity : emailActivities) {
+            System.assert(emailActivity.Type__c == 'Reminder GR add participants');
+            System.assert(emailActivity.Event_Custom__r.Name == 'Test event');
+        }
     }
 }

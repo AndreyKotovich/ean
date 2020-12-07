@@ -92,13 +92,6 @@
                 <elementReference>Topics_Pick</elementReference>
             </value>
         </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Late_Breaking_Submission__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>SetLateBreakingCheckbox</elementReference>
-            </value>
-        </assignmentItems>
         <connector>
             <targetReference>CreateAbstract</targetReference>
         </connector>
@@ -401,8 +394,8 @@
     <assignments>
         <name>Enable_Presenter_Error_Message</name>
         <label>Enable Presenter Error Message</label>
-        <locationX>50</locationX>
-        <locationY>1843</locationY>
+        <locationX>129</locationX>
+        <locationY>1804</locationY>
         <assignmentItems>
             <assignToReference>PresenterErrorFlag</assignToReference>
             <operator>Assign</operator>
@@ -508,6 +501,22 @@
         </assignmentItems>
         <connector>
             <targetReference>Fill_Abstract_Screen_0</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>LateBreakingSubmissionAssign</name>
+        <label>LateBreakingSubmissionAssign</label>
+        <locationX>833</locationX>
+        <locationY>433</locationY>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Late_Breaking_Submission__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>GetMembershipStatus</targetReference>
         </connector>
     </assignments>
     <choices>
@@ -651,6 +660,14 @@
                     <stringValue>Public Submission Open</stringValue>
                 </rightValue>
             </conditions>
+            <connector>
+                <targetReference>GetMembershipStatus</targetReference>
+            </connector>
+            <label>Submission Open</label>
+        </rules>
+        <rules>
+            <name>Late_Breaking_Submission</name>
+            <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>GetEvent.Abstract_Submission__c</leftValueReference>
                 <operator>EqualTo</operator>
@@ -659,9 +676,9 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>GetMembershipStatus</targetReference>
+                <targetReference>LateBreakingSubmissionAssign</targetReference>
             </connector>
-            <label>Submission Open</label>
+            <label>Late Breaking Submission</label>
         </rules>
     </decisions>
     <decisions>
@@ -727,24 +744,9 @@
     <decisions>
         <name>PresenterChecker</name>
         <label>PresenterChecker</label>
-        <locationX>268</locationX>
-        <locationY>1923</locationY>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Presenter_checked</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>checkedPresenter</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>PresenterFound</targetReference>
-            </connector>
-            <label>Presenter checked</label>
-        </rules>
+        <locationX>240</locationX>
+        <locationY>1932</locationY>
+        <defaultConnectorLabel>Default</defaultConnectorLabel>
         <rules>
             <name>Presenter_not_checked</name>
             <conditionLogic>and</conditionLogic>
@@ -759,6 +761,28 @@
                 <targetReference>Enable_Presenter_Error_Message</targetReference>
             </connector>
             <label>Presenter not checked</label>
+        </rules>
+        <rules>
+            <name>Presenter_checked</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>checkedPresenter</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>selectedRecordId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue/>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>PresenterFound</targetReference>
+            </connector>
+            <label>Presenter checked</label>
         </rules>
     </decisions>
     <decisions>
@@ -789,8 +813,8 @@
     <decisions>
         <name>SubmitAbstractDecision</name>
         <label>SubmitAbstractDecision</label>
-        <locationX>491</locationX>
-        <locationY>3691</locationY>
+        <locationX>492</locationX>
+        <locationY>3703</locationY>
         <defaultConnector>
             <targetReference>SubmissionSuccessScreen</targetReference>
         </defaultConnector>
@@ -880,7 +904,7 @@
             <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>TotalBodyWordCount</leftValueReference>
-                <operator>GreaterThanOrEqualTo</operator>
+                <operator>GreaterThan</operator>
                 <rightValue>
                     <numberValue>250.0</numberValue>
                 </rightValue>
@@ -1048,11 +1072,6 @@
         <expression>SUBSTITUTE(SUBSTITUTE({!FileUpload3.fileNames},&apos;[&apos;,&apos;&apos;),&apos;]&apos;,&apos;&apos;)</expression>
     </formulas>
     <formulas>
-        <name>SetLateBreakingCheckbox</name>
-        <dataType>Boolean</dataType>
-        <expression>ISPICKVAL({!GetEvent.Abstract_Submission__c}, &quot;Late Breaking Submission&quot;)</expression>
-    </formulas>
-    <formulas>
         <name>SetTopicDefaultChoice</name>
         <dataType>String</dataType>
         <expression>BLANKVALUE(TEXT({!AbstractRecordVariable.Abstract_Topic__c}), &quot;Select a topic&quot;)</expression>
@@ -1160,8 +1179,8 @@
     <recordLookups>
         <name>GetMembershipStatus</name>
         <label>GetMembershipStatus</label>
-        <locationX>717</locationX>
-        <locationY>554</locationY>
+        <locationX>757</locationX>
+        <locationY>581</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>AssignStage10</targetReference>
@@ -1217,8 +1236,8 @@
     <recordUpdates>
         <name>Update_Abstract_with_Presenter_0</name>
         <label>Update Abstract with Presenter</label>
-        <locationX>869</locationX>
-        <locationY>2078</locationY>
+        <locationX>794</locationX>
+        <locationY>2085</locationY>
         <connector>
             <targetReference>AssignStage40</targetReference>
         </connector>
@@ -1333,7 +1352,7 @@
         <name>Add_Authors_Screen</name>
         <label>Add Authors Screen</label>
         <locationX>484</locationX>
-        <locationY>2347</locationY>
+        <locationY>2390</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1907,8 +1926,8 @@
     <screens>
         <name>Fill_Abstract_Screen_0</name>
         <label>Review Abstract Screen</label>
-        <locationX>615</locationX>
-        <locationY>2828</locationY>
+        <locationX>617</locationX>
+        <locationY>2826</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2009,21 +2028,6 @@
             <fieldType>DisplayText</fieldType>
         </fields>
         <fields>
-            <name>MaxWordErrorText_0</name>
-            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0);&quot;&gt;Please enter less than 250 words.&lt;/span&gt;&lt;/p&gt;</fieldText>
-            <fieldType>DisplayText</fieldType>
-            <visibilityRule>
-                <conditionLogic>and</conditionLogic>
-                <conditions>
-                    <leftValueReference>ShowWordCountErrorReview</leftValueReference>
-                    <operator>EqualTo</operator>
-                    <rightValue>
-                        <booleanValue>true</booleanValue>
-                    </rightValue>
-                </conditions>
-            </visibilityRule>
-        </fields>
-        <fields>
             <name>Introduction_0</name>
             <defaultValue>
                 <stringValue>{!Introduction}</stringValue>
@@ -2076,6 +2080,26 @@
             </validationRule>
         </fields>
         <fields>
+            <name>WordcountDisplay</name>
+            <fieldText>&lt;p&gt;&lt;u&gt;{!TotalBodyWordCount} words&lt;/u&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>MaxWordErrorText_0</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0);&quot;&gt;Please enter less than 250 words.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>ShowWordCountErrorReview</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
             <name>Disclosure_0</name>
             <dataType>String</dataType>
             <defaultValue>
@@ -2095,8 +2119,8 @@
     <screens>
         <name>Review_Abstract</name>
         <label>Review Abstract</label>
-        <locationX>356</locationX>
-        <locationY>2931</locationY>
+        <locationX>463</locationX>
+        <locationY>2832</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2678,7 +2702,7 @@
         </fields>
         <fields>
             <name>FileErrorText</name>
-            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0);&quot;&gt;Please select a section for all files you uploaded.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0);&quot;&gt;Please upload your images again and select a section for all files you uploaded.&lt;/span&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <visibilityRule>
                 <conditionLogic>and</conditionLogic>
@@ -2942,6 +2966,16 @@
     </variables>
     <variables>
         <name>FilesErrorMessage</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <name>LateBreakingSubmission</name>
         <dataType>Boolean</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>

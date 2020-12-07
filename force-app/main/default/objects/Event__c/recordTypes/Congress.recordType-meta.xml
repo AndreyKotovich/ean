@@ -27,6 +27,36 @@
         </values>
     </picklistValues>
     <picklistValues>
+        <picklist>Active_Abstract_Review_Window__c</picklist>
+        <values>
+            <fullName>Abstract Review</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Late Breaking Abstract Review</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Review Closed</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Active_Abstract_Submissions__c</picklist>
+        <values>
+            <fullName>Invited Submission</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Late Breaking Submission</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Public Submission</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>Country__c</picklist>
         <values>
             <fullName>Afghanistan</fullName>

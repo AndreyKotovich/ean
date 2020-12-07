@@ -229,6 +229,18 @@
         <template>EAN_Email_templates/EAN_Group_registration_success</template>
     </alerts>
     <alerts>
+        <fullName>Membership_Renewal_BankT_Payment_Pending</fullName>
+        <description>Membership Renewal Bank Transfer Payment Pending</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Send_To_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderAddress>membership@ean.org</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>EAN_Email_templates/Membership_Renewal_BankT_Payment_Pending</template>
+    </alerts>
+    <alerts>
         <fullName>Solo_Registration_Transfer</fullName>
         <description>Solo Registration Transfer</description>
         <protected>false</protected>
@@ -663,6 +675,29 @@
             <field>Email_Activity__c.Type__c</field>
             <operation>equals</operation>
             <value>Solo Registration Transfer</value>
+        </criteriaItems>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>Membership Renewal Bank Transfer Payment Pending</fullName>
+        <actions>
+            <name>Membership_Renewal_BankT_Payment_Pending</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Email_sent</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <criteriaItems>
+            <field>Email_Activity__c.Email_Sent__c</field>
+            <operation>equals</operation>
+            <value>False</value>
+        </criteriaItems>
+        <criteriaItems>
+            <field>Email_Activity__c.Type__c</field>
+            <operation>equals</operation>
+            <value>Membership Renewal Bank Transfer Payment Pending</value>
         </criteriaItems>
         <triggerType>onCreateOrTriggeringUpdate</triggerType>
     </rules>

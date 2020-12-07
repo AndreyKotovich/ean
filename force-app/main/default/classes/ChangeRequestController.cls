@@ -208,10 +208,7 @@ public without sharing class ChangeRequestController {
 			insert newChangeRequest;
 			newChangeRequest = [SELECT Id, Name FROM Change_Request__c WHERE Id =:newChangeRequest.Id LIMIT 1];
 
-			return new Map<String, Object> {
-				'result' => true,
-				'message' => 'Change Request: ' + newChangeRequest.Name + ' successfully created.'
-			};
+			return new Map<String, Object> {'result' => true, 'message' => 'Change Request: ' + newChangeRequest.Name + ' successfully created.'};
 
 		} catch (Exception e) {
 			system.debug('ChangeRequestController [submitSoloTransfer] Error: ' + e.getMessage());
@@ -247,17 +244,9 @@ public without sharing class ChangeRequestController {
 					if (!subGroupParticipant.isNewTransferExist) continue;
 
 					newChangeRequests.add(new Change_Request__c (
-						Contact__c = communityContactId,
-						Description__c = crDescription,
-						Event_custom__c = zeroParticipant[0].Event_custom__c,
-						Event_Participation__c = subGroupParticipant.participantId,
-						Event_Registration_Group__c = selectedGroupId,
-						Status__c = 'Requested',
-						TransferFromContact__c = subGroupParticipant.oldContactId,
-						TransferFromEmail__c = subGroupParticipant.oldContactEmail,
-						TransferToContact__c = subGroupParticipant.newTransferDetails.crContactId,
-						TransferToEmail__c = subGroupParticipant.newTransferDetails.crContactEmail,
-						Type__c = CR_TYPE_GROUP_TRANSFER
+						Contact__c = communityContactId, Description__c = crDescription, Event_custom__c = zeroParticipant[0].Event_custom__c, Event_Participation__c = subGroupParticipant.participantId,
+						Event_Registration_Group__c = selectedGroupId, Status__c = 'Requested', TransferFromContact__c = subGroupParticipant.oldContactId, TransferFromEmail__c = subGroupParticipant.oldContactEmail,
+						TransferToContact__c = subGroupParticipant.newTransferDetails.crContactId, TransferToEmail__c = subGroupParticipant.newTransferDetails.crContactEmail, Type__c = CR_TYPE_GROUP_TRANSFER
 					));
 				}
 			}

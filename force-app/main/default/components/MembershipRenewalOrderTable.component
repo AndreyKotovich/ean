@@ -1,0 +1,61 @@
+<apex:component id="MembershipRenewalOrderTable" access="global" controller="MembershipRenewalOrderTableController">
+	<apex:attribute name="order" description="Order Id for Membership Renewal" type="String" assignTo="{!orderId}" required="false" access="global"/>
+
+	<table style="width: 100%;">
+		<thead class="slds-assistive-text">
+			<tr class="slds-line-height_reset">
+				<th class="" scope="col" style="width: 80%">
+				</th>
+				<th class="" scope="col" style="width: 20%">
+				</th>
+			</tr>
+		</thead>
+		<tbody id="renewal-table-tbody">
+			<!-- <apex:repeat var="OrderItem" value="{!orderItems}"> -->
+                <tr class="slds-hint-parent">
+                    <td data-label="Item Name">
+						<div class="slds-truncate">
+							<apex:repeat var="OrderItem" value="{!orderItems}">
+								<p style="padding: 5px; margin: 0px; font-size: 11pt;">{!OrderItem.name}</p>
+							</apex:repeat>
+						</div>
+                    </td>
+                    <td data-label="Amount">
+						<div class="slds-truncate">
+							<apex:repeat var="OrderItem" value="{!orderItems}">
+								<p style="padding: 5px; margin: 0px; font-size: 11pt;">{!OrderItem.totalAmount}</p>
+							</apex:repeat>
+						</div>
+                    </td>
+                </tr>
+			<!-- </apex:repeat> -->
+			<tr class="slds-hint-parent">
+				<td data-label="Item Name">
+					<div class="slds-truncate" style="padding: 5px; margin: 0px; font-size: 11pt;">
+						<p>Total</p>
+						<p>Payment received</p>
+					</div>
+				</td>
+				<td data-label="Amount">
+					<div class="slds-truncate" style="padding: 5px; margin: 0px; font-size: 11pt;">
+						<p>{!orderTotalAmount}</p>
+						<p>{!orderReceivedAmount}</p>
+					</div>
+				</td>
+			</tr>
+			<tr class="slds-hint-parent">
+				<td data-label="Item Name">
+					<div class="slds-truncate" style="padding: 5px; margin: 0px; font-size: 11pt;">
+						<p>Balance</p>
+					</div>
+				</td>
+				<td data-label="Amount">
+					<div class="slds-truncate" style="padding: 5px; margin: 0px; font-size: 11pt;">
+						<p>{!balanceAmount}</p>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+</apex:component>

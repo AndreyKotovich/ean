@@ -179,8 +179,6 @@ public without sharing class ParticipantTriggerHelper {
             emailActivity.Event_Participation__c = partisipant.Id;
             emailActivity.Contact__c = partisipant.Contact__c;
             emailActivity.Event_custom__c = partisipant.Event_custom__c;
-            emailActivity.JSON_body__c = JSON.serialize(partisipant);
-            emailActivity.Group_Name__c = partisipant.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name;
             emailActivity.Event_Registration_Group__c = partisipant.Event_Registration_Sub_Group__r.Event_Registration_Group__c;
             if (String.isBlank(partisipant.Contact__r.Email)) {
                 emailActivity.Send_to_email__c = partisipant.Participant_Email__c;

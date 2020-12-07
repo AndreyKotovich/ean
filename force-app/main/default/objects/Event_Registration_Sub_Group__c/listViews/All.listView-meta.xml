@@ -3,7 +3,6 @@
     <fullName>All</fullName>
     <columns>NAME</columns>
     <columns>Event_Registration_Group__c</columns>
-    <columns>Is_Locked__c</columns>
     <columns>CREATED_DATE</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>

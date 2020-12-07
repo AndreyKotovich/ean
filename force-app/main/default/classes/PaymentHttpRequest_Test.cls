@@ -146,7 +146,8 @@ public with sharing class PaymentHttpRequest_Test {
     }
     @IsTest public static void getOrderInfoTest(){
         Order__c order = [SELECT Id FROM Order__c WHERE Contact__r.LastName = 'test'];
-        List<Order__c> orders = PaymentHttpRequest.getOrderInfo(order.Id);
+        Map<String, Object> orderInfo = PaymentHttpRequest.getOrderInfo(order.Id);
+        List<Order__c> orders = (List<Order__c>) orderInfo.get('singleOrderInList');
         System.assertEquals(false, orders.isEmpty());
     }
     @IsTest public static void getContactAddressTestSuccess(){

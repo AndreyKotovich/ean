@@ -72,17 +72,19 @@ public class CustomLookUpController {
     @AuraEnabled
     public static List<String> getMailingCountries(){
         List<String> countries = new List<String>();
+        try{
+            Schema.sObjectType objType = Contact.getSObjectType();
+            Schema.DescribeSObjectResult objDescribe = objType.getDescribe();
+            Map<String, Schema.SObjectField> fieldMap = objDescribe.fields.getMap();
+            List<Schema.PicklistEntry> values = fieldMap.get('MailingCountryCode').getDescribe().getPickListValues();
 
-        Schema.sObjectType objType = Contact.getSObjectType();
-        Schema.DescribeSObjectResult objDescribe = objType.getDescribe();
-        Map<String, Schema.SObjectField> fieldMap = objDescribe.fields.getMap();
-        List<Schema.PicklistEntry> values = fieldMap.get('MailingCountryCode').getDescribe().getPickListValues();
-
-        for (Schema.PicklistEntry v : values){
-            countries.add(v.getLabel());
+            for (Schema.PicklistEntry v : values){
+                countries.add(v.getLabel());
+            }
+        }catch(Exception e){
+            System.debug(e.getMessage());
         }
-
-        System.debug('countries: ' + countries);
+        
 
         return countries;
     }

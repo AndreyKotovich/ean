@@ -611,4 +611,9 @@ public without sharing class EventRegistrationController {
 
         return contactsMemberships;
     }
+
+    @AuraEnabled
+    public static Boolean displayEventRegisterButton(Id recordId){
+        return recordId.getSobjectType().getDescribe().getName() == 'Event__c';
+    }
 }

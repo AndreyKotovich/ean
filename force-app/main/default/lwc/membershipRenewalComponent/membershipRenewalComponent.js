@@ -68,6 +68,8 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 	_isRRFSMembership = false;
 	_isStudentMembership = false;
 
+	_displayClickUpdateSection = false;
+
 	//	EANMR-15, EANMR-16	// STEP 2
 	_enableGraduationAndLicenseStep = false;
 	_minimumLicenseIssuedDate;
@@ -210,6 +212,8 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 
 				if (this._membershipApiName === 'resident_and_research_membership') this._isRRFSMembership = true;
 				if (this._membershipApiName === 'student_membership') this._isStudentMembership = true;
+
+				this._displayClickUpdateSection = result.displayClickUpdateSection;
 
 				// this._dateOfGraduationErrorMessage = this._membershipApiName === 'resident_and_research_membership'
 				// 	? 'Will be defined by EAN! (validation 3 years)'

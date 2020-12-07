@@ -6,6 +6,9 @@
     <columns>Event__c</columns>
     <columns>Review_Capacity__c</columns>
     <columns>Topics__c</columns>
+    <columns>Capacity__c</columns>
+    <columns>Assigned_Abstracts__c</columns>
+    <columns>Remaining_Capacity__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
 </ListView>

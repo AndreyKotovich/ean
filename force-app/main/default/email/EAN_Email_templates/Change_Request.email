@@ -4,7 +4,11 @@
             <body>
             <p>Dear {!relatedTo.Contact__r.FirstName} {!relatedTo.Contact__r.LastName},</p>
                 <p>We have received your change request for the {!relatedTo.Event_custom__r.Event_Number__c}th {!relatedTo.Event_custom__r.Marketing_Name__c}. Attached you will find your credit note for your congress registration. </p>
-                <p>Please note that EAN charges a €{!relatedTo.Total_amount__c} processing fee (including {!relatedTo.Event_custom__r.VAT_Amount__c}% VAT) for any change requests made in the registration process.</p>
+                <p>Please note that EAN charges a €
+                <apex:outputText value="{0, number, 0.00}">
+                    <apex:param value="{!relatedTo.Total_amount__c}" />
+                </apex:outputText>
+                processing fee (including {!relatedTo.Event_custom__r.VAT_Amount__c}% VAT) for any change requests made in the registration process.</p>
                 <p>If you have any questions regarding registration, please contact us at registration@ean.org. </p> 
                 <p>We are looking forward to welcoming you at the {!relatedTo.Event_custom__r.Event_Number__c}th {!relatedTo.Event_custom__r.Name}! </p>
                 <p>Yours sincerely, <br />
@@ -26,7 +30,7 @@
                 Street: {!relatedTo.Contact__r.Work_Street__c}<br />
                 ZIP City: {!relatedTo.Contact__r.Work_Zip_Postal_Code__c} {!relatedTo.Contact__r.Work_City__c}<br />
                 Country: {!relatedTo.Contact__r.Work_Country__c}<br />
-                VAT Nr: </p>
+                VAT Nr: {!relatedTo.Event_custom__r.VAT_Amount__c}%</p>
             </div>
             <div style="height: 60px"> </div>
             <div style = "text-align: right">

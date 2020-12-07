@@ -14,9 +14,9 @@ trigger Participant on Participant__c (after insert, before insert, before updat
         if (participantIds.size() > 0) {
             ParticipantTriggerHelper.upsertBadges(participantIds);
         }
-        if(soloParticipantIds.size() > 0) {
-            ParticipantTriggerHelper.soloParticipantRegistration(soloParticipantIds);
-        }
+        // if(soloParticipantIds.size() > 0) {
+        //     ParticipantTriggerHelper.soloParticipantRegistration(soloParticipantIds);
+        // }
         // if (groupParticipantIds.size() > 0) {
         //     ParticipantTriggerHelper.groupParticipantRegistration(groupParticipantIds);
         // }

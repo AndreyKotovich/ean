@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Late_Breaking_Submission</fullName>
+    <active>true</active>
+    <errorConditionFormula>INCLUDES(Active_Abstract_Submissions__c , &quot;Public Submission&quot;) &amp;&amp; INCLUDES(Active_Abstract_Submissions__c , &quot;Late Breaking Submission&quot;)</errorConditionFormula>
+    <errorDisplayField>Active_Abstract_Submissions__c</errorDisplayField>
+    <errorMessage>Public and Late Breaking Submission cannot be open at the same time</errorMessage>
+</ValidationRule>

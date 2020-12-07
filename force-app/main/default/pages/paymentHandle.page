@@ -227,6 +227,7 @@
     <div id="bank-transfer-screen" hidden="hidden" class="slds-text-heading_small">
         <div id="BankTransferCredentials" hidden="hidden"><c:BankTransferCredentials /></div>
         <div id="BankTransferRegistration" hidden="hidden"><c:BankTransferRegistration /></div>
+        <div id="BankTransferRenewalCredentials" hidden="hidden"><c:BankTransferRenewalCredentials /></div>
         <a onclick="savePdf()">Download as PDF</a>
     </div>
     
@@ -547,13 +548,19 @@
                             spinner.setAttribute('hidden', 'hidden');
                             somethingWrongScreen.removeAttribute('hidden');
                         } else {
-                            order = JSON.parse(JSON.stringify(result));
-                            console.log('CreatedDate', order[0].CreatedDate);
+                            // order = JSON.parse(JSON.stringify(result));
+                            console.log('result: ', result);
+                            orderInfo = JSON.parse(JSON.stringify(result));
+                            console.log('orderInfo: ', orderInfo);
+                            order = orderInfo.singleOrderInList;
+                            console.log('order: ', order);
+
+                            console.log('CreatedDate1', order[0].CreatedDate);
                             let orderDeadline = formatDate(addDays(order[0].CreatedDate, 7));
                             document.querySelectorAll('.order-name').forEach(item => {
                                     console.log('orderInvoiceNumber', order[0]['Invoice_Number__c'])
                                     if (order[0].Invoice_Number__c && (order[0]['Invoice_Number__c']).indexOf('-OC-') > -1) {
-                                        item.innerHTML = '"' + order[0]['Invoice_Number__c'] + '"';
+                                        item.innerHTML = '"' + order[0]['Name'] + '"';
                                         document.getElementById("BankTransferRegistration").removeAttribute('hidden');
 
                                     //  https://jira.towa-digital.com/browse/EANER-19   use EAN21-F-#### (= Invoice Number) 
@@ -561,6 +568,10 @@
                                         item.innerHTML = '"' + order[0]['Name'] + '"';
                                         document.getElementById("BankTransferRegistration").removeAttribute('hidden');
 
+                                    //  'Membership Renewal' updates
+                                    } else if (orderInfo.orderType === 'Renewal') {
+                                        item.innerHTML = '"' + order[0]['Name'] + '"';
+                                        document.getElementById("BankTransferRenewalCredentials").removeAttribute('hidden');
                                     } else {
                                         item.innerHTML = '"' + order[0]['Name'] + '"';
                                         document.getElementById("BankTransferCredentials").removeAttribute('hidden');
@@ -580,6 +591,9 @@
                             });
                             document.querySelectorAll('.order-deadline').forEach(item => {
                                 item.innerHTML = orderDeadline;
+                            });
+                            document.querySelectorAll('.next-year-string').forEach(item => {
+                                item.innerHTML = orderInfo.nextYearString;
                             });
                             spinner.setAttribute('hidden', 'hidden');
                             document.getElementById("bank-transfer-screen").removeAttribute('hidden');
@@ -1054,6 +1068,7 @@
                 orderId,
                 function (result, event) {
                     let title, message;
+                    console.log('showAndDetermineSuccessScreen: ', result);
                     if(result.type === 'ERROR'){
                         somethingWrongScreen.removeAttribute('hidden');
                     } else if(result.type === 'ORDER'){
@@ -1065,7 +1080,7 @@
                         message = 'If you do not hear back from us within 10 working days, please contact us at <a href="mailto:membership@ean.org">membership@ean.org</a>.';
                         showSuccessScreen(title, message);
                     } else if(result.type === 'EVENT_REGISTRATION') {
-                        let invoiceNumber = !!result.order && result.order.length > 0 ? result.order[0].Name : 'NULL';
+                        let invoiceNumber = !!result.order && result.order.length > 0 ? result.order[0].Invoice_Number__c : 'NULL';
                         let congressLink = !!result.order && result.order.length > 0 && result.order[0].Event_custom__r && !!result.order[0].Event_custom__r.www__c ? result.order[0].Event_custom__r.www__c : 'javascript:void(0)';
                         let body =
                             `<div class="slds-align_absolute-center">

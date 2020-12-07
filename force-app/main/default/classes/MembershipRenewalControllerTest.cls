@@ -35,7 +35,7 @@ private class MembershipRenewalControllerTest {
                 First_name__c = 'Test', Last_name__c = 'Contact', Date_of_birth__c = testContact1.Birthdate,
                 Gender__c = 'Male', Email__c = 'test@email.com', Nationality__c = 'Austria',
                 Residency__c = 'Austria', ZIP_Postal_code__c = '111', City__c = 'Test', Contact__c = testContact1.Id, Membership__c = membership.Id,
-                Profession__c = 'Other', Street__c = 'TestStreet', Form_Status__c = 'Draft');
+                Profession__c = 'Other', Street__c = 'TestStreet', Form_Status__c = 'Approved');
 		insert appForm;
 
 		MembershipContactAssotiation__c membershipStatus = new MembershipContactAssotiation__c(

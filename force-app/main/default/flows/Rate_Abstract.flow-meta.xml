@@ -1,27 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <apiVersion>50.0</apiVersion>
-    <assignments>
-        <name>Assign_List_of_Authors</name>
-        <label>Assign List of Authors</label>
-        <locationX>902</locationX>
-        <locationY>661</locationY>
-        <assignmentItems>
-            <assignToReference>ListAuthors</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>AuthorDetails</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Loop_Authors</targetReference>
-        </connector>
-    </assignments>
     <decisions>
         <name>Already_Submitted</name>
         <label>Already Submitted?</label>
-        <locationX>482</locationX>
-        <locationY>287</locationY>
+        <locationX>472</locationX>
+        <locationY>293</locationY>
         <defaultConnector>
             <targetReference>Get_Abstract</targetReference>
         </defaultConnector>
@@ -50,10 +34,42 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Check_Review_Submission_Window</name>
+        <label>Check Review Submission Window</label>
+        <locationX>481</locationX>
+        <locationY>772</locationY>
+        <defaultConnector>
+            <targetReference>Submission_Closed_Window</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Review_Submission_Open</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Review_Submission_Window.Active_Abstract_Review_Window__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Abstract Review</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Review_Submission_Window.Active_Abstract_Review_Window__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Late Breaking Abstract Review</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>ReviewScreen</targetReference>
+            </connector>
+            <label>Review Submission Open</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Submit_Rating</name>
         <label>Submit Rating?</label>
-        <locationX>478</locationX>
-        <locationY>902</locationY>
+        <locationX>344</locationX>
+        <locationY>1095</locationY>
         <defaultConnector>
             <targetReference>Update_Abstract_Rating</targetReference>
         </defaultConnector>
@@ -128,20 +144,6 @@
     </dynamicChoiceSets>
     <interviewLabel>Rate Abstract {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Rate Abstract</label>
-    <loops>
-        <name>Loop_Authors</name>
-        <label>Loop Authors</label>
-        <locationX>660</locationX>
-        <locationY>661</locationY>
-        <collectionReference>Get_Authors</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>Get_Author_Details</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>ReviewScreen</targetReference>
-        </noMoreValuesConnector>
-    </loops>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -164,11 +166,11 @@
     <recordLookups>
         <name>Get_Abstract</name>
         <label>Get Abstract</label>
-        <locationX>494</locationX>
-        <locationY>440</locationY>
+        <locationX>489</locationX>
+        <locationY>483</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Get_Authors</targetReference>
+            <targetReference>Get_Review_Submission_Window</targetReference>
         </connector>
         <faultConnector>
             <targetReference>Already_Submitted_Screen</targetReference>
@@ -186,62 +188,36 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
-        <name>Get_Author_Details</name>
-        <label>Get Author Details</label>
-        <locationX>781</locationX>
-        <locationY>561</locationY>
+        <name>Get_Review_Submission_Window</name>
+        <label>Get Review Submission Window</label>
+        <locationX>489</locationX>
+        <locationY>611</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Assign_List_of_Authors</targetReference>
+            <targetReference>Check_Review_Submission_Window</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Submission_Closed_Window</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
             <operator>EqualTo</operator>
             <value>
-                <elementReference>Loop_Authors.Abstract_Author__c</elementReference>
+                <elementReference>Get_Abstract.Event__c</elementReference>
             </value>
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>Contact</object>
+        <object>Event__c</object>
         <queriedFields>Id</queriedFields>
-        <queriedFields>MailingCity</queriedFields>
-        <queriedFields>MailingCountryCode</queriedFields>
-        <queriedFields>Official_Department_Name__c</queriedFields>
-        <queriedFields>FirstName</queriedFields>
-        <queriedFields>LastName</queriedFields>
-        <queriedFields>Email</queriedFields>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordLookups>
-    <recordLookups>
-        <name>Get_Authors</name>
-        <label>Get Authors</label>
-        <locationX>496</locationX>
-        <locationY>566</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Loop_Authors</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>ReviewScreen</targetReference>
-        </faultConnector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Abstract__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>GetAbstractReview.Abstract__c</elementReference>
-            </value>
-        </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
-        <object>Abstract_Author__c</object>
+        <queriedFields>Active_Abstract_Review_Window__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
         <name>GetAbstractReview</name>
         <label>GetAbstractReview</label>
-        <locationX>490</locationX>
-        <locationY>163</locationY>
+        <locationX>488</locationX>
+        <locationY>166</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Already_Submitted</targetReference>
@@ -264,11 +240,14 @@
     <recordUpdates>
         <name>Reject_Abstract_Review</name>
         <label>Reject Abstract Review</label>
-        <locationX>629</locationX>
-        <locationY>1055</locationY>
+        <locationX>495</locationX>
+        <locationY>1248</locationY>
         <connector>
             <targetReference>SuccessScreen</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Submission_Closed_Window</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -288,11 +267,14 @@
     <recordUpdates>
         <name>Submit_Abstract_Rating</name>
         <label>Submit Abstract Rating</label>
-        <locationX>347</locationX>
-        <locationY>1028</locationY>
+        <locationX>213</locationX>
+        <locationY>1221</locationY>
         <connector>
             <targetReference>SuccessScreen</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Submission_Closed_Window</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -336,11 +318,14 @@
     <recordUpdates>
         <name>Update_Abstract_Rating</name>
         <label>Update Abstract Rating</label>
-        <locationX>490</locationX>
-        <locationY>1062</locationY>
+        <locationX>356</locationX>
+        <locationY>1255</locationY>
         <connector>
             <targetReference>SuccessScreen</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Submission_Closed_Window</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -384,8 +369,8 @@
     <screens>
         <name>Already_Submitted_Screen</name>
         <label>Already Submitted Screen</label>
-        <locationX>683</locationX>
-        <locationY>281</locationY>
+        <locationX>698</locationX>
+        <locationY>361</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -400,8 +385,8 @@
     <screens>
         <name>ReviewScreen</name>
         <label>ReviewScreen</label>
-        <locationX>487</locationX>
-        <locationY>779</locationY>
+        <locationX>352</locationX>
+        <locationY>936</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -783,10 +768,26 @@
         <showHeader>true</showHeader>
     </screens>
     <screens>
+        <name>Submission_Closed_Window</name>
+        <label>Submission Closed Window</label>
+        <locationX>650</locationX>
+        <locationY>925</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>true</allowPause>
+        <fields>
+            <name>SubmissionClosedText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;The review submission window is closed.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
         <name>SuccessScreen</name>
         <label>SuccessScreen</label>
-        <locationX>483</locationX>
-        <locationY>1257</locationY>
+        <locationX>349</locationX>
+        <locationY>1450</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -853,18 +854,13 @@
         <showHeader>true</showHeader>
     </screens>
     <start>
-        <locationX>364</locationX>
-        <locationY>30</locationY>
+        <locationX>363</locationX>
+        <locationY>50</locationY>
         <connector>
             <targetReference>GetAbstractReview</targetReference>
         </connector>
     </start>
     <status>Active</status>
-    <textTemplates>
-        <name>AuthorDetails</name>
-        <isViewedAsPlainText>false</isViewedAsPlainText>
-        <text>&lt;ul&gt;&lt;li&gt;{!Get_Author_Details.FirstName} {!Get_Author_Details.LastName}, {!Get_Author_Details.Official_Department_Name__c}, {!Get_Author_Details.MailingCountry}&lt;/li&gt;&lt;/ul&gt;</text>
-    </textTemplates>
     <textTemplates>
         <name>PresenterDetails</name>
         <isViewedAsPlainText>false</isViewedAsPlainText>

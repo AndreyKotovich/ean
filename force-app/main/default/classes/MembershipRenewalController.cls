@@ -6,6 +6,8 @@ public without sharing class MembershipRenewalController {
 	public final static String API_RR_MEMBERSHIP = 'resident_and_research_membership';
 	public final static String API_STUDENT_MEMBERSHIP = 'student_membership';
 
+	public final static List<String> SKIPPED_STATUSES_OF_APPLICATION_FORMS = new List<String>{'Further Information Required', 'Draft', 'Declined', 'Waiting For Payment', 'Submitted'};
+
 	// public final static List<String> ALLOWED_REGIONS_TO_GET_AAN_DISCOUNT = new List<String>{'B', 'C', 'D', 'E', 'F', ''};	//	EANMR-24	Lucia	at 12/11/2020
 	// public final static List<String> API_ALLOWED_MEMBERS_TO_GET_AAN_DISCOUNT = new List<String>{API_FELLOW_EAN_MEMBERSHIP, API_CORRESPONDING_MEMBERSHIP, API_RR_MEMBERSHIP, API_STUDENT_MEMBERSHIP};
 
@@ -25,6 +27,9 @@ public without sharing class MembershipRenewalController {
 		API_RR_MEMBERSHIP,
 		API_STUDENT_MEMBERSHIP
 	};
+
+	//	EANMR-46	Upgrade sentence – NOT for Fellows of EAN as this is the “highest” possible category.
+	public final static List<String> DISABLED_FOR_UPDATE_MEMBERSHIPS = new List<String>{API_FELLOW_EAN_MEMBERSHIP};
 
 	public final static String FORM_STATUS_FOR_STUDENT_MEMBERSHIP = 'Submitted';
 	// public final static String FORM_STATUS_FOR_NOT_STUDENT_MEMBERSHIP = 'Approved';
@@ -62,6 +67,7 @@ public without sharing class MembershipRenewalController {
 				WHERE Contact__c =:contactId
 				// AND Application_form__c != null
 				// AND IsActive__c = true
+				AND Application_form__r.Form_Status__c NOT IN :SKIPPED_STATUSES_OF_APPLICATION_FORMS
 				LIMIT 20
 			]);
 
@@ -179,7 +185,8 @@ public without sharing class MembershipRenewalController {
 				// 'licenseIssuedDate' => membershipStatus.Contact__r.License_issued__c
 				// EANMR-72    "Date of Graduation" and "License issued" fields should NOT be prefilled
 				'dateOfGraduation' => null,
-				'licenseIssuedDate' => null
+				'licenseIssuedDate' => null,
+				'displayClickUpdateSection' => !DISABLED_FOR_UPDATE_MEMBERSHIPS.contains(membershipStatus.Membership__r.API__c)
 			};
 
 
@@ -196,6 +203,7 @@ public without sharing class MembershipRenewalController {
 			SELECT Id, Expiration_date__c, Membership__c, Membership__r.Name, Membership__r.API__c, Renewal_Application_Form__c, Renewal_Application_Form__r.Form_Status__c
 			FROM MembershipContactAssotiation__c
 			WHERE Contact__c =:communityContactId
+			AND Application_form__r.Form_Status__c NOT IN :SKIPPED_STATUSES_OF_APPLICATION_FORMS
 			// AND IsActive__c=true
 		];
 		return collectRenewalInfo(contactsMemberships);

@@ -70,7 +70,7 @@ export default class Membershipcontainer extends NavigationMixin(LightningElemen
         } else {
             getCurrentContactMemberships()
                 .then(result=>{
-                    console.log('getCurrentContactMemberships result: ', result);
+                    // console.log('getCurrentContactMemberships result: ', result);
                     this.currentContactMemberships = [...JSON.parse(result)['memberships']];
                     this.manageButtons(result);
                 })

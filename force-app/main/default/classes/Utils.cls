@@ -76,4 +76,20 @@ public with sharing class Utils {
         }
     }
 
+    public static String getUserAlias(String FirstName, String LastName){
+        try {
+            String alias = '';
+            if(FirstName != null && FirstName != ''){
+                alias += FirstName.substring(0,1);
+            }
+
+            if(LastName != null && LastName != ''){
+                Integer leftBorder = LastName.length() >= 4? 4 : LastName.length();
+                alias += LastName.substring(0,leftBorder);
+            }
+
+            return alias.toLowerCase();
+        } catch (Exception e) { throw new AuraHandledException('Cannot generate alias'); }
+    }
+
 }

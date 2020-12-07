@@ -1,4 +1,4 @@
-global class LightningSelfRegisterController {
+global without sharing class LightningSelfRegisterController {
 
     public LightningSelfRegisterController() {
 
@@ -27,6 +27,7 @@ global class LightningSelfRegisterController {
     public static String selfRegister(String firstname ,String lastname, String email, String password, String confirmPassword, String accountId, String regConfirmUrl, String extraFields, String startUrl, Boolean includePassword, Boolean newsletter, Boolean industrySponsored) {
         Savepoint sp = null;
         try {
+            System.debug('work');
             sp = Database.setSavepoint();
             
             if (lastname == null || String.isEmpty(lastname)) {
@@ -76,9 +77,79 @@ global class LightningSelfRegisterController {
             else {
                 password = null;
             }
-            
-            // lastName is a required field on user, but if it isn't specified, we'll default it to the username
-            String userId = Site.createPortalUser(u, accountId, password);
+
+
+
+
+            List<Contact> duplicateContacts = [
+                    SELECT Id, Email, FirstName, LastName, AccountId,
+                            Title, Phone, MobilePhone
+                    FROM Contact
+                    WHERE Email = :email
+                    ORDER BY CreatedDate DESC
+            ];
+
+            System.debug('duplicateContacts: '+duplicateContacts);
+            System.debug('duplicateContacts.size: '+duplicateContacts.size());
+
+            String userId;
+
+            if (!duplicateContacts.isEmpty()) {
+                //check if the contacts have active users
+                List<User> users = [
+                        SELECT Id, ContactId
+                        FROM User
+                        WHERE ContactId IN :duplicateContacts
+                        AND IsPortalEnabled = TRUE
+                ];
+
+                Contact newCommunityContact;
+
+                for (Contact contact : duplicateContacts) {
+                    Boolean hasUser = false;
+
+                    for (User user : users)
+                        if (user.ContactId == contact.Id)
+                            hasUser = true;
+
+                    if (!hasUser) {
+                        newCommunityContact = contact;
+                        break;
+                    }
+                }
+
+                System.debug('before newCommunityContact IF');
+                if (newCommunityContact != null && networkId != null) {
+                    System.debug('inside newCommunityContact IF');
+                    Network community = [SELECT Id, SelfRegProfileId FROM Network WHERE Id = :networkId];
+                    u.ProfileId = community.SelfRegProfileId;
+                    u.Alias = Utils.getUserAlias(u.FirstName, u.LastName);
+                    u.EmailEncodingKey = 'UTF-8';
+                    u.ContactId = newCommunityContact.Id;
+                    u.Username = email;
+
+                    String contactTitle = !String.isBlank(newCommunityContact.Title) && newCommunityContact.Title.length() > 80 ? newCommunityContact.Title.substring(0, 80) : newCommunityContact.Title;
+
+                    u.Title = contactTitle;
+                    u.Phone = newCommunityContact.Phone;
+                    u.MobilePhone = newCommunityContact.MobilePhone;
+                    u.LanguageLocaleKey = UserInfo.getLanguage();
+                    u.LocaleSidKey = UserInfo.getLocale();
+                    u.TimeZoneSidKey = String.valueOf(UserInfo.getTimeZone());
+
+                    insert u;
+
+                    userId = u.Id;
+                }
+            }
+
+            if(userId == ''  || userId == null){
+                System.debug('userId: '+userId);
+                // lastName is a required field on user, but if it isn't specified, we'll default it to the username
+                userId = Site.createPortalUser(u, accountId, password);
+            }
+
+
             // create a fake userId for test.
             if (Test.isRunningTest()) {
                 userId = 'fakeUserId';           

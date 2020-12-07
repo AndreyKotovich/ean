@@ -37,4 +37,38 @@ public with sharing class CustomLookUpControllerTest {
             System.assertEquals(contacts.get(i).deleted1__c, true);
         }
     }
+
+    @isTest
+    public static void createContactTest(){
+        String FirstName = 'Mike';
+        String LastName = 'Hottorn';
+        String EmailString = 'hottorn@f1.com';
+        String Department = 'F1';
+        String City = 'Minsk';
+        String Country = 'Belarus';
+
+        List<Contact> con = [Select Id FROM Contact WHERE FirstName =: firstName];
+        System.assertEquals(con.size(), 0);
+
+        CustomLookUpController.createContact(FirstName, LastName, EmailString, Department, City, Country);
+
+        con = [Select Id FROM Contact WHERE FirstName =: firstName];
+        System.assertEquals(con.size(), 1);
+    }
+
+    @isTest
+    public static void getContactTest(){
+        List<Abstract__c> abstractList = [SELECT Id, Abstract_Presenter__c FROM Abstract__c];
+
+        for(Abstract__c abstractItem : abstractList){
+            Contact con = CustomLookUpController.getContact(abstractItem.Id);
+            System.assertNotEquals(con, null);
+        }
+    }
+
+    @isTest
+    public static void getMailingCountriesTest(){
+        List<String> countries = CustomLookUpController.getMailingCountries();
+        System.assertNotEquals(countries.size(), 0);
+    }
 }

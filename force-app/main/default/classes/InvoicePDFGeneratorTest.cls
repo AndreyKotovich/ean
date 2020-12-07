@@ -168,7 +168,7 @@ public with sharing class InvoicePDFGeneratorTest {
         Event_Registration_Group__c group1 = new Event_Registration_Group__c(Name = 'Group1', Contact__c = contact.Id);
 		insert group1;
 
-		Event_Registration_Sub_Group__c subGroup = new Event_Registration_Sub_Group__c(Event_Registration_Group__c = group1.Id, Is_Locked__c = true);
+		Event_Registration_Sub_Group__c subGroup = new Event_Registration_Sub_Group__c(Event_Registration_Group__c = group1.Id);
         insert subGroup;
         
         List<Participant__c> eventParticipation = new List<Participant__c>();

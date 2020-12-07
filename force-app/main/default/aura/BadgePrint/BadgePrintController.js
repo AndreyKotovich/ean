@@ -12,7 +12,7 @@
 			} else {
 				$A.get('e.force:showToast').setParams({
 					title: "Error",
-					message: 'Something Went Wrong'
+					message: 'Something Went Wrong',
 				}).fire();
 				$A.get("e.force:closeQuickAction").fire();
 			}

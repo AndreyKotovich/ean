@@ -9,6 +9,38 @@
             <stringValue>Select All</stringValue>
         </value>
     </choices>
+    <decisions>
+        <name>Check_Review_Submission_Window</name>
+        <label>Check Review Submission Window</label>
+        <locationX>1126</locationX>
+        <locationY>566</locationY>
+        <defaultConnector>
+            <targetReference>Submission_Closed_Window</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Review_Submission_Open</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Review_Submissiom_Window.Active_Abstract_Review_Window__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Abstract Review</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Review_Submissiom_Window.Active_Abstract_Review_Window__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Late Breaking Abstract Review</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>SelectAbstractToSubmit</targetReference>
+            </connector>
+            <label>Review Submission Open</label>
+        </rules>
+    </decisions>
     <dynamicChoiceSets>
         <name>AbstractRatingsChoice</name>
         <dataType>String</dataType>
@@ -36,8 +68,8 @@
     <loops>
         <name>Loop_Abstract_Reviews</name>
         <label>Loop Abstract Reviews</label>
-        <locationX>1016</locationX>
-        <locationY>485</locationY>
+        <locationX>1012</locationX>
+        <locationY>821</locationY>
         <collectionReference>GetAbstractReviews</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
@@ -67,13 +99,59 @@
     </processMetadataValues>
     <processType>Flow</processType>
     <recordLookups>
-        <name>GetAbstractReviews</name>
-        <label>GetAbstractReviews</label>
-        <locationX>1016</locationX>
-        <locationY>206</locationY>
+        <name>Get_Review_Submissiom_Window</name>
+        <label>Get Review Submissiom Window</label>
+        <locationX>1126</locationX>
+        <locationY>408</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>SelectAbstractToSubmit</targetReference>
+            <targetReference>Check_Review_Submission_Window</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Reviewer_Event.Event__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Event__c</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Active_Abstract_Review_Window__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Reviewer_Event</name>
+        <label>Get Reviewer Event</label>
+        <locationX>1123</locationX>
+        <locationY>293</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Review_Submissiom_Window</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Reviewer__c</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Event__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>GetAbstractReviews</name>
+        <label>GetAbstractReviews</label>
+        <locationX>1127</locationX>
+        <locationY>182</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Reviewer_Event</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -97,11 +175,14 @@
     <recordUpdates>
         <name>UpdateAllAbstractSubmissions</name>
         <label>UpdateAllAbstractSubmissions</label>
-        <locationX>1239</locationX>
-        <locationY>485</locationY>
+        <locationX>1177</locationX>
+        <locationY>811</locationY>
         <connector>
             <targetReference>Loop_Abstract_Reviews</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Submission_Closed_Window</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -121,8 +202,8 @@
     <screens>
         <name>SelectAbstractToSubmit</name>
         <label>SelectAbstractToSubmit</label>
-        <locationX>1016</locationX>
-        <locationY>326</locationY>
+        <locationX>1014</locationX>
+        <locationY>683</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -169,10 +250,26 @@
         <showHeader>true</showHeader>
     </screens>
     <screens>
+        <name>Submission_Closed_Window</name>
+        <label>Submission Closed Window</label>
+        <locationX>1280</locationX>
+        <locationY>685</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>true</allowPause>
+        <fields>
+            <name>SubmissionClosedText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;The review submission window is closed.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
         <name>Submit_Success_Message</name>
         <label>Submit Success Message</label>
-        <locationX>1018</locationX>
-        <locationY>683</locationY>
+        <locationX>1016</locationX>
+        <locationY>1040</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -185,8 +282,8 @@
         <showHeader>true</showHeader>
     </screens>
     <start>
-        <locationX>890</locationX>
-        <locationY>48</locationY>
+        <locationX>1001</locationX>
+        <locationY>50</locationY>
         <connector>
             <targetReference>GetAbstractReviews</targetReference>
         </connector>

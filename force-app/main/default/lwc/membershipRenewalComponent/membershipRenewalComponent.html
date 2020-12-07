@@ -54,8 +54,10 @@
 										</div>
 									</div>
 
-									<br/>
-									<p>If you would like to change your membership category, click <a href={_communityUpdateUrl}>here</a> to proceed with upgrade.</p>
+									<template if:true={_displayClickUpdateSection}>
+										<br/>
+										<p>If you would like to change your membership category, click <a href={_communityUpdateUrl}>here</a> to proceed with upgrade.</p>
+									</template>
 								</div>
 
 								<!-- STEP 1 -->

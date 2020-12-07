@@ -7,14 +7,15 @@ ISCHANGED(Stage__c)&amp;&amp;
 ISPICKVAL(Stage__c, &quot;Submitted&quot;) 
 &amp;&amp; 
 (
- ISPICKVAL(Event__r.Abstract_Submission__c , &quot;Closed&quot;)
+ (
+  RecordType.Name = &quot;Public Submission&quot; &amp;&amp;
+  NOT(INCLUDES(Event__r.Active_Abstract_Submissions__c , &quot;Public Submission&quot;)|| INCLUDES( Event__r.Active_Abstract_Submissions__c , &quot;Late Breaking Submission&quot;))
+  )
+
  || 
-  (RecordType.Name = &quot;Public Submission&quot; 
-  &amp;&amp; ISPICKVAL(Event__r.Abstract_Submission__c, &quot;Invited Submission Open&quot;)  
-   )
- || 
-  (RecordType.Name = &quot;Invited Submission&quot; 
-   &amp;&amp; ISPICKVAL(Event__r.Abstract_Submission__c, &quot;Public Submission Open&quot;)  
+  (
+   RecordType.Name = &quot;Invited Submission&quot; 
+   &amp;&amp; NOT(INCLUDES(Event__r.Active_Abstract_Submissions__c , &quot;Invited Submission&quot;))
   )
 )</errorConditionFormula>
     <errorMessage>The abstract submission has been closed.</errorMessage>

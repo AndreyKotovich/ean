@@ -400,4 +400,10 @@ public with sharing class EventRegistrationControllerTest {
         List<MembershipContactAssotiation__c> contactsMemebrships = EventRegistrationController.getContactMemberships(contact.Id);
         System.assertEquals(membership.Id, contactsMemebrships[0].Membership__c);
     }
+
+    @IsTest
+    public static void displayEventRegisterButtonTest(){
+        List<Event__c> event = [SELECT Id FROM Event__c LIMIT 1];
+        System.assert(EventRegistrationController.displayEventRegisterButton(event[0].Id));
+    }
 }

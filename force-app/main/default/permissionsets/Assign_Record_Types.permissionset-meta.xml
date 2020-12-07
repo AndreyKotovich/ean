@@ -76,6 +76,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Abstract__c.Author_Details__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Abstract__c.Authors_consent__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -1611,11 +1616,6 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Event_Registration_Sub_Group__c.Is_Locked__c</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
         <field>Event_Registration_Sub_Group__c.Reminder_Email__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -1662,6 +1662,16 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Event__c.Abstract_Submission__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Event__c.Active_Abstract_Review_Window__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Event__c.Active_Abstract_Submissions__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -2571,6 +2581,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Lecture__c.Presentation_Number__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Lecture__c.Presentation_Type__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -3226,7 +3241,22 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Reviewer__c.Assigned_Abstracts__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Reviewer__c.Capacity__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Reviewer__c.Event__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Reviewer__c.Remaining_Capacity__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>

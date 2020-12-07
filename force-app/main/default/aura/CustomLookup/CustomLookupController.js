@@ -62,6 +62,7 @@
           component.set("v.SearchKeyWord",null);
           component.set("v.listOfSearchRecords", null );
           component.set("v.selectedRecord", {} );   
+          component.set("v.selectedRecordId", "" ); 
      },
      
    // This function call when the end User Select any record from the result list.   

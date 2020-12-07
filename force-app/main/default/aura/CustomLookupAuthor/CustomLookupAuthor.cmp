@@ -78,7 +78,7 @@
                 
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
                     <lightning:input name="input1" value="{! v.FirstName}" label="First Name" />
-                    <lightning:input name="input1" value="{! v.LastName}" required="true" label="Last Name" />
+                    <lightning:input aura:id="field" name="input1" value="{! v.LastName}" required="true" label="Last Name" />
                     <lightning:input type="email" name="email1" value="{! v.Email}" label="Email" />
                     <lightning:input name="input1" value="{! v.Department}" label="Department" />
                     <lightning:input name="input1" value="{! v.City}" label="City" />

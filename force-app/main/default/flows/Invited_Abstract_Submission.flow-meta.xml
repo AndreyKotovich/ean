@@ -4,8 +4,8 @@
     <assignments>
         <name>Assign_Abstract_Values</name>
         <label>Assign Abstract Values</label>
-        <locationX>263</locationX>
-        <locationY>1054</locationY>
+        <locationX>266</locationX>
+        <locationY>1056</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecord.Body__c</assignToReference>
             <operator>Assign</operator>
@@ -67,13 +67,6 @@
             <operator>Assign</operator>
             <value>
                 <elementReference>Get_Lecture_Presentation.Contact__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecord.Late_Breaking_Submission__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>SetLateBreakingCheckbox</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -156,6 +149,38 @@
             <targetReference>Fill_Abstract_Screen_0</targetReference>
         </connector>
     </assignments>
+    <assignments>
+        <name>Enable_Word_Count_Error</name>
+        <label>Enable Word Count Error</label>
+        <locationX>410</locationX>
+        <locationY>834</locationY>
+        <assignmentItems>
+            <assignToReference>ShowWordCountError</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Fill_Abstract_Screen</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Enable_Word_Count_Error_0</name>
+        <label>Enable Word Count Error</label>
+        <locationX>424</locationX>
+        <locationY>2181</locationY>
+        <assignmentItems>
+            <assignToReference>ShowWordCountErrorReview</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Fill_Abstract_Screen_0</targetReference>
+        </connector>
+    </assignments>
     <choices>
         <name>OnsiteoralChoice</name>
         <choiceText>Onsite oral</choiceText>
@@ -188,44 +213,6 @@
         </value>
     </constants>
     <decisions>
-        <name>Author_Found</name>
-        <label>Author Found?</label>
-        <locationX>261</locationX>
-        <locationY>1874</locationY>
-        <defaultConnector>
-            <targetReference>Fill_Abstract_Screen_0</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>No Author</defaultConnectorLabel>
-        <rules>
-            <name>Assign_Author_Outcome</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>LookupAuthor.recordId</leftValueReference>
-                <operator>NotEqualTo</operator>
-            </conditions>
-            <connector>
-                <targetReference>Add_Author</targetReference>
-            </connector>
-            <label>Assign Author</label>
-        </rules>
-        <rules>
-            <name>Create_Author_Outcome</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>NewAuthorEmail.value</leftValueReference>
-                <operator>NotEqualTo</operator>
-                <rightValue>
-                    <stringValue/>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>LookupAuthor.recordId</leftValueReference>
-                <operator>EqualTo</operator>
-            </conditions>
-            <label>Create Author</label>
-        </rules>
-    </decisions>
-    <decisions>
         <name>Submission_Possible</name>
         <label>Submission Possible</label>
         <locationX>250</locationX>
@@ -236,7 +223,7 @@
         <defaultConnectorLabel>Previous Submission</defaultConnectorLabel>
         <rules>
             <name>Eligible_and_no_previous_submission</name>
-            <conditionLogic>1 AND 2 AND (3 OR 4 OR 5)</conditionLogic>
+            <conditionLogic>1 AND 2 AND 3</conditionLogic>
             <conditions>
                 <leftValueReference>Get_Lecture.Abstract__c</leftValueReference>
                 <operator>EqualTo</operator>
@@ -249,24 +236,10 @@
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>Get_Event.Abstract_Submission__c</leftValueReference>
-                <operator>EqualTo</operator>
+                <leftValueReference>Get_Event.Active_Abstract_Submissions__c</leftValueReference>
+                <operator>Contains</operator>
                 <rightValue>
-                    <stringValue>All Submissions Open</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>Get_Event.Abstract_Submission__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Invited Submission Open</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>Get_Event.Abstract_Submission__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Late Breaking Submission</stringValue>
+                    <stringValue>Invited Submission</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -324,6 +297,21 @@
             </connector>
             <label>Type Not Selected</label>
         </rules>
+        <rules>
+            <name>Maximum_Reached</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>WordCountBody</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>250.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Enable_Word_Count_Error</targetReference>
+            </connector>
+            <label>Maximum Reached</label>
+        </rules>
     </decisions>
     <decisions>
         <name>Valid_Input_0</name>
@@ -348,6 +336,21 @@
                 <targetReference>Enable_Error_Message_0</targetReference>
             </connector>
             <label>Type Not Selected</label>
+        </rules>
+        <rules>
+            <name>Maximum_Reached_0</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>WordCountBody</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>250.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Enable_Word_Count_Error_0</targetReference>
+            </connector>
+            <label>Maximum Reached</label>
         </rules>
     </decisions>
     <dynamicChoiceSets>
@@ -411,11 +414,6 @@
         <expression>SUBSTITUTE(SUBSTITUTE({!FileUpload3.fileNames},&apos;[&apos;,&apos;&apos;),&apos;]&apos;,&apos;&apos;)</expression>
     </formulas>
     <formulas>
-        <name>SetLateBreakingCheckbox</name>
-        <dataType>Boolean</dataType>
-        <expression>ISPICKVAL({!Get_Event.Abstract_Submission__c}, &quot;Late Breaking Submission&quot;)</expression>
-    </formulas>
-    <formulas>
         <name>SetTypeDefaultChoice</name>
         <dataType>String</dataType>
         <expression>BLANKVALUE(TEXT({!AbstractRecord.Type__c}), &quot;Select a type&quot;)</expression>
@@ -448,29 +446,6 @@
     </processMetadataValues>
     <processType>Flow</processType>
     <recordCreates>
-        <name>Add_Author</name>
-        <label>Add Author</label>
-        <locationX>153</locationX>
-        <locationY>1967</locationY>
-        <connector>
-            <targetReference>Fill_Abstract_Screen_0</targetReference>
-        </connector>
-        <inputAssignments>
-            <field>Abstract_Author__c</field>
-            <value>
-                <elementReference>LookupAuthor.recordId</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Abstract__c</field>
-            <value>
-                <elementReference>AbstractRecord.Id</elementReference>
-            </value>
-        </inputAssignments>
-        <object>Abstract_Author__c</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordCreates>
-    <recordCreates>
         <name>Create_Abstract</name>
         <label>Create Abstract</label>
         <locationX>266</locationX>
@@ -480,10 +455,20 @@
         </connector>
         <inputReference>AbstractRecord</inputReference>
     </recordCreates>
+    <recordCreates>
+        <name>CreateJunctions</name>
+        <label>CreateJunctions</label>
+        <locationX>261</locationX>
+        <locationY>1918</locationY>
+        <connector>
+            <targetReference>Fill_Abstract_Screen_0</targetReference>
+        </connector>
+        <inputReference>AbstractAuthors</inputReference>
+    </recordCreates>
     <recordLookups>
         <name>Get_Event</name>
         <label>Get Event</label>
-        <locationX>260</locationX>
+        <locationX>261</locationX>
         <locationY>444</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -500,8 +485,8 @@
         <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>Event__c</object>
         <queriedFields>Id</queriedFields>
-        <queriedFields>Abstract_Submission__c</queriedFields>
         <queriedFields>Invited_Abstract_Submission_Deadline__c</queriedFields>
+        <queriedFields>Active_Abstract_Submissions__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
@@ -535,7 +520,7 @@
     <recordLookups>
         <name>Get_Lecture_Presentation</name>
         <label>Get Lecture Presentation</label>
-        <locationX>259</locationX>
+        <locationX>260</locationX>
         <locationY>180</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -554,6 +539,7 @@
         <queriedFields>Id</queriedFields>
         <queriedFields>Lecture__c</queriedFields>
         <queriedFields>Contact__c</queriedFields>
+        <queriedFields>Eligible_for_Invited_Submission__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordUpdates>
@@ -583,8 +569,8 @@
     <recordUpdates>
         <name>UpdateAbstract</name>
         <label>UpdateAbstract</label>
-        <locationX>266</locationX>
-        <locationY>1610</locationY>
+        <locationX>267</locationX>
+        <locationY>1607</locationY>
         <connector>
             <targetReference>Add_Authors_Screen</targetReference>
         </connector>
@@ -661,7 +647,7 @@
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
         <connector>
-            <targetReference>Author_Found</targetReference>
+            <targetReference>CreateJunctions</targetReference>
         </connector>
         <fields>
             <name>CreatedAbstractSuccessMessage</name>
@@ -669,73 +655,20 @@
             <fieldType>DisplayText</fieldType>
         </fields>
         <fields>
-            <name>LookupAuthor</name>
-            <extensionName>flowruntime:lookup</extensionName>
+            <name>CustomLookupAuthorComponent</name>
+            <extensionName>c:CustomLookupAuthor</extensionName>
             <fieldType>ComponentInstance</fieldType>
             <inputParameters>
-                <name>fieldApiName</name>
+                <name>AbstractRecordVariable</name>
                 <value>
-                    <stringValue>Abstract_Author__c</stringValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>label</name>
-                <value>
-                    <stringValue>Search Authors</stringValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>objectApiName</name>
-                <value>
-                    <stringValue>Abstract_Author__c</stringValue>
+                    <elementReference>AbstractRecord</elementReference>
                 </value>
             </inputParameters>
             <isRequired>true</isRequired>
-            <storeOutputAutomatically>true</storeOutputAutomatically>
-        </fields>
-        <fields>
-            <name>AuthorNotFoundDisplay</name>
-            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;﻿&lt;/span&gt;&lt;b style=&quot;background-color: rgb(255, 255, 255);&quot;&gt;&lt;i&gt;If you cannot find the author&lt;/i&gt;&lt;/b&gt;&lt;i style=&quot;background-color: rgb(255, 255, 255);&quot;&gt; in the search, please create a new author by entering the email here:&lt;/i&gt;&lt;/p&gt;</fieldText>
-            <fieldType>DisplayText</fieldType>
-            <visibilityRule>
-                <conditionLogic>and</conditionLogic>
-                <conditions>
-                    <leftValueReference>LookupAuthor.recordId</leftValueReference>
-                    <operator>IsNull</operator>
-                    <rightValue>
-                        <booleanValue>true</booleanValue>
-                    </rightValue>
-                </conditions>
-            </visibilityRule>
-        </fields>
-        <fields>
-            <name>NewAuthorEmail</name>
-            <extensionName>flowruntime:email</extensionName>
-            <fieldType>ComponentInstance</fieldType>
-            <inputParameters>
-                <name>label</name>
-                <value>
-                    <stringValue>Add Author Email</stringValue>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>placeholder</name>
-                <value>
-                    <stringValue>authorname@example.com</stringValue>
-                </value>
-            </inputParameters>
-            <isRequired>true</isRequired>
-            <storeOutputAutomatically>true</storeOutputAutomatically>
-            <visibilityRule>
-                <conditionLogic>and</conditionLogic>
-                <conditions>
-                    <leftValueReference>LookupAuthor.recordId</leftValueReference>
-                    <operator>IsNull</operator>
-                    <rightValue>
-                        <booleanValue>true</booleanValue>
-                    </rightValue>
-                </conditions>
-            </visibilityRule>
+            <outputParameters>
+                <assignToReference>AbstractAuthors</assignToReference>
+                <name>associations</name>
+            </outputParameters>
         </fields>
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
@@ -882,6 +815,21 @@
             </validationRule>
         </fields>
         <fields>
+            <name>MaxWordErrorText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;Please enter less than 250 words.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>ShowWordCountError</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
             <name>Disclosure</name>
             <dataType>String</dataType>
             <defaultValue>
@@ -897,8 +845,8 @@
     <screens>
         <name>Fill_Abstract_Screen_0</name>
         <label>Review Abstract Screen</label>
-        <locationX>267</locationX>
-        <locationY>2090</locationY>
+        <locationX>274</locationX>
+        <locationY>2092</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -955,6 +903,26 @@
             </validationRule>
         </fields>
         <fields>
+            <name>WordCountDisplay</name>
+            <fieldText>&lt;p&gt;&lt;u&gt;{!WordCountBody} words&lt;/u&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>MaxWordErrorText_0</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;Please enter less than 250 words.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>ShowWordCountErrorReview</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
             <name>Disclosure_0</name>
             <dataType>String</dataType>
             <defaultValue>
@@ -970,8 +938,8 @@
     <screens>
         <name>Review_Abstract_Screen</name>
         <label>Review Abstract Screen</label>
-        <locationX>583</locationX>
-        <locationY>1992</locationY>
+        <locationX>553</locationX>
+        <locationY>2085</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1391,6 +1359,14 @@
     </start>
     <status>Active</status>
     <variables>
+        <name>AbstractAuthors</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Abstract_Author__c</objectType>
+    </variables>
+    <variables>
         <name>AbstractRecord</name>
         <dataType>SObject</dataType>
         <isCollection>false</isCollection>
@@ -1431,6 +1407,26 @@
     </variables>
     <variables>
         <name>ShowTypeErrorReview</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <name>ShowWordCountError</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <name>ShowWordCountErrorReview</name>
         <dataType>Boolean</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>

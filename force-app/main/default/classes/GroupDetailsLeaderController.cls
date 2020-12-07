@@ -1,9 +1,10 @@
 public without sharing class GroupDetailsLeaderController {
 
 	public static final String SYSTEM_GROUP_CONTACT_NAME = 'Undefined Participant';
-	public static final Set<String> ALLOWED_PARTICIPANT_STATUSES = new Set<String>{'Registered', 'Pending', 'Registered Draft'};
 
 	public static String undefinedParticipantId = '';
+
+	public static final Set<String> ALLOWED_PARTICIPANT_STATUSES = new Set<String>{'Registered', 'Pending', 'Registered Draft'};
 
 	//	COMMUNITY PAGE: GROUP DETAILS
 	@AuraEnabled
@@ -105,7 +106,7 @@ public without sharing class GroupDetailsLeaderController {
 			SELECT Id, Name, Participant_Email__c, Contact__c, Contact__r.Name, Contact__r.Email,
 				Event_custom__c, Event_custom__r.Name, Event_custom__r.End_Time__c, Event_custom__r.Start_Time__c,
 				Event_Registration_Sub_Group__c,
-				Event_Registration_Sub_Group__r.CreatedDate, Event_Registration_Sub_Group__r.Is_Locked__c,
+				Event_Registration_Sub_Group__r.CreatedDate,
 				Event_Registration_Sub_Group__r.Event_Registration_Group__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name,
 				Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__r.Name,
 				Status__c

@@ -26,9 +26,9 @@ private class MyRegistrationsControllerTest {
 		Event_Registration_Group__c group2 = new Event_Registration_Group__c(Name = 'Group2', Contact__c = secondGroupLeader.Id);
 		insert new List<Event_Registration_Group__c>{group1, group2};
 
-		Event_Registration_Sub_Group__c subGroup1_1 = new Event_Registration_Sub_Group__c(Event_Registration_Group__c = group1.Id, Is_Locked__c = true);
-		Event_Registration_Sub_Group__c subGroup1_2 = new Event_Registration_Sub_Group__c(Event_Registration_Group__c = group1.Id, Is_Locked__c = false);
-		Event_Registration_Sub_Group__c subGroup2_1 = new Event_Registration_Sub_Group__c(Event_Registration_Group__c = group2.Id, Is_Locked__c = true);
+		Event_Registration_Sub_Group__c subGroup1_1 = new Event_Registration_Sub_Group__c(Event_Registration_Group__c = group1.Id);
+		Event_Registration_Sub_Group__c subGroup1_2 = new Event_Registration_Sub_Group__c(Event_Registration_Group__c = group1.Id);
+		Event_Registration_Sub_Group__c subGroup2_1 = new Event_Registration_Sub_Group__c(Event_Registration_Group__c = group2.Id);
 		insert new List<Event_Registration_Sub_Group__c>{subGroup1_1, subGroup1_2, subGroup2_1};
 
 		// Id g2mRT = Schema.SObjectType.Participant__c.getRecordTypeInfosByDeveloperName().get('G2M').getRecordTypeId();
