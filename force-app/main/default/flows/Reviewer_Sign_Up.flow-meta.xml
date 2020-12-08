@@ -54,6 +54,13 @@
                 <elementReference>EventRcordTypeId</elementReference>
             </value>
         </filters>
+        <filters>
+            <field>Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Scheduled</stringValue>
+            </value>
+        </filters>
         <object>Event__c</object>
         <outputAssignments>
             <assignToReference>SelectedEventId</assignToReference>
@@ -232,15 +239,15 @@
         <locationX>919</locationX>
         <locationY>454</locationY>
         <allowBack>true</allowBack>
-        <allowFinish>true</allowFinish>
+        <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
         <fields>
             <name>ReviewerAlreadySubmittedText</name>
             <fieldText>&lt;p&gt;&lt;b&gt;You have already signed up as a Reviewer for this event. &lt;/b&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
-        <showFooter>true</showFooter>
-        <showHeader>true</showHeader>
+        <showFooter>false</showFooter>
+        <showHeader>false</showHeader>
     </screens>
     <screens>
         <name>SuccessScreen</name>

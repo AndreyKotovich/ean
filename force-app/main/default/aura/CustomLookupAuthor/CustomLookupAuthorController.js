@@ -35,7 +35,7 @@
         // check if getInputKeyWord size id more then 0 then open the lookup result List and 
         // call the helper 
         // else close the lookup result List part.   
-        if (getInputkeyWord.length > 0) {
+        if (getInputkeyWord.length >= component.get('v.MIN_SYMBOLS_ENTERED')) {
             var forOpen = component.find("searchRes");
 
             $A.util.addClass(forOpen, 'slds-is-open');

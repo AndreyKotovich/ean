@@ -18,6 +18,7 @@
     <aura:attribute name="selectedRecordId" type="String" default="" access="global"/>
     <aura:attribute name="showModal" type="Boolean" default="false" />
     <aura:attribute name="Countries" type="String[]" />
+    <aura:attribute name="MIN_SYMBOLS_ENTERED" type="Decimal" default="5"/>
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     
@@ -47,7 +48,7 @@
                         <lightning:icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default" iconName="{!v.IconName}" size="x-small" alternativeText="icon"/>
                         <span class="slds-assistive-text"></span>
                     </span>
-                    <ui:inputText click="{!c.onfocus}" updateOn="keyup" keyup="{!c.keyPressController}" class="slds-lookup__search-input slds-input leftPaddingClass" value="{!v.SearchKeyWord}" placeholder="Search Contacts.."/>
+                    <ui:inputText updateOn="keyup" keyup="{!c.keyPressController}" class="slds-lookup__search-input slds-input leftPaddingClass" value="{!v.SearchKeyWord}" placeholder="Search Contacts.."/>
                 </div>   
             </div>
         </div>

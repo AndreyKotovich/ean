@@ -1347,7 +1347,7 @@
         </inputAssignments>
         <object>Abstract__c</object>
     </recordUpdates>
-    <runInMode>DefaultMode</runInMode>
+    <runInMode>SystemModeWithoutSharing</runInMode>
     <screens>
         <name>Add_Authors_Screen</name>
         <label>Add Authors Screen</label>

@@ -64,7 +64,7 @@
                 <leftValueReference>myVariable_current.Status__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>created</stringValue>
+                    <stringValue>invited</stringValue>
                 </rightValue>
             </conditions>
             <conditions>
@@ -221,7 +221,7 @@
                 <leftValueReference>myVariable_old.Status__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>created</stringValue>
+                    <stringValue>invited</stringValue>
                 </rightValue>
             </conditions>
             <conditions>
@@ -321,7 +321,7 @@
         </rules>
     </decisions>
     <description>Send Email Alert to invited persons to register to event</description>
-    <interviewLabel>Invited_Persons_Notification-1_InterviewLabel</interviewLabel>
+    <interviewLabel>Invited_Persons_Notification-2_InterviewLabel</interviewLabel>
     <label>Invited Persons Notification</label>
     <processMetadataValues>
         <name>ObjectType</name>

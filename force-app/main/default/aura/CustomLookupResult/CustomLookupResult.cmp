@@ -16,12 +16,12 @@
               <span class="slds-media__body">  
                 <aura:if isTrue="{!v.oRecord.deleted1__c}">
                     <span class="slds-listbox__option-text slds-listbox__option-text_entity">
-                        {!v.oRecord.Name + ' (Email: ' + v.oRecord.Email + ', Department: ' + v.oRecord.Department_Name__c + ', Country: ' + v.oRecord.MailingAddress.country+ ', City: ' + v.oRecord.MailingAddress.city + ')'}
+                        {!v.oRecord.Name + ' (Department: ' + v.oRecord.Department_Name__c + ', Country: ' + v.oRecord.MailingAddress.country+ ', City: ' + v.oRecord.MailingAddress.city + ')'}
                     </span>
                     <span class="slds-listbox__option-text slds-listbox__option-text_entity slds-text-title">{!v.oRecord.Account.Name}</span>
                     <aura:set attribute="else">
                         <span class="slds-listbox__option-text slds-listbox__option-text_entity slds-text-color_error">
-                            {!v.oRecord.Name + ' (Email: ' + v.oRecord.Email + ', Department: ' + v.oRecord.Department_Name__c + ', Country: ' + v.oRecord.MailingAddress.country+ ', City: ' + v.oRecord.MailingAddress.city + ')'}
+                            {!v.oRecord.Name + ' (Department: ' + v.oRecord.Department_Name__c + ', Country: ' + v.oRecord.MailingAddress.country+ ', City: ' + v.oRecord.MailingAddress.city + ')'}
                         </span>
                         <span class="slds-listbox__option-text slds-listbox__option-text_entity slds-text-title">{!v.oRecord.Account.Name}</span>
                     </aura:set>

@@ -191,8 +191,9 @@
 
     validateRequiredInputs: function (component, auraId) {
         return new Promise( (resolve => {
-            console.log('getElements', component.getElements());
-            let allValid = component.find(auraId).reduce(function (validSoFar, inputCmp) {
+            console.log('component.find(auraId): '+ component.find(auraId));
+            console.log('component.find(auraId): '+ component.find(auraId).length);
+            let allValid = [].concat(component.find(auraId)).reduce(function (validSoFar, inputCmp) {
                 inputCmp.showHelpMessageIfInvalid();
                 return validSoFar && !inputCmp.get('v.validity').valueMissing;
             }, true);

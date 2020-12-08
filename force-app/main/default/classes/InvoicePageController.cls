@@ -1,5 +1,6 @@
 public class InvoicePageController {
     public String name { get; set; }
+    public String orderType { get; set; }
     public List<String> address { get; set; }
     public String invoiceNumber { get; set; }
     public Decimal totalAmount { get{
@@ -29,9 +30,10 @@ public class InvoicePageController {
         name = '';
         invoiceNumber = '';
         invoiceDate = '';
+        orderType = '';
 
         order = [
-                SELECT Id, Total_amount__c, Contact__r.Name, Contact__r.Title, Contact__r.Selected_Mailing_Address__c, Payment_Date__c, Name, Invoice_Number__c, Billing_address__c,
+                SELECT Id, Total_amount__c, Contact__r.Name, Contact__r.Title, Contact__r.Selected_Mailing_Address__c, Payment_Date__c, Name, Invoice_Number__c, Billing_address__c, Type__c,
                         (SELECT Id, Total_amount__c, Quantity__c, Product__c, Membership__c ,Membership__r.Name, Product__r.Name FROM Order_Items__r ORDER BY CreatedDate DESC)
                 FROM Order__c
                 WHERE Id = :orderId
@@ -41,9 +43,10 @@ public class InvoicePageController {
 
         if (!order.isEmpty() && !order[0].Order_Items__r.isEmpty()) {
             Order__c currentOrder = order[0];
+            orderType = order[0].Type__c;
             name = currentOrder.Contact__r.Name;
             name += currentOrder.Contact__r.Title==null?'':', '+currentOrder.Contact__r.Title;
-            invoiceDate = currentOrder.Payment_Date__c != null ? currentOrder.Payment_Date__c.format('MMMM dd, yyyy') : Datetime.now().format('MMMM dd, yyyy');
+            invoiceDate = currentOrder.Payment_Date__c != null ? currentOrder.Payment_Date__c.format('dd MMMM, yyyy') : Datetime.now().format('dd MMMM, yyyy');
             totalAmount = currentOrder.Total_amount__c;
             invoiceNumber = invoNumber != null ? invoNumber : ' EIMF ' + String.valueOf(Date.today().year()) + '/0000';
 

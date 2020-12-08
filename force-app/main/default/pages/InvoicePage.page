@@ -46,42 +46,45 @@
                     Nb.: <apex:outputText value="{!invoiceNumber}"/>
                 </div>
                 <div style="margin-top: 100px">
-                    <h3>EAN Individual Membership  <apex:outputText value=" {!YEAR(TODAY())}"/></h3>
+                    <apex:outputPanel rendered="{!orderType != 'Renewal'}">
+                        <h3>EAN Individual Membership <apex:outputText value=" {!YEAR(TODAY())}"/></h3>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!orderType == 'Renewal'}">
+                        <h3>EAN Individual Membership <apex:outputText value=" {!YEAR(TODAY())+1}"/></h3>
+                    </apex:outputPanel>
                 </div>
             </div>
             <div>
                 <table style="width: 100%; margin-top: 20px;">
                     <tbody>
-                    <apex:repeat value="{!memberships}" var="membership">
                         <tr>
                             <td style="border-bottom: none;">
-                                <div>
-                                    <apex:outputText value=" {!membership.Membership__r.Name}"/>
-                                    <apex:outputText value=" ({!membership.Quantity__c})" rendered="{!membership.Quantity__c > 1}"/>
-                                </div>
+                                <apex:repeat value="{!memberships}" var="membership">
+                                    <div>
+                                        <apex:outputText value=" {!membership.Membership__r.Name}"/>
+                                        <apex:outputText value=" ({!membership.Quantity__c})" rendered="{!membership.Quantity__c > 1}"/>
+                                    </div>
+                                </apex:repeat>
+                                <apex:repeat value="{!products}" var="product">
+                                    <div>
+                                        <apex:outputText value=" {!product.Product__r.Name}"/>
+                                        <apex:outputText value=" ({!product.Quantity__c})" rendered="{!product.Quantity__c > 1}"/>
+                                    </div>
+                                </apex:repeat>
                             </td>
                             <td style="border-bottom: none;">
-                                <div>
-                                    &#8364;  <apex:outputText value=" {!membership.Total_amount__c}"/>
-                                </div>
+                                <apex:repeat value="{!memberships}" var="membership">
+                                    <div>
+                                        &#8364;  <apex:outputText value=" {!membership.Total_amount__c}"/>
+                                    </div>
+                                </apex:repeat>
+                                <apex:repeat value="{!products}" var="product">
+                                    <div>
+                                        &#8364;  <apex:outputText value=" {!product.Total_amount__c}"/>
+                                    </div>
+                                </apex:repeat>
                             </td>
                         </tr>
-                    </apex:repeat>
-                    <apex:repeat value="{!products}" var="product">
-                        <tr>
-                            <td style="border-bottom: none;">
-                                <div>
-                                    <apex:outputText value=" {!product.Product__r.Name}"/>
-                                    <apex:outputText value=" ({!product.Quantity__c})" rendered="{!product.Quantity__c > 1}"/>
-                                </div>
-                            </td>
-                            <td style="border-bottom: none;">
-                                <div>
-                                    &#8364;  <apex:outputText value=" {!product.Total_amount__c}"/>
-                                </div>
-                            </td>
-                        </tr>
-                    </apex:repeat>
                     <tr>
                         <td>
                             <div>

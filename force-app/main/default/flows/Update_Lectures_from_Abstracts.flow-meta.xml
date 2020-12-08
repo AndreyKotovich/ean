@@ -58,8 +58,8 @@
     <assignments>
         <name>Assign_Presenter</name>
         <label>Assign_Presenter</label>
-        <locationX>443</locationX>
-        <locationY>814</locationY>
+        <locationX>433</locationX>
+        <locationY>813</locationY>
         <assignmentItems>
             <assignToReference>ListAuthors</assignToReference>
             <operator>Add</operator>
@@ -139,7 +139,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Clear_Author_Details</targetReference>
+                <targetReference>Clear_Abstract_Details</targetReference>
             </connector>
             <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
             <label>Public Abstract is Submitted</label>
@@ -229,7 +229,7 @@
     <loops>
         <name>Loop_Authors</name>
         <label>Loop Authors</label>
-        <locationX>440</locationX>
+        <locationX>432</locationX>
         <locationY>1082</locationY>
         <collectionReference>Get_Authors</collectionReference>
         <iterationOrder>Asc</iterationOrder>
@@ -237,7 +237,7 @@
             <targetReference>Get_Author_Details</targetReference>
         </nextValueConnector>
         <noMoreValuesConnector>
-            <targetReference>Update_Abstract</targetReference>
+            <targetReference>Insert_Author_Details</targetReference>
         </noMoreValuesConnector>
     </loops>
     <processMetadataValues>
@@ -336,7 +336,6 @@
         <queriedFields>Abstract_Presenter__c</queriedFields>
         <queriedFields>Submitter__c</queriedFields>
         <queriedFields>Type__c</queriedFields>
-        <queriedFields>Author_Details__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
@@ -369,8 +368,8 @@
     <recordLookups>
         <name>Get_Authors</name>
         <label>Get Authors</label>
-        <locationX>440</locationX>
-        <locationY>958</locationY>
+        <locationX>433</locationX>
+        <locationY>951</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Loop_Authors</targetReference>
@@ -436,8 +435,8 @@
     <recordLookups>
         <name>Get_Presenter_Details</name>
         <label>Get Presenter Details</label>
-        <locationX>443</locationX>
-        <locationY>670</locationY>
+        <locationX>433</locationX>
+        <locationY>677</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Assign_Presenter</targetReference>
@@ -461,10 +460,10 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordUpdates>
-        <name>Clear_Author_Details</name>
-        <label>Clear Author Details</label>
-        <locationX>442</locationX>
-        <locationY>547</locationY>
+        <name>Clear_Abstract_Details</name>
+        <label>Clear Abstract Details</label>
+        <locationX>433</locationX>
+        <locationY>537</locationY>
         <connector>
             <targetReference>Get_Presenter_Details</targetReference>
         </connector>
@@ -482,10 +481,10 @@
         <object>Abstract__c</object>
     </recordUpdates>
     <recordUpdates>
-        <name>Update_Abstract</name>
-        <label>Update Abstract</label>
-        <locationX>443</locationX>
-        <locationY>1253</locationY>
+        <name>Insert_Author_Details</name>
+        <label>Insert Author Details</label>
+        <locationX>436</locationX>
+        <locationY>1255</locationY>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -570,9 +569,8 @@
     <status>Active</status>
     <textTemplates>
         <name>AuthorDetails</name>
-        <isViewedAsPlainText>true</isViewedAsPlainText>
-        <text>- {!Get_Author_Details.FirstName} {!Get_Author_Details.LastName}, 
- {!Get_Author_Details.Official_Department_Name__c}, {!Get_Author_Details.MailingCity}, {!Get_Author_Details.MailingCountry}</text>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;ul&gt;&lt;li&gt;{!Get_Author_Details.FirstName} {!Get_Author_Details.LastName}, {!Get_Author_Details.Official_Department_Name__c}, {!Get_Author_Details.MailingCity}, {!Get_Author_Details.MailingCountry}&lt;/li&gt;&lt;/ul&gt;</text>
     </textTemplates>
     <textTemplates>
         <name>NotificationText</name>
@@ -581,8 +579,8 @@
     </textTemplates>
     <textTemplates>
         <name>PresenterDetails</name>
-        <isViewedAsPlainText>true</isViewedAsPlainText>
-        <text>Presenter: {!Get_Presenter_Details.FirstName} {!Get_Presenter_Details.LastName}, {!Get_Presenter_Details.Official_Department_Name__c}, {!Get_Presenter_Details.MailingCity}, {!Get_Presenter_Details.MailingCountry}</text>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;ul&gt;&lt;li&gt;&lt;u&gt;Presenter&lt;/u&gt;: {!Get_Presenter_Details.FirstName} {!Get_Presenter_Details.LastName}, {!Get_Presenter_Details.Official_Department_Name__c}, {!Get_Presenter_Details.MailingCity}, {!Get_Presenter_Details.MailingCountry}&lt;/li&gt;&lt;/ul&gt;</text>
     </textTemplates>
     <variables>
         <name>ListAuthors</name>

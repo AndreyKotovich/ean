@@ -4,8 +4,9 @@
     <active>true</active>
     <errorConditionFormula>NOT(ISBLANK($User.ContactId)) &amp;&amp;
 ISCHANGED(Stage__c)&amp;&amp;
-ISPICKVAL(PRIORVALUE(Stage__c), &quot;Deleted&quot;)&amp;&amp; 
+(ISPICKVAL(PRIORVALUE(Stage__c), &quot;Deleted&quot;)  || ISPICKVAL(PRIORVALUE(Stage__c), &quot;Withdrawn&quot;))
+&amp;&amp; 
 ISPICKVAL(Stage__c, &quot;Submitted&quot;)</errorConditionFormula>
-    <errorMessage>You can not submit a deleted abstract.
+    <errorMessage>You can not submit this abstract anymore.
 If you want to do anthother submission, please create a new abstract.</errorMessage>
 </ValidationRule>

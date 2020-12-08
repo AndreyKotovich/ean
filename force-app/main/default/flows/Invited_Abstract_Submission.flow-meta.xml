@@ -7,13 +7,6 @@
         <locationX>266</locationX>
         <locationY>1056</locationY>
         <assignmentItems>
-            <assignToReference>AbstractRecord.Body__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Body</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
             <assignToReference>AbstractRecord.Event__c</assignToReference>
             <operator>Assign</operator>
             <value>
@@ -76,6 +69,13 @@
                 <elementReference>Get_Lecture_Presentation.Contact__c</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecord.Body__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Body</elementReference>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>Create_Abstract</targetReference>
         </connector>
@@ -83,15 +83,8 @@
     <assignments>
         <name>Assign_Abstract_Values_0</name>
         <label>Assign Abstract Values</label>
-        <locationX>268</locationX>
+        <locationX>261</locationX>
         <locationY>2474</locationY>
-        <assignmentItems>
-            <assignToReference>AbstractRecord.Body__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Body_0</elementReference>
-            </value>
-        </assignmentItems>
         <assignmentItems>
             <assignToReference>AbstractRecord.Title__c</assignToReference>
             <operator>Assign</operator>
@@ -111,6 +104,13 @@
             <operator>Assign</operator>
             <value>
                 <elementReference>Type_0</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecord.Body__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Body_0</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -136,8 +136,8 @@
     <assignments>
         <name>Enable_Error_Message_0</name>
         <label>Enable Error Message</label>
-        <locationX>164</locationX>
-        <locationY>2167</locationY>
+        <locationX>144</locationX>
+        <locationY>2165</locationY>
         <assignmentItems>
             <assignToReference>ShowTypeErrorReview</assignToReference>
             <operator>Assign</operator>
@@ -458,8 +458,8 @@
     <recordCreates>
         <name>CreateJunctions</name>
         <label>CreateJunctions</label>
-        <locationX>261</locationX>
-        <locationY>1918</locationY>
+        <locationX>267</locationX>
+        <locationY>1916</locationY>
         <connector>
             <targetReference>Fill_Abstract_Screen_0</targetReference>
         </connector>
@@ -638,6 +638,7 @@
         </inputAssignments>
         <object>Abstract__c</object>
     </recordUpdates>
+    <runInMode>SystemModeWithoutSharing</runInMode>
     <screens>
         <name>Add_Authors_Screen</name>
         <label>Add Authors Screen</label>
@@ -746,7 +747,26 @@
             <fieldText>&lt;p&gt;&lt;b&gt;Your draft has been saved!&lt;/b&gt;&lt;/p&gt;&lt;p&gt;All abstracts drafts can be seen and edited in the community.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
-        <showFooter>true</showFooter>
+        <fields>
+            <name>EndFlowFooter_0</name>
+            <extensionName>dhfpi:lwcFlowFooter</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>finishLabel</name>
+                <value>
+                    <stringValue>Close</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>redirectUrl</name>
+                <value>
+                    <stringValue>/s/abstracts</stringValue>
+                </value>
+            </inputParameters>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <showFooter>false</showFooter>
         <showHeader>true</showHeader>
     </screens>
     <screens>
@@ -845,8 +865,8 @@
     <screens>
         <name>Fill_Abstract_Screen_0</name>
         <label>Review Abstract Screen</label>
-        <locationX>274</locationX>
-        <locationY>2092</locationY>
+        <locationX>268</locationX>
+        <locationY>2087</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -883,7 +903,7 @@
             <name>Title_0</name>
             <dataType>String</dataType>
             <defaultValue>
-                <elementReference>Title</elementReference>
+                <elementReference>AbstractRecord.Title__c</elementReference>
             </defaultValue>
             <fieldText>Title</fieldText>
             <fieldType>InputField</fieldType>
@@ -892,7 +912,7 @@
         <fields>
             <name>Body_0</name>
             <defaultValue>
-                <stringValue>{!Body}</stringValue>
+                <stringValue>{!AbstractRecord.Body__c}</stringValue>
             </defaultValue>
             <fieldText>Body</fieldText>
             <fieldType>LargeTextArea</fieldType>
@@ -926,7 +946,7 @@
             <name>Disclosure_0</name>
             <dataType>String</dataType>
             <defaultValue>
-                <elementReference>Disclosure</elementReference>
+                <elementReference>AbstractRecord.Disclosure__c</elementReference>
             </defaultValue>
             <fieldText>Disclosure</fieldText>
             <fieldType>InputField</fieldType>
@@ -1190,7 +1210,7 @@
     <screens>
         <name>SubmitSuccessScreen</name>
         <label>SubmitSuccessScreen</label>
-        <locationX>383</locationX>
+        <locationX>384</locationX>
         <locationY>3003</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
@@ -1200,7 +1220,26 @@
             <fieldText>&lt;p&gt;&lt;b&gt;Thank you for your abstract submission!&lt;/b&gt;&lt;/p&gt;&lt;p&gt;You can see the status of your submitted abstract in the community.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
-        <showFooter>true</showFooter>
+        <fields>
+            <name>EndFlowFooter</name>
+            <extensionName>dhfpi:lwcFlowFooter</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>finishLabel</name>
+                <value>
+                    <stringValue>Close</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>redirectUrl</name>
+                <value>
+                    <stringValue>/s/abstracts</stringValue>
+                </value>
+            </inputParameters>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <showFooter>false</showFooter>
         <showHeader>true</showHeader>
     </screens>
     <screens>

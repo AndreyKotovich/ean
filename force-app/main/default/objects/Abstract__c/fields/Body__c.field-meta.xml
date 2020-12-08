@@ -3,8 +3,9 @@
     <fullName>Body__c</fullName>
     <externalId>false</externalId>
     <label>Body</label>
-    <required>false</required>
+    <length>131072</length>
     <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
-    <type>TextArea</type>
+    <type>LongTextArea</type>
+    <visibleLines>20</visibleLines>
 </CustomField>

@@ -2,6 +2,7 @@
 <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Submit_Rating_Validation</fullName>
     <active>true</active>
-    <errorConditionFormula>ISPICKVAL(Stage__c, &quot;Submitted&quot;)  &amp;&amp; ISPICKVAL(Grading__c,&quot;&quot;)</errorConditionFormula>
+    <errorConditionFormula>(ISPICKVAL(Reviewer__r.Event__r.Active_Abstract_Review_Window__c , &quot;Abstract Review&quot;) || ISPICKVAL(Reviewer__r.Event__r.Active_Abstract_Review_Window__c , &quot;Late Breaking Abstract Review&quot;) )  &amp;&amp; 
+ISPICKVAL(Stage__c, &quot;Submitted&quot;)  &amp;&amp; ISPICKVAL(Grading__c,&quot;&quot;)</errorConditionFormula>
     <errorMessage>You can only submit this review after rating it. Please first rate this abstract.</errorMessage>
 </ValidationRule>

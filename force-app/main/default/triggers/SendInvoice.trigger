@@ -19,7 +19,7 @@ trigger SendInvoice on Order__c (after update, after insert) {
                     membershipOrderIds.add(i);
                 }
 
-                //  type 'Upgrade' ???
+                //  type 'Upgrade' ???z
                 if (orderType == 'Event registration') {
                     eventOrderIds.add(i);
                     if (String.isBlank(Trigger.newMap.get(i).Event_Registration_Sub_Group__c)) {

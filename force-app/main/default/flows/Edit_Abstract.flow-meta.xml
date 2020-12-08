@@ -180,6 +180,13 @@
                 <elementReference>Type</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Abstract.Late_Breaking_Submission__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>SetLateBreakingCheckbox</elementReference>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>Max_Total_Words_Reached_0</targetReference>
         </connector>
@@ -201,13 +208,6 @@
             <operator>Assign</operator>
             <value>
                 <elementReference>Title_0</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>Get_Abstract.Body__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Body</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -238,6 +238,13 @@
                 <stringValue>No section selected</stringValue>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Abstract.Body__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Body</elementReference>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>Max_Body_Words_Reached</targetReference>
         </connector>
@@ -245,8 +252,8 @@
     <assignments>
         <name>AssignNewImageId</name>
         <label>AssignNewImageId</label>
-        <locationX>304</locationX>
-        <locationY>2960</locationY>
+        <locationX>298</locationX>
+        <locationY>2983</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Image_1_ID__c</assignToReference>
             <operator>Assign</operator>
@@ -486,8 +493,8 @@
     <assignments>
         <name>Update_Section_and_Caption_0</name>
         <label>Update Section and Caption</label>
-        <locationX>303</locationX>
-        <locationY>3080</locationY>
+        <locationX>300</locationX>
+        <locationY>3113</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Image_1_Caption__c</assignToReference>
             <operator>Assign</operator>
@@ -708,6 +715,13 @@
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Rejected</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Abstract.Stage__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Deleted</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -1737,6 +1751,7 @@
         </faultConnector>
         <inputReference>Get_Abstract</inputReference>
     </recordUpdates>
+    <runInMode>SystemModeWithoutSharing</runInMode>
     <screens>
         <name>Add_Authors_Screen</name>
         <label>Add Authors Screen</label>
@@ -1857,8 +1872,8 @@
     <screens>
         <name>Check_Affirmations_Screen</name>
         <label>Check Affirmations Screen</label>
-        <locationX>556</locationX>
-        <locationY>1965</locationY>
+        <locationX>655</locationX>
+        <locationY>1939</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2740,8 +2755,8 @@
     <screens>
         <name>Review_Files_Screen</name>
         <label>Review Files Screen</label>
-        <locationX>429</locationX>
-        <locationY>3080</locationY>
+        <locationX>426</locationX>
+        <locationY>3079</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -3211,7 +3226,7 @@
             <inputParameters>
                 <name>recordId</name>
                 <value>
-                    <elementReference>Get_Abstract.Id</elementReference>
+                    <elementReference>recordId</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -3320,7 +3335,7 @@
             <inputParameters>
                 <name>recordId</name>
                 <value>
-                    <elementReference>Get_Abstract.Id</elementReference>
+                    <elementReference>recordId</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -3428,7 +3443,7 @@
             <inputParameters>
                 <name>recordId</name>
                 <value>
-                    <elementReference>Get_Abstract.Id</elementReference>
+                    <elementReference>recordId</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>

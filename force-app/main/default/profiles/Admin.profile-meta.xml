@@ -437,10 +437,6 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
-        <apexClass>MembershipRenewalOrderTableController</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
         <apexClass>MembershipTriggerHelper</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -4988,10 +4984,6 @@
     <flowAccesses>
         <enabled>false</enabled>
         <flow>Edit_Abstract</flow>
-    </flowAccesses>
-    <flowAccesses>
-        <enabled>false</enabled>
-        <flow>Edit_Abstractv3</flow>
     </flowAccesses>
     <flowAccesses>
         <enabled>false</enabled>

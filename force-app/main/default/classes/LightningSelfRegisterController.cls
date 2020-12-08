@@ -27,7 +27,6 @@ global without sharing class LightningSelfRegisterController {
     public static String selfRegister(String firstname ,String lastname, String email, String password, String confirmPassword, String accountId, String regConfirmUrl, String extraFields, String startUrl, Boolean includePassword, Boolean newsletter, Boolean industrySponsored) {
         Savepoint sp = null;
         try {
-            System.debug('work');
             sp = Database.setSavepoint();
             
             if (lastname == null || String.isEmpty(lastname)) {
@@ -81,6 +80,12 @@ global without sharing class LightningSelfRegisterController {
 
 
 
+            NetworkSelfRegistration networkSelfRegRec = new NetworkSelfRegistration();
+
+            if(networkId != null){
+                networkSelfRegRec = [SELECT AccountId FROM NetworkSelfRegistration WHERE NetworkId = :networkId];
+            }
+
             List<Contact> duplicateContacts = [
                     SELECT Id, Email, FirstName, LastName, AccountId,
                             Title, Phone, MobilePhone
@@ -89,15 +94,12 @@ global without sharing class LightningSelfRegisterController {
                     ORDER BY CreatedDate DESC
             ];
 
-            System.debug('duplicateContacts: '+duplicateContacts);
-            System.debug('duplicateContacts.size: '+duplicateContacts.size());
-
             String userId;
 
             if (!duplicateContacts.isEmpty()) {
                 //check if the contacts have active users
                 List<User> users = [
-                        SELECT Id, ContactId
+                        SELECT Id, ContactId, AccountId
                         FROM User
                         WHERE ContactId IN :duplicateContacts
                         AND IsPortalEnabled = TRUE
@@ -118,9 +120,12 @@ global without sharing class LightningSelfRegisterController {
                     }
                 }
 
-                System.debug('before newCommunityContact IF');
+                if(newCommunityContact.AccountId == null && networkSelfRegRec.AccountId != null){
+                    newCommunityContact.AccountId = networkSelfRegRec.AccountId;
+                    update newCommunityContact;
+                }
+
                 if (newCommunityContact != null && networkId != null) {
-                    System.debug('inside newCommunityContact IF');
                     Network community = [SELECT Id, SelfRegProfileId FROM Network WHERE Id = :networkId];
                     u.ProfileId = community.SelfRegProfileId;
                     u.Alias = Utils.getUserAlias(u.FirstName, u.LastName);
@@ -144,7 +149,6 @@ global without sharing class LightningSelfRegisterController {
             }
 
             if(userId == ''  || userId == null){
-                System.debug('userId: '+userId);
                 // lastName is a required field on user, but if it isn't specified, we'll default it to the username
                 userId = Site.createPortalUser(u, accountId, password);
             }
@@ -173,12 +177,12 @@ global without sharing class LightningSelfRegisterController {
         }
         catch (Exception ex) {
             Database.rollback(sp);
-            return ex.getMessage();            
+            return ex.getMessage();
         }
     }
     
     @AuraEnabled
-    public static List<Map<String,Object>> getExtraFields(String extraFieldsFieldSet) { 
+    public static List<Map<String,Object>> getExtraFields(String extraFieldsFieldSet) {
         List<Map<String,Object>> extraFields = new List<Map<String,Object>>();
         Schema.FieldSet fieldSet = Schema.SObjectType.User.fieldSets.getMap().get(extraFieldsFieldSet);
         if(!Test.isRunningTest()) {

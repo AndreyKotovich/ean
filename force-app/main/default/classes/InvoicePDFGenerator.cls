@@ -1,6 +1,7 @@
 public class InvoicePDFGenerator {
 
     public static final String SYSTEM_GROUP_CONTACT_NAME = 'Undefined Participant';
+    public static final String MEMBERSHIP_RENEWAL_EMAIL_TEMPLATE = 'Membership_Renewal_Payment_Confirmation';
 
     @Future(Callout = true)
     public static void generateInvoicePDFs(List<Id> orderIds) {
@@ -15,7 +16,7 @@ public class InvoicePDFGenerator {
         // Collect Orders
         orders = [
                 SELECT Id, Name, Contact__r.Email, Contact__r.MailingAddress, Invoice_Number__c, Purchase_Type__c, Type__c,
-                (SELECT Id, Product__c, Membership__c FROM Order_Items__r), (SELECT Id, Name FROM Applications_Forms__r ORDER BY CreatedDate DESC)
+                (SELECT Id, Product__c, Membership__c FROM Order_Items__r), (SELECT Id, Name, Renewal_End_Date__c FROM Applications_Forms__r ORDER BY CreatedDate DESC)
                 FROM Order__c
                 WHERE Id IN :orderIds AND Contact__c != null AND Contact__r.Email != null
                 ORDER BY CreatedDate ASC
@@ -39,6 +40,7 @@ public class InvoicePDFGenerator {
                     FROM EmailTemplate
                     WHERE DeveloperName = 'Confirmation_of_Journal_order_invoice'
                     OR DeveloperName = 'New_Invoice_Email'
+                    OR DeveloperName =:MEMBERSHIP_RENEWAL_EMAIL_TEMPLATE
             ];
             EmailTemplate et = new EmailTemplate();
             OrgWideEmailAddress address = [SELECT Id FROM OrgWideEmailAddress WHERE Address LIKE 'membership@ean.org' LIMIT 1];
@@ -54,14 +56,22 @@ public class InvoicePDFGenerator {
                 }
                 //find required email template
                 String emailTemplateDevName = hasMembership?'New_Invoice_Email':'Confirmation_of_Journal_order_invoice';
+
+                // part of 'Membership Renewal'
+                if (hasMembership && o.Applications_Forms__r[0].Renewal_End_Date__c != null) emailTemplateDevName = MEMBERSHIP_RENEWAL_EMAIL_TEMPLATE;
+                system.debug('InvoicePDFGenerator hasMembership: ' + hasMembership);
+                system.debug('InvoicePDFGenerator o: ' + JSON.serialize(o));
+                system.debug('InvoicePDFGenerator ets: ' + JSON.serialize(ets));
+                system.debug('InvoicePDFGenerator emailTemplateDevName: ' + emailTemplateDevName);
+
                 for(EmailTemplate emTemp : ets){
                     if(emTemp.DeveloperName == emailTemplateDevName){
                         et = emTemp;
                     }
                 }
+                system.debug('InvoicePDFGenerator et: ' + et);
                 //choose whoId and whatId for email template
                 Id whatId = hasMembership?o.Applications_Forms__r[0].Id:o.Id;
-
 
                 // if PDF doesn't exist
                 if (!attachmentMap.keySet().contains('Invoice_' + o.Name + '.pdf')) {
@@ -154,7 +164,7 @@ public class InvoicePDFGenerator {
         List<Order__c> newOrdersEIMF = new List<Order__c>();
         List<Order__c> newOrdersREIMF = new List<Order__c>();
         String orderTemplateEIMF = 'EIMF ' + String.valueOf(Date.today().year()) + '/%';
-        String orderTemplateREIMF = 'REIMF ' + String.valueOf(Date.today().year()) + '/%';
+        String orderTemplateREIMF = 'REIMF ' + String.valueOf((Date.today().addYears(1)).year()) + '/%';
         Integer lastEIMFNumber;
         Integer lastREIMFNumber;
 
@@ -224,7 +234,7 @@ public class InvoicePDFGenerator {
 
             // Find the last correct Invoice Number for REIMF
             for (Order__c o : ordersREIMF) {
-                String invoiceNumb = o.Invoice_Number__c.replace('REIMF ' + String.valueOf(Date.today().year()) + '/','');
+                String invoiceNumb = o.Invoice_Number__c.replace('REIMF ' + String.valueOf((Date.today().addYears(1)).year()) + '/','');
                 if (invoiceNumb.isNumeric()) {
                     lastREIMFNumber = Integer.valueOf(invoiceNumb);
                     break;
@@ -238,7 +248,7 @@ public class InvoicePDFGenerator {
                 if (lastREIMFNumber < 1000) {
                     newInvoiceNumber  = ('0000' + lastREIMFNumber).right(4);
                 }
-                o.Invoice_Number__c = 'REIMF ' + String.valueOf(Date.today().year()) + '/' + newInvoiceNumber;
+                o.Invoice_Number__c = 'REIMF ' + String.valueOf((Date.today().addYears(1)).year()) + '/' + newInvoiceNumber;
             }
 
         }

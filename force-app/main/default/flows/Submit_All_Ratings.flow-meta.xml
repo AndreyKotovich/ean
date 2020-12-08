@@ -10,10 +10,35 @@
         </value>
     </choices>
     <decisions>
+        <name>Check_if_Rated</name>
+        <label>Check if Rated</label>
+        <locationX>1118</locationX>
+        <locationY>297</locationY>
+        <defaultConnector>
+            <targetReference>Get_Reviewer_Event</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>No_reviews_to_submit</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>GetAbstractReviews</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>ErrorScreen</targetReference>
+            </connector>
+            <label>No reviews to submit</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Check_Review_Submission_Window</name>
         <label>Check Review Submission Window</label>
         <locationX>1126</locationX>
-        <locationY>566</locationY>
+        <locationY>757</locationY>
         <defaultConnector>
             <targetReference>Submission_Closed_Window</targetReference>
         </defaultConnector>
@@ -68,8 +93,8 @@
     <loops>
         <name>Loop_Abstract_Reviews</name>
         <label>Loop Abstract Reviews</label>
-        <locationX>1012</locationX>
-        <locationY>821</locationY>
+        <locationX>1013</locationX>
+        <locationY>1012</locationY>
         <collectionReference>GetAbstractReviews</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
@@ -102,7 +127,7 @@
         <name>Get_Review_Submissiom_Window</name>
         <label>Get Review Submissiom Window</label>
         <locationX>1126</locationX>
-        <locationY>408</locationY>
+        <locationY>599</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Check_Review_Submission_Window</targetReference>
@@ -124,8 +149,8 @@
     <recordLookups>
         <name>Get_Reviewer_Event</name>
         <label>Get Reviewer Event</label>
-        <locationX>1123</locationX>
-        <locationY>293</locationY>
+        <locationX>1122</locationX>
+        <locationY>484</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Get_Review_Submissiom_Window</targetReference>
@@ -147,11 +172,11 @@
     <recordLookups>
         <name>GetAbstractReviews</name>
         <label>GetAbstractReviews</label>
-        <locationX>1127</locationX>
-        <locationY>182</locationY>
+        <locationX>1124</locationX>
+        <locationY>169</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Get_Reviewer_Event</targetReference>
+            <targetReference>Check_if_Rated</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -168,6 +193,13 @@
                 <stringValue>Rated</stringValue>
             </value>
         </filters>
+        <filters>
+            <field>Grading__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
         <getFirstRecordOnly>false</getFirstRecordOnly>
         <object>Abstract_Review__c</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
@@ -175,8 +207,8 @@
     <recordUpdates>
         <name>UpdateAllAbstractSubmissions</name>
         <label>UpdateAllAbstractSubmissions</label>
-        <locationX>1177</locationX>
-        <locationY>811</locationY>
+        <locationX>1192</locationX>
+        <locationY>1012</locationY>
         <connector>
             <targetReference>Loop_Abstract_Reviews</targetReference>
         </connector>
@@ -200,10 +232,26 @@
         <object>Abstract_Review__c</object>
     </recordUpdates>
     <screens>
+        <name>ErrorScreen</name>
+        <label>ErrorScreen</label>
+        <locationX>1364</locationX>
+        <locationY>472</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>NoReviewsToSubmitText</name>
+            <fieldText>&lt;p&gt;You do not have any reviews to submit. &lt;/p&gt;&lt;p&gt;Please make sure you rate all reviews first. &lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
         <name>SelectAbstractToSubmit</name>
         <label>SelectAbstractToSubmit</label>
         <locationX>1014</locationX>
-        <locationY>683</locationY>
+        <locationY>874</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -252,8 +300,8 @@
     <screens>
         <name>Submission_Closed_Window</name>
         <label>Submission Closed Window</label>
-        <locationX>1280</locationX>
-        <locationY>685</locationY>
+        <locationX>1277</locationX>
+        <locationY>875</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -269,7 +317,7 @@
         <name>Submit_Success_Message</name>
         <label>Submit Success Message</label>
         <locationX>1016</locationX>
-        <locationY>1040</locationY>
+        <locationY>1231</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -282,7 +330,7 @@
         <showHeader>true</showHeader>
     </screens>
     <start>
-        <locationX>1001</locationX>
+        <locationX>998</locationX>
         <locationY>50</locationY>
         <connector>
             <targetReference>GetAbstractReviews</targetReference>

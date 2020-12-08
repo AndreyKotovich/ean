@@ -1,0 +1,6 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes" access="global" >
+	<aura:attribute name="targetObject" type="Object" required="true"/>	
+    <aura:attribute name="buttonLabel" type="String" required="true"/>
+    <lightning:navigation aura:id="navService"/>
+    <lightning:button variant="brand" label="{!v.buttonLabel}" onclick="{! c.handleClick }" class="slds-slds-p-around--small slds-align_absolute-center" />
+</aura:component>

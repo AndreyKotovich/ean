@@ -9,7 +9,8 @@ public class CertificatePDFGenerator {
 
         // Get Membership status records by Ids ===>
         List<MembershipContactAssotiation__c> mStatuses = [
-                SELECT Id, Name, Contact__c, Application_form__c, Membership__r.API__c
+                SELECT Id, Name, Contact__c, Application_form__c, Membership__r.API__c,
+                    Application_form__r.Order__c, Application_form__r.Order__r.Type__c
                 FROM  MembershipContactAssotiation__c
                 WHERE Id IN :mStatusIds
         ];

@@ -1,4 +1,4 @@
-public class CustomLookUpController {
+public without sharing class CustomLookUpController {
     @AuraEnabled
     public static List<Contact> fetchLookUpValues(String searchKeyWord) {
         String searchKey = '%' + searchKeyWord + '%';
@@ -52,6 +52,24 @@ public class CustomLookUpController {
 
     @AuraEnabled
     public static Contact createContact(String FirstNameString, String LastNameString, String EmailString, String Department, String City, String Country){
+        User u;
+
+        if([SELECT Id, IsSandbox, Name FROM Organization LIMIT 1].IsSandbox){
+            u = [SELECT Id FROM User WHERE Profile.Name = 'System Administrator' AND IsActive = TRUE LIMIT 1];
+        } else {
+            List<User> users = [SELECT Id FROM User WHERE Profile.Name = 'System Administrator' AND IsActive = TRUE];
+
+            for(User user : users){
+                if(user.Name == 'EAN System Administrator'){
+                    u = user;
+                }
+            }
+
+            if(u == null){
+                u = users[0];
+            }
+        }
+
         Contact con = new Contact(
             FirstName = FirstNameString, 
             LastName = LastNameString, 
@@ -59,7 +77,8 @@ public class CustomLookUpController {
             Department_Name__c = Department, 
             MailingCity = City, 
             MailingCountry = Country,
-            deleted1__c = true
+            deleted1__c = true,
+            OwnerId = u.Id
         );
 
         insert con;
