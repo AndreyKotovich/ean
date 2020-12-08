@@ -44,6 +44,6 @@ public class InvoicePageControllerTest {
         System.assertEquals(1, controller.memberships.size());
         System.assertEquals(2, controller.products.size());
         System.assertEquals(orders[0].Total_amount__c, controller.totalAmount);
-        System.assertEquals(orders[0].Payment_Date__c.format('MMMM dd, yyyy'),controller.invoiceDate);
+        System.assertEquals(orders[0].Payment_Date__c.format('dd MMMM, yyyy'),controller.invoiceDate);
     }
 }

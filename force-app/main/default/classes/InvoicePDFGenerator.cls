@@ -5,10 +5,11 @@ public class InvoicePDFGenerator {
 
     @Future(Callout = true)
     public static void generateInvoicePDFs(List<Id> orderIds) {
+        Boolean isSandbox = [SELECT Id, IsSandbox, Name FROM Organization LIMIT 1].IsSandbox;
         List<ContentVersion> attachments = new List<ContentVersion>();
         List<ContentVersion> newAttachments = new List<ContentVersion>();
         Map<String, ContentVersion> attachmentMap = new Map<String, ContentVersion>();
-        Map<String, String> fileOrderMap = new Map<String, String>();
+        Map<String, String> fileTitleEntityIdMap = new Map<String, String>();
         Set<String> attachmentNames = new Set<String>();
         List<Order__c> orders = new List<Order__c>();
         List<Messaging.SingleEmailMessage> emails = new List<Messaging.SingleEmailMessage>();
@@ -21,6 +22,49 @@ public class InvoicePDFGenerator {
                 WHERE Id IN :orderIds AND Contact__c != null AND Contact__r.Email != null
                 ORDER BY CreatedDate ASC
         ];
+
+//        RENEWAL CERTIFICATE GENERATION PART =================>
+        String secretaryName = '';
+        String presidentName = '';
+        // Get president and Secretary names ===>
+        List<GroupChatterGroupAssotiation__c>  groupMemberships = [
+                SELECT Id, Contact__r.Name, Contact__r.Salutation, Role__c
+                FROM GroupChatterGroupAssotiation__c
+                WHERE (Role__c = 'President' OR Role__c = 'Secretary general') AND
+                Group__r.RecordType.Name = 'Level 1 Board (EAN Board)'
+        ];
+
+        for (GroupChatterGroupAssotiation__c g : groupMemberships) {
+            if (g.Role__c == 'President') {
+                presidentName = g.Contact__r.Salutation + ' ' + g.Contact__r.Name;
+            } else if (g.Role__c == 'Secretary general') {
+                secretaryName = g.Contact__r.Salutation + ' ' + g.Contact__r.Name;
+            }
+
+            if (secretaryName != '' && presidentName != ''){
+                break;
+            }
+        }
+        //<===
+        System.debug('checks');
+        List<String> singleEmailMemberships = new List<String>{'resident_and_research_membership', 'full_membership', 'corresponding_membership', 'fellow_membership'};
+
+        List<MembershipContactAssotiation__c> certificateRequired = [
+                SELECT Id, Name, Application_form__r.Form_Status__c, Application_form__r.Order__c, Membership__r.API__c,
+                        Application_form__r.Order__r.Type__c, Contact__c
+                FROM MembershipContactAssotiation__c
+                WHERE Application_form__r.Form_Status__c = 'Approved'
+                AND Application_form__r.Order__c IN :orderIds
+                AND Membership__r.API__c IN :singleEmailMemberships
+                AND Application_form__r.Order__r.Type__c = 'Renewal'
+                ORDER BY CreatedDate DESC
+        ];
+
+        system.debug('certificateRequired: '+certificateRequired);
+
+        List<ContentVersion> existedCertificates = getRenewalExistedCertificates(certificateRequired);
+//        <================= RENEWAL CERTIFICATE GENERATION PART
+
         // Generate new Invoice Numbers
         Boolean generated =  InvoicePDFGenerator.generateInvoiceNumber(orders);
         if (generated) {
@@ -57,11 +101,12 @@ public class InvoicePDFGenerator {
                 //find required email template
                 String emailTemplateDevName = hasMembership?'New_Invoice_Email':'Confirmation_of_Journal_order_invoice';
 
-                // part of 'Membership Renewal'
-                if (hasMembership && o.Applications_Forms__r[0].Renewal_End_Date__c != null) emailTemplateDevName = MEMBERSHIP_RENEWAL_EMAIL_TEMPLATE;
                 system.debug('InvoicePDFGenerator hasMembership: ' + hasMembership);
                 system.debug('InvoicePDFGenerator o: ' + JSON.serialize(o));
                 system.debug('InvoicePDFGenerator ets: ' + JSON.serialize(ets));
+                // part of 'Membership Renewal'
+                if (hasMembership && o.Applications_Forms__r[0].Renewal_End_Date__c != null) emailTemplateDevName = MEMBERSHIP_RENEWAL_EMAIL_TEMPLATE;
+
                 system.debug('InvoicePDFGenerator emailTemplateDevName: ' + emailTemplateDevName);
 
                 for(EmailTemplate emTemp : ets){
@@ -72,6 +117,7 @@ public class InvoicePDFGenerator {
                 system.debug('InvoicePDFGenerator et: ' + et);
                 //choose whoId and whatId for email template
                 Id whatId = hasMembership?o.Applications_Forms__r[0].Id:o.Id;
+
 
                 // if PDF doesn't exist
                 if (!attachmentMap.keySet().contains('Invoice_' + o.Name + '.pdf')) {
@@ -94,30 +140,72 @@ public class InvoicePDFGenerator {
                             NetworkId = ConnectApi.Communities.getCommunities().communities[0].id
                     );
                     newAttachments.add(att);
-                    fileOrderMap.put(att.Title, o.Id);
+                    fileTitleEntityIdMap.put(att.Title, o.Id);
                     // else if PDF exists
                 } else {
                     att = attachmentMap.get('Invoice_' + o.Name + '.pdf');
                 }
-                
+                List<Messaging.EmailFileAttachment> emailAttachments = new List<Messaging.EmailFileAttachment>();
+
+//                RENEWAL CERTIFICATE GENERATION PART =================>
+                MembershipContactAssotiation__c membershipStatusForCertificate;
+
+                for(MembershipContactAssotiation__c mca : certificateRequired){
+                    if(mca.Application_form__r.Order__c == o.Id){
+                        membershipStatusForCertificate = mca;
+                    }
+                }
+
+                if(membershipStatusForCertificate != null){
+                    ContentVersion certificate;
+
+                    for(ContentVersion cv : existedCertificates){
+                        if(cv.Title.contains(membershipStatusForCertificate.Name)){
+                            certificate = cv;
+                            break;
+                        }
+                    }
+
+                    if(certificate == null){
+                        certificate = generateMembershipCertificate(secretaryName, presidentName, membershipStatusForCertificate);
+                        newAttachments.add(certificate);
+                        fileTitleEntityIdMap.put(certificate.Title, membershipStatusForCertificate.Contact__c);
+                    }
+
+
+                    Messaging.EmailFileAttachment renewalCertificate = new Messaging.EmailFileAttachment();
+                    renewalCertificate.setBody(certificate.VersionData);
+                    renewalCertificate.setFileName(certificate.Title);
+                    renewalCertificate.setContentType('application/pdf');
+                    emailAttachments.add(renewalCertificate);
+
+                }
+//                <================= RENEWAL CERTIFICATE GENERATION PART
+
                 Messaging.SingleEmailMessage message = Messaging.renderStoredEmailTemplate(et.Id, o.Contact__c, whatId);
                 Messaging.EmailFileAttachment attach = new Messaging.EmailFileAttachment();
                 attach.setBody(att.VersionData);
                 attach.setFileName(att.Title);
                 attach.setContentType('application/pdf');
+                emailAttachments.add(attach);
+
                 String emailTextBody = message.getPlainTextBody();
                 message.setTargetObjectId(o.Contact__c);
                 message.setPlainTextBody(emailTextBody);
                 message.saveAsActivity = false;
                 message.setOrgWideEmailAddressId(address.Id);
 
-                if(!bccEmail.isEmpty()){
-                    message.setBccAddresses(new List<String>{bccEmail[0].Email__c});
+                if(!bccEmail.isEmpty() && membershipStatusForCertificate == null){
+                    if(isSandbox) message.setBccAddresses(new List<String>{'ilya.litovchik@succraft.com'});
+                    if(!isSandbox) message.setBccAddresses(new List<String>{bccEmail[0].Email__c});
                 }
 
-                message.setFileAttachments(new Messaging.EmailFileAttachment[]{
-                        attach
-                });
+                if(membershipStatusForCertificate != null){
+                    if(isSandbox) message.setBccAddresses(new List<String>{'ilya.litovchik@succraft.com'});
+                    if(!isSandbox) message.setBccAddresses(new List<String>{'membership@ean.org'});
+                }
+
+                message.setFileAttachments(emailAttachments);
                 emails.add(message);
             }
 
@@ -130,7 +218,7 @@ public class InvoicePDFGenerator {
                     List<ContentVersion> cds = [SELECT Id, Title, ContentDocumentId FROM ContentVersion WHERE Id IN : newAttachments];
                     List<ContentDocumentLink> cdLinks = new List<ContentDocumentLink>();
                     for (ContentVersion cd : cds) {
-                        Id orderId = fileOrderMap.get(cd.Title);
+                        Id orderId = fileTitleEntityIdMap.get(cd.Title);
                         ContentDocumentLink link = new ContentDocumentLink(LinkedEntityId = orderId,
                         ShareType = 'V', ContentDocumentId = cd.ContentDocumentId);
                         cdLinks.add(link);
@@ -429,5 +517,46 @@ public class InvoicePDFGenerator {
         if (emailActivities.size() > 0) {
             insert emailActivities;
         }
+    }
+
+    public static List<ContentVersion> getRenewalExistedCertificates(List<MembershipContactAssotiation__c> membershipStatuses){
+        List<ContentVersion> contentVersions = new List<ContentVersion>();
+        Set<String> certificateNames = new Set<String>();
+
+        for(MembershipContactAssotiation__c mStatus : membershipStatuses){
+            certificateNames.add('Certificate_' + mStatus.Name + '.pdf');
+        }
+
+        contentVersions = [SELECT Id, Title, VersionData FROM ContentVersion WHERE Title IN :certificateNames];
+
+        return contentVersions;
+    }
+
+    public static ContentVersion generateMembershipCertificate(String secretaryName, String presidentName, MembershipContactAssotiation__c membershipStatus){
+        PageReference defaultPage = new PageReference('/apex/CertificatePage');
+        defaultPage.getParameters().put('ms', membershipStatus.Id);
+        defaultPage.getParameters().put('sn', secretaryName);
+        defaultPage.getParameters().put('pn', presidentName);
+        Blob pageData;
+        if (Test.isRunningTest()) {
+            pageData = Blob.valueOf('Unit.Test');
+        } else {
+            pageData = defaultPage.getContent();
+
+        }
+        ContentVersion newCertificate = new ContentVersion(
+                VersionData = pageData,
+                Title = 'Certificate_' + membershipStatus.Name + '.pdf',
+                PathOnClient = '/Certificate_' + membershipStatus.Name + '.pdf',
+                IsMajorVersion = true,
+                SharingPrivacy = 'N',
+                ContentLocation = 'S'
+        );
+
+        if (!Test.isRunningTest()) newCertificate.NetworkId = ConnectApi.Communities.getCommunities().communities[0].Id;
+
+        return newCertificate;
+//        newCertificates.add(newCertificate);
+//        fileContactMap.put(newCertificate.Title, membershipStatus.Contact__c);
     }
 }

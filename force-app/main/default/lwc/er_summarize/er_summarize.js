@@ -24,6 +24,9 @@ export default class ErSummarize extends LightningElement {
     @track eventId;
     @track totalAmount = 0;
     @track discountAmount = 0;
+    @track VATamount = 0;
+    @track VATproc = 0;
+    @track GrandTotalAmount = 0;
     isSolo = false;
     isUpgrade = false;
     isDiscount = false;
@@ -69,6 +72,7 @@ export default class ErSummarize extends LightningElement {
     }
 
     connectedCallback() {
+        this.VATproc = +this.eanEvent.VAT_Amount__c || 0;
         let eventTicketsIds = [];
         if (this._selections.selectedTickets && this._selections.selectedTickets.length > 0) {
             this.hasTickets = true;
@@ -151,6 +155,8 @@ export default class ErSummarize extends LightningElement {
                     }
                 }
                 this.totalAmountOrg = this.totalAmount;
+                this.VATamount = (+(this.totalAmountOrg * (1 + +this.VATproc / 100)).toFixed(2) - this.totalAmountOrg).toFixed(2);
+                this.GrandTotalAmount = (+this.totalAmountOrg + +this.VATamount).toFixed(2);
                 console.log('ticketsTable', this.ticketsTable);
                 console.log('sessionsTable', this.sessionsTable);
                 this.isSpinner = false;
@@ -180,7 +186,8 @@ export default class ErSummarize extends LightningElement {
         const selectEvent = new CustomEvent("continue", {
             detail: {
                 discountInfo: this.discountInfo,
-                selectedDates: this.selectedDates
+                selectedDates: this.selectedDates,
+                vatAmount: this.VATamount
             }
         });
         this.dispatchEvent(selectEvent);
@@ -206,12 +213,16 @@ export default class ErSummarize extends LightningElement {
     сancelDiscount() {
         this.discountAmount = 0;
         this.totalAmount = this.totalAmountOrg;
+        this.VATamount = (+(this.totalAmountOrg * (1 + +this.VATproc / 100)).toFixed(2) - this.totalAmountOrg).toFixed(2);
+        this.GrandTotalAmount = (+this.totalAmountOrg + +this.VATamount).toFixed(2);
         this.discountInfo = {};
     }
 
     getDiscount() {
         console.log('getDiscount START');
-        this.discountAmount = 0;
+        this.discountAmount = 0;        
+        this.VATamount = 0;
+        this.GrandTotalAmount = 0;
         this.totalAmount = this.totalAmountOrg;
         this.discountCode = this.template.querySelector('[data-id=dCode]').value;
         this.isSpinner = true;
@@ -260,11 +271,15 @@ export default class ErSummarize extends LightningElement {
                     }
                 }
                 this.totalAmount = this.totalAmountOrg + this.discountAmount;
+                this.VATamount = (+(this.totalAmount * (1 + +this.VATproc / 100)).toFixed(2) - this.totalAmount).toFixed(2);
+                this.GrandTotalAmount = (+this.totalAmount + +this.VATamount).toFixed(2);
                 this.isSpinner = false;
             })
             .catch(error => {
                 console.log('error ', error);
                 this.discountAmount = 0;
+                this.VATamount = 0;
+                this.GrandTotalAmount = 0;
                 this.dispatchToast('Error', error, 'Error');
                 this.isSpinner = false;
             });

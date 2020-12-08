@@ -6,6 +6,7 @@ public class CertificatePDFGenerator {
         Boolean hasError = false;
         List<ContentVersion> newCertificates = new List<ContentVersion>();
         List<BCC_email__mdt> bccEmail = [SELECT Id, Email__c FROM BCC_email__mdt LIMIT 1];
+        List<String> singleEmailMemberships = new List<String>{'resident_and_research_membership', 'full_membership', 'corresponding_membership', 'fellow_membership'};
 
         // Get Membership status records by Ids ===>
         List<MembershipContactAssotiation__c> mStatuses = [
@@ -15,6 +16,20 @@ public class CertificatePDFGenerator {
                 WHERE Id IN :mStatusIds
         ];
         //<===
+
+//        PARSE RENEWAL MEMBERSHIPS (Certificate sent in InvoicePDFGenerator.generateInvoicePDFs) =======>
+        List<MembershipContactAssotiation__c> mStatuses_temp = new List<MembershipContactAssotiation__c>();
+
+        for(MembershipContactAssotiation__c m : mStatuses){
+            if(singleEmailMemberships.contains(m.Membership__r.API__c) && m.Application_form__r.Order__r.Type__c == 'Renewal'){
+                continue;
+            } else {
+                mStatuses_temp.add(m);
+            }
+        }
+
+        mStatuses = mStatuses_temp;
+//      <======= PARSE RENEWAL MEMBERSHIPS (Certificate sent in InvoicePDFGenerator.generateInvoicePDFs)
 
         //GET Attached Certificates for related Contacts ===>
         Set<Id> contactIds = new Set<Id>();

@@ -115,6 +115,16 @@
                         <tbody id="validate-table-tbody">
                         </tbody>
                     </table>
+                    <!-- <div class="slds-grid slds-gutters slds-text-align_center slds-m-right_xxx-small">
+                        <div class="slds-col slds-size_3-of-5">
+                            <span style="font-weight:bold;">VAT amount:</span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-5">
+                        </div>
+                        <div class="slds-col slds-text-body_regular slds-size_1-of-5">
+                            <span id="VAT-amount-total" style="font-weight:bold;"></span>
+                        </div>
+                    </div>
                     <div class="slds-grid slds-gutters slds-text-align_center slds-m-right_xxx-small">
                         <div class="slds-col slds-size_3-of-5">
                             <span style="font-weight:bold;">Total:</span>
@@ -124,7 +134,7 @@
                         <div class="slds-col slds-text-body_regular slds-size_1-of-5">
                             <span id="order-total" style="font-weight:bold;"></span>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <footer class="slds-modal__footer">
                     <button class="slds-button slds-button_neutral" onclick="closeModal('validate-modal')">Cancel
@@ -548,13 +558,8 @@
                             spinner.setAttribute('hidden', 'hidden');
                             somethingWrongScreen.removeAttribute('hidden');
                         } else {
-                            // order = JSON.parse(JSON.stringify(result));
-                            console.log('result: ', result);
                             orderInfo = JSON.parse(JSON.stringify(result));
-                            console.log('orderInfo: ', orderInfo);
                             order = orderInfo.singleOrderInList;
-                            console.log('order: ', order);
-
                             console.log('CreatedDate1', order[0].CreatedDate);
                             let orderDeadline = formatDate(addDays(order[0].CreatedDate, 7));
                             document.querySelectorAll('.order-name').forEach(item => {
@@ -581,7 +586,7 @@
                                 item.innerHTML = '"' + order[0]['Name'] + '"';
                             });
                             document.querySelectorAll('.order-amount').forEach(item => {
-                                item.innerHTML = order[0]['Total_amount__c'];
+                                item.innerHTML = (order[0]['Total_amount_Gros__c']).toFixed(2);
                             });
                             document.querySelectorAll('.customer-first-name').forEach(item => {
                                 item.innerHTML = order[0]['Contact__r']['FirstName'];
@@ -882,7 +887,7 @@
                         spinner.setAttribute('hidden', 'hidden');
                         if (resultParse.url != null) {
                             paymentForm.removeAttribute('hidden');
-                            document.getElementById("total-price").innerHTML = resultParse.price + ' EUR';
+                            document.getElementById("total-price").innerHTML = (resultParse.price).toFixed(2) + ' EUR';
                             showSeamless(resultParse.url);
                         }
                     } else {
@@ -944,7 +949,7 @@
                                 <div class="slds-truncate slds-text-align_center" title="Quantity">x${item.quantity}</div>
                             </td>
                             <td data-label="Price Per Item">
-                                <div class="slds-truncate slds-text-align_center" title="Price Per Item">${item.amount}€</div>
+                                <div class="slds-truncate slds-text-align_left" title="Price Per Item">${item.amount}€</div>
                             </td>
                         </tr>
                     `;
@@ -952,8 +957,35 @@
                     document.getElementById('modal-heading-02').innerHTML = 'Order ' + parsedResult['name'];
                     let tableTbody = document.getElementById('validate-table-tbody');
                     tableTbody.innerHTML = '';
+
+                    rows += `
+                        <tr class="slds-hint-parent">
+                            <td data-label="Item Name">
+                                <div class="slds-truncate slds-text-align_right" title="Item Name"><b>VAT amount:</b></div>
+                            </td>
+                            <td data-label="Quantity">
+                                <div class="slds-truncate" title="Quantity"></div>
+                            </td>
+                            <td data-label="Price Per Item">
+                                <div class="slds-truncate slds-text-align_left" title="Price Per Item">${(parsedResult['VAT-amount-total']).toFixed(2)}€</div>
+                            </td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td data-label="Item Name">
+                                <div class="slds-truncate slds-text-align_right" title="Item Name"><b>Total:</b></div>
+                            </td>
+                            <td data-label="Quantity">
+                                <div class="slds-truncate " title="Total"></div>
+                            </td>
+                            <td data-label="Price Per Item">
+                                <div class="slds-truncate slds-text-align_left" title="Price Per Item">${(parsedResult['total-amount']).toFixed(2)}€</div>
+                            </td>
+                        </tr>
+                    `;
+
                     tableTbody.insertAdjacentHTML('afterbegin', rows);
-                    document.getElementById('order-total').innerHTML = parsedResult['total-amount'] + '€';
+                    // document.getElementById('VAT-amount-total').innerHTML = parsedResult['VAT-amount-total'] + '€';
+                    // document.getElementById('order-total').innerHTML = parsedResult['total-amount'] + '€';
                     openModal('validate-modal');
                 },
                 {escape: false}
@@ -1080,7 +1112,7 @@
                         message = 'If you do not hear back from us within 10 working days, please contact us at <a href="mailto:membership@ean.org">membership@ean.org</a>.';
                         showSuccessScreen(title, message);
                     } else if(result.type === 'EVENT_REGISTRATION') {
-                        let invoiceNumber = !!result.order && result.order.length > 0 ? result.order[0].Invoice_Number__c : 'NULL';
+                        let invoiceNumber = !!result.order && result.order.length > 0 ? result.order[0].Name : 'NULL';
                         let congressLink = !!result.order && result.order.length > 0 && result.order[0].Event_custom__r && !!result.order[0].Event_custom__r.www__c ? result.order[0].Event_custom__r.www__c : 'javascript:void(0)';
                         let body =
                             `<div class="slds-align_absolute-center">

@@ -4,8 +4,8 @@
     <assignments>
         <name>Assign_Type_and_Topic</name>
         <label>Assign Type and Topic</label>
-        <locationX>584</locationX>
-        <locationY>780</locationY>
+        <locationX>599</locationX>
+        <locationY>821</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
             <operator>Assign</operator>
@@ -18,6 +18,34 @@
             <operator>Assign</operator>
             <value>
                 <elementReference>Topics_Pick</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Introduction__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Introduction</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Methods__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Methods</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Results__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Results</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Conclusion__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Conclusion</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -37,45 +65,10 @@
             </value>
         </assignmentItems>
         <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Type</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Conclusion__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Conclusion</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Introduction__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Introduction</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Methods__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Methods</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
             <assignToReference>AbstractRecordVariable.Title__c</assignToReference>
             <operator>Assign</operator>
             <value>
                 <elementReference>Title</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Results__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Results</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -85,13 +78,6 @@
                 <elementReference>Disclosure</elementReference>
             </value>
         </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Abstract_Topic__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Topics_Pick</elementReference>
-            </value>
-        </assignmentItems>
         <connector>
             <targetReference>CreateAbstract</targetReference>
         </connector>
@@ -99,8 +85,8 @@
     <assignments>
         <name>AssignAbstract_0</name>
         <label>AssignAbstract</label>
-        <locationX>741</locationX>
-        <locationY>3050</locationY>
+        <locationX>504</locationX>
+        <locationY>2837</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
             <operator>Assign</operator>
@@ -158,7 +144,7 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Update_Abstract</targetReference>
+            <targetReference>UpdateWordCount</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -519,6 +505,22 @@
             <targetReference>GetMembershipStatus</targetReference>
         </connector>
     </assignments>
+    <assignments>
+        <name>UpdateWordCount</name>
+        <label>UpdateWordCount</label>
+        <locationX>620</locationX>
+        <locationY>2837</locationY>
+        <assignmentItems>
+            <assignToReference>DisplayWordCount</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>TotalBodyWordCount</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Validate_Input_0</targetReference>
+        </connector>
+    </assignments>
     <choices>
         <name>AuthorConsentChoice</name>
         <choiceText>&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;* &lt;/span&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;I confirm that I have the consent of the authors to submit this abstract&lt;/span&gt;</choiceText>
@@ -746,6 +748,9 @@
         <label>PresenterChecker</label>
         <locationX>240</locationX>
         <locationY>1932</locationY>
+        <defaultConnector>
+            <targetReference>PresenterFound</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default</defaultConnectorLabel>
         <rules>
             <name>Presenter_not_checked</name>
@@ -753,6 +758,20 @@
             <conditions>
                 <leftValueReference>checkedPresenter</leftValueReference>
                 <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>selectedRecordId</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue/>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>selectedRecordId</leftValueReference>
+                <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
                 </rightValue>
@@ -777,6 +796,13 @@
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue/>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>selectedRecordId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -893,10 +919,10 @@
     <decisions>
         <name>Validate_Input_0</name>
         <label>Validate Input</label>
-        <locationX>733</locationX>
-        <locationY>2880</locationY>
+        <locationX>747</locationX>
+        <locationY>2971</locationY>
         <defaultConnector>
-            <targetReference>AssignAbstract_0</targetReference>
+            <targetReference>Update_Abstract</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Valid</defaultConnectorLabel>
         <rules>
@@ -1090,25 +1116,25 @@
     <formulas>
         <name>WordCountConclusion</name>
         <dataType>Number</dataType>
-        <expression>(LEN(Trim({!Conclusion}))-LEN(SUBSTITUTE( Trim({!Conclusion}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
+        <expression>(LEN(Trim({!AbstractRecordVariable.Conclusion__c}))-LEN(SUBSTITUTE( Trim({!AbstractRecordVariable.Conclusion__c}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
         <scale>0</scale>
     </formulas>
     <formulas>
         <name>WordCountIntroduction</name>
         <dataType>Number</dataType>
-        <expression>(LEN(Trim({!Introduction}))-LEN(SUBSTITUTE( Trim({!Introduction}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
+        <expression>(LEN(Trim({!AbstractRecordVariable.Introduction__c}))-LEN(SUBSTITUTE( Trim({!AbstractRecordVariable.Introduction__c}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
         <scale>0</scale>
     </formulas>
     <formulas>
         <name>WordCountMethods</name>
         <dataType>Number</dataType>
-        <expression>(LEN(Trim({!Methods}))-LEN(SUBSTITUTE( Trim({!Methods}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
+        <expression>(LEN(Trim({!AbstractRecordVariable.Methods__c}))-LEN(SUBSTITUTE( Trim({!AbstractRecordVariable.Methods__c}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
         <scale>0</scale>
     </formulas>
     <formulas>
         <name>WordCountResults</name>
         <dataType>Number</dataType>
-        <expression>(LEN(Trim({!Results}))-LEN(SUBSTITUTE( Trim({!Results}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
+        <expression>(LEN(Trim({!AbstractRecordVariable.Results__c}))-LEN(SUBSTITUTE( Trim({!AbstractRecordVariable.Results__c}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
         <scale>0</scale>
     </formulas>
     <interviewLabel>Abstract Submission {!$Flow.CurrentDateTime}</interviewLabel>
@@ -1226,8 +1252,8 @@
     <recordUpdates>
         <name>Update_Abstract</name>
         <label>Update Abstract</label>
-        <locationX>598</locationX>
-        <locationY>3023</locationY>
+        <locationX>636</locationX>
+        <locationY>3079</locationY>
         <connector>
             <targetReference>Check_Affirmations_Screen</targetReference>
         </connector>
@@ -1926,13 +1952,13 @@
     <screens>
         <name>Fill_Abstract_Screen_0</name>
         <label>Review Abstract Screen</label>
-        <locationX>617</locationX>
-        <locationY>2826</locationY>
+        <locationX>484</locationX>
+        <locationY>2706</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Validate_Input_0</targetReference>
+            <targetReference>AssignAbstract_0</targetReference>
         </connector>
         <fields>
             <name>ProgressFillAbstract_0_0</name>
@@ -2119,8 +2145,8 @@
     <screens>
         <name>Review_Abstract</name>
         <label>Review Abstract</label>
-        <locationX>463</locationX>
-        <locationY>2832</locationY>
+        <locationX>388</locationX>
+        <locationY>2950</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2963,6 +2989,17 @@
         <isCollection>true</isCollection>
         <isInput>false</isInput>
         <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <name>DisplayWordCount</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value>
+            <elementReference>TotalBodyWordCount</elementReference>
+        </value>
     </variables>
     <variables>
         <name>FilesErrorMessage</name>

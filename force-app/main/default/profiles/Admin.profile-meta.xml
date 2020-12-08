@@ -401,6 +401,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>MRenewalStudentMisInformationController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>MassPrintBadgesController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -1906,6 +1910,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Contact.Topics_of_interest__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Contact.VAT_Number__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -3825,6 +3834,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Order__c.Total_amount_Gros__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Order__c.Total_amount__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -3836,6 +3850,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Order__c.Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Order__c.VAT_Amount__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

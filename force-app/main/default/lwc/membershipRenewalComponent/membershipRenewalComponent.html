@@ -89,6 +89,7 @@
 									<lightning-input data-id="form-city" name="city" type="text" label="City" onchange={handleChangeCity} value={_formCity} placeholder="" max-length="80" required></lightning-input>
 									<lightning-input name="phone" type="text" label="Phone number" onchange={handleChangePhone} value={_formPhoneNumber} placeholder="" max-length="20"></lightning-input>
 									<lightning-combobox data-id="form-profession" name="profession" label="Profession" options={_availableProfessions} onchange={handleChangeProfession} required value={_formProfession}></lightning-combobox>
+									<lightning-input data-id="form-vat-number" name="vatNumber" type="text" label="VAT Number" onchange={handleChangeVatNumber} value={_formVatNumber} placeholder="" max-length="255"></lightning-input>
 
 									<template if:true={_displayAANMemberCheckbox}>
 										<br/>

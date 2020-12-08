@@ -50,6 +50,7 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 	_formIamAANMember = false;
 	_formIamRetired = false;
 	_formProfession = '';
+	_formVATNumber = '';
 
 	_allowAANMemberDiscount = false;
 	_allowRetiredDiscount = false;
@@ -164,6 +165,7 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 				this._formIamAANMember = result.formIamAANMember;
 				this._formIamRetired = result.formIamRetired;
 				this._formProfession = result.formProfession;
+				this._formVATNumber = result.formVATNumber;
 
 				this._allowAANMemberDiscount = result.allowAANMemberDiscount;
 				this._displayAANMemberCheckbox = result.displayAANMemberCheckbox;
@@ -294,6 +296,11 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 
 	handleChangeProfession(event) {
 		this._formProfession = event.target.value;
+		this.validateEnableNextButtonStep1();
+	}
+
+	handleChangeVatNumber(event) {
+		this._formVATNumber = event.target.value;
 		this.validateEnableNextButtonStep1();
 	}
 
@@ -618,6 +625,7 @@ export default class MembershipRenewalComponent extends NavigationMixin(Lightnin
 			formIamAANMember: this._formIamAANMember,
 			formIamRetired: this._formIamRetired,
 			formProfession: this._formProfession,
+			formVATNumber: this._formVATNumber,
 			dateOfGraduation: this._dateOfGraduation,
 			licenseIssuedDate: this._licenseIssuedDate,
 			uploadedFilesPillsString: JSON.stringify(this._uploadedFilesPills),

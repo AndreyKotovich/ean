@@ -4,8 +4,8 @@
     <assignments>
         <name>Assign_Abstract_Values</name>
         <label>Assign Abstract Values</label>
-        <locationX>266</locationX>
-        <locationY>1056</locationY>
+        <locationX>434</locationX>
+        <locationY>852</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecord.Event__c</assignToReference>
             <operator>Assign</operator>
@@ -77,14 +77,14 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Create_Abstract</targetReference>
+            <targetReference>Valid_Input</targetReference>
         </connector>
     </assignments>
     <assignments>
         <name>Assign_Abstract_Values_0</name>
         <label>Assign Abstract Values</label>
-        <locationX>261</locationX>
-        <locationY>2474</locationY>
+        <locationX>271</locationX>
+        <locationY>2199</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecord.Title__c</assignToReference>
             <operator>Assign</operator>
@@ -114,14 +114,14 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Submit_Screen</targetReference>
+            <targetReference>Valid_Input_0</targetReference>
         </connector>
     </assignments>
     <assignments>
         <name>Enable_Error_Message</name>
         <label>Enable Error Message</label>
-        <locationX>19</locationX>
-        <locationY>808</locationY>
+        <locationX>206</locationX>
+        <locationY>823</locationY>
         <assignmentItems>
             <assignToReference>ShowTypeError</assignToReference>
             <operator>Assign</operator>
@@ -136,8 +136,8 @@
     <assignments>
         <name>Enable_Error_Message_0</name>
         <label>Enable Error Message</label>
-        <locationX>144</locationX>
-        <locationY>2165</locationY>
+        <locationX>12</locationX>
+        <locationY>2192</locationY>
         <assignmentItems>
             <assignToReference>ShowTypeErrorReview</assignToReference>
             <operator>Assign</operator>
@@ -152,8 +152,8 @@
     <assignments>
         <name>Enable_Word_Count_Error</name>
         <label>Enable Word Count Error</label>
-        <locationX>410</locationX>
-        <locationY>834</locationY>
+        <locationX>601</locationX>
+        <locationY>828</locationY>
         <assignmentItems>
             <assignToReference>ShowWordCountError</assignToReference>
             <operator>Assign</operator>
@@ -168,8 +168,8 @@
     <assignments>
         <name>Enable_Word_Count_Error_0</name>
         <label>Enable Word Count Error</label>
-        <locationX>424</locationX>
-        <locationY>2181</locationY>
+        <locationX>574</locationX>
+        <locationY>2190</locationY>
         <assignmentItems>
             <assignToReference>ShowWordCountErrorReview</assignToReference>
             <operator>Assign</operator>
@@ -251,8 +251,8 @@
     <decisions>
         <name>Submit_Abstract</name>
         <label>Submit Abstract</label>
-        <locationX>251</locationX>
-        <locationY>2751</locationY>
+        <locationX>269</locationX>
+        <locationY>2642</locationY>
         <defaultConnector>
             <targetReference>DraftSuccessScreen</targetReference>
         </defaultConnector>
@@ -276,10 +276,10 @@
     <decisions>
         <name>Valid_Input</name>
         <label>Valid Input?</label>
-        <locationX>254</locationX>
-        <locationY>887</locationY>
+        <locationX>425</locationX>
+        <locationY>1009</locationY>
         <defaultConnector>
-            <targetReference>Assign_Abstract_Values</targetReference>
+            <targetReference>Create_Abstract</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -316,10 +316,10 @@
     <decisions>
         <name>Valid_Input_0</name>
         <label>Valid Input?</label>
-        <locationX>259</locationX>
-        <locationY>2293</locationY>
+        <locationX>267</locationX>
+        <locationY>2333</locationY>
         <defaultConnector>
-            <targetReference>Assign_Abstract_Values_0</targetReference>
+            <targetReference>Submit_Screen</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -421,7 +421,7 @@
     <formulas>
         <name>WordCountBody</name>
         <dataType>Number</dataType>
-        <expression>(LEN(Trim({!Body}))-LEN(SUBSTITUTE( Trim({!Body}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
+        <expression>(LEN(Trim({!AbstractRecord.Body__c}))-LEN(SUBSTITUTE( Trim({!AbstractRecord.Body__c}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
         <scale>0</scale>
     </formulas>
     <interviewLabel>Invited Abstract Submission {!$Flow.CurrentDateTime}</interviewLabel>
@@ -545,8 +545,8 @@
     <recordUpdates>
         <name>Update_Abstract</name>
         <label>Update Abstract</label>
-        <locationX>383</locationX>
-        <locationY>2856</locationY>
+        <locationX>401</locationX>
+        <locationY>2747</locationY>
         <connector>
             <targetReference>SubmitSuccessScreen</targetReference>
         </connector>
@@ -737,8 +737,8 @@
     <screens>
         <name>DraftSuccessScreen</name>
         <label>DraftSuccessScreen</label>
-        <locationX>135</locationX>
-        <locationY>2877</locationY>
+        <locationX>153</locationX>
+        <locationY>2768</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -772,13 +772,13 @@
     <screens>
         <name>Fill_Abstract_Screen</name>
         <label>Fill Abstract Screen</label>
-        <locationX>262</locationX>
-        <locationY>739</locationY>
+        <locationX>430</locationX>
+        <locationY>699</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Valid_Input</targetReference>
+            <targetReference>Assign_Abstract_Values</targetReference>
         </connector>
         <fields>
             <name>InvitedSubmissionIntroText</name>
@@ -866,12 +866,12 @@
         <name>Fill_Abstract_Screen_0</name>
         <label>Review Abstract Screen</label>
         <locationX>268</locationX>
-        <locationY>2087</locationY>
+        <locationY>2049</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Valid_Input_0</targetReference>
+            <targetReference>Assign_Abstract_Values_0</targetReference>
         </connector>
         <fields>
             <name>Type_0</name>
@@ -1165,8 +1165,8 @@
     <screens>
         <name>Submit_Screen</name>
         <label>Submit Screen</label>
-        <locationX>259</locationX>
-        <locationY>2627</locationY>
+        <locationX>277</locationX>
+        <locationY>2518</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1210,8 +1210,8 @@
     <screens>
         <name>SubmitSuccessScreen</name>
         <label>SubmitSuccessScreen</label>
-        <locationX>384</locationX>
-        <locationY>3003</locationY>
+        <locationX>402</locationX>
+        <locationY>2894</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>

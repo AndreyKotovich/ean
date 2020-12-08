@@ -106,9 +106,36 @@ public with sharing class ParticipantTriggerHelperTest {
         groupParticipantIds.add('' + group1_2_1.Id);
         groupParticipantIds.add('' + group1_2_2.Id);
 
-
         ParticipantTriggerHelper.groupParticipantRegistration(groupParticipantIds);
-        ParticipantTriggerHelper.sendEmailToSubmitedGroupParticipants(new List<Participant__c>{sologroup1_1, group1_1_1, group1_1_2, group1_1_3, group1_1_4, group1_2_1, group1_2_2});
+
+        Map<Id, Participant__c> newParticipantsMap = new Map<Id, Participant__c>{
+            sologroup1_1.Id => sologroup1_1,
+            group1_1_1.Id => group1_1_1,
+            group1_1_2.Id => group1_1_2,
+            group1_1_3.Id => group1_1_3,
+            group1_1_4.Id => group1_1_4,
+            group1_2_1.Id => group1_2_1,
+            group1_2_2.Id => group1_2_2
+        };
+        sologroup1_1.Contact__c = undefined.Id;
+        group1_1_1.Contact__c = undefined.Id;
+        group1_1_2.Contact__c = undefined.Id;
+        group1_1_3.Contact__c = undefined.Id;
+        group1_1_4.Contact__c = undefined.Id;
+        group1_2_1.Contact__c = undefined.Id;
+        group1_2_2.Contact__c = undefined.Id;
+        Map<Id, Participant__c> oldParticipantsMap = new Map<Id, Participant__c>{
+            sologroup1_1.Id => sologroup1_1,
+            group1_1_1.Id => group1_1_1,
+            group1_1_2.Id => group1_1_2,
+            group1_1_3.Id => group1_1_3,
+            group1_1_4.Id => group1_1_4,
+            group1_2_1.Id => group1_2_1,
+            group1_2_2.Id => group1_2_2
+        };
+
+        ParticipantTriggerHelper.sendEmailToSubmitedGroupParticipants(newParticipantsMap, oldParticipantsMap);
+        ParticipantTriggerHelper.soloParticipantRegistration(groupParticipantIds);
 
         System.assertNotEquals(0, [SELECT COUNT() FROM Email_Activity__c]);
     }

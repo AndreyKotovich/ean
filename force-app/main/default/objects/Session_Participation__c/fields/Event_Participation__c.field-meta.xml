@@ -4,8 +4,18 @@
     <deleteConstraint>SetNull</deleteConstraint>
     <externalId>false</externalId>
     <label>Event Participation</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>The related events do not match.</errorMessage>
+        <filterItems>
+            <field>Participant__c.Event_custom__c</field>
+            <operation>equals</operation>
+            <valueField>$Source.Event__c</valueField>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
     <referenceTo>Participant__c</referenceTo>
-    <relationshipLabel>Session Participations</relationshipLabel>
+    <relationshipLabel>Session Bookings</relationshipLabel>
     <relationshipName>Session_Participations</relationshipName>
     <required>false</required>
     <trackTrending>false</trackTrending>

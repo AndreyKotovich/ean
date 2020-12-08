@@ -242,4 +242,61 @@ public with sharing class InvoicePDFGeneratorTest {
         update ord;
     }
 
+    @IsTest(SeeAllData = true)
+    public static void generateInvoiceAndCertificatePDFsTest(){
+        Test.startTest();
+        Contact c = new Contact(LastName = 'test', Email = 'testEm@test.com', MailingStreet = 'TestStreet',
+                MailingCity = 'TestCity', MailingPostalCode = '11111',
+                MailingCountry = 'Germany');
+        insert c;
+
+        List<Membership__c> memberships = [SELECT Id, Name, API__c FROM Membership__c WHERE API__c = 'full_membership'];
+        Membership__c membership;
+        if(memberships.isEmpty()){
+            membership = new Membership__c(Name = 'Full Membership', API__c = 'full_membership');
+            insert membership;
+        } else {
+            membership = memberships[0];
+        }
+
+        Order__c order = new Order__c(Contact__c=c.Id, Payment_Date__c = Date.today(), Purchase_Type__c = 'New', Payment_Method__c = 'Bank Transfer', Type__c = 'Renewal', Status__c = 'Paid');
+        insert order;
+        Application_form__c appForm = new Application_form__c(
+                First_name__c = 'Test',
+                Last_name__c = 'TestLast',
+                Date_of_birth__c = Date.today(),
+                Gender__c = 'Male',
+                Email__c = 'test@test.com',
+                Nationality__c = 'United States',
+                Residency__c = 'United States',
+                ZIP_Postal_code__c = '1111',
+                City__c = 'City',
+                Membership__c = membership.Id,
+                Contact__c = c.Id,
+                Profession__c = 'Neurologist',
+                Street__c = 'test street',
+                Form_Status__c = 'Approved',
+                Order__c = order.Id,
+                Renewal_Start_Date__c = Date.newInstance(Date.today().year()+1, 1,1),
+                Renewal_End_Date__c = Date.newInstance(Date.today().year()+2, 1,1)
+        );
+        insert appForm;
+        Order_Item__c orderItem = new Order_Item__c(Order_Custom__c = order.Id, Amount__c = 214, Membership__c = membership.Id, Quantity__c = 1);
+        insert orderItem;
+        MembershipContactAssotiation__c mca = new MembershipContactAssotiation__c(Membership__c = membership.Id, Contact__c = c.Id, Application_form__c = appForm.Id);
+        insert mca;
+        InvoicePDFGenerator.generateInvoicePDFs(new List<Id>{ order.Id });
+        Test.stopTest();
+        List<Order__c> orders = [
+                SELECT Id, Name
+                FROM Order__c
+                WHERE Id = :order.Id
+        ];
+        String expectedAttName = 'Invoice_' + orders[0].Name + '.pdf';
+        List<ContentVersion> attachments = [SELECT Title FROM ContentVersion WHERE Title = :expectedAttName];
+        System.assertEquals(1, attachments.size());
+        MembershipContactAssotiation__c membershipStatus = [SELECT Id, Name FROM MembershipContactAssotiation__c WHERE Id =:mca.Id LIMIT 1];
+        System.assertEquals(1, [SELECT Title FROM ContentVersion WHERE Title = :'Certificate_' + membershipStatus.Name + '.pdf'].size());
+    }
+
 }

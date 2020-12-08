@@ -63,6 +63,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
      * */
     userInfo = {};
     discountInfo = {};
+    vatAmount = 0;
     selectedDates = [];
     participants = {}; //event participants which we insert in database
     selectedSessions = []; //selected extra sessions
@@ -347,6 +348,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     onSummarize(event) {
         this.discountInfo = event.detail.discountInfo;
         this.selectedDates = event.detail.selectedDates;
+        this.vatAmount = event.detail.vatAmount;
         this.onNext();
     }
 
@@ -427,6 +429,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                         generalData.priceTicket = this.priceTicket;
                         generalData.contactId = this.userInfo.contact.Id;
                         generalData.discountInfo = this.discountInfo;
+                        generalData.vatAmount = this.vatAmount;
                         generalData.selectedDates = this.selectedDates;
 
                         console.log('generalData', JSON.parse(JSON.stringify(generalData)));
@@ -569,6 +572,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             generalData.priceTicket = this.priceTicket;
             generalData.contactId = this.userInfo.contact.Id;
             generalData.discountInfo = this.discountInfo;
+            generalData.vatAmount = this.vatAmount;
             generalData.selectedDates = this.selectedDates;
 
             Object.assign(insertData, {participant: this.upgradeParticipant.Id, selectedSessions:this.selectedSessions, generalData})

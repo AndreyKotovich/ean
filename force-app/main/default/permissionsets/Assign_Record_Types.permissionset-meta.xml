@@ -1191,6 +1191,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Contact.VAT_Number__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Contact.Work_City__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -3051,6 +3056,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Order__c.Total_amount_Gros__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Order__c.Total_amount__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -3062,6 +3072,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Order__c.Type__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Order__c.VAT_Amount__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>

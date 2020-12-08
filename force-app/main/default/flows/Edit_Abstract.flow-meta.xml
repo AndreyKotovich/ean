@@ -1459,31 +1459,31 @@
     <formulas>
         <name>WordCountBody</name>
         <dataType>Number</dataType>
-        <expression>(LEN(Trim({!Body}))-LEN(SUBSTITUTE( Trim({!Body}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
+        <expression>(LEN(Trim({!Get_Abstract.Body__c}))-LEN(SUBSTITUTE( Trim({!Get_Abstract.Body__c}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
         <scale>0</scale>
     </formulas>
     <formulas>
         <name>WordCountConclusion</name>
         <dataType>Number</dataType>
-        <expression>(LEN(Trim({!Conclusion}))-LEN(SUBSTITUTE( Trim({!Conclusion}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
+        <expression>(LEN(Trim({!Get_Abstract.Conclusion__c}))-LEN(SUBSTITUTE( Trim({!Get_Abstract.Conclusion__c}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
         <scale>0</scale>
     </formulas>
     <formulas>
         <name>WordCountIntroduction</name>
         <dataType>Number</dataType>
-        <expression>(LEN(Trim({!Introduction}))-LEN(SUBSTITUTE( Trim({!Introduction}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
+        <expression>(LEN(Trim({!Get_Abstract.Introduction__c}))-LEN(SUBSTITUTE( Trim({!Get_Abstract.Introduction__c}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
         <scale>0</scale>
     </formulas>
     <formulas>
         <name>WordCountMethods</name>
         <dataType>Number</dataType>
-        <expression>(LEN(Trim({!Methods}))-LEN(SUBSTITUTE( Trim({!Methods}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
+        <expression>(LEN(Trim({!Get_Abstract.Methods__c}))-LEN(SUBSTITUTE( Trim({!Get_Abstract.Methods__c}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
         <scale>0</scale>
     </formulas>
     <formulas>
         <name>WordCountResults</name>
         <dataType>Number</dataType>
-        <expression>(LEN(Trim({!Results}))-LEN(SUBSTITUTE( Trim({!Results}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
+        <expression>(LEN(Trim({!Get_Abstract.Results__c}))-LEN(SUBSTITUTE( Trim({!Get_Abstract.Results__c}) ,&quot; &quot;,&quot;&quot;)))+1</expression>
         <scale>0</scale>
     </formulas>
     <interviewLabel>Edit Abstract {!$Flow.CurrentDateTime}</interviewLabel>

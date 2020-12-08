@@ -15,7 +15,9 @@ public without sharing class OrderHelper {
         String contactId = (String)genData.get('contactId');
         String eventId = (String)genData.get('eventId');
         String groupId = (String)genData.get('groupId');
-        
+        System.debug('genData.get' + genData.get('vatAmount'));
+        Double vatAmount = Double.valueOf(genData.get('vatAmount'));
+
         Map<Object,Object> discountInfo = genData.containsKey('discountInfo') ? 
             (Map<Object,Object>)genData.get('discountInfo') : new Map<Object,Object>();
             
@@ -72,7 +74,8 @@ public without sharing class OrderHelper {
             Purchase_Type__c = 'New',
             Event_Registration_Sub_Group__c = groupId,
             Type__c = 'Event registration',
-            Invoice_Number__c = invoiceNum
+            Invoice_Number__c = invoiceNum,
+            VAT_Amount__c = vatAmount
         );
         System.debug('createNewOrder o ' + o);
         insert o;
@@ -155,9 +158,9 @@ public without sharing class OrderHelper {
     @AuraEnabled
     public static List<Order__c> getOrderInfo(String Id) {
         return [
-            SELECT Id, Status__c, Paid_Amount__c, Total_amount__c, 
+            SELECT Id, Status__c, Paid_Amount__c, Total_amount__c, Total_amount_Gros__c, Total_amount_Gros__c,
                 (
-                    SELECT Id, Name__c, Amount__c, Total_amount__c, Quantity__c, Paid__c, 
+                    SELECT Id, Name__c, Amount__c, Total_amount__c, Total_amount_Gros__c, Quantity__c, Paid__c, 
                         Discount_Amount__c, Discount__c, Refund_Amount__c,
                         Contact_Name__c
                     FROM Order_Items__r 

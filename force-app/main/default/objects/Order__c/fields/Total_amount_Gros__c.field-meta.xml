@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Total_amount__c</fullName>
+    <fullName>Total_amount_Gros__c</fullName>
     <externalId>false</externalId>
-    <formula>(Quantity__c *  Amount__c) + Discount_Amount__c</formula>
-    <label>Total amount</label>
+    <formula>Total_amount__c + VAT_Amount__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Total amount Gros</label>
     <precision>18</precision>
     <required>false</required>
     <scale>2</scale>

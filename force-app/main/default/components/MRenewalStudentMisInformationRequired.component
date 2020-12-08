@@ -1,0 +1,5 @@
+<apex:component id="MRenewalStudentMisInformationRequired" access="global" controller="MRenewalStudentMisInformationController">
+	<apex:attribute name="applicationForm" description="Application Form Id" type="String" assignTo="{!appFormId}" required="false" access="global"/>
+	<h1>{!lastApprovalComment}</h1>
+	<h1>Component</h1>
+</apex:component>

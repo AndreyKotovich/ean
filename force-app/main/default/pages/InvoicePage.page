@@ -35,6 +35,11 @@
                     <apex:repeat value="{!address}" var="thing">
                         <apex:outputText value="{!thing}"></apex:outputText> <br style="{!IF(thing!='', '', 'display: none;')}"/>
                     </apex:repeat>
+                    <apex:outputPanel rendered="{!orderType == 'Renewal'}">
+                        <apex:outputPanel rendered="{!vatNumber != ''}">
+                            {!vatNumber}
+                        </apex:outputPanel>
+                    </apex:outputPanel>
                 </div>
             </div>
             <div style="margin: 200px 0 0 0px">

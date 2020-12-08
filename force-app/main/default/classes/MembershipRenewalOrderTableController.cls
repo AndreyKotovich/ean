@@ -15,7 +15,8 @@ public with sharing class MembershipRenewalOrderTableController {
 		balanceAmount = 0;
 
 		List<Order_Item__c> orderItems = [
-			SELECT Id, Name, Name__c, Amount__c , Quantity__c, Total_amount__c, Order_Custom__r.Paid_Amount__c, Order_Custom__r.Total_amount__c
+			SELECT Id, Name, Name__c, Amount__c , Quantity__c, Total_amount__c, Order_Custom__r.Paid_Amount__c, Order_Custom__r.Total_amount__c, 
+				Order_Custom__r.Total_amount_Gros__c, Order_Custom__r.Total_amount_Gros__c
 			FROM Order_Item__c
 			WHERE Order_Custom__c = :orderId
 		];

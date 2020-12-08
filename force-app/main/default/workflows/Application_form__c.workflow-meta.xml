@@ -78,10 +78,11 @@
         <reevaluateOnChange>false</reevaluateOnChange>
     </fieldUpdates>
     <fieldUpdates>
-        <fullName>Declined</fullName>
+        <fullName>Further_Information_Need</fullName>
+        <description>Further Information Required</description>
         <field>Form_Status__c</field>
-        <literalValue>Declined</literalValue>
-        <name>Declined</name>
+        <literalValue>Further Information Required</literalValue>
+        <name>Further Information Need</name>
         <notifyAssignee>false</notifyAssignee>
         <operation>Literal</operation>
         <protected>false</protected>

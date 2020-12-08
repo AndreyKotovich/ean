@@ -16,7 +16,8 @@ public with sharing class OrderInvoiceTableController {
 				Order_Custom__c, Order_Custom__r.Event_custom__r.VAT_Amount__c, Event_Participation__r.Contact__r.FirstName,
 				Event_Participation__r.Contact__r.LastName, Event_Participation__r.Contact__r.Email,
 				Order_Custom__r.Contact__r.FirstName, Order_Custom__r.Contact__r.LastName,
-				Order_Custom__r.Contact__r.Email 
+				Order_Custom__r.Contact__r.Email, Order_Custom__r.Total_amount_Gros__c, Order_Custom__r.VAT_Amount__c,
+				Order_Custom__r.Total_amount__c
 			FROM Order_Item__c 
 			WHERE Order_Custom__c = :orderId
 		];
@@ -30,7 +31,7 @@ public with sharing class OrderInvoiceTableController {
 				oIW.id = oI.Id;
 				oIW.name = oI.Name__c;
 				oIW.amount = oI.Amount__c;
-				oIW.totalAmount  = (oI.Total_amount__c / (1 + vatValue / 100)).setScale(2);
+				oIW.totalAmount  = oI.Total_amount__c;
 				oIW.quantity = oI.Quantity__c;
 				oIW.contactId = oI.Order_Custom__r.Contact__r.Id;
 				oIW.firstName = oI.Order_Custom__r.Contact__r.FirstName;
@@ -41,11 +42,12 @@ public with sharing class OrderInvoiceTableController {
 				oIW.participantContactId = oI.Event_Participation__r.Contact__r.Id;
 				oIW.participantContactEmail = oI.Event_Participation__r.Contact__r.Email;
 				orderIs.add( oIW );
-				orderTotalAmount += oI.Total_amount__c;
+
 			}
-			if (orderTotalAmount > 0 && vatValue > 0) {
-				orderTotal = (orderTotalAmount /(1 + vatValue / 100)).setScale(2);
-				vatAmount = (orderTotalAmount - orderTotal).setScale(2);                
+			if (orderItems.size() > 0) {
+				orderTotal = orderItems[0].Order_Custom__r.Total_amount__c;
+				orderTotalAmount = orderItems[0].Order_Custom__r.Total_amount_Gros__c;
+				vatAmount = orderItems[0].Order_Custom__r.VAT_Amount__c;         
 			}
 		}
 		return orderIs;

@@ -3,7 +3,7 @@ public without sharing class EventRegistrationController {
     public static Event__c getEvent(String eventId) {
         Event__c event = [
                 SELECT Id, Name, Early_Bird_Deadline__c, Registration_Deadline__c, RecordType.DeveloperName,
-                        Start_Time__c, End_Time__c, Max_Participants__c, Registrations__c, Country__c
+                        Start_Time__c, End_Time__c, Max_Participants__c, Registrations__c, Country__c, VAT_Amount__c
                 FROM Event__c
                 WHERE Id = :eventId
         ];
