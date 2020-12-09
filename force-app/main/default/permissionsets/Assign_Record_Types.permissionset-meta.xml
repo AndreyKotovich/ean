@@ -3056,7 +3056,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Order__c.Total_amount_Gros__c</field>
+        <field>Order__c.Total_Amount_Gros__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>

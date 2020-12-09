@@ -1,5 +1,5 @@
 ({
-    loadData : function(cmp){
+    loadData: function (cmp) {
         cmp.set("v.spinnerVisible", true);
 
         this.getTopics(cmp)
@@ -14,42 +14,45 @@
             });
     },
 
-    setAbstractsColumns : function(cmp){
+    setAbstractsColumns: function (cmp) {
         cmp.set("v.abstractColumns", [
-            {label: 'Name', fieldName: 'Name', type: 'text'},
-            {label: 'Title', fieldName: 'Title__c', type: 'text'},
-            {label: 'Topic', fieldName: 'Abstract_Topic__c', type: 'text'},
-            {label: 'Type', fieldName: 'Type__c', type: 'text'},
-            {label: 'Stage', fieldName: 'Stage__c', type: 'text'},
-            {label: 'Status', fieldName: 'Status__c', type: 'text'}
+            { label: 'Name', fieldName: 'Name', type: 'text' },
+            { label: 'Title', fieldName: 'Title__c', type: 'text' },
+            { label: 'Topic', fieldName: 'Abstract_Topic__c', type: 'text' },
+            { label: 'Type', fieldName: 'Type__c', type: 'text' },
+            { label: 'Stage', fieldName: 'Stage__c', type: 'text' },
+            { label: 'Status', fieldName: 'Status__c', type: 'text' },            
+            { label: 'Assigned Reviewers', fieldName: 'assignedReviewers', type: 'text' },
         ])
     },
 
-    setAbstractsColumnsToAssign : function(cmp){
+    setAbstractsColumnsToAssign: function (cmp) {
         cmp.set("v.abstractColumnsToAssign", [
-            {label: 'Name', fieldName: 'Name', type: 'text'},
-            {label: 'Title', fieldName: 'Title__c', type: 'text'},
-            {label: 'Topic', fieldName: 'Abstract_Topic__c', type: 'text'},
-            {label: 'Type', fieldName: 'Type__c', type: 'text'},
-            {label: 'Stage', fieldName: 'Stage__c', type: 'text'},
-            {label: 'Status', fieldName: 'Status__c', type: 'text'},
-            {label: '', type: 'button', initialWidth: 135, typeAttributes: { label: 'Select', name: 'select_abstract', title: 'Click to Select Abstract'}},
+            { label: 'Name', fieldName: 'Name', type: 'text' },
+            { label: 'Title', fieldName: 'Title__c', type: 'text' },
+            { label: 'Topic', fieldName: 'Abstract_Topic__c', type: 'text' },
+            { label: 'Type', fieldName: 'Type__c', type: 'text' },
+            { label: 'Stage', fieldName: 'Stage__c', type: 'text' },
+            { label: 'Status', fieldName: 'Status__c', type: 'text' },
+            { label: 'Assigned Reviewers', fieldName: 'assignedReviewers', type: 'text' },
+            { label: '', type: 'button', initialWidth: 135, typeAttributes: { label: 'Select', name: 'select_abstract', title: 'Click to Select Abstract' } },
         ])
     },
 
 
-    setReviewersColumns : function(cmp){
+    setReviewersColumns: function (cmp) {
         cmp.set("v.reviewerColumns", [
-            {label: 'Name', fieldName: 'Name', type: 'text'},
-            {label: 'Remaining Capacity', fieldName: 'Remaining_Capacity__c', type: 'text'},
-            {label: 'Assigned Abstracts', fieldName: 'Assigned_Abstracts__c', type: 'text'}
+            { label: 'Name', fieldName: 'Name', type: 'text' }, 
+            { label: 'Contact Name', fieldName: 'ContactName', type: 'text' },            
+            { label: 'Remaining Capacity', fieldName: 'Remaining_Capacity__c', type: 'text' },
+            { label: 'Assigned Abstracts', fieldName: 'Assigned_Abstracts__c', type: 'text' }
         ])
     },
 
-    getTopics : function(cmp) {
+    getTopics: function (cmp) {
         return new Promise((resolve, reject) => {
             var action = cmp.get("c.getTopics");
-            action.setCallback(this, function(response) {
+            action.setCallback(this, function (response) {
                 var state = response.getState();
                 if (state === "SUCCESS") {
                     var advTopics = ['All'];
@@ -57,7 +60,7 @@
 
                     cmp.set("v.topics", advTopics);
                     resolve();
-                }else{
+                } else {
                     console.log(response.getState());
                     reject();
                 }
@@ -66,41 +69,52 @@
         })
     },
 
-    getAbstracts : function(cmp) {
+    getAbstracts: function (cmp) {
         cmp.set("v.abstracts", {});
 
         var action = cmp.get("c.getAbstracts");
         var selectedTopic = cmp.get("v.selectedTopic");
-        if(selectedTopic == 'All'){
+        if (selectedTopic == 'All') {
             selectedTopic = '';
         }
         action.setParams({
             'abstractTopic': selectedTopic
         });
-        action.setCallback(this, function(response) {
+        action.setCallback(this, function (response) {
             var state = response.getState();
             if (state === "SUCCESS") {
-                cmp.set("v.abstracts", response.getReturnValue());
-            }else{
+                let res = response.getReturnValue();
+                res.forEach(e => {
+                    e.assignedReviewers = e.Abstract_Reviews__r ? e.Abstract_Reviews__r.length : 0;       
+                });
+                cmp.set("v.abstracts", res);
+            } else {
                 console.log(response.getState());
             }
         });
         $A.enqueueAction(action);
     },
 
-    getReviewers : function(cmp, abstractId){
+    getReviewers: function (cmp, abstractId) {
         return new Promise((resolve, reject) => {
             var action = cmp.get("c.getReviewers");
             action.setParams({
                 'abstractId': abstractId
             });
-            action.setCallback(this, function(response) {
+            action.setCallback(this, function (response) {
                 var state = response.getState();
                 if (state === "SUCCESS") {
-                    response.getReturnValue()
-                    cmp.set("v.reviewers", response.getReturnValue());
+                    let res = response.getReturnValue();
+                    let generalData = [];
+                    res.forEach(e => {
+                        let el = Object.assign({}, e);
+                        el.ContactName = e.Contact__r.Name;
+                        generalData.push(el);
+                    });
+
+                    cmp.set("v.reviewers", generalData);
                     resolve();
-                }else{
+                } else {
                     console.log(response.getState());
                     reject();
                 }
@@ -109,21 +123,23 @@
         })
     },
 
-    getSelectedRecords : function(cmp, event){
+    getSelectedRecords: function (cmp, event) {
         var selectedRows = JSON.parse(JSON.stringify(event.getParam('selectedRows')));
         cmp.set("v.selectedRecords", selectedRows);
     },
 
-    autoAssignReviewers : function(cmp){
-        
+    autoAssignReviewers: function (cmp) {
+
     },
 
-    manualAssignReviewers : function(cmp){
+    manualAssignReviewers: function (cmp) {
         cmp.set("v.abstractListStage", false);
         cmp.set("v.spinnerVisible", true);
 
         var abstractId = cmp.get("v.selectedRecords")[0].Id;
         cmp.set("v.selectedAbstract", cmp.get("v.selectedRecords")[0]);
+
+        cmp.set("v.selectedNameAbstract", `${cmp.get("v.selectedRecords")[0].Name} - ${cmp.get("v.selectedRecords")[0].Title__c}`);
 
         this.getReviewers(cmp, abstractId)
             .then(result => {
@@ -138,7 +154,7 @@
             });
     },
 
-    previous : function(cmp){
+    previous: function (cmp) {
         cmp.set("v.selectedRecords", []);
 
         cmp.set("v.abstractAssignStage", false);
@@ -148,13 +164,14 @@
         cmp.set("v.spinnerVisible", false);
     },
 
-    getAbstractReviewers : function(cmp, event){
+    getAbstractReviewers: function (cmp, event) {
         var row = event.getParam('row');
+        console.log('row ', row);
         cmp.set("v.selectedAbstract", row);
 
         cmp.set("v.reviewers", []);
         cmp.set("v.spinnerVisible", true);
-
+        cmp.set("v.selectedNameAbstract", `${row.Name} - ${row.Title__c}`);
         this.getReviewers(cmp, row.Id)
             .then(result => {
                 this.setReviewersColumns(cmp);
@@ -166,19 +183,19 @@
             });
     },
 
-    getAuthorsData : function(cmp, abstractId, reviewerContactId, reviewerContactEmail){
+    getAuthorsData: function (cmp, abstractId, reviewerContactId, reviewerContactEmail) {
         return new Promise((resolve, reject) => {
             var action = cmp.get("c.getAuthorsData");
             action.setParams({
-                'abstractId':abstractId,
-                'reviewerContactId':reviewerContactId,
-                'reviewerContactEmail':reviewerContactEmail
+                'abstractId': abstractId,
+                'reviewerContactId': reviewerContactId,
+                'reviewerContactEmail': reviewerContactEmail
             });
-            action.setCallback(this, function(response) {
+            action.setCallback(this, function (response) {
                 var state = response.getState();
                 if (state === "SUCCESS") {
                     resolve(response.getReturnValue());
-                }else{
+                } else {
                     console.log(response.getState());
                     reject();
                 }
@@ -187,34 +204,39 @@
         })
     },
 
-    selectReviewer : function(cmp, event){
-        var selectedAbstract = cmp.get("v.selectedAbstract");
-        var selectedReviewers = JSON.parse(JSON.stringify(event.getParam('selectedRows')));
+    selectReviewer: function (cmp, event) {
+        try {
+            var selectedAbstract = cmp.get("v.selectedAbstract");
+            var selectedReviewers = JSON.parse(JSON.stringify(event.getParam('selectedRows')));
 
-        selectedReviewers.forEach(reviewer => {
-            this.getAuthorsData(cmp, selectedAbstract.Id, reviewer.Contact__c, reviewer.Contact__r.Email)
-                .then(resultArray => {
-                    if(reviewer.Contact__c === selectedAbstract.Abstract_Presenter__c || 
-                        reviewer.Contact__r.Email === selectedAbstract.Abstract_Presenter__r.Email || 
-                        resultArray.lenght > 0){
+            selectedReviewers.forEach(reviewer => {
+                this.getAuthorsData(cmp, selectedAbstract.Id, reviewer.Contact__c, reviewer.Contact__r.Email)
+                    .then(resultArray => {
+                        if (reviewer.Contact__c === selectedAbstract.Abstract_Presenter__c ||
+                            reviewer.Contact__r.Email === selectedAbstract.Abstract_Presenter__r.Email ||
+                            resultArray.lenght > 0) {
                             cmp.set("v.notificationVisible", true);
                             cmp.set("v.notificationMessage", 'Conflicts of interest');
                             // unselect row
                             console.log('conflict');
-                    }else{
-                        // add junction object to map
-                    }
-                })
-                .catch(error => {
-                    cmp.set("v.spinnerVisible", false);
-                    console.log(error);
-                })
-        });
+                        } else {
+                            // add junction object to map
+                        }
+                    })
+                    .catch(error => {
+                        cmp.set("v.spinnerVisible", false);
+                        console.log(error);
+                    })
+            });
+        }
+        catch (e) {
+            console.log('selectReviewer catch', e);
+        }
     },
 
-    save : function(cmp, event){
+    save: function (cmp, event) {
         console.log('selectedRows ');
-        
+
         var selectedAbstract = cmp.get("v.selectedAbstract");
         // console.log('selectedAbstract ', selectedAbstract);
         let lines = cmp.find('linesTable').getSelectedRows();
@@ -226,9 +248,9 @@
         if (Object.keys(abstRev).length > 0) {
             var action = cmp.get("c.setAbstractRev");
             action.setParams({
-                'generalData':abstRev
+                'generalData': abstRev
             });
-            action.setCallback(this, function(response) {
+            action.setCallback(this, function (response) {
                 var state = response.getState();
                 if (state === "SUCCESS") {
                     let res = response.getReturnValue();
@@ -248,7 +270,7 @@
             });
             $A.enqueueAction(action);
         }
-        
+
         console.log('abstRev ', abstRev);
     },
 })

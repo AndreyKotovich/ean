@@ -22,7 +22,7 @@ public with sharing class AssignRewiewersController {
 
         if(abstractTopic.length() == 0){
             abstracts = [
-                SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Topics__c, Abstract_Presenter__c, Abstract_Presenter__r.Email
+                SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Topics__c, Abstract_Presenter__c, Abstract_Presenter__r.Email,  (SELECT Id FROM Abstract_Reviews__r)
                 FROM Abstract__c 
                 WHERE 
                     RecordType.Name = 'Public Submission'
@@ -33,7 +33,7 @@ public with sharing class AssignRewiewersController {
             ];
         }else{
             abstracts = [
-                SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Topics__c, Abstract_Presenter__c, Abstract_Presenter__r.Email
+                SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Topics__c, Abstract_Presenter__c, Abstract_Presenter__r.Email,  (SELECT Id FROM Abstract_Reviews__r)
                 FROM Abstract__c 
                 WHERE 
                     RecordType.Name = 'Public Submission'
@@ -54,12 +54,12 @@ public with sharing class AssignRewiewersController {
         List<Reviewer__c> reviewers = new List<Reviewer__c>();
 
         Abstract__c abstractItem = [ 
-            SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Topics__c 
+            SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Topics__c, (SELECT Id FROM Abstract_Reviews__r) 
             FROM Abstract__c WHERE Id =: abstractId
         ].get(0);
         
         String queryString = 
-            'SELECT Id, Name, Remaining_Capacity__c, Assigned_Abstracts__c, Event__c, Topics__c, Contact__c, Contact__r.Email ' + 
+            'SELECT Id, Name, Remaining_Capacity__c, Assigned_Abstracts__c, Event__c, Topics__c, Contact__c, Contact__r.Email, Contact__r.Name ' + 
             'FROM Reviewer__c ' + 
             'WHERE ' +
                 'Id NOT IN (SELECT Reviewer__c FROM Abstract_Review__c WHERE Abstract__c = \'' + abstractId + '\') AND ' +

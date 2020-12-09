@@ -1,23 +1,23 @@
 <aura:component controller="AssignRewiewersController" implements="flexipage:availableForAllPageTypes" access="global">
     <aura:attribute name="abstracts" type="Object" />
     <aura:attribute name="reviewers" type="Object" />
-    <aura:attribute name="abstractColumns" type="List"/>
-    <aura:attribute name="abstractColumnsToAssign" type="List"/>
-    <aura:attribute name="reviewerColumns" type="List"/>
-    <aura:attribute name="numberOfReviewers" type="Integer" default="3"/>
-    <aura:attribute name="topics" type="String[]"/>
-    <aura:attribute name="selectedTopic" type="String"/>
+    <aura:attribute name="abstractColumns" type="List" />
+    <aura:attribute name="abstractColumnsToAssign" type="List" />
+    <aura:attribute name="reviewerColumns" type="List" />
+    <aura:attribute name="numberOfReviewers" type="Integer" default="3" />
+    <aura:attribute name="topics" type="String[]" />
+    <aura:attribute name="selectedTopic" type="String" />
     <aura:attribute name="spinnerVisible" type="Boolean" default="false" />
     <aura:attribute name="abstractListStage" type="Boolean" default="true" />
     <aura:attribute name="abstractAssignStage" type="Boolean" default="false" />
     <aura:attribute name="notificationVisible" type="Boolean" default="false" />
-    <aura:attribute name="selectedRecords" type="List"/>
-    <aura:attribute name="assignedReviewers" type="List"/>
+    <aura:attribute name="selectedRecords" type="List" />
+    <aura:attribute name="assignedReviewers" type="List" />
     <aura:attribute name="selectedAbstract" type="Object" />
     <aura:attribute name="notificationMessage" type="String" />
+    <aura:attribute name="selectedNameAbstract" type="String" />
 
-
-    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:handler name="init" value="{! this }" action="{! c.init }" />
 
     <div class="slds-box slds-theme_default">
         <!-- Spinner section -->
@@ -27,27 +27,27 @@
 
         <!-- Abstract List section -->
         <aura:if isTrue="{!v.abstractListStage}">
-            <lightning:input type="number" name="numberOfReviewers" value="{! v.numberOfReviewers}" maxlength="4" label="Number of Reviewers" />
+            <lightning:input type="number" name="numberOfReviewers" value="{! v.numberOfReviewers}" maxlength="4"
+                label="Number of Reviewers" />
 
-            <lightning:select name="selectTopic" label="Select topic" value="{!v.selectedTopic}" onchange="{! c.selectTopic }">
+            <lightning:select name="selectTopic" label="Select topic" value="{!v.selectedTopic}"
+                onchange="{! c.selectTopic }">
                 <aura:iteration items="{!v.topics}" var="topic">
                     <option text="{!topic}" value="{!topic}" />
                 </aura:iteration>
             </lightning:select>
-            
-            <br />
-
-            <lightning:datatable
-                columns = "{! v.abstractColumns }"
-                data = "{! v.abstracts }"
-                keyField = "id" 
-                hideCheckboxColumn = "false" 
-                onrowselection="{! c.getSelectedRecords }"/>
 
             <br />
 
-            <lightning:button variant="brand" label="Manual Assign" title="Manual Assign" onclick="{! c.manualAssignReviewers }" />
-            <lightning:button variant="brand" label="Auto Assign" title="Auto Assign" onclick="{! c.autoAssignReviewers }" />
+            <lightning:datatable columns="{! v.abstractColumns }" data="{! v.abstracts }" keyField="id"
+                hideCheckboxColumn="false" onrowselection="{! c.getSelectedRecords }" />
+
+            <br />
+
+            <lightning:button variant="brand" label="Manual Assign" title="Manual Assign"
+                onclick="{! c.manualAssignReviewers }" />
+            <lightning:button variant="brand" label="Auto Assign" title="Auto Assign"
+                onclick="{! c.autoAssignReviewers }" />
         </aura:if>
 
         <!-- Abstract Assign section -->
@@ -55,23 +55,18 @@
             <div class="slds-grid slds-gutters">
                 <div class="slds-col slds-size_3-of-5">
                     <!-- abstracts datatable -->
-                    <lightning:datatable
-                        columns = "{! v.abstractColumnsToAssign }"
-                        data = "{! v.selectedRecords }"
-                        keyField = "id" 
-                        hideCheckboxColumn = "true" 
-                        onrowaction = "{! c.getAbstractReviewers}"/>
+                    <lightning:datatable columns="{! v.abstractColumnsToAssign }" data="{! v.selectedRecords }"
+                        keyField="id" hideCheckboxColumn="true" onrowaction="{! c.getAbstractReviewers}" />
                 </div>
                 <div class="slds-col slds-size_2-of-5">
+                    <div class="slds-text-heading_medium">{! v.selectedNameAbstract }</div>
                     <!-- reviewers datatable -->
-                    <lightning:datatable
-                        aura:id="linesTable"
-                        columns = "{! v.reviewerColumns }"
-                        data = "{! v.reviewers }"
-                        keyField = "id" 
-                        hideCheckboxColumn = "false" 
-                        selectedRows = "{! v.assignedReviewers}"
-                        onrowselection="{! c.selectReviewer }"/>
+                    <lightning:datatable aura:id="linesTable" columns="{! v.reviewerColumns }" data="{! v.reviewers }"
+                        keyField="id" hideCheckboxColumn="false" selectedRows="{! v.assignedReviewers}"
+                        onrowselection="{! c.selectReviewer }" />
+
+
+
                 </div>
             </div>
 
@@ -109,5 +104,5 @@
             </div>
         </aura:if>-->
     </div>
-    
+
 </aura:component>

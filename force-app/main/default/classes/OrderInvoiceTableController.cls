@@ -16,7 +16,7 @@ public with sharing class OrderInvoiceTableController {
 				Order_Custom__c, Order_Custom__r.Event_custom__r.VAT_Amount__c, Event_Participation__r.Contact__r.FirstName,
 				Event_Participation__r.Contact__r.LastName, Event_Participation__r.Contact__r.Email,
 				Order_Custom__r.Contact__r.FirstName, Order_Custom__r.Contact__r.LastName,
-				Order_Custom__r.Contact__r.Email, Order_Custom__r.Total_amount_Gros__c, Order_Custom__r.VAT_Amount__c,
+				Order_Custom__r.Contact__r.Email, Order_Custom__r.Total_Amount_Gros__c, Order_Custom__r.VAT_Amount__c,
 				Order_Custom__r.Total_amount__c
 			FROM Order_Item__c 
 			WHERE Order_Custom__c = :orderId
@@ -46,7 +46,7 @@ public with sharing class OrderInvoiceTableController {
 			}
 			if (orderItems.size() > 0) {
 				orderTotal = orderItems[0].Order_Custom__r.Total_amount__c;
-				orderTotalAmount = orderItems[0].Order_Custom__r.Total_amount_Gros__c;
+				orderTotalAmount = orderItems[0].Order_Custom__r.Total_Amount_Gros__c;
 				vatAmount = orderItems[0].Order_Custom__r.VAT_Amount__c;         
 			}
 		}
