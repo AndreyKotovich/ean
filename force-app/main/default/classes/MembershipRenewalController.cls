@@ -62,7 +62,8 @@ public without sharing class MembershipRenewalController {
 					Contact__r.Email, Contact__r.Nationality__c, Contact__r.Residency__c,
 					Contact__r.MailingStreet, Contact__r.MailingPostalCode, Contact__r.MailingCity,
 					Contact__r.Phone, Contact__r.Expected_Date_Of_Graduation__c, Contact__r.License_issued__c,
-					Contact__r.AAN_Member__c, Contact__r.Retired__c, Contact__r.Profession__c, Renewal_Application_Form__c, Renewal_Application_Form__r.Form_Status__c
+					Contact__r.AAN_Member__c, Contact__r.Retired__c, Contact__r.Profession__c, Contact__r.VAT_Number__c,
+					Renewal_Application_Form__c, Renewal_Application_Form__r.Form_Status__c
 				FROM MembershipContactAssotiation__c
 				WHERE Contact__c =:contactId
 				// AND Application_form__c != null
@@ -151,6 +152,9 @@ public without sharing class MembershipRenewalController {
 				// 'formIamRetired' => Boolean.valueOf(membershipStatus.Contact__r.Retired__c),
 				'formIamRetired' => false,
 				'formProfession' => !String.isBlank(membershipStatus.Contact__r.Profession__c) ? membershipStatus.Contact__r.Profession__c : '',
+
+				//	EANMR-77	Add VAT Number
+				'formVATNumber' => '',
 
 				'availableSalutations' => availableSalutations,
 				'availableGenders' => availableGenders,
@@ -365,6 +369,7 @@ public without sharing class MembershipRenewalController {
 			Boolean formIamAANMember = params.containsKey('formIamAANMember') ? Boolean.valueOf(params.get('formIamAANMember')) : false;
 			Boolean formIamRetired = params.containsKey('formIamRetired') ? Boolean.valueOf(params.get('formIamRetired')) : false;
 			String formProfession = params.containsKey('formProfession') ? String.valueOf(params.get('formProfession')) : '';
+			String formVATNumber = params.containsKey('formVATNumber') ? String.valueOf(params.get('formVATNumber')) : '';
 
 			Date dateOfGraduation = params.containsKey('dateOfGraduation') ? Date.valueOf(String.valueOf(params.get('dateOfGraduation'))) : null;
 			Date licenseIssuedDate = params.containsKey('licenseIssuedDate') ? Date.valueOf(String.valueOf(params.get('licenseIssuedDate'))) : null;
@@ -402,7 +407,8 @@ public without sharing class MembershipRenewalController {
 					Nationality__c = formNationality, Residency__c = formCountryOfResidence, MailingStreet = formStreet,
 					MailingPostalCode = formZipPostalCode, MailingCity = formCity, Phone = formPhoneNumber,
 					AAN_Member__c = formIamAANMember, Retired__c = formIamRetired, Profession__c = formProfession,
-					Expected_Date_Of_Graduation__c = dateOfGraduation, License_issued__c = licenseIssuedDate
+					Expected_Date_Of_Graduation__c = dateOfGraduation, License_issued__c = licenseIssuedDate,
+					VAT_Number__c = formVATNumber
 				);
 			} catch (Exception e) {
 				String err = e.getMessage();
@@ -572,6 +578,7 @@ public without sharing class MembershipRenewalController {
 		if (!linksToInsert.isEmpty()) insert linksToInsert;
 	}
 
+	//	USED FROM LIGHTNING FLOW
 	@InvocableMethod(label='UpdateAppForm')
 	public static void updateAppForm(List<String> recordIds) {
 		system.debug('MembershipRenewalController [updateAppForm] recordIds: ' + JSON.serialize(recordIds));
@@ -604,6 +611,57 @@ public without sharing class MembershipRenewalController {
 			system.debug('MembershipRenewalController [updateAppForm] ERROR message: ' + e.getMessage());
 			system.debug('MembershipRenewalController [updateAppForm] ERROR messageStack: ' + e.getStackTraceString());
 		}
+	}
+
+
+	//	QUICK ACTIONS ON APPLICATION FORM
+	//	'Further Information Required'
+	@AuraEnabled
+	public static Map<String, Object> updateAppFormFurtherInformationRequired(Map<String, Object> params) {
+		String rejectProcessResultString = '';
+		String unlockResultString = '';
+		// String lockResultString = '';
+		try {
+			String appFormIdString = params.containsKey('appFormId') ? String.valueOf(params.get('appFormId')) : '';
+			String comment = params.containsKey('comment') ? String.valueOf(params.get('comment')) : '';
+			String formStatus = params.containsKey('formStatus') ? String.valueOf(params.get('formStatus')) : '';
+
+			Id appFormId;
+			try { appFormId = Id.valueOf(appFormIdString);
+			} catch (Exception e) { return new Map<String, Object>{'result' => false, 'message' => 'Wrong Application Form Id: ' + appFormIdString, 'isCustomError' => true}; }
+
+			if (String.isBlank(comment)) return new Map<String, Object>{'result' => false, 'message' => 'Comment Is Required', 'isCustomError' => true};
+
+			List<Application_form__c> appForm = [SELECT Id, Form_Status__c FROM Application_form__c WHERE Id =:appFormId AND Form_Status__c =:formStatus LIMIT 1];
+			if (appForm.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => 'Application Form Not Found, Id: ' + appFormIdString, 'isCustomError' => true};
+
+			List<ProcessInstanceWorkitem> workItem = [SELECT Id, ProcessInstanceId FROM ProcessInstanceWorkitem WHERE ProcessInstance.TargetObjectId = :appFormId ORDER BY CreatedDate DESC LIMIT 1];
+			if (appForm.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => 'ProcessInstanceWorkitem Not Found, Id: ' + appFormIdString, 'isCustomError' => true};
+
+			//	Reject Approval Process
+			Approval.ProcessWorkitemRequest request = new Approval.ProcessWorkitemRequest();
+			request.setWorkitemId(workItem[0].Id);
+			request.setAction('Reject');	//Valid values are: Approve, Reject, or Removed. //Only system administrators can specify Removed.
+			request.setComments('Apex Test Reject Comment');	//  MAX 4000
+			List<Approval.ProcessResult> rejectProcessResult = Approval.process(new List<Approval.ProcessWorkitemRequest>{request});
+			rejectProcessResultString = JSON.serialize(rejectProcessResult);
+
+			//	Unlock record
+			List<Approval.UnlockResult> unlockResult = Approval.unlock(new List<Id>{appFormId});
+			unlockResultString = JSON.serialize(unlockResult);
+
+			//	Update 'Form_Status__c' field to 'Further Information Required'
+			appForm[0].Form_Status__c = 'Further Information Required';
+			update appForm[0];
+
+			return new Map<String, Object>{'result' => true, 'rejectProcessResultString' => rejectProcessResultString, 'unlockResultString' => unlockResultString};
+
+		} catch (Exception e) {
+			system.debug('MembershipRenewalController [updateAppFormFurtherInformationRequired] ERROR message: ' + e.getMessage());
+			system.debug('MembershipRenewalController [updateAppFormFurtherInformationRequired] ERROR messageStack: ' + e.getStackTraceString());
+			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString(), 'isCustomError' => false, 'rejectProcessResultString' => rejectProcessResultString, 'unlockResultString' => unlockResultString};
+		}
+
 	}
 
 }
