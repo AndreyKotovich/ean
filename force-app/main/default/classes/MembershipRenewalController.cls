@@ -204,7 +204,7 @@ public without sharing class MembershipRenewalController {
 	//  priority 2: previous year
 	public static Map<String, Object> collectRenewalInfo(Id communityContactId) {
 		List<MembershipContactAssotiation__c> contactsMemberships = [
-			SELECT Id, Expiration_date__c, Membership__c, Membership__r.Name, Membership__r.API__c, Renewal_Application_Form__c, Renewal_Application_Form__r.Form_Status__c
+			SELECT Id, Expiration_date__c, Membership__c, Membership__r.Name, Membership__r.API__c, Renewal_Application_Form__c, Renewal_Application_Form__r.Form_Status__c, Renewal_Application_Form__r.Renewal_End_Date__c
 			FROM MembershipContactAssotiation__c
 			WHERE Contact__c =:communityContactId
 			AND Application_form__r.Form_Status__c NOT IN :SKIPPED_STATUSES_OF_APPLICATION_FORMS
@@ -228,11 +228,14 @@ public without sharing class MembershipRenewalController {
 
 			Boolean alreadyExistMembershipStatusForNextYear = false;
 
-			Set<String> alreadyExistAppsStatusesForNextYear = new Set<String>{'Approved', 'Submitted', 'Complete', 'Waiting For Payment'};
+			Set<String> alreadyExistAppsStatusesForNextYear = new Set<String>{'Approved', 'Submitted', 'Complete', 'Waiting For Payment', 'Further Information Required'};
 
 			for (MembershipContactAssotiation__c contactsMembership : contactsMemberships) {
 
-				if (contactsMembership.Renewal_Application_Form__c != null && alreadyExistAppsStatusesForNextYear.contains(contactsMembership.Renewal_Application_Form__r.Form_Status__c)) {
+				if (contactsMembership.Renewal_Application_Form__c != null
+					&& alreadyExistAppsStatusesForNextYear.contains(contactsMembership.Renewal_Application_Form__r.Form_Status__c)
+					&& contactsMembership.Renewal_Application_Form__r.Renewal_End_Date__c >= nextYearStart.addDays(1)
+					) {
 					alreadyExistMembershipStatusForNextYear = true;
 					break;
 				}
@@ -625,7 +628,7 @@ public without sharing class MembershipRenewalController {
 			String appFormId = params.containsKey('recordId') ? String.valueOf(params.get('recordId')) : '';
 
 			List<Application_form__c> appForm = [
-				SELECT Id, Name, Form_Status__c, Membership__c, Membership__r.API__c, Renewal_End_Date__c
+				SELECT Id, Name, Form_Status__c, Membership__c, Membership__r.API__c, Renewal_End_Date__c, Contact__c, Contact__r.Email
 				FROM Application_form__c
 				WHERE Id =:appFormId
 				// AND Form_Status__c ='Submitted'
@@ -639,10 +642,22 @@ public without sharing class MembershipRenewalController {
 			if (appFormName == 'Application Form Not Found') return new Map<String, Object>{'result' => false, 'message' => 'Something went wrong', 'isCustomError' => true, 'appFormName' => appFormName};
 			// if (appForm.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => 'Application Form Not Found Or Not Eligible, Id: ' + appFormId, 'isCustomError' => true};
 
-			if (appForm.isEmpty() || appForm[0].Form_Status__c != 'Submitted' || appForm[0].Membership__c == null || appForm[0].Membership__r.API__c != API_STUDENT_MEMBERSHIP || appForm[0].Renewal_End_Date__c == null)
+			//	Application Form Is Not Eligible
+			if (appForm.isEmpty() || appForm[0].Form_Status__c != 'Submitted'
+				|| appForm[0].Contact__c == null || String.isBlank(appForm[0].Contact__r.Email)
+				|| appForm[0].Membership__c == null || appForm[0].Membership__r.API__c != API_STUDENT_MEMBERSHIP || appForm[0].Renewal_End_Date__c == null
+				)
 				return new Map<String, Object>{'result' => false, 'message' => 'Application Form Is Not Eligible', 'isCustomError' => true, 'appFormName' => appFormName};
 
-			return new Map<String, Object>{'result' => true, 'appFormId' => '' + appForm[0].Id, 'formStatus' => appForm[0].Form_Status__c , 'appFormName' => appFormName};
+			//	Valid 'Membership Renewal' application form
+			return new Map<String, Object>{
+				'result' => true,
+				'appFormId' => '' + appForm[0].Id,
+				'formStatus' => appForm[0].Form_Status__c,
+				'appFormName' => appFormName,
+				'contactId' => '' + appForm[0].Contact__c,
+				'contactEmail' => appForm[0].Contact__r.Email
+			};
 
 		} catch (Exception e) {
 			system.debug('MembershipRenewalController [getAppFormInfo] Error: ' + e.getMessage());
@@ -660,12 +675,15 @@ public without sharing class MembershipRenewalController {
 			String action = params.containsKey('action') ? String.valueOf(params.get('action')) : '';
 			if (action != 'Approve' && action != 'Reject' && action != 'MoreInfo') return new Map<String, Object>{'result' => false, 'message' => 'Unknown Action: ' + action, 'isCustomError' => true};
 
-			String approvalAction =  action == 'Reject' || action == 'MoreInfo' ? 'Reject' : 'Approve';
+			// String approvalAction =  action == 'Reject' || action == 'MoreInfo' ? 'Reject' : 'Approve';
+			String approvalAction =  action == 'Reject' ? 'Reject' : action == 'MoreInfo' ? 'Removed' : 'Approve';
 			String newFormStatus = action == 'Reject' ? 'Declined' : (action == 'MoreInfo' ? 'Further Information Required' : 'Approved');
 
 			String appFormIdString = params.containsKey('appFormId') ? String.valueOf(params.get('appFormId')) : '';
 			String comment = params.containsKey('comment') ? String.valueOf(params.get('comment')) : '';
 			String formStatus = params.containsKey('formStatus') ? String.valueOf(params.get('formStatus')) : '';
+			String contactId = params.containsKey('contactId') ? String.valueOf(params.get('contactId')) : '';
+			String contactEmail = params.containsKey('contactEmail') ? String.valueOf(params.get('contactEmail')) : '';
 
 			Id appFormId;
 			try { appFormId = Id.valueOf(appFormIdString);
@@ -680,23 +698,36 @@ public without sharing class MembershipRenewalController {
 			if (appForm.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => 'ProcessInstanceWorkitem Not Found, Id: ' + appFormIdString, 'isCustomError' => true};
 
 			//	Approval Process Action
-			Approval.ProcessWorkitemRequest request = new Approval.ProcessWorkitemRequest();
-			request.setWorkitemId(workItem[0].Id);
-			request.setAction(approvalAction);	//	Valid values are: Approve, Reject, or Removed. //Only system administrators can specify Removed.
-			request.setComments(comment);		//  MAX 4000
-			List<Approval.ProcessResult> approvalProcessResult = Approval.process(new List<Approval.ProcessWorkitemRequest>{request});
-			approvalProcessResultString = JSON.serialize(approvalProcessResult);
-
-			//	Unlock record
-			List<Approval.UnlockResult> unlockResult = Approval.unlock(new List<Id>{appFormId});
-			unlockResultString = JSON.serialize(unlockResult);
+			// if (newFormStatus == 'Declined' || newFormStatus == 'Approved') {
+				Approval.ProcessWorkitemRequest request = new Approval.ProcessWorkitemRequest();
+				request.setWorkitemId(workItem[0].Id);
+				request.setAction(approvalAction);	//	Valid values are: Approve, Reject, or Removed. //Only system administrators can specify Removed.
+				request.setComments(comment);		//  MAX 4000
+				List<Approval.ProcessResult> approvalProcessResult = Approval.process(new List<Approval.ProcessWorkitemRequest>{request});
+				approvalProcessResultString = JSON.serialize(approvalProcessResult);
+			// }
+			// //	Unlock record
+			// List<Approval.UnlockResult> unlockResult = Approval.unlock(new List<Id>{appFormId});
+			// unlockResultString = JSON.serialize(unlockResult);
 
 			//	Update 'Form_Status__c' field
 			appForm[0].Form_Status__c = newFormStatus;
-			update appForm[0];
+			if (newFormStatus != 'Declined' && newFormStatus != 'Approved') {
+				//	Unlock record
+				List<Approval.UnlockResult> unlockResult = Approval.unlock(new List<Id>{appFormId});
+				unlockResultString = JSON.serialize(unlockResult);
+				// update appForm[0];
+			}
 
-			List<Approval.LockResult> lockResult = Approval.lock(new List<Id>{appFormId});
-			lockResultString = JSON.serialize(lockResult);
+			// if (newFormStatus == 'Declined' || newFormStatus == 'Approved') {
+			// 	List<Approval.LockResult> lockResult = Approval.lock(new List<Id>{appFormId});
+			// 	lockResultString = JSON.serialize(lockResult);
+			// }
+
+			//	Send Email
+			// String templateDeveloperName = action == 'MoreInfo' ? 'MRenewal_Student_Mis_Documents_Rejection' : action == 'Reject' ? 'MRenewal_Student_Final_Rejection' : 'MRenewal_Student_Final_Approval';
+			String templateDeveloperName = action == 'MoreInfo' ? 'MRenewal_Student_Mis_Documents_Rejection' : action == 'Reject' ? 'MRenewal_Student_Final_Rejection' : '';
+			// if (!String.isBlank(templateDeveloperName)) sendEmail(templateDeveloperName, contactId, appFormId);
 
 			return new Map<String, Object>{'result' => true, 'approvalProcessResultString' => approvalProcessResultString, 'unlockResultString' => unlockResultString, 'lockResultString' => lockResultString};
 
@@ -706,5 +737,31 @@ public without sharing class MembershipRenewalController {
 			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString(), 'isCustomError' => false, 'approvalProcessResultString' => approvalProcessResultString, 'unlockResultString' => unlockResultString};
 		}
 	}
+
+	// public static void sendEmail(String templateDeveloperName, String contactId, Id appFormId) {
+	// 	Boolean isSandbox = [SELECT Id, IsSandbox, Name FROM Organization LIMIT 1].IsSandbox;
+	// 	List<BCC_email__mdt> bccEmail = [SELECT Id, Email__c FROM BCC_email__mdt LIMIT 1];
+	// 	List<OrgWideEmailAddress> address = [SELECT Id FROM OrgWideEmailAddress WHERE Address LIKE 'membership@ean.org' LIMIT 1];
+	// 	List<EmailTemplate> ets = [SELECT Id, Name, DeveloperName FROM EmailTemplate WHERE DeveloperName = :templateDeveloperName];
+
+	// 	List<Messaging.SingleEmailMessage> emails = new List<Messaging.SingleEmailMessage>();
+
+	// 	Messaging.SingleEmailMessage message = Messaging.renderStoredEmailTemplate(ets[0].Id, contactId, appFormId);
+	// 	String emailTextBody = message.getPlainTextBody();
+	// 	message.setTargetObjectId(contactId);
+	// 	message.setPlainTextBody(emailTextBody);
+	// 	message.saveAsActivity = false;
+	// 	if (!address.isEmpty()) message.setOrgWideEmailAddressId(address[0].Id);
+
+	// 	if(!bccEmail.isEmpty()){
+	// 		// if(isSandbox) message.setBccAddresses(new List<String>{'ilya.litovchik@succraft.com'});
+	// 		if(isSandbox) message.setBccAddresses(new List<String>{'vitaly.serebrekov@succraft.com'});
+	// 		if(!isSandbox) message.setBccAddresses(new List<String>{bccEmail[0].Email__c});
+	// 	}
+
+	// 	emails.add(message);
+
+	// 	Messaging.sendEmail(emails);
+	// }
 
 }

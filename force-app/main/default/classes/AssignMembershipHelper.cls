@@ -44,8 +44,20 @@ public with sharing class AssignMembershipHelper {
     }
     public static void documentsMissingEmailCheck(List<Application_form__c> updatedFormsOld, List<Application_form__c> updatedFormsNew){
         List<String> sendEmailRecords = new List<String>();
+        List<String> sendEmailRecordsRenewal = new List<String>();  //  part of 'Membership Renewal' process
+
         for(Integer i = 0; i<updatedFormsNew.size(); i++){
-            if(updatedFormsNew[i].Form_Status__c == 'Further Information Required' && updatedFormsNew[i].Form_Status__c != updatedFormsOld[i].Form_Status__c){
+            if (updatedFormsNew[i].Form_Status__c == 'Further Information Required'
+                && updatedFormsNew[i].Form_Status__c != updatedFormsOld[i].Form_Status__c
+                // && updatedFormsNew[i].Renewal_End_Date__c == null   // skip 'Membership Renewal' process
+                ) {
+
+                //  part of 'Membership Renewal' process    (used only for Students)
+                if (updatedFormsNew[i].Renewal_End_Date__c != null){
+                    sendEmailRecordsRenewal.add(updatedFormsNew[i].Id);
+                    continue;
+                }
+
                 if(Approval.isLocked(updatedFormsNew[i].Id)){
                     sendEmailRecords.add(updatedFormsNew[i].Id);
                 }
@@ -54,6 +66,11 @@ public with sharing class AssignMembershipHelper {
         System.debug('sendEmailRecords:: '+!sendEmailRecords.isEmpty());
         if(!sendEmailRecords.isEmpty()){
             sendEmail(sendEmailRecords, 'Documents_are_missing');
+        }
+
+        System.debug('documentsMissingEmailCheck: ' + JSON.serialize(sendEmailRecordsRenewal));
+        if(!sendEmailRecordsRenewal.isEmpty()){
+            sendEmail(sendEmailRecordsRenewal, 'MRenewal_Student_Mis_Documents_Rejection');
         }
     }
     @Future public static void sendEmail(List<String> ids, String templateDeveloperName){
@@ -97,6 +114,7 @@ public with sharing class AssignMembershipHelper {
     public static void rejectionLetterEmailCheck(List<Application_form__c> updatedFormsOld, List<Application_form__c> updatedFormsNew){
         List<String> sendEmailRecords = new List<String>();
         List<String> sendFEANEmailRecords = new List<String>();
+        List<String> sendEmailRecordsRenewal = new List<String>();  //  part of 'Membership Renewal' process
         List<Id> membershipIds = new List<Id>();
 
         for(Application_form__c appForm : updatedFormsNew){
@@ -106,7 +124,16 @@ public with sharing class AssignMembershipHelper {
         Map<Id, Membership__c> memberships = new Map<Id, Membership__c>([SELECT Id, API__c FROM Membership__c WHERE Id IN : membershipIds]);
 
         for(Integer i = 0; i<updatedFormsNew.size(); i++){
-            if(updatedFormsNew[i].Form_Status__c == 'Declined' && updatedFormsNew[i].Form_Status__c != updatedFormsOld[i].Form_Status__c){
+            if (updatedFormsNew[i].Form_Status__c == 'Declined'
+                && updatedFormsNew[i].Form_Status__c != updatedFormsOld[i].Form_Status__c
+                // && updatedFormsNew[i].Renewal_End_Date__c == null   // skip 'Membership Renewal' process
+                ){
+                //  part of 'Membership Renewal' process    (used only for Students)
+                if (updatedFormsNew[i].Renewal_End_Date__c != null){
+                    sendEmailRecordsRenewal.add(updatedFormsNew[i].Id);
+                    continue;
+                }
+
                 if(Approval.isLocked(updatedFormsNew[i].Id)){
                     if(memberships.get(updatedFormsNew[i].Membership__c).API__c == 'fellow_membership'){
                         sendFEANEmailRecords.add(updatedFormsNew[i].Id);
@@ -125,6 +152,11 @@ public with sharing class AssignMembershipHelper {
         if(!sendFEANEmailRecords.isEmpty()){
             System.debug('sendFEANEmailRecords: '+sendFEANEmailRecords);
             sendEmail(sendFEANEmailRecords, 'Rejection_Letter_FEAN');
+        }
+
+        System.debug('rejectionLetterEmailCheck: ' + JSON.serialize(sendEmailRecordsRenewal));
+        if(!sendEmailRecordsRenewal.isEmpty()){
+            sendEmail(sendEmailRecordsRenewal, 'MRenewal_Student_Final_Rejection');
         }
     }
 }

@@ -80,6 +80,10 @@ public without sharing class OrderHelper {
         System.debug('createNewOrder o ' + o);
         insert o;
 
+        if (genData.containsKey('industryNews')) {
+            update new Contact( Id = contactId, IndustryNews__c = (Boolean)genData.get('industryNews'));
+        }
+
         List<Order_Item__c> ordItems = new List<Order_Item__c>();
 
         for(Integer i = 0; i < participantsPrice.size(); i++) {

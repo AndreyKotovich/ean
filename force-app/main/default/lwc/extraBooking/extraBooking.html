@@ -42,7 +42,8 @@
                                                         </div>
                                                     </div>
                                                     <template if:true={product.isChecked}>
-                                                        <div class="slds-grid slds-m-left_large" if:true={product.isTicketGroup}>
+                                                        <div class="slds-grid slds-m-left_large"
+                                                            if:true={product.isTicketGroup}>
                                                             <div class="slds-col">
                                                                 <fieldset class="slds-form-element">
                                                                     <legend
@@ -53,14 +54,14 @@
                                                                         <div class="slds-form-element__control"
                                                                             key={tick.Id}>
                                                                             <span class="slds-radio">
-                                                                                <input type="radio" data-session={product.value} id={tick.Id}
-                                                                                    data-price={tick.price}
+                                                                                <input type="radio"
+                                                                                    data-session={product.value}
+                                                                                    id={tick.Id} data-price={tick.price}
                                                                                     data-id={tick.Id}
                                                                                     disabled={product.isDisabled}
                                                                                     value={tick.Id} name="default"
-                                                                                    checked={tick.isChecked} 
-                                                                                    onclick={handleSelectCategory} 
-                                                                                    />
+                                                                                    checked={tick.isChecked}
+                                                                                    onclick={handleSelectCategory} />
                                                                                 <label class="slds-radio__label"
                                                                                     for={tick.Id}>
                                                                                     <span
@@ -106,7 +107,8 @@
                                     name="badge-retrieval" label="Badge Retrieval"
                                     value={_selectedServices.badgeRetrieval} placeholder="Select Badge Retrieval"
                                     options={badgeRetrievalOptions} onchange={handleChangeBR} required={isBadgeRequired}
-                                    disabled={disableBadgeRetrieval} field-level-help={badgeRetrievalTooltip}></lightning-combobox>
+                                    disabled={disableBadgeRetrieval} field-level-help={badgeRetrievalTooltip}>
+                                </lightning-combobox>
 
                             </lightning-layout-item>
 
@@ -118,6 +120,8 @@
 
                             </lightning-layout-item> -->
 
+                            
+
                             <lightning-layout-item if:false={isGroupRegistration} padding="around-small" size="12"
                                 large-device-size="4" medium-device-size="6" small-device-size="12" flexibility="auto">
                                 <lightning-input class="slds-m-top_x-small slds-m-bottom_x-small" type="checkbox"
@@ -126,11 +130,40 @@
                                 </lightning-input>
                             </lightning-layout-item>
 
+                            <lightning-layout-item padding="around-small" size="12"
+                                large-device-size="4" medium-device-size="6" small-device-size="12" flexibility="auto">
+                                <lightning-input class="slds-m-top_x-small slds-m-bottom_x-small" type="checkbox"
+                                    label="I agree to receive Industry news" onchange={handleChangeIndustryNews} 
+                                    checked={_selectedServices.industryNews}>
+                                </lightning-input>
+                            </lightning-layout-item>
+
+
                         </lightning-layout>
                     </div>
                 </lightning-card>
             </lightning-layout-item>
         </lightning-layout>
+
+    </div>
+    <div class="slds-grid">
+        <div class="slds-col slds-text-align--center">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <div class="slds-checkbox">
+                        <input type="checkbox" name="options" id="checkbox-unique-id" value="checkbox-unique-id"
+                            onchange={handleChangeAccess} />
+                        <label class="slds-checkbox__label" for="checkbox-unique-id">
+                            <span class="slds-checkbox_faux"></span>
+                            <span class="slds-form-element__label">I accept the Terms and <a target="_blank"
+                                    href="https://www.ean.org/congress-2021/discover/register/terms-and-conditions">Conditions
+                                    for Registration</a>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
 
@@ -140,7 +173,7 @@
                 onclick={handlePreviousClick}></lightning-button>
         </div>
         <div if:false={hideNextButton}>
-            <lightning-button class="slds-col slds-m-around_x-small" label="Next" variant="brand"
+            <lightning-button class="slds-col slds-m-around_x-small" label="Next" variant="brand"  disabled={isNoAccept}
                 onclick={handleNextClick}></lightning-button>
         </div>
     </div>

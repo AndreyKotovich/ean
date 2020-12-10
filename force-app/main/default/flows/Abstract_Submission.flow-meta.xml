@@ -4,8 +4,8 @@
     <assignments>
         <name>Assign_Type_and_Topic</name>
         <label>Assign Type and Topic</label>
-        <locationX>599</locationX>
-        <locationY>821</locationY>
+        <locationX>600</locationX>
+        <locationY>848</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
             <operator>Assign</operator>
@@ -48,13 +48,6 @@
                 <elementReference>Conclusion</elementReference>
             </value>
         </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Word_Count__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>TotalBodyWordCount</elementReference>
-            </value>
-        </assignmentItems>
         <connector>
             <targetReference>Validate_Input</targetReference>
         </connector>
@@ -85,13 +78,6 @@
                 <elementReference>Disclosure</elementReference>
             </value>
         </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Word_Count__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>TotalBodyWordCount</elementReference>
-            </value>
-        </assignmentItems>
         <connector>
             <targetReference>CreateAbstract</targetReference>
         </connector>
@@ -99,8 +85,8 @@
     <assignments>
         <name>AssignAbstract_0</name>
         <label>AssignAbstract</label>
-        <locationX>484</locationX>
-        <locationY>2843</locationY>
+        <locationX>606</locationX>
+        <locationY>2887</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
             <operator>Assign</operator>
@@ -158,7 +144,7 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>UpdateWordCount</targetReference>
+            <targetReference>Validate_Input_0</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -346,8 +332,8 @@
     <assignments>
         <name>AssignStage40</name>
         <label>AssignStage40</label>
-        <locationX>484</locationX>
-        <locationY>2232</locationY>
+        <locationX>473</locationX>
+        <locationY>2158</locationY>
         <assignmentItems>
             <assignToReference>$Flow.CurrentStage</assignToReference>
             <operator>Assign</operator>
@@ -376,6 +362,22 @@
         </connector>
     </assignments>
     <assignments>
+        <name>Count_Authors</name>
+        <label>Count Authors</label>
+        <locationX>475</locationX>
+        <locationY>2410</locationY>
+        <assignmentItems>
+            <assignToReference>AuthorCount</assignToReference>
+            <operator>AssignCount</operator>
+            <value>
+                <elementReference>AbstractAuthors</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_Author</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Enable_Files_Error_Message</name>
         <label>Enable Files Error Message</label>
         <locationX>289</locationX>
@@ -394,10 +396,42 @@
     <assignments>
         <name>Enable_Presenter_Error_Message</name>
         <label>Enable Presenter Error Message</label>
-        <locationX>129</locationX>
-        <locationY>1804</locationY>
+        <locationX>250</locationX>
+        <locationY>1719</locationY>
         <assignmentItems>
             <assignToReference>PresenterErrorFlag</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Add_Presenter_Screen</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Enable_Select_Author_Error</name>
+        <label>Enable Select Author Error</label>
+        <locationX>702</locationX>
+        <locationY>2326</locationY>
+        <assignmentItems>
+            <assignToReference>SelectAuthorError</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Add_Authors_Screen</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Enable_select_Presenter_Error</name>
+        <label>Enable select Presenter Error</label>
+        <locationX>109</locationX>
+        <locationY>1738</locationY>
+        <assignmentItems>
+            <assignToReference>SelectPresenterError</assignToReference>
             <operator>Assign</operator>
             <value>
                 <booleanValue>true</booleanValue>
@@ -426,7 +460,7 @@
     <assignments>
         <name>Enable_Topic_Error_0</name>
         <label>Enable Topic Error</label>
-        <locationX>818</locationX>
+        <locationX>777</locationX>
         <locationY>2692</locationY>
         <assignmentItems>
             <assignToReference>ShowTopicErrorReview</assignToReference>
@@ -519,22 +553,6 @@
             <targetReference>GetMembershipStatus</targetReference>
         </connector>
     </assignments>
-    <assignments>
-        <name>UpdateWordCount</name>
-        <label>UpdateWordCount</label>
-        <locationX>616</locationX>
-        <locationY>2849</locationY>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Word_Count__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>TotalBodyWordCount</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Validate_Input_0</targetReference>
-        </connector>
-    </assignments>
     <choices>
         <name>AuthorConsentChoice</name>
         <choiceText>&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;* &lt;/span&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(62, 62, 60);&quot;&gt;I confirm that I have the consent of the authors to submit this abstract&lt;/span&gt;</choiceText>
@@ -604,6 +622,46 @@
             <stringValue>Abstract__c.00N0E000007uHfg</stringValue>
         </value>
     </constants>
+    <decisions>
+        <name>Check_Author</name>
+        <label>Check Author</label>
+        <locationX>468</locationX>
+        <locationY>2533</locationY>
+        <defaultConnector>
+            <targetReference>Fill_Abstract_Screen_0</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Author_selected</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>AuthorCount</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CreateJunctions</targetReference>
+            </connector>
+            <label>Author selected</label>
+        </rules>
+        <rules>
+            <name>No_Author_selected</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>AuthorCount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Enable_Select_Author_Error</targetReference>
+            </connector>
+            <label>No Author selected</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>Checkboxes_Null</name>
         <label>Checkboxes = Null</label>
@@ -763,7 +821,7 @@
         <locationX>240</locationX>
         <locationY>1932</locationY>
         <defaultConnector>
-            <targetReference>PresenterFound</targetReference>
+            <targetReference>AssignStage40</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default</defaultConnectorLabel>
         <rules>
@@ -797,7 +855,7 @@
         </rules>
         <rules>
             <name>Presenter_checked</name>
-            <conditionLogic>or</conditionLogic>
+            <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>checkedPresenter</leftValueReference>
                 <operator>EqualTo</operator>
@@ -805,6 +863,28 @@
                     <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>selectedRecordId</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue/>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>selectedRecordId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Abstract_with_Presenter_0</targetReference>
+            </connector>
+            <label>Presenter checked</label>
+        </rules>
+        <rules>
+            <name>Presenter_not_selected</name>
+            <conditionLogic>or</conditionLogic>
             <conditions>
                 <leftValueReference>selectedRecordId</leftValueReference>
                 <operator>EqualTo</operator>
@@ -820,34 +900,9 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>PresenterFound</targetReference>
+                <targetReference>Enable_select_Presenter_Error</targetReference>
             </connector>
-            <label>Presenter checked</label>
-        </rules>
-    </decisions>
-    <decisions>
-        <name>PresenterFound</name>
-        <label>PresenterFound</label>
-        <locationX>472</locationX>
-        <locationY>2016</locationY>
-        <defaultConnector>
-            <targetReference>AssignStage40</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>No Presenter</defaultConnectorLabel>
-        <rules>
-            <name>Assign_Presenter</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>selectedRecordId</leftValueReference>
-                <operator>NotEqualTo</operator>
-                <rightValue>
-                    <stringValue/>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Update_Abstract_with_Presenter_0</targetReference>
-            </connector>
-            <label>Assign Presenter</label>
+            <label>Presenter not selected</label>
         </rules>
     </decisions>
     <decisions>
@@ -1185,8 +1240,8 @@
     <recordCreates>
         <name>CreateJunctions</name>
         <label>CreateJunctions</label>
-        <locationX>484</locationX>
-        <locationY>2563</locationY>
+        <locationX>487</locationX>
+        <locationY>2698</locationY>
         <connector>
             <targetReference>Fill_Abstract_Screen_0</targetReference>
         </connector>
@@ -1266,8 +1321,8 @@
     <recordUpdates>
         <name>Update_Abstract</name>
         <label>Update Abstract</label>
-        <locationX>636</locationX>
-        <locationY>3079</locationY>
+        <locationX>623</locationX>
+        <locationY>3074</locationY>
         <connector>
             <targetReference>Check_Affirmations_Screen</targetReference>
         </connector>
@@ -1276,8 +1331,8 @@
     <recordUpdates>
         <name>Update_Abstract_with_Presenter_0</name>
         <label>Update Abstract with Presenter</label>
-        <locationX>794</locationX>
-        <locationY>2085</locationY>
+        <locationX>484</locationX>
+        <locationY>2017</locationY>
         <connector>
             <targetReference>AssignStage40</targetReference>
         </connector>
@@ -1391,13 +1446,13 @@
     <screens>
         <name>Add_Authors_Screen</name>
         <label>Add Authors Screen</label>
-        <locationX>484</locationX>
-        <locationY>2390</locationY>
+        <locationX>473</locationX>
+        <locationY>2296</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>CreateJunctions</targetReference>
+            <targetReference>Count_Authors</targetReference>
         </connector>
         <fields>
             <name>ProgressAddAuthors</name>
@@ -1427,6 +1482,21 @@
             <name>CreateAbstractSuccessMessage</name>
             <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;&lt;i&gt;Please add at least one author to your abstract.&lt;/i&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Do not add more than 25 authors.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>AuthorNeededText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;It is required to select an author. If you cannot find one, please create a new author.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>SelectAuthorError</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
         </fields>
         <fields>
             <name>CustomLookupAuthorComponent</name>
@@ -1496,6 +1566,21 @@
                 <conditionLogic>and</conditionLogic>
                 <conditions>
                     <leftValueReference>PresenterErrorFlag</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>SelectPresenterText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0);&quot;&gt;It is required to select a presenter. If you cannot find one, please create a new presenter.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>SelectPresenterError</leftValueReference>
                     <operator>EqualTo</operator>
                     <rightValue>
                         <booleanValue>true</booleanValue>
@@ -1966,8 +2051,8 @@
     <screens>
         <name>Fill_Abstract_Screen_0</name>
         <label>Review Abstract Screen</label>
-        <locationX>484</locationX>
-        <locationY>2706</locationY>
+        <locationX>479</locationX>
+        <locationY>2826</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2120,19 +2205,19 @@
             </validationRule>
         </fields>
         <fields>
-            <name>WordCountText</name>
-            <dataType>String</dataType>
-            <defaultValue>
-                <elementReference>AbstractRecordVariable.Word_Count__c</elementReference>
-            </defaultValue>
-            <fieldText>WordCountText</fieldText>
-            <fieldType>InputField</fieldType>
-            <isRequired>false</isRequired>
-        </fields>
-        <fields>
             <name>WordcountDisplay</name>
-            <fieldText>&lt;p&gt;&lt;u&gt;{!AbstractRecordVariable.Word_Count__c} words&lt;/u&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;u&gt;{!TotalBodyWordCount} words&lt;/u&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>ShowWordCountErrorReview</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>false</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
         </fields>
         <fields>
             <name>MaxWordErrorText_0</name>
@@ -2950,7 +3035,7 @@
             <targetReference>Select_Event_Screen</targetReference>
         </connector>
     </start>
-    <status>Draft</status>
+    <status>Active</status>
     <variables>
         <name>AbstractAuthor</name>
         <dataType>SObject</dataType>
@@ -2998,6 +3083,14 @@
         <objectType>Abstract__c</objectType>
     </variables>
     <variables>
+        <name>AuthorCount</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+    </variables>
+    <variables>
         <name>checkedPresenter</name>
         <dataType>Boolean</dataType>
         <isCollection>false</isCollection>
@@ -3024,6 +3117,13 @@
         <value>
             <elementReference>TotalBodyWordCount</elementReference>
         </value>
+    </variables>
+    <variables>
+        <name>EmptyArray</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
     </variables>
     <variables>
         <name>FilesErrorMessage</name>
@@ -3063,6 +3163,16 @@
         </value>
     </variables>
     <variables>
+        <name>SelectAuthorError</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
         <name>SelectedEvent</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
@@ -3082,6 +3192,16 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>SelectPresenterError</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
     </variables>
     <variables>
         <name>ShowTopicError</name>

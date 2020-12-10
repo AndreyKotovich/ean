@@ -418,7 +418,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                             resolve();
                         });
                     };
-
+                    
                 call()
                     .then((result) => {
                         console.log('in call');
@@ -431,6 +431,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                         generalData.discountInfo = this.discountInfo;
                         generalData.vatAmount = this.vatAmount;
                         generalData.selectedDates = this.selectedDates;
+                        generalData.industryNews = this.selectedServices.industryNews;
 
                         console.log('generalData', JSON.parse(JSON.stringify(generalData)));
 
@@ -574,6 +575,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             generalData.discountInfo = this.discountInfo;
             generalData.vatAmount = this.vatAmount;
             generalData.selectedDates = this.selectedDates;
+            generalData.industryNews = this.selectedServices.industryNews;
 
             Object.assign(insertData, {participant: this.upgradeParticipant.Id, selectedSessions:this.selectedSessions, generalData})
             console.log('insertData', JSON.stringify(insertData));

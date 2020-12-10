@@ -118,6 +118,22 @@
         </connector>
     </assignments>
     <assignments>
+        <name>Count_Authors</name>
+        <label>Count Authors</label>
+        <locationX>278</locationX>
+        <locationY>1719</locationY>
+        <assignmentItems>
+            <assignToReference>AuthorCount</assignToReference>
+            <operator>AssignCount</operator>
+            <value>
+                <elementReference>AbstractAuthors</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_Author</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Enable_Error_Message</name>
         <label>Enable Error Message</label>
         <locationX>206</locationX>
@@ -147,6 +163,22 @@
         </assignmentItems>
         <connector>
             <targetReference>Fill_Abstract_Screen_0</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Enable_Select_Author_Error</name>
+        <label>Enable Select Author Error</label>
+        <locationX>495</locationX>
+        <locationY>1611</locationY>
+        <assignmentItems>
+            <assignToReference>SelectAuthorError</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Add_Authors_Screen</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -212,6 +244,46 @@
             <stringValue>0120E000001fKtLQAU</stringValue>
         </value>
     </constants>
+    <decisions>
+        <name>Check_Author</name>
+        <label>Check Author</label>
+        <locationX>274</locationX>
+        <locationY>1831</locationY>
+        <defaultConnector>
+            <targetReference>Fill_Abstract_Screen_0</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Author_selected</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>AuthorCount</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CreateJunctions</targetReference>
+            </connector>
+            <label>Author selected</label>
+        </rules>
+        <rules>
+            <name>No_Author_selected</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>AuthorCount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Enable_Select_Author_Error</targetReference>
+            </connector>
+            <label>No Author selected</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>Submission_Possible</name>
         <label>Submission Possible</label>
@@ -448,8 +520,8 @@
     <recordCreates>
         <name>Create_Abstract</name>
         <label>Create Abstract</label>
-        <locationX>266</locationX>
-        <locationY>1204</locationY>
+        <locationX>282</locationX>
+        <locationY>1130</locationY>
         <connector>
             <targetReference>Upload_Files_Screen</targetReference>
         </connector>
@@ -458,8 +530,8 @@
     <recordCreates>
         <name>CreateJunctions</name>
         <label>CreateJunctions</label>
-        <locationX>267</locationX>
-        <locationY>1916</locationY>
+        <locationX>282</locationX>
+        <locationY>1926</locationY>
         <connector>
             <targetReference>Fill_Abstract_Screen_0</targetReference>
         </connector>
@@ -569,8 +641,8 @@
     <recordUpdates>
         <name>UpdateAbstract</name>
         <label>UpdateAbstract</label>
-        <locationX>267</locationX>
-        <locationY>1607</locationY>
+        <locationX>280</locationX>
+        <locationY>1493</locationY>
         <connector>
             <targetReference>Add_Authors_Screen</targetReference>
         </connector>
@@ -642,18 +714,33 @@
     <screens>
         <name>Add_Authors_Screen</name>
         <label>Add Authors Screen</label>
-        <locationX>267</locationX>
-        <locationY>1747</locationY>
+        <locationX>279</locationX>
+        <locationY>1611</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
         <connector>
-            <targetReference>CreateJunctions</targetReference>
+            <targetReference>Count_Authors</targetReference>
         </connector>
         <fields>
             <name>CreatedAbstractSuccessMessage</name>
             <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;&lt;i&gt;Please add at least one author to your abstract.&lt;/i&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Do not add more than 25 authors.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>AuthorNeededText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;It is required to select an author. If you cannot find one, please create a new author.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>SelectAuthorError</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
         </fields>
         <fields>
             <name>CustomLookupAuthorComponent</name>
@@ -926,6 +1013,16 @@
             <name>WordCountDisplay</name>
             <fieldText>&lt;p&gt;&lt;u&gt;{!WordCountBody} words&lt;/u&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>ShowWordCountError</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>false</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
         </fields>
         <fields>
             <name>MaxWordErrorText_0</name>
@@ -958,8 +1055,8 @@
     <screens>
         <name>Review_Abstract_Screen</name>
         <label>Review Abstract Screen</label>
-        <locationX>553</locationX>
-        <locationY>2085</locationY>
+        <locationX>552</locationX>
+        <locationY>2039</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -979,8 +1076,8 @@
     <screens>
         <name>Review_Files_Screen</name>
         <label>Review Files Screen</label>
-        <locationX>266</locationX>
-        <locationY>1477</locationY>
+        <locationX>283</locationX>
+        <locationY>1373</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1245,8 +1342,8 @@
     <screens>
         <name>Upload_Files_Screen</name>
         <label>Upload Files Screen</label>
-        <locationX>266</locationX>
-        <locationY>1345</locationY>
+        <locationX>283</locationX>
+        <locationY>1254</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1414,6 +1511,14 @@
         <objectType>Abstract__c</objectType>
     </variables>
     <variables>
+        <name>AuthorCount</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+    </variables>
+    <variables>
         <name>ContentDocumentIDs</name>
         <dataType>String</dataType>
         <isCollection>true</isCollection>
@@ -1433,6 +1538,16 @@
         <isCollection>false</isCollection>
         <isInput>true</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>SelectAuthorError</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
     </variables>
     <variables>
         <name>ShowTypeError</name>

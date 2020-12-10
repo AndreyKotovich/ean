@@ -18,6 +18,8 @@ export default class MembershipRenewalApprovalComponent extends NavigationMixin(
 	_appFormName = '';
 	_formStatus = '';
 	_comment = '';
+	_contactId = '';
+	_contactEmail = '';
 
 	_displayOnlyCancelButton = true;
 
@@ -45,6 +47,8 @@ export default class MembershipRenewalApprovalComponent extends NavigationMixin(
 			this._headerText = 'Review of: ' + result.appFormName;
 			this._appFormName = 'Review of: ' + result.appFormName;
 			this._formStatus = result.formStatus;
+			this._contactId = result.contactId;
+			this._contactEmail = result.contactEmail;
 			this._displayOnlyCancelButton = false;
 		})
 		.catch(error=>{
@@ -83,7 +87,9 @@ export default class MembershipRenewalApprovalComponent extends NavigationMixin(
 			action: methodName,
 			appFormId: this._appFormId,
 			comment: this._comment,
-			formStatus: this._formStatus
+			formStatus: this._formStatus,
+			contactId: this._contactId,
+			contactEmail: this._contactEmail
 			}}).then(result=>{
 				console.log('result: ', result);
 				this._displayErrorMessageCustom = false;
@@ -108,8 +114,8 @@ export default class MembershipRenewalApprovalComponent extends NavigationMixin(
 					mode: 'dismissable'
 				});
 				this.dispatchEvent(evt);
-				this.closeQuickAction();
 				this.navigateToNewRecordPage(this._appFormId);
+				this.closeQuickAction();
 			})
 			.catch(error=>{
 				console.log('membershipRenewalApprovalComponent error: ', error);

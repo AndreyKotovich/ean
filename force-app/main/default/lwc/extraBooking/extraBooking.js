@@ -33,6 +33,7 @@ export default class ExtraBooking extends LightningElement {
     @track sessionsCheckboxGroup = [];
     @track showSessions = true;
     @track newsletterLabel = "";
+    @track isNoAccept = true;
 
     eventExtraSessions = []; //all extra sessions for this event
     availableExtraSession = []; //sessions which are available for the participant
@@ -49,7 +50,7 @@ export default class ExtraBooking extends LightningElement {
     connectedCallback() {
         console.log('hasOnlineTickets', this.hasOnlineTickets);
         this.hidePreviousButton = this.userInfo.isUpgrade;
-
+        this._selectedServices.industryNews = this.userInfo.contact.IndustryNews__c;
         this.isEarlyBird = this.eanEvent.Early_Bird_Deadline__c ? Utils.deadlineCheck(this.eanEvent.Early_Bird_Deadline__c) : false;
 
         if (!this._selectedServices.hasOwnProperty('newsletter') && this.registrationType === 'solo') this._selectedServices.newsletter = this.userInfo.contact.Newsletter__c;
@@ -343,7 +344,7 @@ export default class ExtraBooking extends LightningElement {
             }
         }
 
-        return options
+        return options;
     }
 
     get isBadgeRequired() {
@@ -354,6 +355,11 @@ export default class ExtraBooking extends LightningElement {
         if (!this.disableBadgeRetrieval) {
             this._selectedServices.badgeRetrieval = event.detail.value;
         }
+    }
+
+    handleChangeAccess(event) {
+        console.log('handleChangeAccess');
+        this.isNoAccept = !this.isNoAccept;
     }
 
     handleChangeVL(event) {
@@ -367,6 +373,11 @@ export default class ExtraBooking extends LightningElement {
         return this.registrationType !== 'solo';
     }
 
+    
+    handleChangeIndustryNews(event) {
+        console.log('handleChangeIndustryNews');
+        this._selectedServices.industryNews = event.detail.checked;
+    }
     handleChangeNewsletter(event) {
         if (!this.userInfo.contact.Newsletter__c) {
             this._selectedServices.newsletter = event.detail.checked;

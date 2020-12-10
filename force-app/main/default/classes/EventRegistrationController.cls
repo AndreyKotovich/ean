@@ -21,7 +21,7 @@ public without sharing class EventRegistrationController {
         }
 
         Contact contact = [
-                SELECT Id, Residency__c, Newsletter__c
+                SELECT Id, Residency__c, Newsletter__c, IndustryNews__c
                 FROM Contact
                 WHERE Id = :contactId
         ];

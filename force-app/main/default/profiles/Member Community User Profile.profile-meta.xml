@@ -10,7 +10,7 @@
     </classAccesses>
     <classAccesses>
         <apexClass>ApprovalCommentsController</apexClass>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
         <apexClass>ApprovalCommentsController_Test</apexClass>

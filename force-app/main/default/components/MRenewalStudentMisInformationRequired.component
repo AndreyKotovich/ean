@@ -1,4 +1,4 @@
 <apex:component id="MRenewalStudentMisInformationRequired" access="global" controller="MRenewalStudentMisInformationController">
 	<apex:attribute name="applicationForm" description="Application Form Id" type="String" assignTo="{!appFormId}" required="false" access="global"/>
-	<p>{!lastApprovalComment}</p>
+	<p style="margin: 0px; font-size: 11pt;">{!lastApprovalComment}</p>
 </apex:component>
