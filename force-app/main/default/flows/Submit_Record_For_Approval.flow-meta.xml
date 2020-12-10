@@ -81,6 +81,7 @@
             <label>Further Information Required</label>
         </rules>
     </decisions>
+    <description>used for standard &apos;Membership&apos; (skip &apos;Membership Renewal&apos;)</description>
     <interviewLabel>Submit Record For Approval {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Submit Record For Approval</label>
     <loops>
@@ -99,6 +100,12 @@
         <name>BuilderType</name>
         <value>
             <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
         </value>
     </processMetadataValues>
     <processMetadataValues>
@@ -123,6 +130,13 @@
             <operator>EqualTo</operator>
             <value>
                 <elementReference>order.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Renewal_End_Date__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>true</booleanValue>
             </value>
         </filters>
         <object>Application_form__c</object>

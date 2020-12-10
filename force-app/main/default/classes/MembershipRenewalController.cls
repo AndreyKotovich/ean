@@ -615,13 +615,54 @@ public without sharing class MembershipRenewalController {
 
 
 	//	QUICK ACTIONS ON APPLICATION FORM
-	//	'Further Information Required'
+	//	EANMR-35	'Declined'
+	//	EANMR-82	'Further Information Required'
+	//	EANMR-83	'Declined'
+
 	@AuraEnabled
-	public static Map<String, Object> updateAppFormFurtherInformationRequired(Map<String, Object> params) {
-		String rejectProcessResultString = '';
-		String unlockResultString = '';
-		// String lockResultString = '';
+	public static Map<String, Object> getAppFormInfo(Map<String, Object> params) {
 		try {
+			String appFormId = params.containsKey('recordId') ? String.valueOf(params.get('recordId')) : '';
+
+			List<Application_form__c> appForm = [
+				SELECT Id, Name, Form_Status__c, Membership__c, Membership__r.API__c, Renewal_End_Date__c
+				FROM Application_form__c
+				WHERE Id =:appFormId
+				// AND Form_Status__c ='Submitted'
+				// AND Membership__c != null
+				// AND Membership__r.API__c =:API_STUDENT_MEMBERSHIP
+				// AND Renewal_End_Date__c != null
+				LIMIT 1
+			];
+			String appFormName = !appForm.isEmpty() ? appForm[0].Name : 'Application Form Not Found';
+
+			if (appFormName == 'Application Form Not Found') return new Map<String, Object>{'result' => false, 'message' => 'Something went wrong', 'isCustomError' => true, 'appFormName' => appFormName};
+			// if (appForm.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => 'Application Form Not Found Or Not Eligible, Id: ' + appFormId, 'isCustomError' => true};
+
+			if (appForm.isEmpty() || appForm[0].Form_Status__c != 'Submitted' || appForm[0].Membership__c == null || appForm[0].Membership__r.API__c != API_STUDENT_MEMBERSHIP || appForm[0].Renewal_End_Date__c == null)
+				return new Map<String, Object>{'result' => false, 'message' => 'Application Form Is Not Eligible', 'isCustomError' => true, 'appFormName' => appFormName};
+
+			return new Map<String, Object>{'result' => true, 'appFormId' => '' + appForm[0].Id, 'formStatus' => appForm[0].Form_Status__c , 'appFormName' => appFormName};
+
+		} catch (Exception e) {
+			system.debug('MembershipRenewalController [getAppFormInfo] Error: ' + e.getMessage());
+			system.debug('MembershipRenewalController [getAppFormInfo] Stack: ' + e.getStackTraceString());
+			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString(), 'isCustomError' => false, 'appFormName' => 'Access Denied'};
+		}
+	}
+
+	@AuraEnabled
+	public static Map<String, Object> updateAppFormApproval(Map<String, Object> params) {
+		String approvalProcessResultString = '';
+		String unlockResultString = '';
+		String lockResultString = '';
+		try {
+			String action = params.containsKey('action') ? String.valueOf(params.get('action')) : '';
+			if (action != 'Approve' && action != 'Reject' && action != 'MoreInfo') return new Map<String, Object>{'result' => false, 'message' => 'Unknown Action: ' + action, 'isCustomError' => true};
+
+			String approvalAction =  action == 'Reject' || action == 'MoreInfo' ? 'Reject' : 'Approve';
+			String newFormStatus = action == 'Reject' ? 'Declined' : (action == 'MoreInfo' ? 'Further Information Required' : 'Approved');
+
 			String appFormIdString = params.containsKey('appFormId') ? String.valueOf(params.get('appFormId')) : '';
 			String comment = params.containsKey('comment') ? String.valueOf(params.get('comment')) : '';
 			String formStatus = params.containsKey('formStatus') ? String.valueOf(params.get('formStatus')) : '';
@@ -630,38 +671,40 @@ public without sharing class MembershipRenewalController {
 			try { appFormId = Id.valueOf(appFormIdString);
 			} catch (Exception e) { return new Map<String, Object>{'result' => false, 'message' => 'Wrong Application Form Id: ' + appFormIdString, 'isCustomError' => true}; }
 
-			if (String.isBlank(comment)) return new Map<String, Object>{'result' => false, 'message' => 'Comment Is Required', 'isCustomError' => true};
+			if (String.isBlank(comment) && action == 'MoreInfo') return new Map<String, Object>{'result' => false, 'message' => 'Comment Is Required', 'isCustomError' => true};
 
-			List<Application_form__c> appForm = [SELECT Id, Form_Status__c FROM Application_form__c WHERE Id =:appFormId AND Form_Status__c =:formStatus LIMIT 1];
-			if (appForm.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => 'Application Form Not Found, Id: ' + appFormIdString, 'isCustomError' => true};
+			List<Application_form__c> appForm = [SELECT Id, Form_Status__c FROM Application_form__c WHERE Id =:appFormId AND Form_Status__c =:formStatus AND Membership__c != null AND Membership__r.API__c =:API_STUDENT_MEMBERSHIP AND Renewal_End_Date__c != null LIMIT 1];
+			if (appForm.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => 'Application Form Not Found Or Not Eligible, Id: ' + appFormIdString, 'isCustomError' => true};
 
 			List<ProcessInstanceWorkitem> workItem = [SELECT Id, ProcessInstanceId FROM ProcessInstanceWorkitem WHERE ProcessInstance.TargetObjectId = :appFormId ORDER BY CreatedDate DESC LIMIT 1];
 			if (appForm.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => 'ProcessInstanceWorkitem Not Found, Id: ' + appFormIdString, 'isCustomError' => true};
 
-			//	Reject Approval Process
+			//	Approval Process Action
 			Approval.ProcessWorkitemRequest request = new Approval.ProcessWorkitemRequest();
 			request.setWorkitemId(workItem[0].Id);
-			request.setAction('Reject');	//Valid values are: Approve, Reject, or Removed. //Only system administrators can specify Removed.
-			request.setComments('Apex Test Reject Comment');	//  MAX 4000
-			List<Approval.ProcessResult> rejectProcessResult = Approval.process(new List<Approval.ProcessWorkitemRequest>{request});
-			rejectProcessResultString = JSON.serialize(rejectProcessResult);
+			request.setAction(approvalAction);	//	Valid values are: Approve, Reject, or Removed. //Only system administrators can specify Removed.
+			request.setComments(comment);		//  MAX 4000
+			List<Approval.ProcessResult> approvalProcessResult = Approval.process(new List<Approval.ProcessWorkitemRequest>{request});
+			approvalProcessResultString = JSON.serialize(approvalProcessResult);
 
 			//	Unlock record
 			List<Approval.UnlockResult> unlockResult = Approval.unlock(new List<Id>{appFormId});
 			unlockResultString = JSON.serialize(unlockResult);
 
-			//	Update 'Form_Status__c' field to 'Further Information Required'
-			appForm[0].Form_Status__c = 'Further Information Required';
+			//	Update 'Form_Status__c' field
+			appForm[0].Form_Status__c = newFormStatus;
 			update appForm[0];
 
-			return new Map<String, Object>{'result' => true, 'rejectProcessResultString' => rejectProcessResultString, 'unlockResultString' => unlockResultString};
+			List<Approval.LockResult> lockResult = Approval.lock(new List<Id>{appFormId});
+			lockResultString = JSON.serialize(lockResult);
+
+			return new Map<String, Object>{'result' => true, 'approvalProcessResultString' => approvalProcessResultString, 'unlockResultString' => unlockResultString, 'lockResultString' => lockResultString};
 
 		} catch (Exception e) {
-			system.debug('MembershipRenewalController [updateAppFormFurtherInformationRequired] ERROR message: ' + e.getMessage());
-			system.debug('MembershipRenewalController [updateAppFormFurtherInformationRequired] ERROR messageStack: ' + e.getStackTraceString());
-			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString(), 'isCustomError' => false, 'rejectProcessResultString' => rejectProcessResultString, 'unlockResultString' => unlockResultString};
+			system.debug('MembershipRenewalController [updateAppFormApproval] ERROR message: ' + e.getMessage());
+			system.debug('MembershipRenewalController [updateAppFormApproval] ERROR messageStack: ' + e.getStackTraceString());
+			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString(), 'isCustomError' => false, 'approvalProcessResultString' => approvalProcessResultString, 'unlockResultString' => unlockResultString};
 		}
-
 	}
 
 }

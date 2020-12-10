@@ -1,0 +1,45 @@
+<template>
+	<!-- Quick Action Height	440px -->
+    <div class="modal-header slds-modal__header slds-size_1-of-1" style="padding: 16px; min-height: 57px !important;">
+		<h4 class="title slds-text-heading--medium">{_headerText}</h4>
+	</div>
+	<div style="height: 322px;">
+
+		<template if:true={_isError}>
+			<div class="slds-p-around--x-small slds-size_1-of-1 slds-is-relative" style="padding: 16px; text-align: center;">
+				<div class="slds-form-element">
+					<template if:false={_displayErrorMessageCustom}>
+						<h4 class="title slds-text-heading--medium">{_errorMessage}</h4>
+					</template>
+					<template if:true={_displayErrorMessageCustom}>
+						<h4 class="title slds-text-heading--medium">{_errorMessageCustom}</h4>
+					</template>
+				</div>
+			</div>
+		</template>
+
+		<template if:false={_isError}>
+			<div class="slds-modal__content slds-p-around--x-small slds-size_1-of-1 slds-is-relative" style="padding: 16px;">
+				<div class="slds-form-element">
+					<label class="slds-form-element__label" for="standardtextarea">Comment</label>
+						<div class="slds-form-element__control">
+						<textarea id="standardtextarea" data-target-id="standardtextarea" class="slds-textarea" onchange={handleCommentChange}
+							placeholder="Comment Text" maxlength="4000" style="height: 260px;">
+						</textarea>
+					</div>
+				</div>
+			</div>
+		</template>
+	</div>
+    <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+		<template if:false={_displayOnlyCancelButton}>
+			<button class="slds-button slds-button_neutral" onclick={clickFinalReject}>Reject</button>
+			<button class="slds-button slds-button_neutral" onclick={clickMoreInfo}>Further Information Required</button>
+			<button class="slds-button slds-button_brand" onclick={clickApprove}>Approve</button>
+		</template>
+		<template if:true={_displayOnlyCancelButton}>
+			<button class="slds-button slds-button_neutral" onclick={closeQuickAction}>Cancel</button>
+		</template>
+    </div>
+
+</template>

@@ -43,7 +43,27 @@ public class CreateAndSendVisaLetter {
 		// Send an email with new or existing PDF
 		List<EmailTemplate> ets = [ SELECT Id, Name, DeveloperName FROM EmailTemplate WHERE DeveloperName = 'Visa_Letter_Email' ];
 		EmailTemplate et = new EmailTemplate();
-		OrgWideEmailAddress address = [SELECT Id FROM OrgWideEmailAddress WHERE Address LIKE 'membership@ean.org' LIMIT 1];
+		List<String> emailAddresses = new List<String>{'membership@ean.org', 'registration@ean.org'};
+
+		List<OrgWideEmailAddress> addresses = [SELECT Id, Address FROM OrgWideEmailAddress WHERE Address IN :emailAddresses];
+		OrgWideEmailAddress address;
+
+		if(addresses.size() > 1){
+
+			for(OrgWideEmailAddress oea : addresses){
+				if(oea.Address == 'registration@ean.org'){
+					address = oea;
+				}
+			}
+
+			if(address == null){
+				address = addresses[0];
+			}
+
+		} else {
+			address = addresses[0];
+		}
+
 		for (Visa_Letter__c vL : visaLetters) {
 			ContentVersion att = new ContentVersion();
 			ContentVersion att2 = new ContentVersion();

@@ -17,7 +17,28 @@
     </messaging:htmlEmailBody>
         <messaging:attachment renderAs="PDF" filename="invoice.pdf">
         <html>
-            <body>
+        <head>
+            <style type="text/css" media="print">
+                @page {
+                    @bottom-center {
+                        content: element(footer);
+                    }
+                    margin-bottom: 2cm;
+                }
+                div.footer {
+                    position: running(footer);
+                    text-align: center;
+                    font-size: 9pt
+                }
+            </style>
+        </head>
+        <body>
+
+        <div class="footer">
+            <p><b>EAN Registration Management</b><br/>
+                Breite Gasse 4/7, 1070 Vienna, Austria<br/>
+                registration@ean.org, 00431889050325</p>
+        </div>
             <div>
                 <center>
                     <img src = "{!$Resource.EAN_BANNER_EC21}" width="720" align="center"/>
@@ -29,7 +50,7 @@
                 Street: {!relatedTo.Contact__r.Work_Street__c}<br />
                 ZIP City: {!relatedTo.Contact__r.Work_Zip_Postal_Code__c} {!relatedTo.Contact__r.Work_City__c}<br />
                 Country: {!relatedTo.Contact__r.Work_Country__c}<br />
-                VAT Nr: </p>
+                VAT Nr: {!relatedTo.Contact__r.VAT_Number__c}</p>
             </div>
             
             <div style="margin: 50px;">
@@ -67,12 +88,6 @@
             
             <div style="margin: 150px;">
             </div>
-            
-            
-            
-            <p style="text-align: center; margin: 0px; font-size: 9pt;"><b>EAN Registration Management</b><br/>
-                Breite Gasse 4/7, 1070 Vienna, Austria<br/>
-                registration@ean.org, 00431889050325</p>
             </body>
         </html>
     </messaging:attachment>

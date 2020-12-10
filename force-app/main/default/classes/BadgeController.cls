@@ -83,7 +83,7 @@ public with sharing class BadgeController {
                     'countPostfix' => eB.Event_custom__r.Congress_Postfix__c,
                     'date' => dates,
                     'name' => eB.Event_custom__r.Marketing_Name__c,
-                    'company' => eB.Company__c,
+                    'company' => eB.Company__c != 'Individuals' ? eB.Company__c : '',
                     'firstName' => eB.FirstName__c,
                     'lastName' => eB.LastName__c,
                     'city' => eB.City__c,

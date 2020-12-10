@@ -7,7 +7,7 @@
     <columns>Change_Request__c</columns>
     <columns>Send_To_Email__c</columns>
     <columns>Contact__c</columns>
+    <columns>Order__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
-    <language>en_US</language>
 </ListView>

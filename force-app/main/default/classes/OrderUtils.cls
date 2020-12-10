@@ -34,7 +34,7 @@ public without sharing class OrderUtils {
             sucTransTotal += t.Amount__c;
         }
         List<Order__c> order = [SELECT Total_amount__c, Total_Amount_Gros__c, Status__c, Payment_Date__c FROM Order__c WHERE Id = :newTransaction.Order_Custom__c];
-        if(order[0].Total_amount__c == sucTransTotal && order[0].Status__c != 'Paid'){
+        if(order[0].Total_Amount_Gros__c == sucTransTotal && order[0].Status__c != 'Paid'){
             System.debug('here');
             order[0].Status__c = 'Paid';
             order[0].Payment_Date__c = Datetime.now();
