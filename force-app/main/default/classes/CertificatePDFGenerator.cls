@@ -11,7 +11,7 @@ public class CertificatePDFGenerator {
         // Get Membership status records by Ids ===>
         List<MembershipContactAssotiation__c> mStatuses = [
                 SELECT Id, Name, Contact__c, Application_form__c, Membership__r.API__c,
-                    Application_form__r.Order__c, Application_form__r.Order__r.Type__c
+                    Application_form__r.Order__c, Application_form__r.Order__r.Type__c, Application_form__r.Order__r.Total_amount__c, Application_form__r.Renewal_End_Date__c
                 FROM  MembershipContactAssotiation__c
                 WHERE Id IN :mStatusIds
         ];
@@ -147,16 +147,26 @@ public class CertificatePDFGenerator {
             emailTemplateMap.put(et.DeveloperName, et);
         }
 
+        //  costyl
+        List<EmailTemplate> renewalApproved = [SELECT Id, DeveloperName FROM EmailTemplate WHERE DeveloperName ='MRenewal_Student_Final_Approval' LIMIT 1];
+        if (!renewalApproved.isEmpty()) emailTemplateMap.put(renewalApproved[0].DeveloperName, renewalApproved[0]);
+
         OrgWideEmailAddress address = [SELECT Id FROM OrgWideEmailAddress WHERE Address LIKE 'membership@ean.org' LIMIT 1];
         for (MStatusAttachmentAssociation a : associatedStatuses) {
             String contactId = a.mStatus.Contact__c;
             String whatId = a.mStatus.Id;
             Messaging.SingleEmailMessage message;
 
-            if(a.mStatus.Membership__r.API__c == 'fellow_membership'){
-                message = Messaging.renderStoredEmailTemplate(emailTemplateMap.get('New_Welcome_Email_FEAN').Id, contactId, whatId);
-            } else {
-                message = Messaging.renderStoredEmailTemplate(emailTemplateMap.get('New_Welcome_Email').Id, contactId, whatId);
+            if (a.mStatus.Application_form__r.Renewal_End_Date__c == null) {
+                if(a.mStatus.Membership__r.API__c == 'fellow_membership'){
+                    message = Messaging.renderStoredEmailTemplate(emailTemplateMap.get('New_Welcome_Email_FEAN').Id, contactId, whatId);
+                } else {
+                    message = Messaging.renderStoredEmailTemplate(emailTemplateMap.get('New_Welcome_Email').Id, contactId, whatId);
+                }
+            }
+            // if (a.mStatus.Application_form__r.Renewal_End_Date__c != null && a.mStatus.Application_form__r.Order__r.Total_amount__c == 0) {
+            if (a.mStatus.Application_form__r.Renewal_End_Date__c != null) {
+                message = Messaging.renderStoredEmailTemplate(emailTemplateMap.get('MRenewal_Student_Final_Approval').Id, contactId, a.mStatus.Application_form__c);
             }
 
             String emailTextBody = message.getPlainTextBody();

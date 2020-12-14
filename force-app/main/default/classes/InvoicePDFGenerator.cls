@@ -2,6 +2,7 @@ public class InvoicePDFGenerator {
 
     public static final String SYSTEM_GROUP_CONTACT_NAME = 'Undefined Participant';
     public static final String MEMBERSHIP_RENEWAL_EMAIL_TEMPLATE = 'Membership_Renewal_Payment_Confirmation';
+    public static final String MEMBERSHIP_RENEWAL_EMAIL_TEMPLATE_STUDENTS = 'MRenewal_Payment_Confirmation_Students';
 
     @Future(Callout = true)
     public static void generateInvoicePDFs(List<Id> orderIds) {
@@ -16,8 +17,8 @@ public class InvoicePDFGenerator {
         List<BCC_email__mdt> bccEmail = [SELECT Id, Email__c FROM BCC_email__mdt LIMIT 1];
         // Collect Orders
         orders = [
-                SELECT Id, Name, Contact__r.Email, Contact__r.MailingAddress, Invoice_Number__c, Purchase_Type__c, Type__c,
-                (SELECT Id, Product__c, Membership__c FROM Order_Items__r), (SELECT Id, Name, Renewal_End_Date__c FROM Applications_Forms__r ORDER BY CreatedDate DESC)
+                SELECT Id, Name, Contact__r.Email, Contact__r.MailingAddress, Invoice_Number__c, Purchase_Type__c, Type__c, Total_amount__c,
+                (SELECT Id, Product__c, Membership__c FROM Order_Items__r), (SELECT Id, Name, Renewal_End_Date__c, Membership__r.API__c FROM Applications_Forms__r ORDER BY CreatedDate DESC)
                 FROM Order__c
                 WHERE Id IN :orderIds AND Contact__c != null AND Contact__r.Email != null
                 ORDER BY CreatedDate ASC
@@ -46,8 +47,8 @@ public class InvoicePDFGenerator {
             }
         }
         //<===
-        System.debug('checks');
         List<String> singleEmailMemberships = new List<String>{'resident_and_research_membership', 'full_membership', 'corresponding_membership', 'fellow_membership'};
+        // List<String> singleEmailMemberships = new List<String>{'resident_and_research_membership', 'full_membership', 'corresponding_membership', 'fellow_membership', 'student_membership'};
 
         List<MembershipContactAssotiation__c> certificateRequired = [
                 SELECT Id, Name, Application_form__r.Form_Status__c, Application_form__r.Order__c, Membership__r.API__c,
@@ -57,6 +58,7 @@ public class InvoicePDFGenerator {
                 AND Application_form__r.Order__c IN :orderIds
                 AND Membership__r.API__c IN :singleEmailMemberships
                 AND Application_form__r.Order__r.Type__c = 'Renewal'
+                AND Application_form__r.Order__r.Total_amount__c > 0
                 ORDER BY CreatedDate DESC
         ];
 
@@ -85,6 +87,7 @@ public class InvoicePDFGenerator {
                     WHERE DeveloperName = 'Confirmation_of_Journal_order_invoice'
                     OR DeveloperName = 'New_Invoice_Email'
                     OR DeveloperName =:MEMBERSHIP_RENEWAL_EMAIL_TEMPLATE
+                    OR DeveloperName =:MEMBERSHIP_RENEWAL_EMAIL_TEMPLATE_STUDENTS
             ];
             EmailTemplate et = new EmailTemplate();
             OrgWideEmailAddress address = [SELECT Id FROM OrgWideEmailAddress WHERE Address LIKE 'membership@ean.org' LIMIT 1];
@@ -101,20 +104,16 @@ public class InvoicePDFGenerator {
                 //find required email template
                 String emailTemplateDevName = hasMembership?'New_Invoice_Email':'Confirmation_of_Journal_order_invoice';
 
-                system.debug('InvoicePDFGenerator hasMembership: ' + hasMembership);
-                system.debug('InvoicePDFGenerator o: ' + JSON.serialize(o));
-                system.debug('InvoicePDFGenerator ets: ' + JSON.serialize(ets));
                 // part of 'Membership Renewal'
-                if (hasMembership && o.Applications_Forms__r[0].Renewal_End_Date__c != null) emailTemplateDevName = MEMBERSHIP_RENEWAL_EMAIL_TEMPLATE;
-
-                system.debug('InvoicePDFGenerator emailTemplateDevName: ' + emailTemplateDevName);
+                if (hasMembership && o.Applications_Forms__r[0].Renewal_End_Date__c != null) {
+                    emailTemplateDevName = o.Applications_Forms__r[0].Membership__r.API__c == 'student_membership' ? MEMBERSHIP_RENEWAL_EMAIL_TEMPLATE_STUDENTS : MEMBERSHIP_RENEWAL_EMAIL_TEMPLATE;
+                }
 
                 for(EmailTemplate emTemp : ets){
                     if(emTemp.DeveloperName == emailTemplateDevName){
                         et = emTemp;
                     }
                 }
-                system.debug('InvoicePDFGenerator et: ' + et);
                 //choose whoId and whatId for email template
                 Id whatId = hasMembership?o.Applications_Forms__r[0].Id:o.Id;
 

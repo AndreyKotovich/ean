@@ -78,6 +78,16 @@
         <reevaluateOnChange>false</reevaluateOnChange>
     </fieldUpdates>
     <fieldUpdates>
+        <fullName>Declined</fullName>
+        <field>Form_Status__c</field>
+        <literalValue>Declined</literalValue>
+        <name>Declined</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>true</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
         <fullName>Further_Information_Required</fullName>
         <field>Form_Status__c</field>
         <literalValue>Further Information Required</literalValue>
@@ -96,17 +106,6 @@
         <operation>Literal</operation>
         <protected>false</protected>
         <reevaluateOnChange>false</reevaluateOnChange>
-    </fieldUpdates>
-    <fieldUpdates>
-        <fullName>Reject</fullName>
-        <description>Declined</description>
-        <field>Form_Status__c</field>
-        <literalValue>Declined</literalValue>
-        <name>Reject</name>
-        <notifyAssignee>false</notifyAssignee>
-        <operation>Literal</operation>
-        <protected>false</protected>
-        <reevaluateOnChange>true</reevaluateOnChange>
     </fieldUpdates>
     <fieldUpdates>
         <fullName>Submitted</fullName>

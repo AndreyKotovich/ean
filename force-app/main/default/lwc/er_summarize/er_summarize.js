@@ -93,7 +93,8 @@ export default class ErSummarize extends LightningElement {
         console.log('this._selections', JSON.parse(JSON.stringify(this._selections)));
         this.isSolo = this._selections.registrationType && this._selections.registrationType === 'solo';
         this.isUpgrade = this._selections.isUpgrade;
-        this.isDates = this.isSolo && (!this._selections.eventParticipantConf || this._selections.eventParticipantConf === 0);
+        // this.isDates = this.isSolo && (!this._selections.eventParticipantConf || this._selections.eventParticipantConf === 0);
+        this.isDates = false;
         this.isDiscount = this.isSolo && (this.hasTickets || this.hasSessions);
         this.eventId = this._selections.eventId;
 

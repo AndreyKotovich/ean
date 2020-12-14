@@ -563,10 +563,7 @@ public without sharing class MembershipRenewalController {
 		Set<Id> documentIdList = new Set<Id>();
 		for (Map <String, String> uploadedFilePill : uploadedFilesPills) documentIdList.add(Id.valueOf(uploadedFilePill.get('documentId')));
 
-		List<ContentDocumentLink> existingLinks = [
-			SELECT Id, LinkedEntityId, Visibility, ContentDocumentId, ShareType FROM ContentDocumentLink WHERE ContentDocumentId IN :documentIdList AND LinkedEntityId =:currentContactId
-		];
-
+		List<ContentDocumentLink> existingLinks = [SELECT Id, LinkedEntityId, Visibility, ContentDocumentId, ShareType FROM ContentDocumentLink WHERE ContentDocumentId IN :documentIdList AND LinkedEntityId =:currentContactId];
 		List<ContentDocumentLink> linksToInsert = new List<ContentDocumentLink>();
 		Set<Id> processedDocumentIdList = new Set<Id>();
 		for (ContentDocumentLink existingLink : existingLinks) {
@@ -588,27 +585,18 @@ public without sharing class MembershipRenewalController {
 		if (recordIds.isEmpty()) return;
 		try {
 			Set<Id> recordIdsTemp = new Set<Id>();
-			for (String recordId : recordIds) {
-				recordIdsTemp.add(Id.valueOf(recordId));
-			}
-			
+			for (String recordId : recordIds) recordIdsTemp.add(Id.valueOf(recordId));
 			List<Id> recordIdsList = new List<Id>(recordIdsTemp);
 
 			List<Approval.UnlockResult> unlockResult = Approval.unlock(recordIdsList);
 			system.debug('MembershipRenewalController [updateAppForm] unlockResult: ' + JSON.serialize(unlockResult));
 
 			List<Application_form__c> formsToUpdate = new List<Application_form__c>();
-			for (Id recordId : recordIdsList) {
-				formsToUpdate.add(new Application_form__c(
-					Id = recordId,
-					Form_Status__c = 'Approved'
-				));
-			}
+			for (Id recordId : recordIdsList) formsToUpdate.add(new Application_form__c(Id = recordId, Form_Status__c = 'Approved'));
 			update formsToUpdate;
 
 			List<Approval.LockResult> lockResult = Approval.lock(recordIdsList);
 			system.debug('MembershipRenewalController [updateAppForm] lockResult: ' + JSON.serialize(lockResult));		
-
 
 		} catch (Exception e) {
 			system.debug('MembershipRenewalController [updateAppForm] ERROR message: ' + e.getMessage());
@@ -675,7 +663,6 @@ public without sharing class MembershipRenewalController {
 			String action = params.containsKey('action') ? String.valueOf(params.get('action')) : '';
 			if (action != 'Approve' && action != 'Reject' && action != 'MoreInfo') return new Map<String, Object>{'result' => false, 'message' => 'Unknown Action: ' + action, 'isCustomError' => true};
 
-			// String approvalAction =  action == 'Reject' || action == 'MoreInfo' ? 'Reject' : 'Approve';
 			String approvalAction =  action == 'Reject' ? 'Reject' : action == 'MoreInfo' ? 'Removed' : 'Approve';
 			String newFormStatus = action == 'Reject' ? 'Declined' : (action == 'MoreInfo' ? 'Further Information Required' : 'Approved');
 
@@ -698,37 +685,18 @@ public without sharing class MembershipRenewalController {
 			if (appForm.isEmpty()) return new Map<String, Object>{'result' => false, 'message' => 'ProcessInstanceWorkitem Not Found, Id: ' + appFormIdString, 'isCustomError' => true};
 
 			//	Approval Process Action
-			// if (newFormStatus == 'Declined' || newFormStatus == 'Approved') {
-				Approval.ProcessWorkitemRequest request = new Approval.ProcessWorkitemRequest();
-				request.setWorkitemId(workItem[0].Id);
-				request.setAction(approvalAction);	//	Valid values are: Approve, Reject, or Removed. //Only system administrators can specify Removed.
-				request.setComments(comment);		//  MAX 4000
-				List<Approval.ProcessResult> approvalProcessResult = Approval.process(new List<Approval.ProcessWorkitemRequest>{request});
-				approvalProcessResultString = JSON.serialize(approvalProcessResult);
-			// }
-			// //	Unlock record
-			// List<Approval.UnlockResult> unlockResult = Approval.unlock(new List<Id>{appFormId});
-			// unlockResultString = JSON.serialize(unlockResult);
+			Approval.ProcessWorkitemRequest request = new Approval.ProcessWorkitemRequest();
+			request.setWorkitemId(workItem[0].Id);
+			request.setAction(approvalAction);	//	Valid values are: Approve, Reject, or Removed. //Only system administrators can specify Removed.
+			request.setComments(comment);		//  MAX 4000
+			List<Approval.ProcessResult> approvalProcessResult = Approval.process(new List<Approval.ProcessWorkitemRequest>{request});
+			approvalProcessResultString = JSON.serialize(approvalProcessResult);
 
-			//	Update 'Form_Status__c' field
-			appForm[0].Form_Status__c = newFormStatus;
 			if (newFormStatus != 'Declined' && newFormStatus != 'Approved') {
 				//	Unlock record
 				List<Approval.UnlockResult> unlockResult = Approval.unlock(new List<Id>{appFormId});
 				unlockResultString = JSON.serialize(unlockResult);
-				// update appForm[0];
 			}
-
-			// if (newFormStatus == 'Declined' || newFormStatus == 'Approved') {
-			// 	List<Approval.LockResult> lockResult = Approval.lock(new List<Id>{appFormId});
-			// 	lockResultString = JSON.serialize(lockResult);
-			// }
-
-			//	Send Email
-			// String templateDeveloperName = action == 'MoreInfo' ? 'MRenewal_Student_Mis_Documents_Rejection' : action == 'Reject' ? 'MRenewal_Student_Final_Rejection' : 'MRenewal_Student_Final_Approval';
-			String templateDeveloperName = action == 'MoreInfo' ? 'MRenewal_Student_Mis_Documents_Rejection' : action == 'Reject' ? 'MRenewal_Student_Final_Rejection' : '';
-			// if (!String.isBlank(templateDeveloperName)) sendEmail(templateDeveloperName, contactId, appFormId);
-
 			return new Map<String, Object>{'result' => true, 'approvalProcessResultString' => approvalProcessResultString, 'unlockResultString' => unlockResultString, 'lockResultString' => lockResultString};
 
 		} catch (Exception e) {
@@ -737,31 +705,5 @@ public without sharing class MembershipRenewalController {
 			return new Map<String, Object>{'result' => false, 'message' => e.getMessage(), 'messageStack' => e.getStackTraceString(), 'isCustomError' => false, 'approvalProcessResultString' => approvalProcessResultString, 'unlockResultString' => unlockResultString};
 		}
 	}
-
-	// public static void sendEmail(String templateDeveloperName, String contactId, Id appFormId) {
-	// 	Boolean isSandbox = [SELECT Id, IsSandbox, Name FROM Organization LIMIT 1].IsSandbox;
-	// 	List<BCC_email__mdt> bccEmail = [SELECT Id, Email__c FROM BCC_email__mdt LIMIT 1];
-	// 	List<OrgWideEmailAddress> address = [SELECT Id FROM OrgWideEmailAddress WHERE Address LIKE 'membership@ean.org' LIMIT 1];
-	// 	List<EmailTemplate> ets = [SELECT Id, Name, DeveloperName FROM EmailTemplate WHERE DeveloperName = :templateDeveloperName];
-
-	// 	List<Messaging.SingleEmailMessage> emails = new List<Messaging.SingleEmailMessage>();
-
-	// 	Messaging.SingleEmailMessage message = Messaging.renderStoredEmailTemplate(ets[0].Id, contactId, appFormId);
-	// 	String emailTextBody = message.getPlainTextBody();
-	// 	message.setTargetObjectId(contactId);
-	// 	message.setPlainTextBody(emailTextBody);
-	// 	message.saveAsActivity = false;
-	// 	if (!address.isEmpty()) message.setOrgWideEmailAddressId(address[0].Id);
-
-	// 	if(!bccEmail.isEmpty()){
-	// 		// if(isSandbox) message.setBccAddresses(new List<String>{'ilya.litovchik@succraft.com'});
-	// 		if(isSandbox) message.setBccAddresses(new List<String>{'vitaly.serebrekov@succraft.com'});
-	// 		if(!isSandbox) message.setBccAddresses(new List<String>{bccEmail[0].Email__c});
-	// 	}
-
-	// 	emails.add(message);
-
-	// 	Messaging.sendEmail(emails);
-	// }
 
 }

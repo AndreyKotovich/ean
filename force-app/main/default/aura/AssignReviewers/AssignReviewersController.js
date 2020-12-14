@@ -4,7 +4,7 @@
     },
 
     selectTopic : function(cmp, event, helper){
-        helper.getAbstracts(cmp)
+        helper.getAbstracts(cmp);
     },
 
     autoAssignReviewers : function(cmp, event, helper){

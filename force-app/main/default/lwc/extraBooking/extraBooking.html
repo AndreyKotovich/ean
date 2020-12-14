@@ -119,26 +119,6 @@
                                     checked={_selectedServices.visaLetter} disabled={disableVisaLetter} field-level-help={visaLetterTooltip}></lightning-input>
 
                             </lightning-layout-item> -->
-
-                            
-
-                            <lightning-layout-item if:false={isGroupRegistration} padding="around-small" size="12"
-                                large-device-size="4" medium-device-size="6" small-device-size="12" flexibility="auto">
-                                <lightning-input class="slds-m-top_x-small slds-m-bottom_x-small" type="checkbox"
-                                    label={newsletterLabel} name="newsletter" onchange={handleChangeNewsletter}
-                                    checked={_selectedServices.newsletter} disabled={userInfo.contact.Newsletter__c}>
-                                </lightning-input>
-                            </lightning-layout-item>
-
-                            <lightning-layout-item padding="around-small" size="12"
-                                large-device-size="4" medium-device-size="6" small-device-size="12" flexibility="auto">
-                                <lightning-input class="slds-m-top_x-small slds-m-bottom_x-small" type="checkbox"
-                                    label="I agree to receive Industry news" onchange={handleChangeIndustryNews} 
-                                    checked={_selectedServices.industryNews}>
-                                </lightning-input>
-                            </lightning-layout-item>
-
-
                         </lightning-layout>
                     </div>
                 </lightning-card>
@@ -146,8 +126,29 @@
         </lightning-layout>
 
     </div>
+
+    <div class="slds-grid" if:false={isGroupRegistration}>
+        <div class="slds-col slds-size_5-of-12"></div> 
+        <div class="slds-col slds-size_7-of-12 slds-text-align--left">
+            <lightning-input type="checkbox" label={newsletterLabel}
+                name="newsletter" onchange={handleChangeNewsletter} checked={_selectedServices.newsletter}
+                disabled={userInfo.contact.Newsletter__c}>
+            </lightning-input>
+        </div> 
+    </div>
     <div class="slds-grid">
-        <div class="slds-col slds-text-align--center">
+        <div class="slds-col slds-size_5-of-12"></div> 
+        <div class="slds-col slds-size_7-of-12 slds-text-align--left">
+            <lightning-input  type="checkbox"
+                label="I agree to receive Industry news" onchange={handleChangeIndustryNews}
+                checked={_selectedServices.industryNews}>
+            </lightning-input>
+        </div> 
+    </div>
+
+    <div class="slds-grid">
+        <div class="slds-col slds-size_5-of-12"></div> 
+        <div class="slds-col slds-size_7-of-12 slds-text-align--left">
             <div class="slds-form-element">
                 <div class="slds-form-element__control">
                     <div class="slds-checkbox">
@@ -163,8 +164,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-
+        </div> 
     </div>
 
     <div class="slds-card__footer slds-grid slds-align--absolute-center">
@@ -173,7 +173,7 @@
                 onclick={handlePreviousClick}></lightning-button>
         </div>
         <div if:false={hideNextButton}>
-            <lightning-button class="slds-col slds-m-around_x-small" label="Next" variant="brand"  disabled={isNoAccept}
+            <lightning-button class="slds-col slds-m-around_x-small" label="Next" variant="brand" disabled={isNoAccept}
                 onclick={handleNextClick}></lightning-button>
         </div>
     </div>

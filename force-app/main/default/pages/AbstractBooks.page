@@ -1,0 +1,160 @@
+<apex:page controller="AbstractBookController" renderAs="pdf" showHeader="false" sidebar="false" standardStylesheets="false"
+    applyBodyTag="false" applyHtmlTag="false">
+    <!--    -->
+    <html>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <body>
+
+        <h1>Part: Abstracts Volume - Oral Session</h1>
+
+        Saturday, June 29 2019
+        <br/>
+        <br/>
+
+        <apex:repeat value="{!abAll}" var="fieldKey">
+            <h2>{!fieldKey}</h2>
+            <apex:repeat value="{!abAll[fieldKey]}" var="ab">
+                <h3>{!ab.Name}</h3>
+                <h4>{!ab.Title__c}</h4>
+               
+                <apex:repeat value="{!abInfo[ab.Id].authors}" var="author">
+                    <span style="display: {!If(author['isPresenter']==true,'blank','none') }">
+                        <u>{!author['name']}</u>
+                        <sup>
+                            <small>{!author['count']}</small>
+                        </sup>, </span>
+                    <span style="display: {!If(author['isPresenter']==false,'blank','none') }">{!author['name']}
+                        <sup>
+                            <small>{!author['count']}</small>
+                        </sup>, </span>
+                </apex:repeat>
+                <br/>
+                <apex:repeat value="{!abInfo[ab.Id].departments}" var="department">
+                    <sup>
+                        <small>{!department['count']}</small>
+                    </sup> {!department['departmentName']}, {!department['city']}, {!department['country']},
+                </apex:repeat>
+                <p>
+                    <span style="display: {!If(ab.RecordType.Name=='Public Submission' ,'blank','none') }">
+                        <h4>Background and aims:</h4>{!ab.Introduction__c}
+
+                        <div style="display: {!If(ab.Image_1_Location__c=='Introduction' ,'blank','none')} ; text-align: center;">
+                            <img style="text-align:center" src="{!'/sfc/servlet.shepherd/version/download/' + imageMap[newAbs[ab.Id]['Image_1']]}" width="200"
+                            />
+                            <h5>{!ab.Image_1_Caption__c}</h5>
+
+                        </div>
+
+                        <div style="display: {!If(ab.Image_2_Location__c=='Introduction' ,'blank','none') }; text-align: center;">
+                            <img src="{!'/sfc/servlet.shepherd/version/download/' + imageMap[newAbs[ab.Id]['Image_2']]}" width="200" />
+                            <h5>{!ab.Image_2_Caption__c}</h5>
+
+                        </div>
+
+                        <div style="display: {!If(ab.Image_3_Location__c=='Introduction' ,'blank','none') }; text-align: center;">
+                            <img src="{!'/sfc/servlet.shepherd/version/download/' + imageMap[newAbs[ab.Id]['Image_3']]}" width="200" />
+                            <h5>{!ab.Image_3_Caption__c}</h5>
+                        </div>
+                    </span>
+                </p>
+                <p style="text-align:justify">
+                    <span style="display: {!If(ab.RecordType.Name=='Public Submission' ,'blank','none') }">
+                        <h4>Methods:</h4>{!ab.Methods__c}
+                        <br/>
+                        <div style="display: {!If(ab.Image_1_Location__c=='Methods' ,'blank','none') }; text-align: center;">
+                            <img src="{!'/sfc/servlet.shepherd/version/download/' + imageMap[newAbs[ab.Id]['Image_1']]}" width="200" />
+                            <h5>{!ab.Image_1_Caption__c}</h5>
+
+                        </div>
+
+                        <div style="display: {!If(ab.Image_2_Location__c=='Methods' ,'blank','none') }; text-align: center;">
+                            <img src="{!'/sfc/servlet.shepherd/version/download/' + imageMap[newAbs[ab.Id]['Image_2']]}" width="200" />
+                            <h5>{!ab.Image_2_Caption__c}</h5>
+
+                        </div>
+
+                        <div style="display: {!If(ab.Image_3_Location__c=='Methods' ,'blank','none') }; text-align: center;">
+                            <img src="{!'/sfc/servlet.shepherd/version/download/' + imageMap[newAbs[ab.Id]['Image_3']]}" width="200" />
+                            <h5>{!ab.Image_3_Caption__c}</h5>
+                        </div>
+                    </span>
+                </p>
+                <p style="text-align:justify">
+                    <span style="display: {!If(ab.RecordType.Name=='Public Submission' ,'blank','none') };  ">
+                        <h4>Results:</h4>{!ab.Results__c}
+                        <br/>
+                        <div style="display: {!If(ab.Image_1_Location__c=='Results' ,'blank','none') }; text-align: center;">
+                            <img src="{!'/sfc/servlet.shepherd/version/download/' + imageMap[newAbs[ab.Id]['Image_1']]}" width="200" />
+                            <h5>{!ab.Image_1_Caption__c}</h5>
+                        </div>
+
+                        <div style="display: {!If(ab.Image_2_Location__c=='Results' ,'blank','none') }; text-align: center;">
+                            <img src="{!'/sfc/servlet.shepherd/version/download/' + imageMap[newAbs[ab.Id]['Image_2']]}" width="200" />
+                            <h5>{!ab.Image_2_Caption__c}</h5>
+
+                        </div>
+
+                        <div style="display: {!If(ab.Image_3_Location__c=='Results' ,'blank','none') }; text-align: center;">
+                            <img src="{!'/sfc/servlet.shepherd/version/download/' + imageMap[newAbs[ab.Id]['Image_3']]}" width="200" />
+                            <h5>{!ab.Image_3_Caption__c}</h5>
+                        </div>
+                    </span>
+                </p>
+                <p style="text-align:justify">
+                    <span style="display: {!If(ab.RecordType.Name=='Public Submission' ,'blank','none') }; ">
+                        <h4>Conclusion:</h4>{!ab.Conclusion__c}
+                        <br/>
+                        <div style="display: {!If(ab.Image_1_Location__c=='Conclusion' ,'blank','none') }; text-align: center;">
+                            <img src="{!'/sfc/servlet.shepherd/version/download/' + imageMap[newAbs[ab.Id]['Image_1']]}" width="200" />
+                            <h5>{!ab.Image_1_Caption__c}</h5>
+
+                        </div>
+
+                        <div style="display: {!If(ab.Image_2_Location__c=='Conclusion' ,'blank','none') }; text-align: center;">
+                            <img src="{!'/sfc/servlet.shepherd/version/download/' + imageMap[newAbs[ab.Id]['Image_2']]}" width="200" />
+                            <h5>{!ab.Image_2_Caption__c}</h5>
+
+                        </div>
+
+                        <div style="display: {!If(ab.Image_3_Location__c=='Conclusion' ,'blank','none') }; text-align: center;">
+                            <img src="{!'/sfc/servlet.shepherd/version/download/' + imageMap[newAbs[ab.Id]['Image_3']]}" width="200" />
+                            <h5>{!ab.Image_3_Caption__c}</h5>
+                        </div>
+                    </span>
+                </p>
+                <p style="text-align:justify">
+                    <div style="display: {!If(ab.RecordType.Name=='Invited Submission' ,'blank','none') } ">
+                        <h4>Body:</h4>{!ab.Body__c}
+                        <br/>
+                        <div style="display: {!If(imageMap[newAbs[ab.Id]['Image_1']]=='' ,'blank','none') }; text-align: center;">
+                            <img src="{!'/sfc/servlet.shepherd/version/download/' + imageMap[newAbs[ab.Id]['Image_1']]}" width="200" />
+                            <h5>{!ab.Image_1_Caption__c}</h5>
+                        </div>
+                        <div style="display: {!If(imageMap[newAbs[ab.Id]['Image_2']]=='' ,'blank','none') }; text-align: center;">
+                            <img src="{!'/sfc/servlet.shepherd/version/download/' + imageMap[newAbs[ab.Id]['Image_2']]}" width="200" />
+                            <h5>{!ab.Image_2_Caption__c}</h5>
+                        </div>
+                        <div style="display: {!If(imageMap[newAbs[ab.Id]['Image_3']]=='' ,'blank','none') }; text-align: center;">
+                            <img src="{!'/sfc/servlet.shepherd/version/download/' + imageMap[newAbs[ab.Id]['Image_3']]}" width="200" />
+                            <h5>{!ab.Image_3_Caption__c}</h5>
+                        </div>
+                    </div>
+
+
+
+                </p>
+                <p style="text-align:justify">
+                    <h4>Disclosure:</h4>
+                    <span>{!ab.Disclosure__c} </span>
+                </p>
+            </apex:repeat>
+
+        </apex:repeat>
+    </body>
+    <!--  Introduction Methods Results Conclusion -->
+
+    </html>
+
+
+</apex:page>
