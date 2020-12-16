@@ -6,7 +6,9 @@
     <aura:attribute name="reviewerColumns" type="List" />
     <aura:attribute name="numberOfReviewers" type="Integer" default="3" />
     <aura:attribute name="topics" type="String[]" />
+    <aura:attribute name="types" type="String[]" />
     <aura:attribute name="selectedTopic" type="String" />
+    <aura:attribute name="selectedType" type="String" />
     <aura:attribute name="spinnerVisible" type="Boolean" default="false" />
     <aura:attribute name="abstractListStage" type="Boolean" default="true" />
     <aura:attribute name="abstractAssignStage" type="Boolean" default="false" />
@@ -34,6 +36,12 @@
                 onchange="{! c.selectTopic }">
                 <aura:iteration items="{!v.topics}" var="topic">
                     <option text="{!topic}" value="{!topic}" />
+                </aura:iteration>
+            </lightning:select>
+            <lightning:select name="selectType" label="Select type" value="{!v.selectedType}"
+                onchange="{! c.selectType }">
+                <aura:iteration items="{!v.types}" var="type">
+                    <option text="{!type}" value="{!type}" />
                 </aura:iteration>
             </lightning:select>
 

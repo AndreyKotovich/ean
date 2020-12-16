@@ -1,26 +1,51 @@
 public with sharing class AssignReviewersController {
 
-    @AuraEnabled
-    public static List<String> getTopics(){
-        List<String> topics = new List<String>();
+    // @AuraEnabled
+    // public static List<String> getTopics(){
+    //     List<String> topics = new List<String>();
 
-        Schema.sObjectType objType = Abstract__c.getSObjectType();
-        Schema.DescribeSObjectResult objDescribe = objType.getDescribe();
-        Map<String, Schema.SObjectField> fieldMap = objDescribe.fields.getMap();
-        List<Schema.PicklistEntry> values = fieldMap.get('Abstract_Topic__c').getDescribe().getPickListValues();
+    //     Schema.sObjectType objType = Abstract__c.getSObjectType();
+    //     Schema.DescribeSObjectResult objDescribe = objType.getDescribe();
+    //     Map<String, Schema.SObjectField> fieldMap = objDescribe.fields.getMap();
+    //     List<Schema.PicklistEntry> values = fieldMap.get('Abstract_Topic__c').getDescribe().getPickListValues();
 
-        for (Schema.PicklistEntry v : values){
-            topics.add(v.getLabel());
-        }
+    //     for (Schema.PicklistEntry v : values){
+    //         topics.add(v.getLabel());
+    //     }
 
-        return topics;
-    }
+    //     return topics;
+    // }
     
     @AuraEnabled
-    public static List<Abstract__c> getAbstracts(String abstractTopic){
+    public static Map<String, Map<String, List<String>>> getPickListValues(Map<String, List<String>> objectApiNameTofieldApiNameMap){
+        Map<String, Schema.SObjectType> globalDescribeMap = Schema.getGlobalDescribe();
+        Map<String, Map<String, List<String>>> resultsMap= new Map<String, Map<String, List<String>>>();
+        for (String objectApiName : objectApiNameTofieldApiNameMap.keySet()) {
+            if (globalDescribeMap.containsKey(objectApiName)) {
+                Map<String, List<String>> pickListValuesMap= new Map<String, List<String>>();
+                Map<String, Schema.SObjectField> objectFieldsMap = globalDescribeMap.get(objectApiName).getDescribe().fields.getMap();
+                for (String fieldApiName : objectApiNameTofieldApiNameMap.get(objectApiName)) {
+                    if (objectFieldsMap.containsKey(fieldApiName.toLowerCase())) {
+                        List<String> pickListValues = new List<String>();
+                        List<Schema.PicklistEntry> fieldResults = objectFieldsMap.get(fieldApiName.toLowerCase()).getDescribe().getPicklistValues();
+                        for( Schema.PicklistEntry pickListValue : fieldResults){
+                            pickListValues.add(pickListValue.getLabel());
+                        }
+                        pickListValuesMap.put(fieldApiName, pickListValues);
+                    }
+                }
+                resultsMap.put(objectApiName, pickListValuesMap);
+            }
+        }
+        return resultsMap;
+    }
+
+    @AuraEnabled
+    public static List<Abstract__c> getAbstracts(String abstractTopic, String abstractType){
         List<Abstract__c> abstracts = new List<Abstract__c>();
 
-        if(abstractTopic.length() == 0){
+        if(abstractTopic.length() == 0
+            && abstractType.length() == 0){
             abstracts = [
                 SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Abstract_Presenter__c, Abstract_Presenter__r.Email,  (SELECT Id FROM Abstract_Reviews__r)
                 FROM Abstract__c 
@@ -32,18 +57,17 @@ public with sharing class AssignReviewersController {
                     Status__c = 'Pending'
             ];
         }else{
-            abstracts = [
-                SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Abstract_Presenter__c, Abstract_Presenter__r.Email,  (SELECT Id FROM Abstract_Reviews__r)
-                FROM Abstract__c 
-                WHERE 
-                    RecordType.Name = 'Public Submission'
-                    AND 
-                    Stage__c = 'Submitted'
-                    AND 
-                    Status__c = 'Pending' 
-                    AND 
-                    Abstract_Topic__c =: abstractTopic
-            ];
+            String recordType = 'Public Submission';
+            String stage = 'Submitted';
+            String status = 'Pending';
+            String query = 'SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Abstract_Presenter__c, Abstract_Presenter__r.Email,  (SELECT Id FROM Abstract_Reviews__r) FROM Abstract__c WHERE RecordType.Name = :recordType AND Stage__c = :stage AND Status__c = :status';
+            if (String.isNotBlank(abstractTopic)) {
+                query = query + ' AND Abstract_Topic__c = :abstractTopic';
+            }
+            if (String.isNotBlank(abstractType)) {
+                query = query + ' AND Type__c = :abstractType';
+            }
+            abstracts = Database.query(query);
         }
         
         return abstracts;
@@ -55,6 +79,7 @@ public with sharing class AssignReviewersController {
 
         Abstract__c abstractItem = [ 
             SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Abstract_Presenter__c,
+                    Submitter__c,
             (
                     SELECT Id, Abstract_Author__c FROM Abstract_Authors__r
             )
@@ -65,7 +90,8 @@ public with sharing class AssignReviewersController {
 
         //Reviewer.Contact != Abstract.AbstractPresenter
         excludedReviewerContacts.add(abstractItem.Abstract_Presenter__c);
-
+        //submitter cannot be a reviewer
+        excludedReviewerContacts.add(abstractItem.Submitter__c);
         //Reviewer.Contact != Check all Abstract Authors.Contact for Abstract
         for(Abstract_Author__c author : abstractItem.Abstract_Authors__r){
             excludedReviewerContacts.add(author.Abstract_Author__c);

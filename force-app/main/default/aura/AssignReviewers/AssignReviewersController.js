@@ -7,6 +7,10 @@
         helper.getAbstracts(cmp)
     },
 
+    selectType : function(cmp, event, helper) {
+        helper.getAbstracts(cmp)
+    },
+
     autoAssignReviewers : function(cmp, event, helper){
         helper.autoAssignReviewers(cmp);
     },

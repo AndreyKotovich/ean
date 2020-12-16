@@ -4,9 +4,9 @@
 
         this.getTopics(cmp)
             .then(result => {
-                this.getAbstracts(cmp);
-                this.setAbstractsColumns(cmp);
-                cmp.set("v.spinnerVisible", false);
+                    this.getAbstracts(cmp);
+                    this.setAbstractsColumns(cmp);
+                    cmp.set("v.spinnerVisible", false);
             })
             .catch(error => {
                 cmp.set("v.spinnerVisible", false);
@@ -46,11 +46,12 @@
 
     setReviewersColumns: function (cmp) {
         cmp.set("v.reviewerColumns", [
-            { label: 'Name', fieldName: 'Name', type: 'text' },
-            { label: 'Contact Name', fieldName: 'contactLink', type: 'url', 
-                typeAttributes: {label: { fieldName: 'ContactName' },target: '_blank',
+            { label: 'Name', fieldName: 'ReviewerLink', type: 'url', 
+                typeAttributes: {label: { fieldName: 'Name' },target: '_blank',
                 tooltip: 'Click to see object page'}},
-            { label: 'Contact Name', fieldName: 'ContactName', type: 'text' },            
+            { label: 'Contact Name', fieldName: 'ContactLink', type: 'url', 
+                typeAttributes: {label: { fieldName: 'ContactName' },target: '_blank',
+                tooltip: 'Click to see object page'}},           
             { label: 'Remaining Capacity', fieldName: 'Remaining_Capacity__c', type: 'text' },
             { label: 'Assigned Abstracts', fieldName: 'Assigned_Abstracts__c', type: 'text' }
         ])
@@ -58,14 +59,51 @@
 
     getTopics: function (cmp) {
         return new Promise((resolve, reject) => {
-            var action = cmp.get("c.getTopics");
+            var objectApiName = 'Abstract__c';
+            var request = {
+                'Abstract__c' : ['Abstract_Topic__c', 'Type__c']
+            };
+            var action = cmp.get("c.getPickListValues");
+            action.setParams({
+                'objectApiNameTofieldApiNameMap': request
+            });
             action.setCallback(this, function (response) {
                 var state = response.getState();
                 if (state === "SUCCESS") {
                     var advTopics = ['All'];
-                    Array.prototype.push.apply(advTopics, response.getReturnValue());
+                    Array.prototype.push.apply(advTopics, response.getReturnValue()[objectApiName]['Abstract_Topic__c']);
 
                     cmp.set("v.topics", advTopics);
+
+                    var advTypes = ['All'];
+                    Array.prototype.push.apply(advTypes, response.getReturnValue()[objectApiName]['Type__c']);
+                    cmp.set("v.types", advTypes);
+                    resolve();
+                } else {
+                    console.log(response.getState());
+                    reject();
+                }
+            });
+            $A.enqueueAction(action);
+        })
+    },
+
+    getTypes: function (cmp) {
+        return new Promise((resolve, reject) => {
+            var objectApiName = 'Abstract__c';
+            var fieldApiName = 'Type__c';
+            var action = cmp.get("c.getPickListValues");
+            action.setParams({
+                'objectApiName': objectApiName,
+                'fieldApiName': fieldApiName
+            });
+            action.setCallback(this, function (response) {
+                var state = response.getState();
+                if (state === "SUCCESS") {
+                    var advTypes = ['All'];
+                    Array.prototype.push.apply(advTypes, response.getReturnValue());
+
+                    cmp.set("v.types", advTypes);
                     resolve();
                 } else {
                     console.log(response.getState());
@@ -81,11 +119,16 @@
 
         var action = cmp.get("c.getAbstracts");
         var selectedTopic = cmp.get("v.selectedTopic");
+        var selectedType = cmp.get("v.selectedType");
         if (selectedTopic == 'All') {
             selectedTopic = '';
         }
+        if (selectedType == 'All') {
+            selectedType = '';
+        }
         action.setParams({
-            'abstractTopic': selectedTopic
+            'abstractTopic': selectedTopic,
+            'abstractType': selectedType
         });
         action.setCallback(this, function (response) {
             var state = response.getState();
@@ -115,10 +158,11 @@
                     let res = response.getReturnValue();
                     let generalData = [];
                     res.forEach(e => {
+                        e.ReviewerLink = '/' + e.Id;
                         let el = Object.assign({}, e);
-                        e.ContactName = e.Contact__r.Name;
-                        e.ContactLink = '/' + e.Contact__c;
-                        generalData.push(e);
+                        el.ContactName = e.Contact__r.Name;
+                        el.ContactLink = '/' + e.Contact__c;
+                        generalData.push(el);
                     });
 
                     cmp.set("v.reviewers", generalData);
