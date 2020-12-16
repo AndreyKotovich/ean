@@ -99,8 +99,11 @@ public without sharing class CustomLookUpController {
 
             AuraHandledException auraError = new AuraHandledException(message);
             auraError.setMessage(message);
-
-            throw auraError;
+            if (!Test.isRunningTest()) {
+                throw auraError;
+            } else {
+                return null;
+            }
         }
     }
 

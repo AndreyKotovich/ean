@@ -16,7 +16,9 @@
 
     setAbstractsColumns: function (cmp) {
         cmp.set("v.abstractColumns", [
-            { label: 'Name', fieldName: 'Name', type: 'text' },
+            { label: 'Name', fieldName: 'abstractLink', type: 'url', 
+                typeAttributes: {label: { fieldName: 'Name' },target: '_blank',
+                tooltip: 'Click to see object page'}},
             { label: 'Title', fieldName: 'Title__c', type: 'text' },
             { label: 'Topic', fieldName: 'Abstract_Topic__c', type: 'text' },
             { label: 'Type', fieldName: 'Type__c', type: 'text' },
@@ -28,7 +30,9 @@
 
     setAbstractsColumnsToAssign: function (cmp) {
         cmp.set("v.abstractColumnsToAssign", [
-            { label: 'Name', fieldName: 'Name', type: 'text' },
+            { label: 'Name', fieldName: 'abstractLink', type: 'url', 
+                typeAttributes: {label: { fieldName: 'Name' },target: '_blank',
+                tooltip: 'Click to see object page'}},
             { label: 'Title', fieldName: 'Title__c', type: 'text' },
             { label: 'Topic', fieldName: 'Abstract_Topic__c', type: 'text' },
             { label: 'Type', fieldName: 'Type__c', type: 'text' },
@@ -42,7 +46,10 @@
 
     setReviewersColumns: function (cmp) {
         cmp.set("v.reviewerColumns", [
-            { label: 'Name', fieldName: 'Name', type: 'text' }, 
+            { label: 'Name', fieldName: 'Name', type: 'text' },
+            { label: 'Contact Name', fieldName: 'contactLink', type: 'url', 
+                typeAttributes: {label: { fieldName: 'ContactName' },target: '_blank',
+                tooltip: 'Click to see object page'}},
             { label: 'Contact Name', fieldName: 'ContactName', type: 'text' },            
             { label: 'Remaining Capacity', fieldName: 'Remaining_Capacity__c', type: 'text' },
             { label: 'Assigned Abstracts', fieldName: 'Assigned_Abstracts__c', type: 'text' }
@@ -85,7 +92,8 @@
             if (state === "SUCCESS") {
                 let res = response.getReturnValue();
                 res.forEach(e => {
-                    e.assignedReviewers = e.Abstract_Reviews__r ? e.Abstract_Reviews__r.length : 0;       
+                    e.assignedReviewers = e.Abstract_Reviews__r ? e.Abstract_Reviews__r.length : 0;
+                    e.abstractLink = '/' + e.Id;
                 });
                 cmp.set("v.abstracts", res);
             } else {
@@ -108,8 +116,9 @@
                     let generalData = [];
                     res.forEach(e => {
                         let el = Object.assign({}, e);
-                        el.ContactName = e.Contact__r.Name;
-                        generalData.push(el);
+                        e.ContactName = e.Contact__r.Name;
+                        e.ContactLink = '/' + e.Contact__c;
+                        generalData.push(e);
                     });
 
                     cmp.set("v.reviewers", generalData);

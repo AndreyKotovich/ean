@@ -54,20 +54,35 @@ public with sharing class AssignReviewersController {
         List<Reviewer__c> reviewers = new List<Reviewer__c>();
 
         Abstract__c abstractItem = [ 
-            SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, (SELECT Id FROM Abstract_Reviews__r)
+            SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Abstract_Presenter__c,
+            (
+                    SELECT Id, Abstract_Author__c FROM Abstract_Authors__r
+            )
             FROM Abstract__c WHERE Id =: abstractId
         ].get(0);
-        
+
+        Set<Id> excludedReviewerContacts = new Set<Id>();
+
+        //Reviewer.Contact != Abstract.AbstractPresenter
+        excludedReviewerContacts.add(abstractItem.Abstract_Presenter__c);
+
+        //Reviewer.Contact != Check all Abstract Authors.Contact for Abstract
+        for(Abstract_Author__c author : abstractItem.Abstract_Authors__r){
+            excludedReviewerContacts.add(author.Abstract_Author__c);
+        }
+
+        System.debug('excludedReviewerContacts: ' + excludedReviewerContacts);
+
         String queryString = 
             'SELECT Id, Name, Remaining_Capacity__c, Assigned_Abstracts__c, Event__c, Topics__c, Contact__c, Contact__r.Email, Contact__r.Name ' + 
             'FROM Reviewer__c ' + 
             'WHERE ' +
-                'Id NOT IN (SELECT Reviewer__c FROM Abstract_Review__c WHERE Abstract__c = \'' + abstractId + '\') AND ' +
-                'Remaining_Capacity__c > 0 ' + 
-                'AND ' + 
-                'Event__c = \'' + abstractItem.Event__c + '\' ';
-                
-                
+                'Id NOT IN (SELECT Reviewer__c FROM Abstract_Review__c WHERE Abstract__c = :abstractId) ' +
+                'AND Remaining_Capacity__c > 0 ' +
+                'AND Event__c = \'' + abstractItem.Event__c + '\' ' +
+                'AND Contact__c NOT IN :excludedReviewerContacts ' +
+                'AND Status__c = \'Accepted\' ';
+
         System.debug('abstractItem.Abstract_Topic__c ' + abstractItem.Abstract_Topic__c);
         if(abstractItem.Abstract_Topic__c != null){
             String[] topicsArray = abstractItem.Abstract_Topic__c.split(';');
@@ -82,7 +97,6 @@ public with sharing class AssignReviewersController {
         }
         System.debug('queryString ' + queryString);
         reviewers = (List<Reviewer__c>)Database.query(queryString);
-
         return reviewers;
     }
 

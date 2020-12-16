@@ -1,21 +1,25 @@
-<messaging:emailTemplate subject="Event" recipientType="Contact" relatedToType="Email_Activity__c">
+<messaging:emailTemplate subject="{!relatedTo.Event_custom__r.Marketing_Name__c}: Change Request – Credit Note" recipientType="Contact" relatedToType="Email_Activity__c">
     <messaging:htmlEmailBody >
         <html>
             <body>
-            <p style="margin: 0px; font-size: 11pt;">Dear {!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.LastName},</p>
-                <p style="margin: 0px; font-size: 11pt;">Thank you for registering<span style="{!IF(relatedTo.Order__r.Event_Registration_Sub_Group__c!='', '', 'display: none;')}"> your group 
-                {!relatedTo.Order__r.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name}</span> to the {!relatedTo.Event_custom__r.Name} of the European Academy of Neurology.
-                Please find attached the confirmation for your order. Kindly transfer the outstanding amount to the account indicated in the attachment.</p>
-                <p style="margin: 0px; font-size: 11pt;">You can check the registration status<span style="{!IF(relatedTo.Order__r.Event_Registration_Sub_Group__c!='', '', 'display: none;')}"> of your group</span>,
-                edit or add additional registrations or download relevant documents by accessing the registration system again via MyEAN (www.ean.org).</p>
-                <p style="margin: 0px; font-size: 11pt;">If you have any questions regarding registration, please contact us at registration@ean.org.<br />
-                We are looking forward to welcoming you at the {!relatedTo.Event_custom__r.Name}!</p>
-                <p style="margin: 0px; font-size: 11pt;">Yours sincerely, <br />
-                {!relatedTo.Event_custom__r.Name} Registration Management</p>
+            <p style="margin: 0px; font-size: 11pt; padding:5px 0;">Dear {!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.LastName},</p>
+                <p style="margin: 0px; font-size: 11pt; padding:5px 0;">We have received your change request for the {!relatedTo.Event_custom__r.Event_Number__c}{!relatedTo.Event_custom__r.Congress_Postfix__c} congress of the {!relatedTo.Event_custom__r.Marketing_Name__c}. Attached you will find your credit note for your congress registration.</p>
+                <p style="margin: 0px; font-size: 11pt; padding:5px 0;">Please note that EAN charges a €50 processing fee (excluding {!relatedTo.Event_custom__r.VAT_Amount__c}% VAT) for any change requests made in the registration process.</p>
+                <p style="margin: 0px; font-size: 11pt; padding:5px 0;">If you have any questions regarding registration, please contact us at registration@ean.org.</p>
+                <p style="margin: 0px; font-size: 11pt; padding:5px 0;">We are looking forward to welcoming you at the {!relatedTo.Event_custom__r.Event_Number__c}{!relatedTo.Event_custom__r.Congress_Postfix__c} EAN Congress in
+                    <apex:outputText value="{0, date, yyyy}">
+                        <apex:param value="{!relatedTo.Event_custom__r.Start_Time__c}" /> 
+                    </apex:outputText>!</p>
+                <p style="margin: 0px; font-size: 11pt; padding:5px 0;">Yours sincerely, <br />
+                EAN
+                    <apex:outputText value="{0, date, yyyy}">
+                        <apex:param value="{!relatedTo.Event_custom__r.Start_Time__c}" /> 
+                    </apex:outputText>
+                    Registration Management</p>
             </body>
         </html>
     </messaging:htmlEmailBody>
-        <messaging:attachment renderAs="PDF" filename="invoice.pdf">
+        <messaging:attachment renderAs="PDF" filename="Credit Note.pdf">
         <html>
         <head>
             <style type="text/css" media="print">
