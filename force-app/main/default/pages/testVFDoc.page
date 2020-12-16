@@ -1,0 +1,6 @@
+<apex:page id="testVFDoc" contentType="application/msword#filename.doc" sidebar="false" standardStylesheets="false"
+           applyHtmlTag="false" applyBodyTag="false" showHeader="false">
+
+    <img src="data:image/png;base64,R0lGODlhDAAMAKIFAF5LAP/zxAAAANyuAP/gaP///wAAAAAAACH5BAEAAAUALAAAAAAMAAwAAAMlWLPcGjDKFYi9lxKBOaGcF35DhWHamZUW0K4mAbiwWtuf0uxFAgA7"/>
+
+</apex:page>

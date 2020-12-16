@@ -103,8 +103,13 @@
         component.set("v.showModal", false);
     },
 
+
     save: function (component, event, helper) {
-        helper.createContact(component)
-        component.set("v.showModal", false);
+        helper.validateRequiredInputs(component, 'field')
+        .then(result => {
+            if(result){
+                helper.createContact(component)
+            }
+        })
     }
 })

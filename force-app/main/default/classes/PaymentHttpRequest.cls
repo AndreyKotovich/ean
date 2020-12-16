@@ -26,7 +26,7 @@ public without sharing class PaymentHttpRequest {
         String resultString = 'SUCCESS';
         List<Order__c> order = [SELECT Id, Total_amount__c, Total_Amount_Gros__c, Status__c, Event_Registration_Sub_Group__c FROM Order__c WHERE Id = :orderId];
         List<Transaction__c> transactions = [SELECT Id, Status__c, Amount__c FROM Transaction__c WHERE Order_Custom__c = :orderId];
-        List<Payment_Credentials__mdt> creds = [SELECT Id, Merchant_Account_Id__c, Merchant_PayPal_Account_Id__c, DeveloperName, 
+        List<Payment_Credentials__mdt> creds = [SELECT Id, Merchant_Account_Id__c, Merchant_PayPal_Account_Id__c, DeveloperName,
             Named_Credentials__c, Payment_Info_PayPal_Named_Credentials__c, Named_Credentials_PayPal__c FROM Payment_Credentials__mdt WHERE Active__c = true];
         Decimal paidAmount = 0;
         Boolean isGroup;
@@ -59,8 +59,8 @@ public without sharing class PaymentHttpRequest {
             message += '\n'+'order: '+JSON.serialize(order);
             message += '\n'+'creds isEmpty?: '+JSON.serialize(creds.isEmpty());
             insert new Log__c(
-                Process_Name__c = 'Apex: PaymentHttpRequest.showPaymentCheck()', 
-                Order__c=orderId, Type__c='Other', Message__c = message, 
+                Process_Name__c = 'Apex: PaymentHttpRequest.showPaymentCheck()',
+                Order__c=orderId, Type__c='Other', Message__c = message,
                 Status__c='Success', End_Time__c = Datetime.now()
             );
         }
@@ -70,10 +70,10 @@ public without sharing class PaymentHttpRequest {
     public static void choosePaymentCredentials(List<Payment_Credentials__mdt> creds) {
 
         if (creds.size() == 0) {
-            creds = [SELECT Id, Merchant_Account_Id__c, Merchant_PayPal_Account_Id__c, DeveloperName, Named_Credentials__c, 
+            creds = [SELECT Id, Merchant_Account_Id__c, Merchant_PayPal_Account_Id__c, DeveloperName, Named_Credentials__c,
                 Payment_Info_PayPal_Named_Credentials__c, Named_Credentials_Base__c FROM Payment_Credentials__mdt WHERE Active__c = true];
         }
-        
+
         if (creds.size() >= 2) {
             for (Payment_Credentials__mdt pc : creds) {
                 if (pc.DeveloperName == 'Test_Seamless') {
@@ -102,9 +102,9 @@ public without sharing class PaymentHttpRequest {
     }
     public static String getSeamlessURLBody(String cardId, String orderId, String addressesObject) {
         List<Card__c> card = [SELECT Id, Token_Id__c FROM Card__c WHERE Id = :cardId];
-        List<Order__c> order = [SELECT Id, Total_amount__c, Total_Amount_Gros__c, Name, Contact__r.FirstName, Contact__r.LastName FROM Order__c WHERE Id = :orderId];
+        List<Order__c> order = [SELECT Id, Total_amount__c, Total_Amount_Gros__c, VAT_Amount__c, Name, Contact__r.FirstName, Contact__r.LastName FROM Order__c WHERE Id = :orderId];
         List<Order_Item__c> orderItem = [
-            SELECT Id, Amount__c, Product__c, Membership__c, Membership__r.Name, Product__r.Name, Name, Quantity__c, Total_amount__c,
+            SELECT Id, Amount__c, Name__c, Product__c, Membership__c, Membership__r.Name, Product__r.Name, Name, Quantity__c, Total_amount__c,
                 Event_Participation__r.Event_Ticket__r.Ticket__c, Event_Participation__r.Event_Ticket__r.Ticket__r.Name, Session_Participation__r.Session__r.Name
             FROM Order_Item__c
             WHERE Order_Custom__c = :orderId
@@ -116,12 +116,21 @@ public without sharing class PaymentHttpRequest {
                             'currency' => 'EUR', 'value' => oi.Amount__c
                     },
                     'article-number' => oi.Name,
-                    'name' => !String.isBlank(oi.Membership__c) ? oi.Membership__r.Name : !String.isBlank(oi.Product__c) ? 
-                        oi.Product__r.Name : !String.isBlank(oi.Event_Participation__c) ? oi.Event_Participation__r.Event_Ticket__r.Ticket__r.Name :
-                                    !String.isBlank(oi.Session_Participation__c) ? oi.Session_Participation__r.Session__r.Name : 'undefined name',
+                    'name' => !String.isBlank(oi.Name__c) ? oi.Name__c : 'undefined name',
                     'quantity' => oi.Quantity__c
             });
         }
+
+        if(order[0].VAT_Amount__c != null && order[0].VAT_Amount__c > 0){
+            m.add(new Map<String, Object>{
+                    'amount' => new Map<String, Object>{
+                            'currency' => 'EUR', 'value' => order[0].VAT_Amount__c
+                    },
+                    'name' => 'Tax',
+                    'quantity' => 1
+            });
+        }
+
         List<Map<String, String>> addresses = parseAddresses(addressesObject);
         Map<String, String> shippingAddress = addresses[0];
         Map<String, String> billingAddress = addresses[1];
@@ -231,7 +240,7 @@ public without sharing class PaymentHttpRequest {
     @RemoteAction public static String getOrderItems(String orderId) {
         List<Order__c> order = [SELECT Id, Total_amount__c, Total_Amount_Gros__c, VAT_Amount__c, Name FROM Order__c WHERE Id = :orderId];
         List<Order_Item__c> orderItems = [
-            SELECT Id, Amount__c, Product__c, Membership__c, Membership__r.Name, Product__r.Name, Name, Quantity__c, Total_amount__c,
+            SELECT Id, Amount__c, Name__c, Product__c, Membership__c, Membership__r.Name, Product__r.Name, Name, Quantity__c, Total_amount__c,
                 Event_Participation__r.Event_Ticket__r.Ticket__c, Event_Participation__r.Event_Ticket__r.Ticket__r.Name, Session_Participation__r.Session__r.Name
             FROM Order_Item__c
             WHERE Order_Custom__c = :order[0].Id
@@ -240,9 +249,7 @@ public without sharing class PaymentHttpRequest {
         List<Map<String, Object>> orderItemsMap = new List<Map<String, Object>>();
         for (Order_Item__c oi : orderItems) {
             orderItemsMap.add(new Map<String, Object>{
-                    'product' => !String.isBlank(oi.Membership__c) ? oi.Membership__r.Name : !String.isBlank(oi.Product__c) ? 
-                        oi.Product__r.Name : !String.isBlank(oi.Event_Participation__c) ? oi.Event_Participation__r.Event_Ticket__r.Ticket__r.Name :
-                                    !String.isBlank(oi.Session_Participation__c) ? oi.Session_Participation__r.Session__r.Name : 'undefined name',
+                    'product' => !String.isBlank(oi.Name__c) ? oi.Name__c : 'undefined name',
                     'quantity' => oi.Quantity__c,
                     'amount' => oi.Amount__c,
                     'total-amount' => oi.Total_amount__c
@@ -257,7 +264,7 @@ public without sharing class PaymentHttpRequest {
         return JSON.serialize(resultMap);
     }
     @AuraEnabled public static String getPaymentInfoByRequestId(String requestId, String orderId) {
-        List<Payment_Credentials__mdt> creds = [SELECT Id, Merchant_Account_Id__c, Merchant_PayPal_Account_Id__c, DeveloperName, Named_Credentials__c, 
+        List<Payment_Credentials__mdt> creds = [SELECT Id, Merchant_Account_Id__c, Merchant_PayPal_Account_Id__c, DeveloperName, Named_Credentials__c,
             Payment_Info_PayPal_Named_Credentials__c FROM Payment_Credentials__mdt WHERE Active__c = true];
         choosePaymentCredentials(creds);
         Http http = new Http();
@@ -392,12 +399,19 @@ public without sharing class PaymentHttpRequest {
     public static String getPayPalUrlBody(String orderId, String addressesObject) {
         String communityOriginURL = getCommunityOriginUrl('Community');
         String communityURL = getCommunityHomeUrl();
-        List<Order__c> order = [SELECT Id, Total_amount__c, Total_Amount_Gros__c, Name, Contact__r.FirstName, Contact__r.LastName FROM Order__c WHERE Id = :orderId];
+        List<Order__c> order = [
+                SELECT Id, Total_amount__c, Total_Amount_Gros__c, Name, Contact__r.FirstName, Contact__r.LastName, VAT_Amount__c
+                FROM Order__c
+                WHERE Id = :orderId
+        ];
+
         List<Order_Item__c> orderItem = [
-            SELECT Id, Amount__c, Product__c, Membership__c, Membership__r.Name, Product__r.Name, Name, Quantity__c, Total_amount__c,
+            SELECT Id, Amount__c, Name__c, Product__c, Membership__c, Membership__r.Name, Product__r.Name, Name, Quantity__c, Total_amount__c,
                 Event_Participation__r.Event_Ticket__r.Ticket__c, Event_Participation__r.Event_Ticket__r.Ticket__r.Name
-            FROM Order_Item__c 
-            WHERE Order_Custom__c = :orderId];
+            FROM Order_Item__c
+            WHERE Order_Custom__c = :orderId
+        ];
+
         List<Map<String, Object>> orderItems = new List<Map<String, Object>>();
         for (Order_Item__c oi : orderItem) {
             orderItems.add(new Map<String, Object>{
@@ -405,9 +419,18 @@ public without sharing class PaymentHttpRequest {
                             'currency' => 'EUR', 'value' => oi.Amount__c
                     },
                     'article-number' => oi.Name,
-                    'name' => !String.isBlank(oi.Membership__c) ? oi.Membership__r.Name : !String.isBlank(oi.Product__c) ? 
-                        oi.Product__r.Name : oi.Event_Participation__r.Event_Ticket__r.Ticket__r.Name,
+                    'name' => !String.isBlank(oi.Name__c) ? oi.Name__c : 'undefined name',
                     'quantity' => oi.Quantity__c
+            });
+        }
+
+        if(order[0].VAT_Amount__c != null && order[0].VAT_Amount__c > 0){
+            orderItems.add(new Map<String, Object>{
+                    'amount' => new Map<String, Object>{
+                            'currency' => 'EUR', 'value' => order[0].VAT_Amount__c
+                    },
+                    'name' => 'Tax',
+                    'quantity' => 1
             });
         }
 
@@ -506,7 +529,7 @@ public without sharing class PaymentHttpRequest {
     public static Map<String, Object> getOrderInfoUpdated(String orderId, Boolean insertEmailActivityForRenewal) {
         Map<String, Object> result = new Map<String, Object>();
         List<Order__c> order = [
-            SELECT Id, Name, Contact__c, Contact__r.Email, Contact__r.FirstName, Contact__r.LastName, Invoice_Number__c, 
+            SELECT Id, Name, Contact__c, Contact__r.Email, Contact__r.FirstName, Contact__r.LastName, Invoice_Number__c,
                 Total_amount__c, Payment_Method__c, CreatedDate, Type__c, Total_Amount_Gros__c
             FROM Order__c
             WHERE Id = :orderId
@@ -534,14 +557,14 @@ public without sharing class PaymentHttpRequest {
 
     @RemoteAction public static void updatePaymentMethodForOrder(String orderId, String method) {
         try {
-            String paymentMethod = method == 'card-method' ? 'creditcard' : 
-                method == 'paypal-method' ? 'paypal' : 
+            String paymentMethod = method == 'card-method' ? 'creditcard' :
+                method == 'paypal-method' ? 'paypal' :
                 method == 'bank-transfer-method'? 'Bank Transfer' :  '';
 
             update new Order__c(Id = orderId, Payment_Method__c = paymentMethod);
         } catch (Exception e) {
             System.debug('catch ' + e.getMessage());
-        }     
+        }
     }
 
     @AuraEnabled public static String getCommunityHomeUrlAuraEnabled(){
@@ -645,7 +668,7 @@ public without sharing class PaymentHttpRequest {
             String template = isTypeOc ? 'BankTransferRegistrationPdf' : 'BankTransferCredentialsPdf';
             if (orderType == 'Renewal') template = 'BankTransferRenewalCredentialsPdf';
             PageReference defaultPage = new PageReference('/apex/' + template);
-            
+
             defaultPage.getParameters().put('orderName', order[0].Name);
             defaultPage.getParameters().put('orderInvoiceNumber', order[0].Invoice_Number__c);
             defaultPage.getParameters().put('orderAmount', String.valueOf(order[0].Total_Amount_Gros__c));
@@ -701,14 +724,14 @@ public without sharing class PaymentHttpRequest {
 
     public static Map<String, String> refundTransaction(String orderRefunedId, String orderCancelledId, Decimal amount) {
         Transaction__c tr = new Transaction__c();
-        try { 
+        try {
             List<Order__c> ords = [
-                SELECT Id, Status__c, 
+                SELECT Id, Status__c,
                     (
-                        SELECT Id, Amount__c, Status__c, Payment_Method__c, Request_Id__c, Reference_Id__c 
-                        FROM Transactions__r 
+                        SELECT Id, Amount__c, Status__c, Payment_Method__c, Request_Id__c, Reference_Id__c
+                        FROM Transactions__r
                         WHERE Status__c = 'Success'
-                    ) 
+                    )
                 FROM Order__c WHERE Id = :orderRefunedId
             ];
 
@@ -716,7 +739,7 @@ public without sharing class PaymentHttpRequest {
                 return new Map<String, String> {
                     'status' => 'Error',
                     'message' => 'Transaction for refund not found'
-                }; 
+                };
             }
 
             choosePaymentCredentials( new List<Payment_Credentials__mdt>() );
@@ -729,7 +752,7 @@ public without sharing class PaymentHttpRequest {
             String paymentMethod = isPayPal ? 'paypal' : 'creditcard';
             String invoiceNum = 'EAN' + String.valueOf(Date.today().year()).right(2) + '-CN-%';
             Integer oIEANNumber;
- 
+
             List<Transaction__c> oIEAN = [
                 SELECT Refund_Invoice__c
                 FROM Transaction__c
@@ -755,11 +778,11 @@ public without sharing class PaymentHttpRequest {
 					oIEANNumber++;
 					oIEANStr = '0' + oIEANStr;
 				}
-               
+
 				invoiceNum = invoiceNum.substring(0,invoiceNum.length()-1) + oIEANStr;
             }
-     
-            if (ords[0].Transactions__r[0].Payment_Method__c == 'Bank Transfer') { 
+
+            if (ords[0].Transactions__r[0].Payment_Method__c == 'Bank Transfer') {
                 tr = new Transaction__c();
                 tr.Amount__c = (-1) * refundAmount;
                 tr.Order_Custom__c = orderCancelledId;
@@ -769,7 +792,7 @@ public without sharing class PaymentHttpRequest {
                 tr.Refund_Invoice__c = invoiceNum;
 
                 insert tr;
-                
+
                 return new Map<String, String> {
                     'status' => 'Success',
                     'id' => String.valueOf(tr.Id)
@@ -782,13 +805,13 @@ public without sharing class PaymentHttpRequest {
                     'request-id' => getUUID(),
                     'transaction-type' => tranType,
                     'parent-transaction-id' => ords[0].Transactions__r[0].Reference_Id__c,
-                    'payment-methods' => new Map<String,Object> { 
-                        'payment-method' => new List<Map<String,Object>>{ 
+                    'payment-methods' => new Map<String,Object> {
+                        'payment-method' => new List<Map<String,Object>>{
                             new Map<String,Object> { 'name' => paymentMethod}
                         }
                     },
                     'requested-amount' => new Map<String, Object>{
-                        'currency' => 'EUR', 
+                        'currency' => 'EUR',
                         'value' => refundAmount
                     }
                 }
@@ -802,7 +825,7 @@ public without sharing class PaymentHttpRequest {
             request.setHeader('Accept', 'application/json');
             request.setBody(requestBody);
             HttpResponse response = http.send(request);
-            
+
             Log__c log = new Log__c(Process_Name__c = 'REST: Payment Refund', Order__c = orderRefunedId, Type__c = 'REST');
             createLog(log, requestBody, response.getBody(), Datetime.now(), response.getStatusCode());
 
@@ -826,10 +849,10 @@ public without sharing class PaymentHttpRequest {
             String name = (String) ((Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(paymentMethodList[0]))).get('name');
             tr.Payment_Method__c = String.valueOf(name);
             tr.Refund_Invoice__c = invoiceNum;
-            
+
             insert tr;
             System.debug('response.getBody()' + response.getBody());
-        
+
             return new Map<String, String> {
                 'status' => Decimal.valueOf((String) statusCode) == 201 ? 'Success' : 'Error',
                 'id' => String.valueOf(tr.Id)
@@ -837,7 +860,7 @@ public without sharing class PaymentHttpRequest {
         }
         catch(Exception e) {
             System.debug('catch ' + e.getMessage());
-        
+
             return new Map<String, String> {
                 'status' => 'Error',
                 'message' => e.getMessage()

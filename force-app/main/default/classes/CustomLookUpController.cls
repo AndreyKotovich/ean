@@ -52,40 +52,56 @@ public without sharing class CustomLookUpController {
 
     @AuraEnabled
     public static Contact createContact(String FirstNameString, String LastNameString, String EmailString, String Department, String City, String Country){
-        User u;
+        try{
+            User u;
 
-        if([SELECT Id, IsSandbox, Name FROM Organization LIMIT 1].IsSandbox){
-            u = [SELECT Id, Name FROM User WHERE Profile.Name = 'System Administrator' AND IsActive = TRUE LIMIT 1];
-        } else {
-            List<User> users = [SELECT Id, Name FROM User WHERE Profile.Name = 'System Administrator' AND IsActive = TRUE];
+            if([SELECT Id, IsSandbox, Name FROM Organization LIMIT 1].IsSandbox){
+                u = [SELECT Id, Name FROM User WHERE Profile.Name = 'System Administrator' AND IsActive = TRUE LIMIT 1];
+            } else {
+                List<User> users = [SELECT Id, Name FROM User WHERE Profile.Name = 'System Administrator' AND IsActive = TRUE];
 
-            for(User user : users){
-                if(user.Name == 'EAN System Administrator'){
-                    u = user;
+                for(User user : users){
+                    if(user.Name == 'EAN System Administrator'){
+                        u = user;
+                    }
+                }
+
+                if(u == null){
+                    u = users[0];
                 }
             }
 
-            if(u == null){
-                u = users[0];
+            Contact con = new Contact(
+                FirstName = FirstNameString, 
+                LastName = LastNameString, 
+                Email = EmailString, 
+                Department_Name__c = Department, 
+                MailingCity = City, 
+                MailingCountry = Country,
+                deleted1__c = true,
+                OwnerId = u.Id
+            );
+
+            insert con;
+
+            con = [SELECT Id, Name, deleted1__c FROM Contact WHERE Id =: con.Id].get(0);
+
+            return con;
+        } catch (Exception error){
+            String message = 'Something went wrong, please contact your system administrator';
+            System.debug('The following exception has occurred: ' + error.getMessage() +' on line number: ' + error.getLineNumber() + error.getStackTraceString() + error.getCause());
+
+            if(error.getMessage().contains('DUPLICATES_DETECTED')){
+                message = 'Please review inserted data, looks like contact with similar data already exist';
+            } else if(error.getMessage().contains('INVALID_EMAIL_ADDRESS')) {
+                message = 'Please review inserted data, looks like you entered email in invalid format';
             }
+
+            AuraHandledException auraError = new AuraHandledException(message);
+            auraError.setMessage(message);
+
+            throw auraError;
         }
-
-        Contact con = new Contact(
-            FirstName = FirstNameString, 
-            LastName = LastNameString, 
-            Email = EmailString, 
-            Department_Name__c = Department, 
-            MailingCity = City, 
-            MailingCountry = Country,
-            deleted1__c = true,
-            OwnerId = u.Id
-        );
-
-        insert con;
-
-        con = [SELECT Id, Name, deleted1__c FROM Contact WHERE Id =: con.Id].get(0);
-
-        return con;
     }
 
     @AuraEnabled

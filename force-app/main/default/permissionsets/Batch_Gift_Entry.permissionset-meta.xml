@@ -3063,6 +3063,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Order__c.VAT_Rate__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Participant__c.Badge_Retrieval__c</field>
         <readable>false</readable>
     </fieldPermissions>

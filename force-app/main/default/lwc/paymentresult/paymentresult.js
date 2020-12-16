@@ -78,7 +78,7 @@ export default class Paymentresult extends LightningElement {
                     message = 'If you do not hear back from us within 10 working days, please contact us at <a href="mailto:membership@ean.org">membership@ean.org</a>.';
                     this.showSuccessScreen(title, message);
                 } else if(result.type === 'EVENT_REGISTRATION') {
-                    let invoiceNumber = !!result.order && result.order.length > 0 ? result.order[0].Invoice_Number__c : 'NULL';
+                    let invoiceName = !!result.order && result.order.length > 0 ? result.order[0].Name : 'NULL';
                     let congressLink = !!result.order && result.order.length > 0 && result.order[0].Event_custom__r && !!result.order[0].Event_custom__r.www__c ? result.order[0].Event_custom__r.www__c : 'javascript:void(0)';
                     let body =
                         `<div class="slds-align_absolute-center">
@@ -87,7 +87,7 @@ export default class Paymentresult extends LightningElement {
                                         <div class="slds-text-heading_large slds-text-color_success">Thank you for your EAN congress registration.</div>
                                     </div>
                                     <div class="slds-text-align_left slds-col">
-                                        <div class="slds-text-heading_small slds-m-top--medium">Your registration was received, and your order confirmation number is: ${invoiceNumber}.</div>
+                                        <div class="slds-text-heading_small slds-m-top--medium">Your registration was received, and your order confirmation number is: ${invoiceName}.</div>
                                     </div>
                                     <div class="slds-text-align_left slds-col">
                                         <div class="slds-text-heading_small">If you do have any queries, do not hesitate to contact us via <a href="mailto:registration@ean.org">registration@ean.org</a>.</div>

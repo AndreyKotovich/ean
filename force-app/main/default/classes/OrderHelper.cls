@@ -17,6 +17,7 @@ public without sharing class OrderHelper {
         String groupId = (String)genData.get('groupId');
         System.debug('genData.get' + genData.get('vatAmount'));
         Double vatAmount = Double.valueOf(genData.get('vatAmount'));
+        Double vatRate = Double.valueOf(genData.get('vatRate'));
 
         Map<Object,Object> discountInfo = genData.containsKey('discountInfo') ? 
             (Map<Object,Object>)genData.get('discountInfo') : new Map<Object,Object>();
@@ -75,13 +76,23 @@ public without sharing class OrderHelper {
             Event_Registration_Sub_Group__c = groupId,
             Type__c = 'Event registration',
             Invoice_Number__c = invoiceNum,
-            VAT_Amount__c = vatAmount
+            VAT_Amount__c = vatAmount,
+            VAT_Rate__c = vatRate
         );
         System.debug('createNewOrder o ' + o);
         insert o;
 
+        Contact updateContact;
         if (genData.containsKey('industryNews')) {
-            update new Contact( Id = contactId, IndustryNews__c = (Boolean)genData.get('industryNews'));
+            updateContact = new Contact(Id = contactId);
+            updateContact.IndustryNews__c = (Boolean)genData.get('industryNews');
+        }
+        if(genData.containsKey('vatNumber')){
+            if(updateContact == null) updateContact = new Contact(Id = contactId);
+            updateContact.VAT_Number__c = (String)genData.get('vatNumber');
+        }
+        if(updateContact != null){
+            update updateContact;
         }
 
         List<Order_Item__c> ordItems = new List<Order_Item__c>();

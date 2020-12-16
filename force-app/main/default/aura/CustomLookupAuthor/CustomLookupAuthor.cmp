@@ -47,7 +47,7 @@
                         <lightning:icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default" iconName="{!v.IconName}" size="x-small" alternativeText="icon"/>
                         <span class="slds-assistive-text"></span>
                     </span>
-                    <ui:inputText updateOn="keyup" keyup="{!c.keyPressController}" class="slds-lookup__search-input slds-input leftPaddingClass" value="{!v.SearchKeyWord}" placeholder="Search Contacts.."/>
+                    <ui:inputText updateOn="keyup" keyup="{!c.keyPressController}" class="slds-lookup__search-input slds-input leftPaddingClass" value="{!v.SearchKeyWord}" placeholder="Search Contacts by email"/>
                 </div>   
             </div>
         </div>
@@ -66,7 +66,7 @@
             <div class="slds-modal__container">
                 <header class="slds-modal__header">
                     <lightning:buttonIcon iconName="utility:close"
-                        onclick="{! c.hideModel }"
+                        onclick="{! c.cancel }"
                         alternativeText="close"
                         variant="bare-inverse"
                         class="slds-modal__close"/>

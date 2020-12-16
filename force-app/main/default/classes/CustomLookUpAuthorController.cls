@@ -17,7 +17,7 @@ public without sharing class CustomLookUpAuthorController {
             sQuery = 'SELECT Id, Name, Account.Name, Email, Department_Name__c, MailingAddress FROM Contact WHERE Id IN: conIds';
         }else{
             // get contacts by searchKeyWord
-            sQuery =  'SELECT Id, Name, Account.Name, Email, Department_Name__c, MailingAddress FROM Contact WHERE Id NOT IN: selectedIds AND (Email LIKE: searchKey OR Name LIKE: searchKey) ORDER BY createdDate DESC limit 5';
+            sQuery =  'SELECT Id, Name, Account.Name, Email, Department_Name__c, MailingAddress FROM Contact WHERE Id NOT IN: selectedIds AND Email LIKE: searchKey ORDER BY createdDate DESC limit 5';
         }
 
         return (List<Contact>)Database.query(sQuery);

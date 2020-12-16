@@ -81,6 +81,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     eventPersonaId = ''; // id of record event persona or speaker
     freeTicketAmount = 0;
     hasOnlineTickets = false; // indicates if the any of selected tickets is online
+    vatNumber = '';
 
     connectedCallback() {
         this.updateProgressBar();
@@ -349,6 +350,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
         this.discountInfo = event.detail.discountInfo;
         this.selectedDates = event.detail.selectedDates;
         this.vatAmount = event.detail.vatAmount;
+        this.vatNumber = event.detail.vatNumber;
         this.onNext();
     }
 
@@ -430,8 +432,12 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                         generalData.contactId = this.userInfo.contact.Id;
                         generalData.discountInfo = this.discountInfo;
                         generalData.vatAmount = this.vatAmount;
+                        generalData.vatRate = this.ean_event.VAT_Amount__c;
                         generalData.selectedDates = this.selectedDates;
                         generalData.industryNews = this.selectedServices.industryNews;
+                        if(!!this.vatNumber){
+                            generalData.vatNumber = this.vatNumber;
+                        }
 
                         console.log('generalData', JSON.parse(JSON.stringify(generalData)));
 
@@ -574,10 +580,15 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             generalData.contactId = this.userInfo.contact.Id;
             generalData.discountInfo = this.discountInfo;
             generalData.vatAmount = this.vatAmount;
+            generalData.vatRate = this.ean_event.VAT_Amount__c;
             generalData.selectedDates = this.selectedDates;
             generalData.industryNews = this.selectedServices.industryNews;
+            if(!!this.vatNumber){
+                generalData.vatNumber = this.vatNumber;
+            }
 
-            Object.assign(insertData, {participant: this.upgradeParticipant.Id, selectedSessions:this.selectedSessions, generalData})
+
+        Object.assign(insertData, {participant: this.upgradeParticipant.Id, selectedSessions:this.selectedSessions, generalData})
             console.log('insertData', JSON.stringify(insertData));
         //}
 

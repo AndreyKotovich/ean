@@ -3,6 +3,7 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getPicklistValues from "@salesforce/apex/EventRegistrationController.getPicklistValues";
 import getEventTicketsLabels from "@salesforce/apex/EventRegistrationController.getEventTicketsLabels";
 import getDiscountApex from "@salesforce/apex/DiscountHelper.getDiscount";
+import { Utils } from "c/utils";
 export default class ErSummarize extends LightningElement {
 
     @api
@@ -13,6 +14,7 @@ export default class ErSummarize extends LightningElement {
         this._selections = Object.assign({}, value);
     }
     @api eanEvent = {};
+    @api userInfo = {};
 
     @track hasTickets = false;
     @track hasSessions = false;
@@ -27,6 +29,7 @@ export default class ErSummarize extends LightningElement {
     @track VATamount = 0;
     @track VATproc = 0;
     @track GrandTotalAmount = 0;
+    @track vatNumber = '';
     isSolo = false;
     isUpgrade = false;
     isDiscount = false;
@@ -94,7 +97,7 @@ export default class ErSummarize extends LightningElement {
         this.isSolo = this._selections.registrationType && this._selections.registrationType === 'solo';
         this.isUpgrade = this._selections.isUpgrade;
         // this.isDates = this.isSolo && (!this._selections.eventParticipantConf || this._selections.eventParticipantConf === 0);
-        this.isDates = false;
+        this.isDates = false; 
         this.isDiscount = this.isSolo && (this.hasTickets || this.hasSessions);
         this.eventId = this._selections.eventId;
 
@@ -184,14 +187,29 @@ export default class ErSummarize extends LightningElement {
     }
 
     handleNextClick() {
+        if(!this.nextValidation()) return;
+
         const selectEvent = new CustomEvent("continue", {
             detail: {
                 discountInfo: this.discountInfo,
                 selectedDates: this.selectedDates,
-                vatAmount: this.VATamount
+                vatAmount: this.VATamount,
+                vatNumber: this.vatNumber
             }
         });
         this.dispatchEvent(selectEvent);
+    }
+
+    nextValidation(){
+        let result = true;
+        let message = 'Something went wrong';
+
+        result = Utils.validateElements.call(this, 'lightning-input');
+        if(!result) message = 'Check your inputs';
+
+        if(!result) this.dispatchToast('Error', message, 'error');
+
+        return result;
     }
 
     throwError(error) {
@@ -332,4 +350,9 @@ export default class ErSummarize extends LightningElement {
         console.log('this._selectedDates', this._selectedDates);
         console.log('this._selectedDates', JSON.parse(JSON.stringify(this._selectedDates)));
     }
+
+    handleVatNumber(event){
+        this.vatNumber = event.detail.value;
+    }
+
 }

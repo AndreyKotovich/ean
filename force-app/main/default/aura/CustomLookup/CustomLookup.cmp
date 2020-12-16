@@ -48,7 +48,7 @@
                         <lightning:icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default" iconName="{!v.IconName}" size="x-small" alternativeText="icon"/>
                         <span class="slds-assistive-text"></span>
                     </span>
-                    <ui:inputText updateOn="keyup" keyup="{!c.keyPressController}" class="slds-lookup__search-input slds-input leftPaddingClass" value="{!v.SearchKeyWord}" placeholder="Search Contacts.."/>
+                    <ui:inputText updateOn="keyup" keyup="{!c.keyPressController}" class="slds-lookup__search-input slds-input leftPaddingClass" value="{!v.SearchKeyWord}" placeholder="Search Contacts by email"/>
                 </div>   
             </div>
         </div>
@@ -67,7 +67,7 @@
             <div class="slds-modal__container">
                 <header class="slds-modal__header">
                     <lightning:buttonIcon iconName="utility:close"
-                        onclick="{! c.hideModel }"
+                        onclick="{! c.cancel }"
                         alternativeText="close"
                         variant="bare-inverse"
                         class="slds-modal__close"/>
@@ -80,14 +80,14 @@
                 
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
                     <lightning:input name="input1" value="{! v.FirstName}" label="First Name" />
-                    <lightning:input name="input1" value="{! v.LastName}" required="true" label="Last Name" />
+                    <lightning:input aura:id="field" name="input1" value="{! v.LastName}" required="true" label="Last Name" />
                     <lightning:input type="email" name="email1" value="{! v.Email}" label="Email" />
                     <lightning:input name="input1" value="{! v.Department}" label="Department" />
                     <lightning:input name="input1" value="{! v.City}" label="City" />
                     <lightning:select name="select" label="Country" value="{! v.Country}">
                         <aura:iteration items="{!v.Countries}" var="country">
-                                <option text="{!country}"></option>
-                            </aura:iteration>
+                            <option text="{!country}"></option>
+                        </aura:iteration>
                     </lightning:select>
                 </div>
                 

@@ -96,6 +96,11 @@
                     </div> -->
                     </lightning-card>
                 </template>
+
+                <div class="slds-m-around_large">
+                    <lightning-input type="text" label="VAT NUMBER" value={vatNumber} onchange={handleVatNumber}></lightning-input>
+                </div>
+
                 <div if:true={showTotalAmount}>
                     <table class="slds-table slds-table_cell-buffer">
                         <tbody>

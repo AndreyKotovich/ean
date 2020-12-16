@@ -1,4 +1,4 @@
-<aura:component controller="AssignRewiewersController" implements="flexipage:availableForAllPageTypes" access="global">
+<aura:component controller="AssignReviewersController" implements="flexipage:availableForAllPageTypes" access="global">
     <aura:attribute name="abstracts" type="Object" />
     <aura:attribute name="reviewers" type="Object" />
     <aura:attribute name="abstractColumns" type="List" />

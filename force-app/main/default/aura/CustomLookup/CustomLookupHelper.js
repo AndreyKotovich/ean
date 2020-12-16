@@ -57,7 +57,7 @@
                     component.set("v.selectedRecord" , newContact); 
                     component.set("v.selectedRecordId", newContact.Id);
                     component.set("v.checkedPresenter", newContact.deleted1__c);
-
+                    component.set("v.showModal", false);
                     var forclose = component.find("lookup-pill");
                         $A.util.addClass(forclose, 'slds-show');
                         $A.util.removeClass(forclose, 'slds-hide');
@@ -74,15 +74,21 @@
                         $A.util.addClass(bottomText, 'slds-hide');
                         $A.util.removeClass(bottomText, 'slds-show');
                 }
-                else{
-                    console.log(response.getState());
+                else {
+                    console.log(response.getState());                    
+                    console.log(response.getError());
+                    let errors = action.getError();
+                    if (errors) {
+                        if (errors[0] && errors[0].message) {
+                            this.showToast('Error', errors[0].message, 'error')
+                        }
+                    }
                 }
             });
+        $A.enqueueAction(action);
+    },
 
-            $A.enqueueAction(action);
-      },
-
-      getContact : function(component){
+    getContact : function(component){
         var AbstractRecordVariable = component.get("v.AbstractRecordVariable");
         AbstractRecordVariable = JSON.parse(JSON.stringify(AbstractRecordVariable));
 
@@ -117,9 +123,19 @@
  
         });
         $A.enqueueAction(action);
-      },
+    },
 
-      getAddresses : function(component){
+    showToast: function (title, message, type) {
+        let toastEvent = $A.get("e.force:showToast");
+        toastEvent.setParams({
+            "title": title,
+            "message": message,
+            "type": type
+        });
+        toastEvent.fire();
+    },
+
+    getAddresses : function(component){
         var action = component.get("c.getMailingCountries");
         action.setCallback(this, function(response) {
             var state = response.getState();
@@ -134,5 +150,24 @@
             }
         });
         $A.enqueueAction(action);
-      }
+    },
+
+    validateRequiredInputs: function (component, auraId) {
+        return new Promise( (resolve => {
+            console.log('component.find(auraId): '+ component.find(auraId));
+            console.log('component.find(auraId): '+ component.find(auraId).length);
+            let allValid = [].concat(component.find(auraId)).reduce(function (validSoFar, inputCmp) {
+                inputCmp.showHelpMessageIfInvalid();
+                return validSoFar && !inputCmp.get('v.validity').valueMissing;
+            }, true);
+
+            console.log('allValid',allValid);
+
+            if(!allValid){
+                this.showToast('Error', 'Check your inputs', 'error');
+            }
+
+            resolve(allValid);
+        }))
+    }
 })
