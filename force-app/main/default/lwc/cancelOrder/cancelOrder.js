@@ -90,6 +90,7 @@ export default class CancelOrder extends LightningElement {
     }
 
     handleFieldChange(e) {
+
         let curOI = this.orderItem.find(el => el.Id === e.currentTarget.dataset.id);
         if (((curOI.Total_amount__c - curOI.Refund_Amount__c) < +e.target.value) || +e.target.value < 0) {
             this.dispatchToast('Error', 'Invalid refund value', 'Error');
@@ -98,6 +99,9 @@ export default class CancelOrder extends LightningElement {
         }
 
         curOI[`${e.currentTarget.dataset.field}`] = +e.target.value;
+
+        console.log('this.orderItem', JSON.stringify(this.orderItem));
+
     }
 
     dispatchToast(title, message, variant) {
@@ -108,6 +112,30 @@ export default class CancelOrder extends LightningElement {
                 variant: variant
             })
         );
+    }
+
+    get subTotalRefund(){
+        let subTotal = 0;
+
+        for(let io of this.orderItem){
+            subTotal += +io.maxRef;
+        }
+
+        return subTotal.toFixed(2);
+    }
+
+    get refundVAT(){
+        if(!this.hasVAT) return 0;
+
+        return (+(this.subTotalRefund * (1 + +this.infoOrder.VAT_Rate__c / 100)).toFixed(2) - this.subTotalRefund).toFixed(2);
+    }
+
+    get refundTotal(){
+        return (+this.subTotalRefund + +this.refundVAT).toFixed(2);
+    }
+
+    get hasVAT(){
+        return !!this.infoOrder.VAT_Rate__c;
     }
 
 }

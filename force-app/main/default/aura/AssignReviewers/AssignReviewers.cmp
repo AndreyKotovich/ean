@@ -29,21 +29,34 @@
 
         <!-- Abstract List section -->
         <aura:if isTrue="{!v.abstractListStage}">
-            <lightning:input type="number" name="numberOfReviewers" value="{! v.numberOfReviewers}" maxlength="4"
-                label="Number of Reviewers" />
-
-            <lightning:select name="selectTopic" label="Select topic" value="{!v.selectedTopic}"
-                onchange="{! c.selectTopic }">
-                <aura:iteration items="{!v.topics}" var="topic">
-                    <option text="{!topic}" value="{!topic}" />
-                </aura:iteration>
-            </lightning:select>
-            <lightning:select name="selectType" label="Select type" value="{!v.selectedType}"
-                onchange="{! c.selectType }">
-                <aura:iteration items="{!v.types}" var="type">
-                    <option text="{!type}" value="{!type}" />
-                </aura:iteration>
-            </lightning:select>
+                <div class="c-container">
+        <lightning:layout multipleRows="true">
+            <!-- <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="4" largeDeviceSize="4" padding="around-small">
+                <div class="custom-box">
+                    <lightning:input type="number" name="numberOfReviewers" value="{! v.numberOfReviewers}" maxlength="4" label="Number of Reviewers" />
+                </div>
+            </lightning:layoutItem> -->
+            <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="6" largeDeviceSize="6" padding="around-small">
+                <div class="custom-box">
+                    <lightning:select name="selectTopic" label="Select topic" value="{!v.selectedTopic}" onchange="{! c.selectTopic }">
+                        <aura:iteration items="{!v.topics}" var="topic">
+                            <option text="{!topic}" value="{!topic}" />
+                        </aura:iteration>
+                    </lightning:select>
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="6" largeDeviceSize="6" padding="around-small">
+                <div class="custom-box">
+                    <lightning:select name="selectType" label="Select type" value="{!v.selectedType}"
+                        onchange="{! c.selectType }">
+                        <aura:iteration items="{!v.types}" var="type">
+                            <option text="{!type}" value="{!type}" />
+                        </aura:iteration>
+                    </lightning:select>
+                </div>
+            </lightning:layoutItem>
+        </lightning:layout>
+    </div>
 
             <br />
 

@@ -174,7 +174,7 @@ public without sharing class OrderHelper {
     @AuraEnabled
     public static List<Order__c> getOrderInfo(String Id) {
         return [
-            SELECT Id, Status__c, Paid_Amount__c, Total_amount__c, Total_Amount_Gros__c,
+            SELECT Id, Status__c, Paid_Amount__c, Total_amount__c, Total_Amount_Gros__c, VAT_Rate__c,
                 (
                     SELECT Id, Name__c, Amount__c, Total_amount__c, Quantity__c, Paid__c, 
                         Discount_Amount__c, Discount__c, Refund_Amount__c,

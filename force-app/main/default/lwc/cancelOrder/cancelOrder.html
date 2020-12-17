@@ -89,6 +89,38 @@
         </div>
     </template>
 
+    <div class="slds-m-top_small"></div>
+
+    <div if:true={hasVAT} class="slds-grid slds-wrap slds-grid_align-end slds-border_top">
+        <div class="slds-col slds-size_2-of-12 slds-text-title_caps slds-var-p-left_medium">
+            <span class=" slds-p-around_small">SUB TOTAL</span>
+        </div>
+
+        <div class="slds-col slds-size_2-of-12 slds-text-title_caps slds-var-p-left_medium">
+            <span class=" slds-p-around_small">€{subTotalRefund}</span>
+        </div>
+    </div>
+
+    <div if:true={hasVAT} class="slds-grid slds-wrap slds-grid_align-end slds-border_top">
+        <div class="slds-col slds-size_2-of-12 slds-text-title_caps slds-var-p-left_medium">
+            <span class=" slds-p-around_small">VAT</span>
+        </div>
+
+        <div class="slds-col slds-size_2-of-12 slds-text-title_caps slds-var-p-left_medium">
+            <span class=" slds-p-around_small">€{refundVAT}</span>
+        </div>
+    </div>
+
+    <div class="slds-grid slds-wrap slds-grid_align-end slds-border_bottom slds-border_bottom slds-border_top">
+        <div class="slds-col slds-size_2-of-12 slds-text-title_caps slds-var-p-left_medium">
+            <span class=" slds-p-around_small">TOTAL</span>
+        </div>
+
+        <div class="slds-col slds-size_2-of-12 slds-text-title_caps slds-var-p-left_medium">
+            <span class=" slds-p-around_small">€{refundTotal}</span>
+        </div>
+    </div>
+
     <div class="slds-grid slds-wrap slds-m-top_xx-large">
         <div class="slds-col slds-size_12-of-12 slds-text-align_right">
             <lightning-button variant="brand" label="Refund" onclick={refund}></lightning-button>

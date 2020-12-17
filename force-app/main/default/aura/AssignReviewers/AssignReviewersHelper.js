@@ -2,7 +2,7 @@
     loadData: function (cmp) {
         cmp.set("v.spinnerVisible", true);
 
-        this.getTopics(cmp)
+        this.getPickList(cmp)
             .then(result => {
                     this.getAbstracts(cmp);
                     this.setAbstractsColumns(cmp);
@@ -57,12 +57,15 @@
         ])
     },
 
-    getTopics: function (cmp) {
+    getPickList: function (cmp) {
         return new Promise((resolve, reject) => {
+            var request = {};
             var objectApiName = 'Abstract__c';
-            var request = {
-                'Abstract__c' : ['Abstract_Topic__c', 'Type__c']
-            };
+            var fieldApiNames =  [];
+            var topicFieldApiName =  'Abstract_Topic__c';
+            var typeFieldApiName = 'Type__c';
+            fieldApiNames.push(topicFieldApiName, typeFieldApiName);
+            request[objectApiName] = fieldApiNames;
             var action = cmp.get("c.getPickListValues");
             action.setParams({
                 'objectApiNameTofieldApiNameMap': request
@@ -71,38 +74,12 @@
                 var state = response.getState();
                 if (state === "SUCCESS") {
                     var advTopics = ['All'];
-                    Array.prototype.push.apply(advTopics, response.getReturnValue()[objectApiName]['Abstract_Topic__c']);
+                    Array.prototype.push.apply(advTopics, response.getReturnValue()[objectApiName][topicFieldApiName]);
 
                     cmp.set("v.topics", advTopics);
 
                     var advTypes = ['All'];
-                    Array.prototype.push.apply(advTypes, response.getReturnValue()[objectApiName]['Type__c']);
-                    cmp.set("v.types", advTypes);
-                    resolve();
-                } else {
-                    console.log(response.getState());
-                    reject();
-                }
-            });
-            $A.enqueueAction(action);
-        })
-    },
-
-    getTypes: function (cmp) {
-        return new Promise((resolve, reject) => {
-            var objectApiName = 'Abstract__c';
-            var fieldApiName = 'Type__c';
-            var action = cmp.get("c.getPickListValues");
-            action.setParams({
-                'objectApiName': objectApiName,
-                'fieldApiName': fieldApiName
-            });
-            action.setCallback(this, function (response) {
-                var state = response.getState();
-                if (state === "SUCCESS") {
-                    var advTypes = ['All'];
-                    Array.prototype.push.apply(advTypes, response.getReturnValue());
-
+                    Array.prototype.push.apply(advTypes, response.getReturnValue()[objectApiName][typeFieldApiName]);
                     cmp.set("v.types", advTypes);
                     resolve();
                 } else {
@@ -186,25 +163,27 @@
     },
 
     manualAssignReviewers: function (cmp) {
-        cmp.set("v.abstractListStage", false);
-        cmp.set("v.spinnerVisible", true);
+        if (cmp.get("v.selectedRecords").length >0) {
+            cmp.set("v.abstractListStage", false);
+            cmp.set("v.spinnerVisible", true);
 
-        var abstractId = cmp.get("v.selectedRecords")[0].Id;
-        cmp.set("v.selectedAbstract", cmp.get("v.selectedRecords")[0]);
+            var abstractId = cmp.get("v.selectedRecords")[0].Id;
+            cmp.set("v.selectedAbstract", cmp.get("v.selectedRecords")[0]);
 
-        cmp.set("v.selectedNameAbstract", `${cmp.get("v.selectedRecords")[0].Name} - ${cmp.get("v.selectedRecords")[0].Title__c}`);
+            cmp.set("v.selectedNameAbstract", `${cmp.get("v.selectedRecords")[0].Name} - ${cmp.get("v.selectedRecords")[0].Title__c}`);
 
-        this.getReviewers(cmp, abstractId)
-            .then(result => {
-                this.setAbstractsColumnsToAssign(cmp);
-                this.setReviewersColumns(cmp);
-                cmp.set("v.spinnerVisible", false);
-                cmp.set("v.abstractAssignStage", true);
-            })
-            .catch(error => {
-                console.log(error);
-                cmp.set("v.spinnerVisible", false);
-            });
+            this.getReviewers(cmp, abstractId)
+                .then(result => {
+                    this.setAbstractsColumnsToAssign(cmp);
+                    this.setReviewersColumns(cmp);
+                    cmp.set("v.spinnerVisible", false);
+                    cmp.set("v.abstractAssignStage", true);
+                })
+                .catch(error => {
+                    console.log(error);
+                    cmp.set("v.spinnerVisible", false);
+                });
+        }
     },
 
     previous: function (cmp) {
@@ -213,7 +192,7 @@
         cmp.set("v.abstractAssignStage", false);
         cmp.set("v.spinnerVisible", true);
         cmp.set("v.abstractListStage", true);
-
+        this.getAbstracts(cmp);
         cmp.set("v.spinnerVisible", false);
     },
 
@@ -298,6 +277,7 @@
         lines.forEach(e => {
             abstRev[e.Id] = selectedAbstract.Id;
         });
+        console.log('abstRev --> ', abstRev);
         if (Object.keys(abstRev).length > 0) {
             var action = cmp.get("c.setAbstractRev");
             action.setParams({

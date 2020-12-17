@@ -1,20 +1,4 @@
 public with sharing class AssignReviewersController {
-
-    // @AuraEnabled
-    // public static List<String> getTopics(){
-    //     List<String> topics = new List<String>();
-
-    //     Schema.sObjectType objType = Abstract__c.getSObjectType();
-    //     Schema.DescribeSObjectResult objDescribe = objType.getDescribe();
-    //     Map<String, Schema.SObjectField> fieldMap = objDescribe.fields.getMap();
-    //     List<Schema.PicklistEntry> values = fieldMap.get('Abstract_Topic__c').getDescribe().getPickListValues();
-
-    //     for (Schema.PicklistEntry v : values){
-    //         topics.add(v.getLabel());
-    //     }
-
-    //     return topics;
-    // }
     
     @AuraEnabled
     public static Map<String, Map<String, List<String>>> getPickListValues(Map<String, List<String>> objectApiNameTofieldApiNameMap){
@@ -43,23 +27,22 @@ public with sharing class AssignReviewersController {
     @AuraEnabled
     public static List<Abstract__c> getAbstracts(String abstractTopic, String abstractType){
         List<Abstract__c> abstracts = new List<Abstract__c>();
-
+        String recordType = 'Public Submission';
+        String stage = 'Submitted';
+        String status = 'Pending';
         if(abstractTopic.length() == 0
             && abstractType.length() == 0){
             abstracts = [
                 SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Abstract_Presenter__c, Abstract_Presenter__r.Email,  (SELECT Id FROM Abstract_Reviews__r)
                 FROM Abstract__c 
                 WHERE 
-                    RecordType.Name = 'Public Submission'
+                    RecordType.Name = :recordType
                     AND 
-                    Stage__c = 'Submitted'
+                    Stage__c = :stage
                     AND 
-                    Status__c = 'Pending'
+                    Status__c = :status
             ];
         }else{
-            String recordType = 'Public Submission';
-            String stage = 'Submitted';
-            String status = 'Pending';
             String query = 'SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Abstract_Presenter__c, Abstract_Presenter__r.Email,  (SELECT Id FROM Abstract_Reviews__r) FROM Abstract__c WHERE RecordType.Name = :recordType AND Stage__c = :stage AND Status__c = :status';
             if (String.isNotBlank(abstractTopic)) {
                 query = query + ' AND Abstract_Topic__c = :abstractTopic';
@@ -160,7 +143,7 @@ public with sharing class AssignReviewersController {
                 );
             }
             
-            insert ars;
+            // insert ars;
 
             return new Map<String,Object> {
                 'status' => 'Success',
