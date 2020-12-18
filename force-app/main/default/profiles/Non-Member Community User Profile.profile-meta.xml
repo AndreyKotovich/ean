@@ -37,6 +37,10 @@
         <enabled>false</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>AssignReviewersControllerTest</apexClass>
+        <enabled>false</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>AssociateMembershipsAssignment</apexClass>
         <enabled>false</enabled>
     </classAccesses>
@@ -250,6 +254,10 @@
     </classAccesses>
     <classAccesses>
         <apexClass>DocumentsMissingEmailController</apexClass>
+        <enabled>false</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DownloadAbstractBookController</apexClass>
         <enabled>false</enabled>
     </classAccesses>
     <classAccesses>
@@ -1030,6 +1038,11 @@
         <editable>true</editable>
         <field>Abstract__c.Originality__c</field>
         <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Abstract__c.Required_number_of_reviewers__c</field>
+        <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
@@ -3878,6 +3891,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Order__c.Total_Amount_Net__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Order__c.Total_amount__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -5503,6 +5521,10 @@
     </pageAccesses>
     <pageAccesses>
         <apexPage>CommunitiesTemplate</apexPage>
+        <enabled>false</enabled>
+    </pageAccesses>
+    <pageAccesses>
+        <apexPage>DownloadAbstractBook</apexPage>
         <enabled>false</enabled>
     </pageAccesses>
     <pageAccesses>

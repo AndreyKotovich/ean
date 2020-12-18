@@ -3,6 +3,7 @@ public without sharing class AbstractBookController {
 	public Map<String,Object> abInfo { get; set; }
 	public Map<String,Object> SessionInfo { get; set; }
 	public Map<String,String> imageMap { get; set; }
+	public Map<String,Object> imageNameMap { get; set; }
 	public Map<String,Object> newAbs { get; set; }
 	public Map<String,Abstract_Review__c> abRew { get; set; }
 	public Map<String,Abstract__c> abstractMap { get; set; }
@@ -26,6 +27,7 @@ public without sharing class AbstractBookController {
 		newAbs = new Map<String,Object>();
 		lectMap = new Map<String,Object>();
 		imageMap = new Map<String,String>();
+		imageNameMap = new Map<String,Object>();
 		abstractMap = new Map<String,Abstract__c>();
 		lectSorts = new List<String>();
 
@@ -190,11 +192,14 @@ public without sharing class AbstractBookController {
  
 		}
 
-		List<ContentVersion> CDs = [SELECT Id, ContentDocumentId FROM ContentVersion WHERE ContentDocumentId IN: imgId];
+		List<ContentVersion> CDs = [SELECT Id, ContentDocument.Title, ContentDocumentId FROM ContentVersion WHERE ContentDocumentId IN: imgId];
 	   
 		this.imageMap.put('', '');
+		this.imageNameMap.put('', '');
+		
 		for (ContentVersion cd : CDs) {
-			this.imageMap.put(cd.ContentDocumentId, cd.Id);
+			this.imageMap.put(cd.ContentDocumentId, cd.Id); 
+			this.imageNameMap.put(cd.ContentDocumentId, cd.ContentDocument.Title);
 		}
 
 		this.abAll = abstracts;

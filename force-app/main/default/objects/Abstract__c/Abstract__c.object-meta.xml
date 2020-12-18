@@ -169,11 +169,13 @@
     <pluralLabel>Abstracts</pluralLabel>
     <recordTypeTrackHistory>false</recordTypeTrackHistory>
     <searchLayouts>
+        <listViewButtons>Download_Abstract_Book</listViewButtons>
         <massQuickActions>Change</massQuickActions>
         <searchResultsAdditionalFields>Title__c</searchResultsAdditionalFields>
         <searchResultsAdditionalFields>Event__c</searchResultsAdditionalFields>
         <searchResultsAdditionalFields>Session__c</searchResultsAdditionalFields>
         <searchResultsAdditionalFields>CREATEDBY_USER</searchResultsAdditionalFields>
+        <searchResultsCustomButtons>Download_Abstract_Book</searchResultsCustomButtons>
     </searchLayouts>
     <sharingModel>ReadWrite</sharingModel>
     <startsWith>Vowel</startsWith>

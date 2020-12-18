@@ -213,6 +213,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Abstract__c.Required_number_of_reviewers__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Abstract__c.Results__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -2984,6 +2989,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Order__c.Total_Amount_Gros__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Order__c.Total_Amount_Net__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>

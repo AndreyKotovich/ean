@@ -1,0 +1,17 @@
+<apex:page id="abstracts"
+           standardController="Abstract__c"
+           extensions="DownloadAbstractBookController"
+           recordSetVar="abstracts"
+           sideBar="false"
+>
+    <apex:form >
+        <script>
+            if((typeof sforce != 'undefined') && sforce && (!!sforce.one)){
+                sforce.one.navigateToURL('{!redirectUrl}', true);
+            } else {
+                window.top.location.href = '{!redirectUrl}';
+               // window.open('{!redirectUrl}',  '_blank');
+            }
+        </script>
+    </apex:form>
+</apex:page>

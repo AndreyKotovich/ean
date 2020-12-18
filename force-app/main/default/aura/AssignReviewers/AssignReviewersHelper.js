@@ -25,6 +25,7 @@
             { label: 'Stage', fieldName: 'Stage__c', type: 'text' },
             { label: 'Status', fieldName: 'Status__c', type: 'text' },            
             { label: 'Assigned Reviewers', fieldName: 'assignedReviewers', type: 'text' },
+            { label: 'Required Reviewers', fieldName: 'Required_number_of_reviewers__c', type: 'text' }
         ])
     },
 
@@ -39,6 +40,7 @@
             { label: 'Stage', fieldName: 'Stage__c', type: 'text' },
             { label: 'Status', fieldName: 'Status__c', type: 'text' },
             { label: 'Assigned Reviewers', fieldName: 'assignedReviewers', type: 'text' },
+            { label: 'Required Reviewers', fieldName: 'Required_number_of_reviewers__c', type: 'text' },
             { label: '', type: 'button', initialWidth: 135, typeAttributes: { label: 'Select', name: 'select_abstract', title: 'Click to Select Abstract' } },
         ])
     },
@@ -166,11 +168,14 @@
         if (cmp.get("v.selectedRecords").length >0) {
             cmp.set("v.abstractListStage", false);
             cmp.set("v.spinnerVisible", true);
-
-            var abstractId = cmp.get("v.selectedRecords")[0].Id;
-            cmp.set("v.selectedAbstract", cmp.get("v.selectedRecords")[0]);
-
-            cmp.set("v.selectedNameAbstract", `${cmp.get("v.selectedRecords")[0].Name} - ${cmp.get("v.selectedRecords")[0].Title__c}`);
+            var abstractId;
+            if (cmp.get("v.selectedAbstract")) {
+                abstractId = cmp.get("v.selectedAbstract").Id;
+            } else {
+                var abstractId = cmp.get("v.selectedRecords")[0].Id;
+                cmp.set("v.selectedAbstract", cmp.get("v.selectedRecords")[0]);
+                cmp.set("v.selectedNameAbstract", `${cmp.get("v.selectedRecords")[0].Name} - ${cmp.get("v.selectedRecords")[0].Title__c}`);
+            }
 
             this.getReviewers(cmp, abstractId)
                 .then(result => {
@@ -267,8 +272,6 @@
     },
 
     save: function (cmp, event) {
-        console.log('selectedRows ');
-
         var selectedAbstract = cmp.get("v.selectedAbstract");
         // console.log('selectedAbstract ', selectedAbstract);
         let lines = cmp.find('linesTable').getSelectedRows();
@@ -277,7 +280,6 @@
         lines.forEach(e => {
             abstRev[e.Id] = selectedAbstract.Id;
         });
-        console.log('abstRev --> ', abstRev);
         if (Object.keys(abstRev).length > 0) {
             var action = cmp.get("c.setAbstractRev");
             action.setParams({
@@ -292,10 +294,33 @@
                         message: res.message,
                         type: res.status,
                     }).fire();
+                    selectedAbstract.assignedReviewers = selectedAbstract.assignedReviewers + lines.length;
+                    cmp.set("v.selectedAbstract", selectedAbstract);
+                    let selectedRecords = cmp.get("v.selectedRecords");
+                    selectedRecords.forEach(function(record) {
+                        if (record.Id == selectedAbstract.Id) {
+                            record.assignedReviewers = selectedAbstract.assignedReviewers;
+                        }
+                    });
+                    cmp.set("v.selectedRecords", selectedRecords);
+                    if (res.isAbstractInReview) {
+                        let filteredRecords = selectedRecords.filter(record => record != selectedAbstract);
+                        if (filteredRecords.length > 0) {
+                            cmp.set("v.selectedRecords", filteredRecords);
+                            cmp.set("v.selectedAbstract", filteredRecords[0]);
+                            cmp.set("v.selectedNameAbstract", `${filteredRecords[0].Name} - ${filteredRecords[0].Title__c}`);
+                        } else {
+                            this.previous(cmp);
+                        }
+                    }
                 } else {
+                    let errorMessage = 'Something Went Wrong';
+                    if (response.getError()[0].message.length > 0) {
+                        errorMessage = response.getError()[0].message;
+                    }
                     $A.get('e.force:showToast').setParams({
                         title: "Error",
-                        message: 'Something Went Wrong',
+                        message: errorMessage,
                         type: "error"
                     }).fire();
                 }

@@ -33,7 +33,7 @@ public with sharing class AssignReviewersController {
         if(abstractTopic.length() == 0
             && abstractType.length() == 0){
             abstracts = [
-                SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Abstract_Presenter__c, Abstract_Presenter__r.Email,  (SELECT Id FROM Abstract_Reviews__r)
+                SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Abstract_Presenter__c, Abstract_Presenter__r.Email, Required_number_of_reviewers__c, (SELECT Id FROM Abstract_Reviews__r)
                 FROM Abstract__c 
                 WHERE 
                     RecordType.Name = :recordType
@@ -43,7 +43,7 @@ public with sharing class AssignReviewersController {
                     Status__c = :status
             ];
         }else{
-            String query = 'SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Abstract_Presenter__c, Abstract_Presenter__r.Email,  (SELECT Id FROM Abstract_Reviews__r) FROM Abstract__c WHERE RecordType.Name = :recordType AND Stage__c = :stage AND Status__c = :status';
+            String query = 'SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Abstract_Presenter__c, Abstract_Presenter__r.Email, Required_number_of_reviewers__c,  (SELECT Id FROM Abstract_Reviews__r) FROM Abstract__c WHERE RecordType.Name = :recordType AND Stage__c = :stage AND Status__c = :status';
             if (String.isNotBlank(abstractTopic)) {
                 query = query + ' AND Abstract_Topic__c = :abstractTopic';
             }
@@ -131,6 +131,44 @@ public with sharing class AssignReviewersController {
     @AuraEnabled
     public static Map<String,Object> setAbstractRev(Map<String,String> generalData){
         System.debug('setAbstractRev generalData ' + generalData);
+        Set<String> abstractIdsSet = new Set<String>();
+        abstractIdsSet.addAll(generalData.values());
+        List<Abstract__c> abstracts = [
+            SELECT Id, Required_number_of_reviewers__c, Assigned_Reviewers__c, Stage__c
+            FROM Abstract__c
+            WHERE Id IN :abstractIdsSet
+        ];
+        if (abstracts.size() > 1) {
+            String message = 'Incorrect data.';
+            AuraHandledException auraError = new AuraHandledException(message);
+            if (!Test.isRunningTest()) {
+                throw auraError;
+            }
+        }
+        for (Abstract__c abstractItem : abstracts) {
+            if ( abstractItem.Assigned_Reviewers__c + generalData.keySet().size() > abstractItem.Required_number_of_reviewers__c) {
+                String message = 'Please review selected reviewers. Abstract can only have ' + abstractItem.Required_number_of_reviewers__c + ' reviewers./n';
+                if (abstractItem.Assigned_Reviewers__c > 0) {
+                    message = message + ' This abstract allredy has ' + abstractItem.Assigned_Reviewers__c;
+                    if (abstractItem.Assigned_Reviewers__c == 1) {
+                        message = message + ' assigned reviewer.';
+                    } else {
+                       message = message + ' assigned reviewers.';
+                    }
+                }
+                if (generalData.keySet().size() > 0) {
+                    if (generalData.keySet().size() == 1) {
+                        message = message + ' You try to add ' + generalData.keySet().size() + ' reviewer.';
+                    } else {
+                        message = message + ' You try to add ' + generalData.keySet().size() + ' reviewers.';
+                    }
+                }
+                AuraHandledException auraError = new AuraHandledException(message);
+                if (!Test.isRunningTest()) {
+                    throw auraError;
+                }
+            }
+        }
         try {
             List<Abstract_Review__c> ars = new List<Abstract_Review__c>();
             for (String key : generalData.keySet()) {
@@ -143,11 +181,18 @@ public with sharing class AssignReviewersController {
                 );
             }
             
-            // insert ars;
+            insert ars;
+            Boolean isAbstractInReview = false;
+            if (abstracts[0].Assigned_Reviewers__c + generalData.keySet().size() == abstracts[0].Required_number_of_reviewers__c ) {
+                isAbstractInReview = true;
+                abstracts[0].Stage__c = 'In Review';
+                update abstracts;
+            }
 
             return new Map<String,Object> {
                 'status' => 'Success',
-                'message' => 'Reviewers appointed'
+                'message' => 'Reviewers appointed',
+                'isAbstractInReview' => isAbstractInReview
             };
 
         } catch (Exception e) {

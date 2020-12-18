@@ -7,7 +7,7 @@
                     Attached you will find your credit note for your congress registration. </p>
                 <p>Please note that EAN charges a €
                 <apex:outputText value="{0, number, 0.00}">
-                    <apex:param value="{!relatedTo.Total_Amount_Gros__c}" />
+                    <apex:param value="{!relatedTo.Total_amount__c}" />
                 </apex:outputText>
                 processing fee (including {!relatedTo.Event_custom__r.VAT_Amount__c}% VAT) for any change requests made in the registration process.</p>
                 <p>If you have any questions regarding registration, please contact us at registration@ean.org. </p> 

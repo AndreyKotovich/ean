@@ -1,10 +1,10 @@
-<apex:page id="testVFDoc" contentType="application/msword#filename.doc" sidebar="false" standardStylesheets="false"
+<apex:page id="testVFDoc" contentType="application/msword#filename.docx" sidebar="false" standardStylesheets="false"
            applyHtmlTag="false" applyBodyTag="false" showHeader="false">
-<html>
+<!--<html>
 <body>
 <apex:image value="data:image;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAzklEQVQ4y2P4//8/AyWYgWoGwMEFBi0gXgLEb4H4FxD/BuLXQNwHxPwwZdgNuMDgDcS3GR4w7Gf4yfCE4T8UgtggsQsMH4DYHrsBFxiUgfgVw1eGm3CN6BAkd4HhGhArYTNgDtiW/wQgxCVTsBnwCcXZuCBIzQWGB9gM+EdQMwxeYPiGzYD/JBjwFZsBz0jwwh1sBswiIRAbsBkgDsTviIjGpyC1uBKSJRBfx5OQLgOxLu6UCDFEEYh7oQnmCyjEgfgeELcAsSzOpDxguREA1co5dU5YrgAAAAAASUVORK5CYII=" />
 
      <img src="data:image/png;base64,R0lGODlhDAAMAKIFAF5LAP/zxAAAANyuAP/gaP///wAAAAAAACH5BAEAAAUALAAAAAAMAAwAAAMlWLPcGjDKFYi9lxKBOaGcF35DhWHamZUW0K4mAbiwWtuf0uxFAgA7"/>
 </body>
-</html>
+</html>-->
 </apex:page>
