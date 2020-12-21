@@ -9,7 +9,7 @@ public without sharing class AbstractBookController {
 	public Map<String,Abstract__c> abstractMap { get; set; }
 	public Map<String,Object> lectMap { get; set; }
 	public List<String> lectSorts { get; set; }  
-	
+	public String lstAbsctract { get; set; }	
 	public String typeDoc { get; set; }
 	
 	public AbstractBookController() {
@@ -30,7 +30,8 @@ public without sharing class AbstractBookController {
 		imageNameMap = new Map<String,Object>();
 		abstractMap = new Map<String,Abstract__c>();
 		lectSorts = new List<String>();
-
+		lstAbsctract = '';
+		
 		Map<String,Integer> depMap = new Map<String,Integer>();
 		Map<String,Object> abMap = new Map<String,Object>();
 		Set<String> imgId = new Set<String>();
@@ -209,7 +210,7 @@ public without sharing class AbstractBookController {
 			this.imageMap.put(cd.ContentDocumentId, cd.Id); 
 			this.imageNameMap.put(cd.ContentDocumentId, cd.ContentDocument.Title);
 		}
-
+		this.lstAbsctract = abstracts[abstracts.size() - 1].Id; 
 		this.abAll = abstracts;
 	}
 

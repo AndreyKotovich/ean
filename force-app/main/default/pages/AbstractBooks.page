@@ -1,6 +1,6 @@
 <apex:page controller="AbstractBookController" renderAs="pdf" showHeader="false" sidebar="false" standardStylesheets="false"
     applyBodyTag="false" applyHtmlTag="false">
-    <!--  renderAs="pdf"  -->
+    <!--    -->
     <html>
 
     <head>
@@ -49,7 +49,7 @@
 
         <div style="display: {!IF(typeDoc=='AbstractStaff' ,'none','') };">
             <apex:repeat value="{!abAll}" var="ab">
-                <div class="page-break">
+                <div class="{!IF(typeDoc=='AbstractSubmission' && lstAbsctract==ab.Id ,'','page-break') } ">
                     <h3>{!ab.Name}</h3>
                     <h4>{!ab.Title__c}</h4>
 
@@ -179,7 +179,7 @@
                 </div>
                 <div style="display: {!IF(typeDoc=='AbstractReviews' ,'','none') };">
 
-                    <div class="page-break">
+                    <div class="{!IF(typeDoc=='AbstractReviews' && lstAbsctract==ab.Id ,'','page-break') } ">
                         <h3>Review: {!ab.Name}</h3>
                         <p>
                             <h4> Grading:</h4>
@@ -380,7 +380,7 @@
 
     </body>
     <!--  Introduction Methods Results Conclusion -->
-
+    
     </html>
 
 
