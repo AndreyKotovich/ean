@@ -12,9 +12,9 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>Virtual oral</fullName>
+                <fullName>Oral</fullName>
                 <default>false</default>
-                <label>Virtual oral</label>
+                <label>Oral</label>
             </value>
             <value>
                 <fullName>Poster</fullName>
@@ -25,11 +25,6 @@
                 <fullName>Poster or Oral</fullName>
                 <default>false</default>
                 <label>Poster or Oral</label>
-            </value>
-            <value>
-                <fullName>Onsite oral</fullName>
-                <default>false</default>
-                <label>Onsite oral</label>
             </value>
         </valueSetDefinition>
     </valueSet>

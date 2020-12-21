@@ -1,17 +1,39 @@
-<apex:page id="abstracts"
-           standardController="Abstract__c"
-           extensions="DownloadAbstractBookController"
-           recordSetVar="abstracts"
-           sideBar="false"
->
+<apex:page id="abstracts" standardController="Abstract__c" extensions="DownloadAbstractBookController" recordSetVar="abstracts"
+    sideBar="false">
+    <apex:slds />
     <apex:form >
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col">
+                <div class="slds-box slds-align_absolute-center">
+                    <div class="slds-text-title_caps">Download Abstract Book</div>
+                </div>
+            </div>
+        </div>
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col">
+                <div class="slds-box slds-align_absolute-center">
+                    <apex:commandButton styleClass="slds-button slds-button--neutral slds-var-m-around_medium" value="Word" action="{!doWord}"
+                    />
+                    <apex:commandButton styleClass="slds-button slds-button--neutral slds-var-m-around_medium" value="PDF" action="{!doPDF}"
+                    />
+                    <apex:commandButton styleClass="slds-button slds-button--neutral slds-var-m-around_medium" value="HTML" action="{!doHTML}"
+                    />
+                </div>
+            </div>
+        </div>
         <script>
-            if((typeof sforce != 'undefined') && sforce && (!!sforce.one)){
-                sforce.one.navigateToURL('{!redirectUrl}', true);
-            } else {
-                window.top.location.href = '{!redirectUrl}';
-               // window.open('{!redirectUrl}',  '_blank');
+            if ({!isRedirect}) {
+                // if ((typeof sforce != 'undefined') && sforce && (!!sforce.one)) {
+                //     console.log('111');
+                //     sforce.one.navigateToURL('{!redirectUrl}', true);
+                // } else {
+                // window.top.location.href = '{!redirectUrl}';
+                //    console.log('222');
+                //    console.log('{!redirectUrl}');
+                window.open('{!redirectUrl}', '_blank');
+                //}
             }
+
         </script>
     </apex:form>
 </apex:page>

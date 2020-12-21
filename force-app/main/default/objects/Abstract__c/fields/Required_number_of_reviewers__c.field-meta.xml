@@ -2,8 +2,8 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Required_number_of_reviewers__c</fullName>
     <externalId>false</externalId>
-    <formula>IF(Event__r.Abstract_Review_Deadline__c &gt;  NOW(), Event__r.Number_of_Reviewers__c,
- IF( Event__r.Late_Breaking_Review_Deadline__c &gt;  NOW(), Event__r.Number_of_Reviewers_Late_Breaking__c, 0) )</formula>
+    <formula>IF(Late_Breaking_Submission__c  = false, Event__r.Number_of_Reviewers__c,
+IF( Late_Breaking_Submission__c  = true, Event__r.Number_of_Reviewers_Late_Breaking__c, 0) )</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
     <label>Required number of reviewers</label>
     <precision>18</precision>

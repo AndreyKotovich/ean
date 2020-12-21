@@ -32,17 +32,17 @@
                     </td>
                 </tr>
             </apex:repeat>
-            <tr>
-                <td style="" data-label="Delegate name">
-                    <div style="padding: 5px; margin: 0px; font-size: 11pt;"></div>
-                </td>
-                <td style="border-bottom: 1px solid #ddd;" data-label="Ticket Type">
-                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">Total</div>
-                </td>
-                <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">
-                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!orderTotal}  &#8364;</div>
-                </td>
-            </tr>
+<!--            <tr>-->
+<!--                <td style="" data-label="Delegate name">-->
+<!--                    <div style="padding: 5px; margin: 0px; font-size: 11pt;"></div>-->
+<!--                </td>-->
+<!--                <td style="border-bottom: 1px solid #ddd;" data-label="Ticket Type">-->
+<!--                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">Total</div>-->
+<!--                </td>-->
+<!--                <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">-->
+<!--                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!orderTotal}  &#8364;</div>-->
+<!--                </td>-->
+<!--            </tr>-->
             <tr>
                 <td style="" data-label="Delegate name">
                     <div style="padding: 5px; margin: 0px; font-size: 11pt;"></div>

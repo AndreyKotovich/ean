@@ -1,0 +1,8 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickAction">
+    <aura:attribute name="recordId" type="Id" />
+	<div class="slds-box slds-align_absolute-center">
+        <lightning:button variant="brand-outline" label="Word" title="Word" onclick="{! c.handleWord }" />
+        <lightning:button variant="brand-outline" label="PDF" title="PDF" onclick="{! c.handlePDF }" />
+        <lightning:button variant="brand-outline" label="HTML" title="HTML" onclick="{! c.handleHTML }" />
+	</div>
+</aura:component>

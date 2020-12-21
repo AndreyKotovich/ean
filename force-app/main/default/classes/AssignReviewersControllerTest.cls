@@ -24,7 +24,11 @@ public with sharing class AssignReviewersControllerTest {
         System.debug('contacts --> ' + contacts);
 
         Event__c eventTetst = new Event__c(
-            Name = 'Test event'            
+            Name = 'Test event',
+            Abstract_Submission_Deadline__c = Datetime.now().addDays(5),
+            Late_Breaking_Submission_Deadline__c = Datetime.now().addDays(10),
+            Number_of_Reviewers__c = 2,
+            Number_of_Reviewers_Late_Breaking__c = 1
         );
         insert eventTetst;
         System.debug('eventTetst --> ' + eventTetst);
@@ -66,6 +70,7 @@ public with sharing class AssignReviewersControllerTest {
         for (String abstractPickListValue : abstractPickListValues) {
             Abstract__c abstractItem = new Abstract__c(
                 Event__c = eventTetst.Id,
+                // Late_Breaking_Submission__c = true,
                 Abstract_Topic__c = abstractPickListValue,
                 Stage__c = 'Submitted',
                 Status__c = 'Pending',
@@ -158,5 +163,17 @@ public with sharing class AssignReviewersControllerTest {
             authors = AssignReviewersController.getAuthorsData(abstracts[0].Id, contacts[0].Id, contacts[0].Email);
         }
         System.assert(authors.size() > 0);
+    }
+
+    @isTest
+    static void setAbstractRevTest(){
+        List<Abstract__c> abstracts = [
+            SELECT Name, Submitted_After_Deadline__c, Late_Breaking_Submission__c, Required_number_of_reviewers__c
+            FROM Abstract__c
+        ];
+        System.debug('setAbstractRevTest');
+        for (Abstract__c abstractItem : abstracts) {
+            System.debug('abstractItem --> ' + abstractItem);
+        }
     }
 }

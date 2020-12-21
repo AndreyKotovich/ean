@@ -10,10 +10,6 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>Autonomic nervous system diseases</fullName>
-            <default>false</default>
-        </values>
-        <values>
             <fullName>COVID-19</fullName>
             <default>false</default>
         </values>
@@ -27,10 +23,6 @@
         </values>
         <values>
             <fullName>Clinical neurophysiology</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Coma and chronic disorders of consciousness</fullName>
             <default>false</default>
         </values>
         <values>
@@ -50,19 +42,7 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>General neurology</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Headache</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Higher cortical functions</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>History of neurology</fullName>
+            <fullName>History of Neurology</fullName>
             <default>false</default>
         </values>
         <values>
@@ -75,10 +55,6 @@
         </values>
         <values>
             <fullName>Muscle and neuromuscular junction diseaese</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Neuro Infectious diseases</fullName>
             <default>false</default>
         </values>
         <values>
@@ -114,19 +90,7 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>Neuropathies</fullName>
-            <default>false</default>
-        </values>
-        <values>
             <fullName>Neurorehabilitation</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Neuroscience%2Ftranslational neurology</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Neurosonology</fullName>
             <default>false</default>
         </values>
         <values>
@@ -138,19 +102,7 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>Pain</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Palliative care</fullName>
-            <default>false</default>
-        </values>
-        <values>
             <fullName>Peripheral nerve disorders</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Rare diseases</fullName>
             <default>false</default>
         </values>
         <values>
@@ -159,10 +111,6 @@
         </values>
         <values>
             <fullName>Spinal cord and root disorders</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Stroke</fullName>
             <default>false</default>
         </values>
     </picklistValues>
@@ -284,10 +232,6 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>Autonomic nervous system diseases</fullName>
-            <default>false</default>
-        </values>
-        <values>
             <fullName>COVID-19</fullName>
             <default>false</default>
         </values>
@@ -301,10 +245,6 @@
         </values>
         <values>
             <fullName>Clinical neurophysiology</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Coma and chronic disorders of consciousness</fullName>
             <default>false</default>
         </values>
         <values>
@@ -324,19 +264,7 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>General neurology</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Headache</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Higher cortical functions</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>History of neurology</fullName>
+            <fullName>History of Neurology</fullName>
             <default>false</default>
         </values>
         <values>
@@ -349,10 +277,6 @@
         </values>
         <values>
             <fullName>Muscle and neuromuscular junction diseaese</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Neuro Infectious diseases</fullName>
             <default>false</default>
         </values>
         <values>
@@ -388,19 +312,7 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>Neuropathies</fullName>
-            <default>false</default>
-        </values>
-        <values>
             <fullName>Neurorehabilitation</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Neuroscience%2Ftranslational neurology</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Neurosonology</fullName>
             <default>false</default>
         </values>
         <values>
@@ -412,19 +324,7 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>Pain</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Palliative care</fullName>
-            <default>false</default>
-        </values>
-        <values>
             <fullName>Peripheral nerve disorders</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Rare diseases</fullName>
             <default>false</default>
         </values>
         <values>
@@ -435,15 +335,11 @@
             <fullName>Spinal cord and root disorders</fullName>
             <default>false</default>
         </values>
-        <values>
-            <fullName>Stroke</fullName>
-            <default>false</default>
-        </values>
     </picklistValues>
     <picklistValues>
         <picklist>Type__c</picklist>
         <values>
-            <fullName>Onsite oral</fullName>
+            <fullName>Oral</fullName>
             <default>false</default>
         </values>
         <values>
@@ -452,10 +348,6 @@
         </values>
         <values>
             <fullName>Poster or Oral</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Virtual oral</fullName>
             <default>false</default>
         </values>
     </picklistValues>
