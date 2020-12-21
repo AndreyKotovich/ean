@@ -2,10 +2,42 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <apiVersion>49.0</apiVersion>
     <assignments>
+        <name>Assign_List_of_Authors</name>
+        <label>Assign List of Authors</label>
+        <locationX>845</locationX>
+        <locationY>2681</locationY>
+        <assignmentItems>
+            <assignToReference>ListAuthors</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>AuthorDetails</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_Authors</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_Presenter</name>
+        <label>Assign Presenter</label>
+        <locationX>660</locationX>
+        <locationY>1969</locationY>
+        <assignmentItems>
+            <assignToReference>ListAuthors</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>PresenterDetails</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Abstract_with_Presenter_0</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Assign_Type_and_Topic</name>
         <label>Assign Type and Topic</label>
-        <locationX>600</locationX>
-        <locationY>848</locationY>
+        <locationX>788</locationX>
+        <locationY>860</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
             <operator>Assign</operator>
@@ -18,6 +50,33 @@
             <operator>Assign</operator>
             <value>
                 <elementReference>Topics_Pick</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>AssignAbstract</name>
+        <label>AssignAbstract</label>
+        <locationX>582</locationX>
+        <locationY>830</locationY>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Event__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>SelectedEvent</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Type</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Conclusion__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Conclusion</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -35,40 +94,17 @@
             </value>
         </assignmentItems>
         <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Results__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Results</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Conclusion__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Conclusion</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Validate_Input</targetReference>
-        </connector>
-    </assignments>
-    <assignments>
-        <name>AssignAbstract</name>
-        <label>AssignAbstract</label>
-        <locationX>612</locationX>
-        <locationY>1098</locationY>
-        <assignmentItems>
-            <assignToReference>AbstractRecordVariable.Event__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>SelectedEvent</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
             <assignToReference>AbstractRecordVariable.Title__c</assignToReference>
             <operator>Assign</operator>
             <value>
                 <elementReference>Title</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Results__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Results</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -78,15 +114,22 @@
                 <elementReference>Disclosure</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Abstract_Topic__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Topics_Pick</elementReference>
+            </value>
+        </assignmentItems>
         <connector>
-            <targetReference>CreateAbstract</targetReference>
+            <targetReference>Validate_Input</targetReference>
         </connector>
     </assignments>
     <assignments>
         <name>AssignAbstract_0</name>
         <label>AssignAbstract</label>
-        <locationX>606</locationX>
-        <locationY>2887</locationY>
+        <locationX>609</locationX>
+        <locationY>3037</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Type__c</assignToReference>
             <operator>Assign</operator>
@@ -143,6 +186,13 @@
                 <elementReference>Topics_Pick_0</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Author_Details__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>ListAuthors</elementReference>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>Validate_Input_0</targetReference>
         </connector>
@@ -150,8 +200,8 @@
     <assignments>
         <name>AssignAbstractValues</name>
         <label>AssignAbstractValues</label>
-        <locationX>510</locationX>
-        <locationY>3396</locationY>
+        <locationX>511</locationX>
+        <locationY>3505</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Bursary__c</assignToReference>
             <operator>Assign</operator>
@@ -201,8 +251,8 @@
     <assignments>
         <name>AssignAbstractValues_0</name>
         <label>AssignAbstractValues</label>
-        <locationX>631</locationX>
-        <locationY>3379</locationY>
+        <locationX>632</locationX>
+        <locationY>3488</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Bursary__c</assignToReference>
             <operator>Assign</operator>
@@ -238,8 +288,8 @@
     <assignments>
         <name>AssignAbstractValues_0_0</name>
         <label>AssignAbstractValues</label>
-        <locationX>398</locationX>
-        <locationY>3368</locationY>
+        <locationX>399</locationX>
+        <locationY>3477</locationY>
         <assignmentItems>
             <assignToReference>AbstractRecordVariable.Authors_consent__c</assignToReference>
             <operator>Assign</operator>
@@ -284,8 +334,8 @@
     <assignments>
         <name>AssignStage10</name>
         <label>AssignStage10</label>
-        <locationX>642</locationX>
-        <locationY>689</locationY>
+        <locationX>640</locationX>
+        <locationY>682</locationY>
         <assignmentItems>
             <assignToReference>$Flow.CurrentStage</assignToReference>
             <operator>Assign</operator>
@@ -332,8 +382,8 @@
     <assignments>
         <name>AssignStage40</name>
         <label>AssignStage40</label>
-        <locationX>473</locationX>
-        <locationY>2158</locationY>
+        <locationX>476</locationX>
+        <locationY>2113</locationY>
         <assignmentItems>
             <assignToReference>$Flow.CurrentStage</assignToReference>
             <operator>Assign</operator>
@@ -348,8 +398,8 @@
     <assignments>
         <name>AssignStage50</name>
         <label>AssignStage50</label>
-        <locationX>635</locationX>
-        <locationY>3506</locationY>
+        <locationX>636</locationX>
+        <locationY>3615</locationY>
         <assignmentItems>
             <assignToReference>$Flow.CurrentStage</assignToReference>
             <operator>Assign</operator>
@@ -365,7 +415,7 @@
         <name>Count_Authors</name>
         <label>Count Authors</label>
         <locationX>475</locationX>
-        <locationY>2410</locationY>
+        <locationY>2342</locationY>
         <assignmentItems>
             <assignToReference>AuthorCount</assignToReference>
             <operator>AssignCount</operator>
@@ -396,8 +446,8 @@
     <assignments>
         <name>Enable_Presenter_Error_Message</name>
         <label>Enable Presenter Error Message</label>
-        <locationX>250</locationX>
-        <locationY>1719</locationY>
+        <locationX>248</locationX>
+        <locationY>1720</locationY>
         <assignmentItems>
             <assignToReference>PresenterErrorFlag</assignToReference>
             <operator>Assign</operator>
@@ -412,8 +462,8 @@
     <assignments>
         <name>Enable_Select_Author_Error</name>
         <label>Enable Select Author Error</label>
-        <locationX>702</locationX>
-        <locationY>2326</locationY>
+        <locationX>656</locationX>
+        <locationY>2229</locationY>
         <assignmentItems>
             <assignToReference>SelectAuthorError</assignToReference>
             <operator>Assign</operator>
@@ -428,8 +478,8 @@
     <assignments>
         <name>Enable_select_Presenter_Error</name>
         <label>Enable select Presenter Error</label>
-        <locationX>109</locationX>
-        <locationY>1738</locationY>
+        <locationX>112</locationX>
+        <locationY>1747</locationY>
         <assignmentItems>
             <assignToReference>SelectPresenterError</assignToReference>
             <operator>Assign</operator>
@@ -460,8 +510,8 @@
     <assignments>
         <name>Enable_Topic_Error_0</name>
         <label>Enable Topic Error</label>
-        <locationX>777</locationX>
-        <locationY>2692</locationY>
+        <locationX>832</locationX>
+        <locationY>2870</locationY>
         <assignmentItems>
             <assignToReference>ShowTopicErrorReview</assignToReference>
             <operator>Assign</operator>
@@ -492,8 +542,8 @@
     <assignments>
         <name>Enable_Type_Error_0</name>
         <label>Enable Type Error</label>
-        <locationX>940</locationX>
-        <locationY>2948</locationY>
+        <locationX>952</locationX>
+        <locationY>3066</locationY>
         <assignmentItems>
             <assignToReference>ShowTypeErrorReview</assignToReference>
             <operator>Assign</operator>
@@ -524,8 +574,8 @@
     <assignments>
         <name>Enable_Word_Count_Error_0</name>
         <label>Enable Word Count Error</label>
-        <locationX>940</locationX>
-        <locationY>2807</locationY>
+        <locationX>948</locationX>
+        <locationY>2941</locationY>
         <assignmentItems>
             <assignToReference>ShowWordCountErrorReview</assignToReference>
             <operator>Assign</operator>
@@ -551,6 +601,22 @@
         </assignmentItems>
         <connector>
             <targetReference>GetMembershipStatus</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Reset_Author_Details</name>
+        <label>Reset Author Details</label>
+        <locationX>435</locationX>
+        <locationY>1976</locationY>
+        <assignmentItems>
+            <assignToReference>AbstractRecordVariable.Author_Details__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue/>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_Presenter_Details</targetReference>
         </connector>
     </assignments>
     <choices>
@@ -612,28 +678,28 @@
         <name>TopicFieldId</name>
         <dataType>String</dataType>
         <value>
-            <stringValue>Abstract__c.00N0E000007uo8z</stringValue>
+            <stringValue>Abstract__c.00N1X0000078R9p</stringValue>
         </value>
     </constants>
     <constants>
         <name>TypeFieldId</name>
         <dataType>String</dataType>
         <value>
-            <stringValue>Abstract__c.00N0E000007uHfg</stringValue>
+            <stringValue>Abstract__c.00N1X000006eorz</stringValue>
         </value>
     </constants>
     <decisions>
         <name>Check_Author</name>
         <label>Check Author</label>
-        <locationX>468</locationX>
-        <locationY>2533</locationY>
+        <locationX>466</locationX>
+        <locationY>2463</locationY>
         <defaultConnector>
             <targetReference>Fill_Abstract_Screen_0</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Author_selected</name>
-            <conditionLogic>or</conditionLogic>
+            <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>AuthorCount</leftValueReference>
                 <operator>NotEqualTo</operator>
@@ -665,8 +731,8 @@
     <decisions>
         <name>Checkboxes_Null</name>
         <label>Checkboxes = Null</label>
-        <locationX>494</locationX>
-        <locationY>3234</locationY>
+        <locationX>495</locationX>
+        <locationY>3343</locationY>
         <defaultConnector>
             <targetReference>AssignAbstractValues</targetReference>
         </defaultConnector>
@@ -818,8 +884,8 @@
     <decisions>
         <name>PresenterChecker</name>
         <label>PresenterChecker</label>
-        <locationX>240</locationX>
-        <locationY>1932</locationY>
+        <locationX>237</locationX>
+        <locationY>1966</locationY>
         <defaultConnector>
             <targetReference>AssignStage40</targetReference>
         </defaultConnector>
@@ -878,7 +944,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Update_Abstract_with_Presenter_0</targetReference>
+                <targetReference>Reset_Author_Details</targetReference>
             </connector>
             <label>Presenter checked</label>
         </rules>
@@ -908,8 +974,8 @@
     <decisions>
         <name>SubmitAbstractDecision</name>
         <label>SubmitAbstractDecision</label>
-        <locationX>492</locationX>
-        <locationY>3703</locationY>
+        <locationX>494</locationX>
+        <locationY>3802</locationY>
         <defaultConnector>
             <targetReference>SubmissionSuccessScreen</targetReference>
         </defaultConnector>
@@ -933,10 +999,10 @@
     <decisions>
         <name>Validate_Input</name>
         <label>Validate Input</label>
-        <locationX>493</locationX>
-        <locationY>973</locationY>
+        <locationX>498</locationX>
+        <locationY>980</locationY>
         <defaultConnector>
-            <targetReference>AssignAbstract</targetReference>
+            <targetReference>CreateAbstract</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Valid</defaultConnectorLabel>
         <rules>
@@ -988,8 +1054,8 @@
     <decisions>
         <name>Validate_Input_0</name>
         <label>Validate Input</label>
-        <locationX>747</locationX>
-        <locationY>2971</locationY>
+        <locationX>749</locationX>
+        <locationY>3086</locationY>
         <defaultConnector>
             <targetReference>Update_Abstract</targetReference>
         </defaultConnector>
@@ -1208,6 +1274,20 @@
     </formulas>
     <interviewLabel>Abstract Submission {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Abstract Submission</label>
+    <loops>
+        <name>Loop_Authors</name>
+        <label>Loop Authors</label>
+        <locationX>690</locationX>
+        <locationY>2560</locationY>
+        <collectionReference>AbstractAuthors</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Get_Author_Details</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Update_Author_Details</targetReference>
+        </noMoreValuesConnector>
+    </loops>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -1230,23 +1310,89 @@
     <recordCreates>
         <name>CreateAbstract</name>
         <label>CreateAbstract</label>
-        <locationX>474</locationX>
-        <locationY>1155</locationY>
+        <locationX>503</locationX>
+        <locationY>1144</locationY>
         <connector>
             <targetReference>AssignStage20</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Enable_Word_Count_Error</targetReference>
+        </faultConnector>
         <inputReference>AbstractRecordVariable</inputReference>
     </recordCreates>
     <recordCreates>
         <name>CreateJunctions</name>
         <label>CreateJunctions</label>
-        <locationX>487</locationX>
-        <locationY>2698</locationY>
+        <locationX>574</locationX>
+        <locationY>2563</locationY>
         <connector>
-            <targetReference>Fill_Abstract_Screen_0</targetReference>
+            <targetReference>Loop_Authors</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Enable_Select_Author_Error</targetReference>
+        </faultConnector>
         <inputReference>AbstractAuthors</inputReference>
     </recordCreates>
+    <recordLookups>
+        <name>Get_Author_Details</name>
+        <label>Get Author Details</label>
+        <locationX>842</locationX>
+        <locationY>2552</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Assign_List_of_Authors</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Enable_Select_Author_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Loop_Authors.Abstract_Author__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Contact</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>FirstName</queriedFields>
+        <queriedFields>LastName</queriedFields>
+        <queriedFields>Official_Department_Name__c</queriedFields>
+        <queriedFields>MailingCountry</queriedFields>
+        <queriedFields>MailingCity</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Presenter_Details</name>
+        <label>Get Presenter Details</label>
+        <locationX>549</locationX>
+        <locationY>1968</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Assign_Presenter</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Enable_select_Presenter_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>selectedRecordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Contact</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>FirstName</queriedFields>
+        <queriedFields>LastName</queriedFields>
+        <queriedFields>Official_Department_Name__c</queriedFields>
+        <queriedFields>MailingCity</queriedFields>
+        <queriedFields>MailingCountry</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <recordLookups>
         <name>GetEvent</name>
         <label>GetEvent</label>
@@ -1297,8 +1443,8 @@
     <recordUpdates>
         <name>SubmitAbstract</name>
         <label>SubmitAbstract</label>
-        <locationX>438</locationX>
-        <locationY>3905</locationY>
+        <locationX>419</locationX>
+        <locationY>4018</locationY>
         <connector>
             <targetReference>SubmissionSuccessScreen</targetReference>
         </connector>
@@ -1321,8 +1467,8 @@
     <recordUpdates>
         <name>Update_Abstract</name>
         <label>Update Abstract</label>
-        <locationX>623</locationX>
-        <locationY>3074</locationY>
+        <locationX>605</locationX>
+        <locationY>3148</locationY>
         <connector>
             <targetReference>Check_Affirmations_Screen</targetReference>
         </connector>
@@ -1331,11 +1477,14 @@
     <recordUpdates>
         <name>Update_Abstract_with_Presenter_0</name>
         <label>Update Abstract with Presenter</label>
-        <locationX>484</locationX>
-        <locationY>2017</locationY>
+        <locationX>799</locationX>
+        <locationY>1968</locationY>
         <connector>
             <targetReference>AssignStage40</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Add_Presenter_Screen</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -1350,6 +1499,39 @@
                 <elementReference>selectedRecordId</elementReference>
             </value>
         </inputAssignments>
+        <inputAssignments>
+            <field>Author_Details__c</field>
+            <value>
+                <elementReference>ListAuthors</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Abstract__c</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Author_Details</name>
+        <label>Update Author Details</label>
+        <locationX>588</locationX>
+        <locationY>2760</locationY>
+        <connector>
+            <targetReference>Fill_Abstract_Screen_0</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Enable_Select_Author_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>AbstractRecordVariable.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Author_Details__c</field>
+            <value>
+                <elementReference>ListAuthors</elementReference>
+            </value>
+        </inputAssignments>
         <object>Abstract__c</object>
     </recordUpdates>
     <recordUpdates>
@@ -1360,6 +1542,9 @@
         <connector>
             <targetReference>AssignStage30</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Enable_Files_Error_Message</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -1446,8 +1631,8 @@
     <screens>
         <name>Add_Authors_Screen</name>
         <label>Add Authors Screen</label>
-        <locationX>473</locationX>
-        <locationY>2296</locationY>
+        <locationX>477</locationX>
+        <locationY>2231</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1485,7 +1670,7 @@
         </fields>
         <fields>
             <name>AuthorNeededText</name>
-            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;It is required to select an author. If you cannot find one, please create a new author.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;It is required to select an author. If you cannot find one, please create a new author.&lt;/span&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <visibilityRule>
                 <conditionLogic>and</conditionLogic>
@@ -1575,7 +1760,7 @@
         </fields>
         <fields>
             <name>SelectPresenterText</name>
-            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0);&quot;&gt;It is required to select a presenter. If you cannot find one, please create a new presenter.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;It is required to select a presenter. If you cannot find one, please create a new presenter.&lt;/span&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <visibilityRule>
                 <conditionLogic>and</conditionLogic>
@@ -1626,8 +1811,8 @@
     <screens>
         <name>Check_Affirmations_Screen</name>
         <label>Check Affirmations Screen</label>
-        <locationX>505</locationX>
-        <locationY>3100</locationY>
+        <locationX>497</locationX>
+        <locationY>3204</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1864,7 +2049,7 @@
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Assign_Type_and_Topic</targetReference>
+            <targetReference>AssignAbstract</targetReference>
         </connector>
         <fields>
             <name>ProgressFillAbstract</name>
@@ -2052,8 +2237,8 @@
         <name>Fill_Abstract_Screen_0</name>
         <label>Review Abstract Screen</label>
         <locationX>479</locationX>
-        <locationY>2826</locationY>
-        <allowBack>true</allowBack>
+        <locationY>3019</locationY>
+        <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
@@ -2254,8 +2439,8 @@
     <screens>
         <name>Review_Abstract</name>
         <label>Review Abstract</label>
-        <locationX>388</locationX>
-        <locationY>2950</locationY>
+        <locationX>342</locationX>
+        <locationY>2812</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2363,8 +2548,8 @@
     <screens>
         <name>Review_Files_Screen</name>
         <label>Review Files Screen</label>
-        <locationX>584</locationX>
-        <locationY>1613</locationY>
+        <locationX>653</locationX>
+        <locationY>1491</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2595,8 +2780,8 @@
     <screens>
         <name>SubmissionSuccessScreen</name>
         <label>SubmissionSuccessScreen</label>
-        <locationX>607</locationX>
-        <locationY>3905</locationY>
+        <locationX>606</locationX>
+        <locationY>4017</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2655,8 +2840,8 @@
     <screens>
         <name>Submit_Screen</name>
         <label>Submit Screen</label>
-        <locationX>501</locationX>
-        <locationY>3568</locationY>
+        <locationX>502</locationX>
+        <locationY>3677</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -3035,7 +3220,17 @@
             <targetReference>Select_Event_Screen</targetReference>
         </connector>
     </start>
-    <status>Active</status>
+    <status>Draft</status>
+    <textTemplates>
+        <name>AuthorDetails</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;ul&gt;&lt;li&gt;{!Get_Author_Details.FirstName} {!Get_Author_Details.LastName}, {!Get_Author_Details.Official_Department_Name__c}, {!Get_Author_Details.MailingCity}, {!Get_Author_Details.MailingCountry}&lt;/li&gt;&lt;/ul&gt;</text>
+    </textTemplates>
+    <textTemplates>
+        <name>PresenterDetails</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;ul&gt;&lt;li&gt;&lt;u&gt;Presenter&lt;/u&gt;: {!Get_Presenter_Details.FirstName} {!Get_Presenter_Details.LastName}, {!Get_Presenter_Details.Official_Department_Name__c}, {!Get_Presenter_Details.MailingCity}, {!Get_Presenter_Details.MailingCountry}&lt;/li&gt;&lt;/ul&gt;</text>
+    </textTemplates>
     <variables>
         <name>AbstractAuthor</name>
         <dataType>SObject</dataType>
@@ -3108,24 +3303,6 @@
         <isOutput>true</isOutput>
     </variables>
     <variables>
-        <name>DisplayWordCount</name>
-        <dataType>Number</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <scale>0</scale>
-        <value>
-            <elementReference>TotalBodyWordCount</elementReference>
-        </value>
-    </variables>
-    <variables>
-        <name>EmptyArray</name>
-        <dataType>String</dataType>
-        <isCollection>true</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
         <name>FilesErrorMessage</name>
         <dataType>Boolean</dataType>
         <isCollection>false</isCollection>
@@ -3144,6 +3321,13 @@
         <value>
             <booleanValue>false</booleanValue>
         </value>
+    </variables>
+    <variables>
+        <name>ListAuthors</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
     </variables>
     <variables>
         <name>NewAuthorID</name>

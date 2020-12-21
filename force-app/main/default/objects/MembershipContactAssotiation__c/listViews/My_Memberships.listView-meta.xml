@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>My_Memberships</fullName>
+    <columns>Membership__c</columns>
+    <columns>IsActive__c</columns>
+    <columns>Expiration_date__c</columns>
+    <columns>Renewal_Application_Form__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Expiration_date__c</field>
+        <operation>greaterThan</operation>
+        <value>1/1/2018 12:00 AM</value>
+    </filters>
+    <label>My Memberships</label>
+</ListView>

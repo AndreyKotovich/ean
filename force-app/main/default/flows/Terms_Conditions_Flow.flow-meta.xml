@@ -1226,7 +1226,7 @@
             <targetReference>Get_Terms_Conditions_Settings</targetReference>
         </connector>
     </start>
-    <status>Obsolete</status>
+    <status>Active</status>
     <variables>
         <name>LoginFlow_UserId</name>
         <dataType>String</dataType>

@@ -2,6 +2,7 @@
 <RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Hostess_Badge</fullName>
     <active>true</active>
+    <compactLayoutAssignment>Community_Badge_Layout</compactLayoutAssignment>
     <description>Firstname Lastname City, Country</description>
     <label>Hostess Badge</label>
     <picklistValues>

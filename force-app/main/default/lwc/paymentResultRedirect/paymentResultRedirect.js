@@ -9,7 +9,6 @@ export default class PaymentResultRedirect extends NavigationMixin(LightningElem
     @track errorMessage = '';
 
     connectedCallback() {
-        //console.log('window.location', window.location);
         let urlParams = new URL(window.location);
         let payPalResponse = urlParams.searchParams.get("eppresponse");
         let io = urlParams.searchParams.get("oi");

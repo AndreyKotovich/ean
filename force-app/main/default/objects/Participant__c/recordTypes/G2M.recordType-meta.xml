@@ -36,10 +36,6 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>Group_Participant</fullName>
-            <default>false</default>
-        </values>
-        <values>
             <fullName>Guest</fullName>
             <default>false</default>
         </values>

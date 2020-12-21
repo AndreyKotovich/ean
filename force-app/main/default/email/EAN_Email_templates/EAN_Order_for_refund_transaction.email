@@ -2,7 +2,7 @@
     <messaging:htmlEmailBody >
         <html>
             <body>
-                <p style="margin: 0px; font-size: 11pt; padding:5px 0;">Dear {!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.LastName},</p>
+            <p style="margin: 0px; font-size: 11pt; padding:5px 0;">Dear {!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.LastName},</p>
                 <p style="margin: 0px; font-size: 11pt; padding:5px 0;">We have received your change request for the {!relatedTo.Event_custom__r.Event_Number__c}{!relatedTo.Event_custom__r.Congress_Postfix__c} congress of the {!relatedTo.Event_custom__r.Marketing_Name__c}. Attached you will find your credit note for your congress registration.</p>
                 <p style="margin: 0px; font-size: 11pt; padding:5px 0;">Please note that EAN charges a €50 processing fee (excluding {!relatedTo.Event_custom__r.VAT_Amount__c}% VAT) for any change requests made in the registration process.</p>
                 <p style="margin: 0px; font-size: 11pt; padding:5px 0;">If you have any questions regarding registration, please contact us at registration@ean.org.</p>
@@ -20,83 +20,78 @@
         </html>
     </messaging:htmlEmailBody>
         <messaging:attachment renderAs="PDF" filename="Credit Note.pdf">
-            <html>
-                <head>
-                    <style type="text/css" media="print">
-                        @page {
-                            @bottom-center {
-                                content: element(footer);
-                            }
-                            margin-bottom: 3cm;
-                        }
-                        div.footer {
-                            position: running(footer);
-                            text-align: center;
-                            font-size: 9pt
-                        }
-                    </style>
-                </head>
-            <body>
+        <html>
+        <head>
+            <style type="text/css" media="print">
+                @page {
+                    @bottom-center {
+                        content: element(footer);
+                    }
+                    margin-bottom: 2cm;
+                }
+                div.footer {
+                    position: running(footer);
+                    text-align: center;
+                    font-size: 9pt
+                }
+            </style>
+        </head>
+        <body>
 
-                <div class="footer">
-                    <div>
-                        <center>
-                            <img src = "{!$Resource.EAN_BANNER_EC21}" width="725px" align="center"/>
-                        </center>
-                    </div>
-                </div>
-
-                <div style="width: 725px;">
-                    <div style="margin-top: 20px; float: left; width: 475px;">
-                        <div>
-                            <p style="margin: 0px; font-size: 11pt;">{!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.FirstName} {!relatedTo.Contact__r.LastName}<br />
-                            Department: {!relatedTo.Contact__r.Department_Name__c}<br />
-                            Street: {!relatedTo.Contact__r.Work_Street__c}<br />
-                            ZIP City: {!relatedTo.Contact__r.Work_Zip_Postal_Code__c} {!relatedTo.Contact__r.Work_City__c}<br />
-                            Country: {!relatedTo.Contact__r.Work_Country__c}<br />
-                            VAT Nr: {!relatedTo.Contact__r.VAT_Number__c}</p>
-                        </div>
-                        
-                        <div style="margin: 50px;">
-                        </div>
-                        
-                        <div style = "text-align: right">
-                            <p style="margin: 0px; font-size: 9pt;">
-                                <apex:outputText value="{0, date, d MMMM yyyy}">
-                                    <apex:param value="{!relatedTo.CreatedDate}" /> 
-                                </apex:outputText>
-                            </p>
-                        </div>
-                        
-                        <div style="margin: 50px;">
-                        </div>
-                        
-                        <div>
-                            <p style="margin: 0px; font-size: 11pt;">
-                            {!relatedTo.Event_custom__r.Name} - Congress of the European Academy of Neurology<br/>
-                                <apex:outputText value="{0, date, d MMMM}">
-                                    <apex:param value="{!relatedTo.Event_custom__r.Start_Time__c}" /> 
-                                </apex:outputText>
-                                - 
-                                <apex:outputText value="{0, date, d MMMM yyyy}">
-                                    <apex:param value="{!relatedTo.Event_custom__r.End_Time__c}" /> 
-                                </apex:outputText>
-                            </p>
-                        </div>
-                        <div style="margin: 50px;">
-                        </div>
-                        <div>
-                            <c:RefundInvoiceTable order="{!relatedTo.Order__c}" body="{!relatedTo.JSON_body__c}" />
-                        </div>
-                        
-                        
-                        <div style="margin: 150px;">
-                        </div>
-                    </div>
-                    <div style="width: 250px; float: right;">
-                        <apex:image id="theImage" value="{!$Resource.EAN_Details}" width="250"/>
-                    </div>
-                </div>
+        <div class="footer">
+            <p><b>EAN Registration Management</b><br/>
+                Breite Gasse 4/7, 1070 Vienna, Austria<br/>
+                registration@ean.org, 00431889050325</p>
+        </div>
+            <div>
+                <center>
+                    <img src = "{!$Resource.EAN_BANNER_EC21}" width="720" align="center"/>
+                </center>
+            </div>
+            <div>
+                <p style="margin: 0px; font-size: 11pt;">{!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.FirstName} {!relatedTo.Contact__r.LastName}<br />
+                Department: {!relatedTo.Contact__r.Department_Name__c}<br />
+                Street: {!relatedTo.Contact__r.Work_Street__c}<br />
+                ZIP City: {!relatedTo.Contact__r.Work_Zip_Postal_Code__c} {!relatedTo.Contact__r.Work_City__c}<br />
+                Country: {!relatedTo.Contact__r.Work_Country__c}<br />
+                VAT Nr: {!relatedTo.Contact__r.VAT_Number__c}</p>
+            </div>
+            
+            <div style="margin: 50px;">
+            </div>
+            
+            <div style = "text-align: right">
+                <p style="margin: 0px; font-size: 9pt;">
+                    <apex:outputText value="{0, date, d MMMM yyyy}">
+                        <apex:param value="{!relatedTo.CreatedDate}" /> 
+                    </apex:outputText>
+                </p>
+            </div>
+            
+            <div style="margin: 50px;">
+            </div>
+            
+            <div>
+                <p style="margin: 0px; font-size: 11pt;">
+                {!relatedTo.Event_custom__r.Name} - Congress of the European Academy of Neurology<br/>
+                    <apex:outputText value="{0, date, d MMMM}">
+                        <apex:param value="{!relatedTo.Event_custom__r.Start_Time__c}" /> 
+                    </apex:outputText>
+                     - 
+                    <apex:outputText value="{0, date, d MMMM yyyy}">
+                        <apex:param value="{!relatedTo.Event_custom__r.End_Time__c}" /> 
+                    </apex:outputText>
+                </p>
+            </div>
+            <div style="margin: 50px;">
+            </div>
+            <div>
+                <c:RefundInvoiceTable order="{!relatedTo.Order__c}" body="{!relatedTo.JSON_body__c}" />
+            </div>
+            
+            
+            <div style="margin: 150px;">
+            </div>
             </body>
         </html>
     </messaging:attachment>

@@ -175,7 +175,6 @@
         <searchResultsAdditionalFields>Event__c</searchResultsAdditionalFields>
         <searchResultsAdditionalFields>Session__c</searchResultsAdditionalFields>
         <searchResultsAdditionalFields>CREATEDBY_USER</searchResultsAdditionalFields>
-        <searchResultsCustomButtons>Download_Abstract_Book</searchResultsCustomButtons>
     </searchLayouts>
     <sharingModel>ReadWrite</sharingModel>
     <startsWith>Vowel</startsWith>

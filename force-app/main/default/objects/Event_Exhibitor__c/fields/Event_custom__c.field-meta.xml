@@ -6,7 +6,7 @@
     <referenceTo>Event__c</referenceTo>
     <relationshipLabel>Event Exhibitors</relationshipLabel>
     <relationshipName>Event_Exhibitors1</relationshipName>
-    <relationshipOrder>1</relationshipOrder>
+    <relationshipOrder>0</relationshipOrder>
     <reparentableMasterDetail>false</reparentableMasterDetail>
     <trackTrending>false</trackTrending>
     <type>MasterDetail</type>

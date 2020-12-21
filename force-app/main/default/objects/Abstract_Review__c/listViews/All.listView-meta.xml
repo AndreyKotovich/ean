@@ -3,10 +3,12 @@
     <fullName>All</fullName>
     <columns>NAME</columns>
     <columns>Abstract__c</columns>
+    <columns>Abstract_Title__c</columns>
     <columns>Reviewer__c</columns>
     <columns>Reviewer_Contact__c</columns>
     <columns>Grade__c</columns>
     <columns>Stage__c</columns>
+    <columns>CREATED_DATE</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
 </ListView>

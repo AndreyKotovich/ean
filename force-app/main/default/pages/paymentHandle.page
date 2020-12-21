@@ -586,7 +586,7 @@
                                 item.innerHTML = '"' + order[0]['Name'] + '"';
                             });
                             document.querySelectorAll('.order-amount').forEach(item => {
-                                item.innerHTML = (order[0]['Total_amount__c']).toFixed(2);
+                                item.innerHTML = (order[0]['Total_Amount_Gros__c']).toFixed(2);
                             });
                             document.querySelectorAll('.customer-first-name').forEach(item => {
                                 item.innerHTML = order[0]['Contact__r']['FirstName'];

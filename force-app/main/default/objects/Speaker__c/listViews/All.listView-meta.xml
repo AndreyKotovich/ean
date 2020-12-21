@@ -3,6 +3,8 @@
     <fullName>All</fullName>
     <columns>NAME</columns>
     <columns>Lecture__c</columns>
+    <columns>Eligible_for_Invited_Submission__c</columns>
+    <columns>Eligible_for_Speaker_Ticket__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
 </ListView>

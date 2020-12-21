@@ -6,8 +6,6 @@
     <columns>Membership_Benefits__c</columns>
     <columns>www__c</columns>
     <columns>Hierarchy__c</columns>
-    <columns>contact_hidden__c</columns>
-    <columns>Required_Documents__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
 </ListView>

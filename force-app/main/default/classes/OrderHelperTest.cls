@@ -6,6 +6,7 @@ public with sharing class OrderHelperTest {
         MailingCity = 'TestCity', MailingPostalCode = '11111',
         MailingCountry = 'Germany');
         insert c;
+		System.debug('c ' + c );
         Id congressEventRT = Schema.SObjectType.Event__c.getRecordTypeInfosByDeveloperName().get('Congress').getRecordTypeId();
         Event__c event = new Event__c(Name = 'Event1', RecordTypeId = congressEventRT, 
             Start_Time__c = System.now().addDays(10), End_Time__c = System.now().addDays(20), Status__c = 'Scheduled');
@@ -42,28 +43,8 @@ public with sharing class OrderHelperTest {
                 }
             }
         );
+        
         System.assertEquals(1, ords.size());
-        List<Order__c> secondAttemptOrds = OrderHelper.createNewOrder(
-            new Map<String,Object> {
-                'participantsPrice' => new List<Map<String,Object>> {
-                    new Map<String,Object> {
-                        'participant' => p,
-                        'price' => 50
-                    }
-                },
-                'sessionParticipantPrice' => new Map<String,Object> {
-                    sessionParticipation.Id => new Map<String,Object> {
-                        'id' => session.Id, 
-                        'price' => 5
-                    }
-                },
-                'generalData' =>  new Map<String,Object> {
-                    'contactId' => c.Id,
-                	'eventId' => event.Id
-                }
-            }
-        );
-        System.assertEquals(2, secondAttemptOrds.size());
         
         List<Order__c> orders = [
         	SELECT 
@@ -117,10 +98,6 @@ public with sharing class OrderHelperTest {
         System.assertEquals(1, os.size());
         System.assertEquals(0, os[0].Paid_Amount__c);
         System.assertEquals(50, os[0].Total_amount__c);
-
-        Map<String, Object> result = OrderHelper.getCancellationSettings(order.Id);
-        System.assert(result.containsKey('displayContactColumn'));
-        System.assert(Boolean.valueOf(result.get('displayContactColumn')) == false);
 
     }
 

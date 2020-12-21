@@ -3,7 +3,7 @@
     <fullName>Congress_Postfix__c</fullName>
     <defaultValue>(&quot;th&quot;)</defaultValue>
     <externalId>false</externalId>
-    <label>Congress Postfix</label>
+    <label>Event Postfix</label>
     <length>255</length>
     <required>false</required>
     <trackTrending>false</trackTrending>

@@ -83,10 +83,7 @@ public with sharing class EAN_EmailController {
         for (SObject objectItem : objects) {
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
             if (!templates.isEmpty()) {
-                System.debug('___________');
-                System.debug('111Number of Queries used in this apex code so far: ' + Limits.getQueries());
                 mail = Messaging.renderStoredEmailTemplate(templates[0].Id, contactId, objectItem.Id);
-                System.debug('222Number of Queries used in this apex code so far: ' + Limits.getQueries());
                 mail.saveAsActivity = false;
             }            
             List<String> toAddresses = new List<String>();

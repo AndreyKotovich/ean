@@ -18,10 +18,6 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>Late Breaking Submission</fullName>
-            <default>false</default>
-        </values>
-        <values>
             <fullName>Public Submission Open</fullName>
             <default>false</default>
         </values>

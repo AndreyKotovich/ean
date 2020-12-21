@@ -38,6 +38,12 @@ public with sharing class RefundInvoiceTableController {
 			}
 		} 
 
+        for (Order_Item__c oi : oIs) {
+			 
+            
+			
+        }
+
         return oIs;
     }
 }

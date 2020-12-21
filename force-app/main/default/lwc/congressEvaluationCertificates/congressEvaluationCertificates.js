@@ -11,7 +11,6 @@ export default class CongressEvaluationCertificates extends LightningElement {
     connectedCallback() {
         getCertificatesLinks()
             .then(result => {
-                console.log('getCertificatesLinks result: ', result);
                 this.spinner = false;
 
                 //Check result on errors

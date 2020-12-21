@@ -40,38 +40,6 @@
     </actionCalls>
     <apiVersion>50.0</apiVersion>
     <assignments>
-        <name>Assign_List_of_Authors</name>
-        <label>Assign_List_of_Authors</label>
-        <locationX>685</locationX>
-        <locationY>1220</locationY>
-        <assignmentItems>
-            <assignToReference>ListAuthors</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>AuthorDetails</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Loop_Authors</targetReference>
-        </connector>
-    </assignments>
-    <assignments>
-        <name>Assign_Presenter</name>
-        <label>Assign_Presenter</label>
-        <locationX>433</locationX>
-        <locationY>813</locationY>
-        <assignmentItems>
-            <assignToReference>ListAuthors</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>PresenterDetails</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Get_Authors</targetReference>
-        </connector>
-    </assignments>
-    <assignments>
         <name>Assign_Users_To_Notify</name>
         <label>Assign Users To Notify</label>
         <locationX>95</locationX>
@@ -91,14 +59,14 @@
         <name>InvitedRecordTypeId</name>
         <dataType>String</dataType>
         <value>
-            <stringValue>0120E000001fKtLQAU</stringValue>
+            <stringValue>0121X000000Ft2OQAS</stringValue>
         </value>
     </constants>
     <constants>
         <name>PublicRecordTypeId</name>
         <dataType>String</dataType>
         <value>
-            <stringValue>0120E000001fKtQQAU</stringValue>
+            <stringValue>0121X000000Ft2PQAS</stringValue>
         </value>
     </constants>
     <decisions>
@@ -107,43 +75,6 @@
         <locationX>269</locationX>
         <locationY>413</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Public_Abstract_is_Submitted</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.RecordTypeId</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <elementReference>PublicRecordTypeId</elementReference>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.Stage__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Submitted</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.Status__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Pending</stringValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.Abstract_Presenter__c</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Clear_Abstract_Details</targetReference>
-            </connector>
-            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
-            <label>Public Abstract is Submitted</label>
-        </rules>
         <rules>
             <name>Public_Abstract_is_Accepted</name>
             <conditionLogic>and</conditionLogic>
@@ -226,20 +157,6 @@
     </formulas>
     <interviewLabel>Update Lectures from Abstracts {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Update Lectures from Abstracts</label>
-    <loops>
-        <name>Loop_Authors</name>
-        <label>Loop Authors</label>
-        <locationX>432</locationX>
-        <locationY>1082</locationY>
-        <collectionReference>Get_Authors</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>Get_Author_Details</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>Insert_Author_Details</targetReference>
-        </noMoreValuesConnector>
-    </loops>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -339,60 +256,10 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
-        <name>Get_Author_Details</name>
-        <label>Get Author Details</label>
-        <locationX>685</locationX>
-        <locationY>1081</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Assign_List_of_Authors</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>Loop_Authors.Abstract_Author__c</elementReference>
-            </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>Contact</object>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>FirstName</queriedFields>
-        <queriedFields>LastName</queriedFields>
-        <queriedFields>Official_Department_Name__c</queriedFields>
-        <queriedFields>MailingCountry</queriedFields>
-        <queriedFields>MailingCity</queriedFields>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordLookups>
-    <recordLookups>
-        <name>Get_Authors</name>
-        <label>Get Authors</label>
-        <locationX>433</locationX>
-        <locationY>951</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Loop_Authors</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Abstract__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
-        <object>Abstract_Author__c</object>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>Abstract_Author__c</queriedFields>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordLookups>
-    <recordLookups>
         <name>Get_Lecture_Presentations</name>
         <label>Get Lecture Presentations</label>
-        <locationX>285</locationX>
-        <locationY>599</locationY>
+        <locationX>390</locationX>
+        <locationY>521</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Update_Lecture</targetReference>
@@ -432,80 +299,11 @@
         <object>CustomNotificationType</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
-    <recordLookups>
-        <name>Get_Presenter_Details</name>
-        <label>Get Presenter Details</label>
-        <locationX>433</locationX>
-        <locationY>677</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Assign_Presenter</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>Get_Abstract.Abstract_Presenter__c</elementReference>
-            </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>Contact</object>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>FirstName</queriedFields>
-        <queriedFields>LastName</queriedFields>
-        <queriedFields>Official_Department_Name__c</queriedFields>
-        <queriedFields>MailingCity</queriedFields>
-        <queriedFields>MailingCountry</queriedFields>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordLookups>
-    <recordUpdates>
-        <name>Clear_Abstract_Details</name>
-        <label>Clear Abstract Details</label>
-        <locationX>433</locationX>
-        <locationY>537</locationY>
-        <connector>
-            <targetReference>Get_Presenter_Details</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </filters>
-        <inputAssignments>
-            <field>Author_Details__c</field>
-        </inputAssignments>
-        <object>Abstract__c</object>
-    </recordUpdates>
-    <recordUpdates>
-        <name>Insert_Author_Details</name>
-        <label>Insert Author Details</label>
-        <locationX>436</locationX>
-        <locationY>1255</locationY>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </filters>
-        <inputAssignments>
-            <field>Author_Details__c</field>
-            <value>
-                <elementReference>ListAuthors</elementReference>
-            </value>
-        </inputAssignments>
-        <object>Abstract__c</object>
-    </recordUpdates>
     <recordUpdates>
         <name>Update_Lecture</name>
         <label>Update Lecture</label>
-        <locationX>285</locationX>
-        <locationY>737</locationY>
+        <locationX>397</locationX>
+        <locationY>665</locationY>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -568,19 +366,9 @@
     </start>
     <status>Active</status>
     <textTemplates>
-        <name>AuthorDetails</name>
-        <isViewedAsPlainText>false</isViewedAsPlainText>
-        <text>&lt;ul&gt;&lt;li&gt;{!Get_Author_Details.FirstName} {!Get_Author_Details.LastName}, {!Get_Author_Details.Official_Department_Name__c}, {!Get_Author_Details.MailingCity}, {!Get_Author_Details.MailingCountry}&lt;/li&gt;&lt;/ul&gt;</text>
-    </textTemplates>
-    <textTemplates>
         <name>NotificationText</name>
         <isViewedAsPlainText>false</isViewedAsPlainText>
         <text>&lt;p&gt;A lecture {!Create_Lecture} was created from this abstract. &lt;/p&gt;</text>
-    </textTemplates>
-    <textTemplates>
-        <name>PresenterDetails</name>
-        <isViewedAsPlainText>false</isViewedAsPlainText>
-        <text>&lt;ul&gt;&lt;li&gt;&lt;u&gt;Presenter&lt;/u&gt;: {!Get_Presenter_Details.FirstName} {!Get_Presenter_Details.LastName}, {!Get_Presenter_Details.Official_Department_Name__c}, {!Get_Presenter_Details.MailingCity}, {!Get_Presenter_Details.MailingCountry}&lt;/li&gt;&lt;/ul&gt;</text>
     </textTemplates>
     <variables>
         <name>ListAuthors</name>

@@ -55,7 +55,7 @@ public without sharing class AbstractBookController {
 			}
 
 			ids = new List<String>(abRew.keySet());
-			if (ids.size() == 0) { return; } 
+			if (ids.size() == 0) { abRew = new Map<String,Abstract_Review__c>(); return; } 
 		}
 
 		if (typeDoc == 'AbstractStaff') {
@@ -73,29 +73,36 @@ public without sharing class AbstractBookController {
 			ids = new List<String>();
 			System.debug('lects ' + lects);
 			for (Lecture__c l : lects) {
-				ids.add(l.Abstract__c);
-				System.debug('l.Presentation_Number__c ' + l.Presentation_Number__c );
-				if (lectMap.containsKey(l.Session__c)) {
-					Map<String,Object> absts = (Map<String,Object>)((Map<String,Object>)lectMap.get(l.Session__c)).get('abstract');
-					absts.put(l.Abstract__c, l.Presentation_Number__c);
-					((Map<String,Object>)lectMap.get(l.Session__c)).put('abstract',absts);
-					List<String> abstSort = (List<String>)((Map<String,Object>)lectMap.get(l.Session__c)).get('abstractSort');
-					abstSort.add(l.Abstract__c);
-					((Map<String,Object>)lectMap.get(l.Session__c)).put('abstractSort',abstSort);
-				} else {
-					lectSorts.add(l.Session__c);
-					lectMap.put(l.Session__c, new Map<String,Object> {
-						'sessionType' => l.Session__r.Session_Type__c,
-						'sessionData' => (l.Session__r.Session_Start__c).format('EEEE, MMMM dd, yyyy'),
-						'sessionTitle' => l.Session__r.Session_Title__c,
-						'abstractSort'=> new List<String> { l.Abstract__c },
-						'abstract' => new Map<String,Object> { l.Abstract__c => l.Presentation_Number__c }
-					});
+				if (l.Session__r.Session_Start__c != null) {
+					ids.add(l.Abstract__c);
+					System.debug('l.Presentation_Number__c ' + l.Presentation_Number__c );
+					if (lectMap.containsKey(l.Session__c)) {
+						Map<String,Object> absts = (Map<String,Object>)((Map<String,Object>)lectMap.get(l.Session__c)).get('abstract');
+						absts.put(l.Abstract__c, !String.isBlank(l.Presentation_Number__c) ? l.Presentation_Number__c : '');
+						((Map<String,Object>)lectMap.get(l.Session__c)).put('abstract',absts);
+						List<String> abstSort = (List<String>)((Map<String,Object>)lectMap.get(l.Session__c)).get('abstractSort');
+						abstSort.add(l.Abstract__c);
+						((Map<String,Object>)lectMap.get(l.Session__c)).put('abstractSort',abstSort);
+					} else {
+						
+							lectSorts.add(l.Session__c);
+							lectMap.put(l.Session__c, new Map<String,Object> {
+								'sessionType' => !String.isBlank(l.Session__r.Session_Type__c) ? l.Session__r.Session_Type__c : '',
+								'sessionData' => (l.Session__r.Session_Start__c).format('EEEE, MMMM dd, yyyy'),
+								'sessionTitle' => !String.isBlank(l.Session__r.Session_Title__c) ? l.Session__r.Session_Title__c : '',
+								'abstractSort'=> new List<String> { l.Abstract__c },
+								'abstract' => new Map<String,Object> { l.Abstract__c => !String.isBlank(l.Presentation_Number__c) ? l.Presentation_Number__c : '' }
+							});
+										
+					}
 				}
 			}
 			System.debug('lects ids' + ids);
 			System.debug('lectMap ' + lectMap);
-			if (ids.size() == 0) { return; } 
+			if (ids.size() == 0) { 
+				
+				return; 
+			} 
 
 		}
 
@@ -189,7 +196,8 @@ public without sharing class AbstractBookController {
 				'authors' => authors,
 				'departments' => departments
 			});
- 
+
+			System.debug('abInfo ' +  abInfo);
 		}
 
 		List<ContentVersion> CDs = [SELECT Id, ContentDocument.Title, ContentDocumentId FROM ContentVersion WHERE ContentDocumentId IN: imgId];

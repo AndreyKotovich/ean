@@ -2,6 +2,7 @@
 <RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Meeting_Only</fullName>
     <active>true</active>
+    <compactLayoutAssignment>Community_Badge_Layout</compactLayoutAssignment>
     <description>Meeting Only: Firstname Lastname City, Country (of Residence)</description>
     <label>Meeting Only</label>
     <picklistValues>

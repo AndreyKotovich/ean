@@ -12,19 +12,19 @@ public without sharing class PaymentHttpRequest {
     }
     @RemoteAction public static String SeamlessURL(String orderId, String cardId, String addressesObject) {
         Map<String, Object> vfdata = new Map<String, Object>();
-        Order__c orderRec = [SELECT Id, Total_amount__c FROM Order__c WHERE Id = :orderId];
+        Order__c orderRec = [SELECT Id, Total_amount__c, Total_Amount_Gros__c FROM Order__c WHERE Id = :orderId];
         Map<String,Object> showPaidForm = (Map<String,Object>)JSON.deserializeUntyped(showPaymentCheck(orderId));
         if (showPaidForm.get('status') == 'SUCCESS') {
             String s = getSeamlessURLBody(cardId, orderId, addressesObject);
             String seamlessUrl = getSeamlessURLHttp(s, orderId);
             vfdata.put('url', seamlessUrl);
-            vfdata.put('price', orderRec.Total_amount__c);
+            vfdata.put('price', orderRec.Total_Amount_Gros__c);
         }
         return JSON.serialize(vfdata);
     }
     @RemoteAction public static String showPaymentCheck(String orderId) {
         String resultString = 'SUCCESS';
-        List<Order__c> order = [SELECT Id, Total_amount__c, Status__c, Event_Registration_Sub_Group__c FROM Order__c WHERE Id = :orderId];
+        List<Order__c> order = [SELECT Id, Total_amount__c, Total_Amount_Gros__c, Status__c, Event_Registration_Sub_Group__c FROM Order__c WHERE Id = :orderId];
         List<Transaction__c> transactions = [SELECT Id, Status__c, Amount__c FROM Transaction__c WHERE Order_Custom__c = :orderId];
         List<Payment_Credentials__mdt> creds = [SELECT Id, Merchant_Account_Id__c, Merchant_PayPal_Account_Id__c, DeveloperName,
             Named_Credentials__c, Payment_Info_PayPal_Named_Credentials__c, Named_Credentials_PayPal__c FROM Payment_Credentials__mdt WHERE Active__c = true];
@@ -41,8 +41,8 @@ public without sharing class PaymentHttpRequest {
                     resultString = 'ERROR';
                 }
             }
-            if (order[0].Total_amount__c == paidAmount) {
-                if(order[0].Total_amount__c == 0){
+            if (order[0].Total_Amount_Gros__c == paidAmount) {
+                if(order[0].Total_Amount_Gros__c == 0){
                     resultString = 'ZERO_PAYMENT';
                 }else{
                     resultString = 'PAID';
@@ -102,7 +102,7 @@ public without sharing class PaymentHttpRequest {
     }
     public static String getSeamlessURLBody(String cardId, String orderId, String addressesObject) {
         List<Card__c> card = [SELECT Id, Token_Id__c FROM Card__c WHERE Id = :cardId];
-        List<Order__c> order = [SELECT Id, Total_amount__c, Name, Contact__r.FirstName, Contact__r.LastName FROM Order__c WHERE Id = :orderId];
+        List<Order__c> order = [SELECT Id, Total_amount__c, Total_Amount_Gros__c, VAT_Amount__c, Name, Contact__r.FirstName, Contact__r.LastName FROM Order__c WHERE Id = :orderId];
         List<Order_Item__c> orderItem = [
             SELECT Id, Amount__c, Name__c, Product__c, Membership__c, Membership__r.Name, Product__r.Name, Name, Quantity__c, Total_amount__c,
                 Event_Participation__r.Event_Ticket__r.Ticket__c, Event_Participation__r.Event_Ticket__r.Ticket__r.Name, Session_Participation__r.Session__r.Name
@@ -118,6 +118,16 @@ public without sharing class PaymentHttpRequest {
                     'article-number' => oi.Name,
                     'name' => !String.isBlank(oi.Name__c) ? oi.Name__c : 'undefined name',
                     'quantity' => oi.Quantity__c
+            });
+        }
+
+        if(order[0].VAT_Amount__c != null && order[0].VAT_Amount__c >= 0){
+            m.add(new Map<String, Object>{
+                    'amount' => new Map<String, Object>{
+                            'currency' => 'EUR', 'value' => order[0].VAT_Amount__c
+                    },
+                    'name' => 'Tax',
+                    'quantity' => 1
             });
         }
 
@@ -142,7 +152,7 @@ public without sharing class PaymentHttpRequest {
         gen.writeFieldName('requested-amount');
         gen.writeStartObject();
         gen.writeStringField('currency', 'EUR');
-        gen.writeNumberField('value', order[0].Total_amount__c);
+        gen.writeNumberField('value', order[0].Total_Amount_Gros__c);
         gen.writeEndObject();
         gen.writeFieldName('payment-methods');
         gen.writeStartObject();
@@ -228,7 +238,7 @@ public without sharing class PaymentHttpRequest {
     }
 
     @RemoteAction public static String getOrderItems(String orderId) {
-        List<Order__c> order = [SELECT Id, Total_amount__c, VAT_Amount__c, Name FROM Order__c WHERE Id = :orderId];
+        List<Order__c> order = [SELECT Id, Total_amount__c, Total_Amount_Gros__c, VAT_Amount__c, Name FROM Order__c WHERE Id = :orderId];
         List<Order_Item__c> orderItems = [
             SELECT Id, Amount__c, Name__c, Product__c, Membership__c, Membership__r.Name, Product__r.Name, Name, Quantity__c, Total_amount__c,
                 Event_Participation__r.Event_Ticket__r.Ticket__c, Event_Participation__r.Event_Ticket__r.Ticket__r.Name, Session_Participation__r.Session__r.Name
@@ -247,7 +257,7 @@ public without sharing class PaymentHttpRequest {
         }
         System.debug('orderItemsMap:: ' + orderItemsMap);
         Map<String, Object> resultMap = new Map<String, Object>();
-        resultMap.put('total-amount', order[0].Total_amount__c);
+        resultMap.put('total-amount', order[0].Total_Amount_Gros__c);
         resultMap.put('VAT-amount-total', order[0].VAT_Amount__c);
         resultMap.put('name', order[0].Name);
         resultMap.put('order-items', orderItemsMap);
@@ -390,7 +400,7 @@ public without sharing class PaymentHttpRequest {
         String communityOriginURL = getCommunityOriginUrl('Community');
         String communityURL = getCommunityHomeUrl();
         List<Order__c> order = [
-                SELECT Id, Total_amount__c, Name, Contact__r.FirstName, Contact__r.LastName
+                SELECT Id, Total_amount__c, Total_Amount_Gros__c, Name, Contact__r.FirstName, Contact__r.LastName, VAT_Amount__c
                 FROM Order__c
                 WHERE Id = :orderId
         ];
@@ -414,6 +424,16 @@ public without sharing class PaymentHttpRequest {
             });
         }
 
+        if(order[0].VAT_Amount__c != null && order[0].VAT_Amount__c >= 0){
+            orderItems.add(new Map<String, Object>{
+                    'amount' => new Map<String, Object>{
+                            'currency' => 'EUR', 'value' => order[0].VAT_Amount__c
+                    },
+                    'name' => 'Tax',
+                    'quantity' => 1
+            });
+        }
+
         List<Map<String, String>> addresses = parseAddresses(addressesObject);
         Map<String, String> shippingAddress = addresses[0];
         Map<String, String> billingAddress = addresses[1];
@@ -434,7 +454,7 @@ public without sharing class PaymentHttpRequest {
         gen.writeFieldName('requested-amount');
         gen.writeStartObject();
         gen.writeStringField('currency', 'EUR');
-        gen.writeNumberField('value', order[0].Total_amount__c);
+        gen.writeNumberField('value', order[0].Total_Amount_Gros__c);
         gen.writeEndObject();
         gen.writeFieldName('payment-methods');
         gen.writeStartObject();
@@ -510,7 +530,7 @@ public without sharing class PaymentHttpRequest {
         Map<String, Object> result = new Map<String, Object>();
         List<Order__c> order = [
             SELECT Id, Name, Contact__c, Contact__r.Email, Contact__r.FirstName, Contact__r.LastName, Invoice_Number__c,
-                Total_amount__c, Payment_Method__c, CreatedDate, Type__c
+                Total_amount__c, Payment_Method__c, CreatedDate, Type__c, Total_Amount_Gros__c
             FROM Order__c
             WHERE Id = :orderId
         ];
@@ -520,7 +540,7 @@ public without sharing class PaymentHttpRequest {
         result.put('nextYearString', nextYearString);
         result.put('orderType', orderType);
 
-        if (orderType == 'Renewal' && insertEmailActivityForRenewal && !order.isEmpty() && order[0].Contact__c != null && order[0].Total_amount__c != 0) {
+        if (orderType == 'Renewal' && insertEmailActivityForRenewal && !order.isEmpty() && order[0].Contact__c != null && order[0].Total_Amount_Gros__c != 0) {
             List<Email_Activity__c> existingEmailActivity = [SELECT Id FROM Email_Activity__c WHERE Contact__c =:order[0].Contact__c AND Order__c =:order[0].Id LIMIT 1];
             if (!existingEmailActivity.isEmpty()) return result;
             insert new Email_Activity__c(
@@ -651,7 +671,7 @@ public without sharing class PaymentHttpRequest {
 
             defaultPage.getParameters().put('orderName', order[0].Name);
             defaultPage.getParameters().put('orderInvoiceNumber', order[0].Invoice_Number__c);
-            defaultPage.getParameters().put('orderAmount', String.valueOf(order[0].Total_amount__c));
+            defaultPage.getParameters().put('orderAmount', String.valueOf(order[0].Total_Amount_Gros__c));
             defaultPage.getParameters().put('firstName', String.valueOf(order[0].Contact__r.FirstName));
             defaultPage.getParameters().put('lastName', String.valueOf(order[0].Contact__r.LastName));
             String orderDeadline= order[0].CreatedDate.addDays(7).format('MM.dd.yyyy');

@@ -35,7 +35,7 @@ public class InvoicePageController {
         vatNumber = '';
 
         order = [
-                SELECT Id, Total_amount__c, Contact__r.Name, Contact__r.Title, Contact__r.Selected_Mailing_Address__c, Contact__r.VAT_Number__c,
+                SELECT Id, Total_amount__c, Total_Amount_Gros__c, Contact__r.Name, Contact__r.Title, Contact__r.Selected_Mailing_Address__c, Contact__r.VAT_Number__c,
                     Payment_Date__c, Name, Invoice_Number__c, Billing_address__c, Type__c,
                     (SELECT Id, Total_amount__c, Quantity__c, Product__c, Membership__c ,Membership__r.Name, Product__r.Name FROM Order_Items__r ORDER BY CreatedDate DESC)
                 FROM Order__c

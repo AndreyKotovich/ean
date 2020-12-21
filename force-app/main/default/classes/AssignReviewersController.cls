@@ -80,10 +80,8 @@ public with sharing class AssignReviewersController {
             excludedReviewerContacts.add(author.Abstract_Author__c);
         }
 
-        System.debug('excludedReviewerContacts: ' + excludedReviewerContacts);
-
         String queryString = 
-            'SELECT Id, Name, Remaining_Capacity__c, Assigned_Abstracts__c, Event__c, Topics__c, Contact__c, Contact__r.Email, Contact__r.Name ' + 
+            'SELECT Id, Name, Remaining_Capacity__c, Assigned_Abstracts__c, Event__c, Topics__c, Contact__c, Contact__r.Email, Contact__r.Name,  Contact__r.Membership_Status__c ' + 
             'FROM Reviewer__c ' + 
             'WHERE ' +
                 'Id NOT IN (SELECT Reviewer__c FROM Abstract_Review__c WHERE Abstract__c = :abstractId) ' +
@@ -92,7 +90,6 @@ public with sharing class AssignReviewersController {
                 'AND Contact__c NOT IN :excludedReviewerContacts ' +
                 'AND Status__c = \'Accepted\' ';
 
-        System.debug('abstractItem.Abstract_Topic__c ' + abstractItem.Abstract_Topic__c);
         if(abstractItem.Abstract_Topic__c != null){
             String[] topicsArray = abstractItem.Abstract_Topic__c.split(';');
             queryString += 'AND Topics__c INCLUDES(';
@@ -104,7 +101,6 @@ public with sharing class AssignReviewersController {
         }else{
             return reviewers;
         }
-        System.debug('queryString ' + queryString);
         reviewers = (List<Reviewer__c>)Database.query(queryString);
         return reviewers;
     }

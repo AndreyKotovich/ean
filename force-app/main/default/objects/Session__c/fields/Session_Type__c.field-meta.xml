@@ -138,6 +138,18 @@
                 <label>Hands-on-course</label>
             </value>
             <value>
+                <fullName>Networking</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Networking</label>
+            </value>
+            <value>
+                <fullName>Oral Session</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Oral Session</label>
+            </value>
+            <value>
                 <fullName>Plenary Symposium</fullName>
                 <default>false</default>
                 <isActive>false</isActive>
@@ -154,6 +166,12 @@
                 <default>false</default>
                 <isActive>false</isActive>
                 <label>Satellite Symposium</label>
+            </value>
+            <value>
+                <fullName>Symposium</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Symposium</label>
             </value>
         </valueSetDefinition>
     </valueSet>

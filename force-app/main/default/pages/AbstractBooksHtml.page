@@ -242,13 +242,13 @@
                 <h1>{!lectMap[lc].sessionType}</h1>
                 {!lectMap[lc].sessionData} 
                 <h2>{!lectMap[lc].sessionTitle}</h2>
-                <apex:repeat value="{!lectMap[lc].abstractSort}" var="l">
+                <apex:repeat value="{!lectMap[lc]['abstractSort']}" var="l">
                     <!-- <div class="page-break"> -->
                         <br/>
                         <h3>{!lectMap[lc].abstract[l]}</h3>
                         <h4>{!abstractMap[l].Title__c}</h4>
     
-                        <apex:repeat value="{!abInfo[l].authors}" var="author">
+                        <apex:repeat value="{!abInfo[l]['authors']}" var="author">
                             <span style="display: {!IF(author['isPresenter']==true,'','none') }">
                                 <u>{!author['name']}</u>
                                 <sup>

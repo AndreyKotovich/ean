@@ -181,7 +181,7 @@ public with sharing class membershipApplicationController {
     }
     @AuraEnabled public static Map<String, Object> getOrderWithItems(String orderId){
         Map<String, Object> mapResult = new Map<String, Object>();
-        List<Order__c> order = [SELECT Id, Status__c, Total_amount__c FROM Order__c WHERE Id = :orderId];
+        List<Order__c> order = [SELECT Id, Status__c, Total_amount__c, Total_Amount_Gros__c FROM Order__c WHERE Id = :orderId];
         if(!order.isEmpty()){
             mapResult.put('order', order[0]);
             List<Order_Item__c> orderItems = [SELECT Id, Membership__c, Product__c, Amount__c, Quantity__c FROM Order_Item__c WHERE Order_Custom__c = :order[0].Id];

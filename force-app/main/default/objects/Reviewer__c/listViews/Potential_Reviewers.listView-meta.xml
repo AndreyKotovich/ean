@@ -4,9 +4,10 @@
     <columns>NAME</columns>
     <columns>Contact__c</columns>
     <columns>Event__c</columns>
-    <columns>Review_Capacity__c</columns>
     <columns>Topics__c</columns>
     <columns>Status__c</columns>
+    <columns>Remaining_Capacity__c</columns>
+    <columns>Assigned_Abstracts__c</columns>
     <filterScope>Everything</filterScope>
     <filters>
         <field>Review_Capacity__c</field>
@@ -15,6 +16,16 @@
     <filters>
         <field>Topics__c</field>
         <operation>notEqual</operation>
+    </filters>
+    <filters>
+        <field>Status__c</field>
+        <operation>equals</operation>
+        <value>Accepted</value>
+    </filters>
+    <filters>
+        <field>Topics__c</field>
+        <operation>includes</operation>
+        <value>Pain</value>
     </filters>
     <label>Potential Reviewers</label>
 </ListView>

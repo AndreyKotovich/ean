@@ -8,7 +8,6 @@
     <columns>Total_amount__c</columns>
     <columns>Paid_Amount__c</columns>
     <columns>Purchase_Type__c</columns>
-    <columns>Event_custom__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
 </ListView>

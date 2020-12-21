@@ -432,7 +432,6 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                         generalData.contactId = this.userInfo.contact.Id;
                         generalData.discountInfo = this.discountInfo;
                         generalData.vatAmount = this.vatAmount;
-                        generalData.vatRate = this.ean_event.VAT_Amount__c;
                         generalData.selectedDates = this.selectedDates;
                         generalData.industryNews = this.selectedServices.industryNews;
                         if(!!this.vatNumber){
@@ -580,7 +579,6 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             generalData.contactId = this.userInfo.contact.Id;
             generalData.discountInfo = this.discountInfo;
             generalData.vatAmount = this.vatAmount;
-            generalData.vatRate = this.ean_event.VAT_Amount__c;
             generalData.selectedDates = this.selectedDates;
             generalData.industryNews = this.selectedServices.industryNews;
             if(!!this.vatNumber){

@@ -8,7 +8,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/Group_registration_cancellation</template>
     </alerts>
@@ -20,7 +20,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/Solo_registration_cancellation</template>
     </alerts>
@@ -32,7 +32,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/EAN_Registr_for_participant_in_subGroup</template>
     </alerts>
@@ -44,7 +44,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/EAN_RegisrForUndefinedParticipInSubGr</template>
     </alerts>
@@ -56,7 +56,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/EAN_GroupRegistrationSuccessSameOrderIt</template>
     </alerts>
@@ -68,7 +68,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/EAN_GroupEventRegistrationOrderPaidBT</template>
     </alerts>
@@ -80,7 +80,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/EAN_Group_participants_added</template>
     </alerts>
@@ -92,7 +92,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/EAN_GroupParticipantsAddedSameOrderIt</template>
     </alerts>
@@ -104,7 +104,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/EAN_OrderForEventParticipPaidCardPP</template>
     </alerts>
@@ -116,7 +116,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/EAN_Order_for_refund_transaction</template>
     </alerts>
@@ -128,7 +128,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/EAN_QR_code_for_participant</template>
     </alerts>
@@ -140,7 +140,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/EAN_QR_code_for_participant_reminder</template>
     </alerts>
@@ -152,7 +152,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/EAN_Reminder_for_opened_orders</template>
     </alerts>
@@ -164,7 +164,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/EAN_Solo_event_registration_BT</template>
     </alerts>
@@ -176,7 +176,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/EAN_SoloEventRegistrationOrderPaidBT</template>
     </alerts>
@@ -188,7 +188,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/EAN_Solo_regisration_success</template>
     </alerts>
@@ -200,7 +200,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/EANGroupEventRegOrderPaidBTSameOrderIt</template>
     </alerts>
@@ -212,7 +212,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/Group_registration_transfer</template>
     </alerts>
@@ -224,7 +224,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/EAN_Group_registration_success</template>
     </alerts>
@@ -248,7 +248,7 @@
             <field>Send_To_Email__c</field>
             <type>email</type>
         </recipients>
-        <senderAddress>noreply@ean.org</senderAddress>
+        <senderAddress>registration@ean.org</senderAddress>
         <senderType>OrgWideEmailAddress</senderType>
         <template>EAN_Email_templates/Solo_registration_transfer</template>
     </alerts>

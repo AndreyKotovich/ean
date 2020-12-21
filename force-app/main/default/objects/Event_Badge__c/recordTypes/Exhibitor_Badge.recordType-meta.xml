@@ -2,6 +2,7 @@
 <RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Exhibitor_Badge</fullName>
     <active>true</active>
+    <compactLayoutAssignment>Community_Badge_Layout</compactLayoutAssignment>
     <description>(for known Participants of Industry Partners) Firstname Lastname City, Country (Official Address) (one additional badge)  -&gt; requirements are explained in: https://jira.towa-digital.com/browse/EANER-61</description>
     <label>Exhibitor Badge</label>
     <picklistValues>

@@ -32,6 +32,24 @@
                 <default>false</default>
                 <label>Speaker</label>
             </value>
+            <value>
+                <fullName>Persona 1</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Persona 1</label>
+            </value>
+            <value>
+                <fullName>Persona 2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Persona 2</label>
+            </value>
+            <value>
+                <fullName>Persona 3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Persona 3</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
     <visibleLines>4</visibleLines>

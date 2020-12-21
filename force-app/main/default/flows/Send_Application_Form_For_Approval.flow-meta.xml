@@ -116,7 +116,7 @@
         </rules>
     </decisions>
     <description>Send order&apos;s Application (Form) for approval</description>
-    <interviewLabel>Send_Application_Form_For_Approval-2_InterviewLabel</interviewLabel>
+    <interviewLabel>Send_Application_Form_For_Approval-1_InterviewLabel</interviewLabel>
     <label>Send Application (Form) For Approval</label>
     <processMetadataValues>
         <name>ObjectType</name>
@@ -144,7 +144,7 @@
     </processMetadataValues>
     <processType>Workflow</processType>
     <startElementReference>myDecision</startElementReference>
-    <status>Draft</status>
+    <status>Active</status>
     <variables>
         <name>myVariable_current</name>
         <dataType>SObject</dataType>

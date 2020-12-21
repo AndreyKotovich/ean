@@ -33,30 +33,6 @@
         <senderType>OrgWideEmailAddress</senderType>
         <template>Membership_approval_process/Membership_Form_Further_Information_Required</template>
     </alerts>
-    <alerts>
-        <fullName>Send_Membership_Application_Information_Required_Reminder</fullName>
-        <description>Send Membership Application Information Required Reminder</description>
-        <protected>false</protected>
-        <recipients>
-            <field>Contact__c</field>
-            <type>contactLookup</type>
-        </recipients>
-        <senderAddress>membership@ean.org</senderAddress>
-        <senderType>OrgWideEmailAddress</senderType>
-        <template>unfiled$public/Membership_Information_Required_Reminder</template>
-    </alerts>
-    <alerts>
-        <fullName>Send_Membership_Application_Payment_Reminder</fullName>
-        <description>Send Membership Application Payment Reminder</description>
-        <protected>false</protected>
-        <recipients>
-            <field>Contact__c</field>
-            <type>contactLookup</type>
-        </recipients>
-        <senderAddress>membership@ean.org</senderAddress>
-        <senderType>OrgWideEmailAddress</senderType>
-        <template>unfiled$public/Membership_Payment_Reminder</template>
-    </alerts>
     <fieldUpdates>
         <fullName>Approved</fullName>
         <field>Form_Status__c</field>
@@ -117,23 +93,4 @@
         <protected>false</protected>
         <reevaluateOnChange>false</reevaluateOnChange>
     </fieldUpdates>
-    <rules>
-        <fullName>EAN%3A Membership Payment Reminder</fullName>
-        <actions>
-            <name>Send_Membership_Application_Payment_Reminder</name>
-            <type>Alert</type>
-        </actions>
-        <active>true</active>
-        <criteriaItems>
-            <field>Application_form__c.Payment_Reminder_Sent__c</field>
-            <operation>equals</operation>
-            <value>True</value>
-        </criteriaItems>
-        <criteriaItems>
-            <field>Application_form__c.Payment_Status__c</field>
-            <operation>notEqual</operation>
-            <value>Paid</value>
-        </criteriaItems>
-        <triggerType>onCreateOrTriggeringUpdate</triggerType>
-    </rules>
 </Workflow>

@@ -12,7 +12,7 @@
     </targets>
     <targetConfigs>
         <targetConfig targets="lightningCommunity__Default">
-            <property name="recordId" type="String" label="Record ID" default="{!recordId}" description="Should be set to {!recordId}"/>
+            <property name="recordId" type="String" label="Record ID" description="Should be set to {!recordId}"/>
         </targetConfig>
     </targetConfigs>
     <masterLabel>ApprovalComments</masterLabel>

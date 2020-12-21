@@ -10,8 +10,7 @@
     <filters>
         <field>Form_Status__c</field>
         <operation>notEqual</operation>
-        <value>Declined</value>
+        <value>Approved,Declined</value>
     </filters>
     <label>My Open Membership Applications</label>
-    <language>en_US</language>
 </ListView>

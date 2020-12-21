@@ -32,6 +32,11 @@
             </quickActionLayoutItems>
             <quickActionLayoutItems>
                 <emptySpace>false</emptySpace>
+                <field>Challenge_Question__c</field>
+                <uiBehavior>Edit</uiBehavior>
+            </quickActionLayoutItems>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
                 <field>Disclaimer_Text__c</field>
                 <uiBehavior>Readonly</uiBehavior>
             </quickActionLayoutItems>

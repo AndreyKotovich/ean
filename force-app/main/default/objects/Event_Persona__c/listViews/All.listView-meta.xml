@@ -4,8 +4,8 @@
     <columns>NAME</columns>
     <columns>Contact__c</columns>
     <columns>Event_custom__c</columns>
-    <columns>RECORDTYPE</columns>
     <columns>Status__c</columns>
+    <columns>RECORDTYPE</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
 </ListView>

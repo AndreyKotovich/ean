@@ -53,7 +53,8 @@
                 tooltip: 'Click to see object page'}},
             { label: 'Contact Name', fieldName: 'ContactLink', type: 'url', 
                 typeAttributes: {label: { fieldName: 'ContactName' },target: '_blank',
-                tooltip: 'Click to see object page'}},           
+                tooltip: 'Click to see object page'}},
+            { label: 'Membership Status', fieldName: 'Membership_Status', type: 'text' },
             { label: 'Remaining Capacity', fieldName: 'Remaining_Capacity__c', type: 'text' },
             { label: 'Assigned Abstracts', fieldName: 'Assigned_Abstracts__c', type: 'text' }
         ])
@@ -138,6 +139,7 @@
                     let generalData = [];
                     res.forEach(e => {
                         e.ReviewerLink = '/' + e.Id;
+                        e.Membership_Status = e.Contact__r.Membership_Status__c;
                         let el = Object.assign({}, e);
                         el.ContactName = e.Contact__r.Name;
                         el.ContactLink = '/' + e.Contact__c;
