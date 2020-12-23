@@ -26,7 +26,7 @@
         update g;
 
         RecordType groupMemberRecordType = [SELECT Id FROM RecordType WHERE SobjectType = 'GroupChatterGroupAssotiation__c' AND DeveloperName = 'Level_3_Working_Group'];
-        GroupChatterGroupAssotiation__c newManagementMember = new GroupChatterGroupAssotiation__c(Contact__c = con.Id, Group__c= g.Id, RecordTypeId = groupMemberRecordType.Id, Role__c = 'Management Group Member');
+        GroupChatterGroupAssotiation__c newManagementMember = new GroupChatterGroupAssotiation__c(Contact__c = con.Id, Group__c= g.Id, RecordTypeId = groupMemberRecordType.Id, Role__c = SynchronizationGroupMembersHelper.MANAGEMENT_ROLES[0]);
         insert newManagementMember;
         List<CollaborationGroupMember> collMember = [SELECT Id, MemberId, CollaborationGroupId FROM CollaborationGroupMember WHERE MemberId = :u.Id];
         System.assertEquals(collMember.size(), 0);
@@ -76,8 +76,10 @@
 
         g = [SELECT Id, Name, Enable_synchronization__c, Chatter_Group_Id__c FROM Group__c WHERE Id = :g.Id];
         RecordType groupMemberRecordType = [SELECT Id FROM RecordType WHERE SobjectType = 'GroupChatterGroupAssotiation__c' AND DeveloperName = 'Level_3_Working_Group'];
-        GroupChatterGroupAssotiation__c newManagementMember = new GroupChatterGroupAssotiation__c(Contact__c = con.Id, Group__c= g.Id, RecordTypeId = groupMemberRecordType.Id, Role__c = 'Management Group Member');
+        GroupChatterGroupAssotiation__c newManagementMember = new GroupChatterGroupAssotiation__c(Contact__c = con.Id, Group__c= g.Id, RecordTypeId = groupMemberRecordType.Id, Role__c = SynchronizationGroupMembersHelper.MANAGEMENT_ROLES[0]);
         insert newManagementMember;
+        GroupChatterGroupAssotiation__c newChairMember = new GroupChatterGroupAssotiation__c(Contact__c = con.Id, Group__c= g.Id, RecordTypeId = groupMemberRecordType.Id, Role__c = SynchronizationGroupMembersHelper.MANAGEMENT_ROLES[1]);
+        insert newChairMember;
 
         g.Enable_synchronization__c = false;
         g.Enable_management_group__c = false;
@@ -89,11 +91,14 @@
 
         undelete newManagementMember;
 
-        test.startTest();
+        Test.startTest();
         g.Enable_synchronization__c = true;
         g.Enable_management_group__c = true;
         update g;
         delete newManagementMember;
+        collMember = [SELECT Id, MemberId, CollaborationGroupId FROM CollaborationGroupMember WHERE MemberId = :u.Id];
+        System.assertEquals(2, collMember.size());
+        delete newChairMember;
         collMember = [SELECT Id, MemberId, CollaborationGroupId FROM CollaborationGroupMember WHERE MemberId = :u.Id];
         System.assertEquals(0, collMember.size());
 
@@ -112,13 +117,13 @@
         //test groupsMembers have double membership in group
         List<GroupChatterGroupAssotiation__c> newMembers = new List<GroupChatterGroupAssotiation__c>{
                 new GroupChatterGroupAssotiation__c(Contact__c = con.Id, Group__c= g.Id),
-                new GroupChatterGroupAssotiation__c(Contact__c = con.Id, Group__c= g.Id, RecordTypeId = groupMemberRecordType.Id, Role__c = 'Management Group Member')
+                new GroupChatterGroupAssotiation__c(Contact__c = con.Id, Group__c= g.Id, RecordTypeId = groupMemberRecordType.Id, Role__c = SynchronizationGroupMembersHelper.MANAGEMENT_ROLES[0])
         };
         insert newMembers;
         delete newMembers[1];
         collMember = [SELECT Id, MemberId, CollaborationGroupId FROM CollaborationGroupMember WHERE MemberId = :u.Id];
         System.assertEquals(1, collMember.size());
-        test.stopTest();
+        Test.stopTest();
     }
 
     @IsTest public static void updateGroupMembersTest(){
@@ -129,19 +134,19 @@
 
         g = [SELECT Id, Name, Enable_synchronization__c, Chatter_Group_Id__c FROM Group__c WHERE Id = :g.Id];
         RecordType groupMemberRecordType = [SELECT Id FROM RecordType WHERE SobjectType = 'GroupChatterGroupAssotiation__c' AND DeveloperName = 'Level_3_Working_Group'];
-        GroupChatterGroupAssotiation__c newManagementMember = new GroupChatterGroupAssotiation__c(Contact__c = con.Id, Group__c= g.Id, RecordTypeId = groupMemberRecordType.Id, Role__c = 'Management Group Member');
+        GroupChatterGroupAssotiation__c newManagementMember = new GroupChatterGroupAssotiation__c(Contact__c = con.Id, Group__c= g.Id, RecordTypeId = groupMemberRecordType.Id, Role__c = SynchronizationGroupMembersHelper.MANAGEMENT_ROLES[0]);
         insert newManagementMember;
 
         List<CollaborationGroupMember> collMember = [SELECT Id, MemberId, CollaborationGroupId FROM CollaborationGroupMember WHERE MemberId = :u.Id];
         System.assertEquals(2, collMember.size());
 
-        newManagementMember.Role__c = 'Chair';
+        newManagementMember.Role__c = 'Representative';
         update newManagementMember;
 
         collMember = [SELECT Id, MemberId, CollaborationGroupId FROM CollaborationGroupMember WHERE MemberId = :u.Id];
         System.assertEquals(1, collMember.size());
 
-        newManagementMember.Role__c = 'Management Group Member';
+        newManagementMember.Role__c = SynchronizationGroupMembersHelper.MANAGEMENT_ROLES[0];
         update newManagementMember;
 
         collMember = [SELECT Id, MemberId, CollaborationGroupId FROM CollaborationGroupMember WHERE MemberId = :u.Id];
@@ -150,11 +155,34 @@
         g.Enable_management_group__c = false;
         update g;
 
-        newManagementMember.Role__c = 'Chair';
+        newManagementMember.Role__c = 'Representative';
         update newManagementMember;
 
         collMember = [SELECT Id, MemberId, CollaborationGroupId FROM CollaborationGroupMember WHERE MemberId = :u.Id];
         System.assertEquals(2, collMember.size());
 
+        newManagementMember.Role__c = SynchronizationGroupMembersHelper.MANAGEMENT_ROLES[0];
+        update newManagementMember;
+
+        g.Enable_management_group__c = true;
+        update g;
+
+        GroupChatterGroupAssotiation__c newChairMember = new GroupChatterGroupAssotiation__c(Contact__c = con.Id, Group__c= g.Id, RecordTypeId = groupMemberRecordType.Id, Role__c = SynchronizationGroupMembersHelper.MANAGEMENT_ROLES[1]);
+        insert newChairMember;
+
+        collMember = [SELECT Id, MemberId, CollaborationGroupId FROM CollaborationGroupMember WHERE MemberId = :u.Id];
+        System.assertEquals(2, collMember.size());
+
+        newManagementMember.Role__c = 'Representative';
+        update newManagementMember;
+
+        collMember = [SELECT Id, MemberId, CollaborationGroupId FROM CollaborationGroupMember WHERE MemberId = :u.Id];
+        System.assertEquals(2, collMember.size());
+
+        newChairMember.Role__c = 'Associate Editor';
+        update newChairMember;
+
+        collMember = [SELECT Id, Member.Name, MemberId, CollaborationGroupId, CollaborationGroup.Name FROM CollaborationGroupMember WHERE MemberId = :u.Id];
+        System.assertEquals(1, collMember.size());
     }
 }

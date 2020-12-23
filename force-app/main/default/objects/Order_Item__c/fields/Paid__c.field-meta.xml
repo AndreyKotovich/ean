@@ -5,6 +5,7 @@
     <formula>ISPICKVAL(Order_Custom__r.Status__c, &quot;Paid&quot;)</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
     <label>Paid</label>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>Checkbox</type>
 </CustomField>

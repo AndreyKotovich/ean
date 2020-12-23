@@ -21,24 +21,22 @@ public with sharing class AssignReviewersControllerTest {
             contacts.add(cont);
         }
         insert contacts;
-        System.debug('contacts --> ' + contacts);
 
-        Event__c eventTetst = new Event__c(
+        Event__c eventTest = new Event__c(
             Name = 'Test event',
             Abstract_Submission_Deadline__c = Datetime.now().addDays(5),
             Late_Breaking_Submission_Deadline__c = Datetime.now().addDays(10),
             Number_of_Reviewers__c = 2,
-            Number_of_Reviewers_Late_Breaking__c = 1
+            Number_of_Reviewers_Late_Breaking__c = 0
         );
-        insert eventTetst;
-        System.debug('eventTetst --> ' + eventTetst);
+        insert eventTest;
 
         List<Reviewer__c> reviewers = new List<Reviewer__c>();
         Integer loopCounter = 0;
         for (String  pickListValue : pickListValues) {
             Reviewer__c reviewer = new Reviewer__c(
                 Review_Capacity__c = '0-100',
-                Event__c = eventTetst.Id,
+                Event__c = eventTest.Id,
                 Contact__c = contacts[loopCounter].Id,
                 Status__c = 'Accepted',
                 Topics__c = pickListValue
@@ -47,7 +45,6 @@ public with sharing class AssignReviewersControllerTest {
             loopCounter = loopCounter + 1;
         }
         insert reviewers;
-        System.debug('reviewers --> ' + reviewers);
 
         Contact contactAbstractSubmitter = new Contact(
                 LastName = 'Test_abstract_submitter',
@@ -69,8 +66,7 @@ public with sharing class AssignReviewersControllerTest {
         List<Abstract__c> abstracts = new List<Abstract__c>();
         for (String abstractPickListValue : abstractPickListValues) {
             Abstract__c abstractItem = new Abstract__c(
-                Event__c = eventTetst.Id,
-                // Late_Breaking_Submission__c = true,
+                Event__c = eventTest.Id,
                 Abstract_Topic__c = abstractPickListValue,
                 Stage__c = 'Submitted',
                 Status__c = 'Pending',
@@ -81,14 +77,12 @@ public with sharing class AssignReviewersControllerTest {
             abstracts.add(abstractItem);
         }
         insert abstracts;
-        System.debug('abstracts --> ' + abstracts);
 
         Contact contactAbstractAuthor = new Contact(
                 LastName = 'Test_abstract_author',
                 Email = 'testabstract.author@test.ru'
             );
         insert contactAbstractAuthor;
-        System.debug('contactAbstractAuthor --> ' + contactAbstractAuthor);
 
         List<Abstract_Author__c> abstractAuthors = new List<Abstract_Author__c>();
         for (Abstract__c abstractItem : abstracts) {
@@ -99,7 +93,6 @@ public with sharing class AssignReviewersControllerTest {
             abstractAuthors.add(abstractAuthor);
         }
         insert abstractAuthors;
-        System.debug('abstractAuthors --> ' + abstractAuthors);
     }
 
     @isTest
@@ -138,10 +131,9 @@ public with sharing class AssignReviewersControllerTest {
             FROM Abstract__c
             WHERE Stage__c = 'Submitted'
         ];
-        System.debug('getReviewersTest abstracts --> ' + abstracts);
         List<Reviewer__c> reviewers = new List<Reviewer__c>();
         if (abstracts.size() > 0) {
-            reviewers = AssignReviewersController.getReviewers(abstracts[0].Id);
+            reviewers = AssignReviewersController.getReviewers(new List<Id> { abstracts[0].Id }, false);
         }
         System.assert(reviewers.size() > 0);
     }
@@ -171,9 +163,18 @@ public with sharing class AssignReviewersControllerTest {
             SELECT Name, Submitted_After_Deadline__c, Late_Breaking_Submission__c, Required_number_of_reviewers__c
             FROM Abstract__c
         ];
-        System.debug('setAbstractRevTest');
-        for (Abstract__c abstractItem : abstracts) {
-            System.debug('abstractItem --> ' + abstractItem);
-        }
+        List<Reviewer__c> reviewers = AssignReviewersController.getReviewers(new List<Id> { abstracts[0].Id }, false);
+        Map<String, String> dataBeforeLateBreaking = new Map<String, String>();
+        dataBeforeLateBreaking.put(reviewers[0].Id, abstracts[0].Id);
+        Map<String,Object> resultBeforeLateBreaking = AssignReviewersController.setAbstractRev(dataBeforeLateBreaking);
+        System.assert(resultBeforeLateBreaking.size() > 0);
+
+        abstracts[1].Late_Breaking_Submission__c = true;
+        update abstracts[1];
+        List<Reviewer__c> reviewersAfterLateBreaking = AssignReviewersController.getReviewers(new List<Id> { abstracts[1].Id }, true);
+         Map<String, String> dataAfterLateBreaking = new Map<String, String>();
+        dataAfterLateBreaking.put(reviewersAfterLateBreaking[0].Id, abstracts[1].Id);
+        Map<String,Object> resultAfterLateBreaking = AssignReviewersController.setAbstractRevAuto(new List<Map<String, String>> { dataAfterLateBreaking });
+        System.assertEquals(true, !resultAfterLateBreaking.isEmpty());
     }
 }

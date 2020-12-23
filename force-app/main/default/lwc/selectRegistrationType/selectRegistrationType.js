@@ -114,7 +114,7 @@ export default class SelectRegistrationType extends NavigationMixin(LightningEle
             }
         } else {
             if(this.existedParticipant.length === 0){
-                result.push({label: "Solo registration", value: "solo"});
+                result.push({label: "Individual Registration", value: "solo"});
             }
 
             result.push({label: "Group registration", value: "group"});

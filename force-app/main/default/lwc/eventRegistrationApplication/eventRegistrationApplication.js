@@ -63,7 +63,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
      * */
     userInfo = {};
     discountInfo = {};
-    vatAmount = 0;
+    // vatAmount = 0;
     selectedDates = [];
     participants = {}; //event participants which we insert in database
     selectedSessions = []; //selected extra sessions
@@ -349,7 +349,7 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
     onSummarize(event) {
         this.discountInfo = event.detail.discountInfo;
         this.selectedDates = event.detail.selectedDates;
-        this.vatAmount = event.detail.vatAmount;
+        // this.vatAmount = event.detail.vatAmount;
         this.vatNumber = event.detail.vatNumber;
         this.onNext();
     }
@@ -431,7 +431,8 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
                         generalData.priceTicket = this.priceTicket;
                         generalData.contactId = this.userInfo.contact.Id;
                         generalData.discountInfo = this.discountInfo;
-                        generalData.vatAmount = this.vatAmount;
+                        // generalData.vatAmount = this.vatAmount;
+                        generalData.vatRate = this.ean_event.VAT_Amount__c;
                         generalData.selectedDates = this.selectedDates;
                         generalData.industryNews = this.selectedServices.industryNews;
                         if(!!this.vatNumber){
@@ -578,7 +579,8 @@ export default class EventRegistrationApplication extends NavigationMixin(Lightn
             generalData.priceTicket = this.priceTicket;
             generalData.contactId = this.userInfo.contact.Id;
             generalData.discountInfo = this.discountInfo;
-            generalData.vatAmount = this.vatAmount;
+            // generalData.vatAmount = this.vatAmount;
+            generalData.vatRate = this.ean_event.VAT_Amount__c;
             generalData.selectedDates = this.selectedDates;
             generalData.industryNews = this.selectedServices.industryNews;
             if(!!this.vatNumber){

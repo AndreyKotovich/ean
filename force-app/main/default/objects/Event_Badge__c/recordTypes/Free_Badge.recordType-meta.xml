@@ -2,7 +2,6 @@
 <RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Free_Badge</fullName>
     <active>true</active>
-    <compactLayoutAssignment>Community_Badge_Layout</compactLayoutAssignment>
     <label>Free Badge</label>
     <picklistValues>
         <picklist>Footer_Definitions__c</picklist>

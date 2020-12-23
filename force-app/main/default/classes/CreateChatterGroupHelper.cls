@@ -70,7 +70,7 @@ public with sharing class CreateChatterGroupHelper {
 
         for(Group__c g : managementWorkingGroupWithoutChatterGroup){
             String name = getChatterGroupName('MG ' + g.Name);
-            newChatterGroups.add(new CollaborationGroup(Name = name, NetworkId = communityId, CollaborationType = 'Private', Description = name.contains('...')?'Chatter Group Full Name:\n"' + 'MG ' + g.Name + '"':''));
+            newChatterGroups.add(new CollaborationGroup(Name = name, NetworkId = communityId, CollaborationType = g.MG_Chatter_Group_Accessibility__c, Description = name.contains('...')?'Chatter Group Full Name:\n"' + 'MG ' + g.Name + '"':''));
         }
 
         insert newChatterGroups;
@@ -164,7 +164,7 @@ public with sharing class CreateChatterGroupHelper {
                 SELECT Id, Contact__c, Group__c
                 FROM GroupChatterGroupAssotiation__c
                 WHERE Group__c IN :changedSyncManagementWorkingGroups
-                AND Role__c = 'Management Group Member'
+                AND Role__c IN :SynchronizationGroupMembersHelper.MANAGEMENT_ROLES
         ];
 
         List<Id> contactIds = new List<Id>();
@@ -190,19 +190,19 @@ public with sharing class CreateChatterGroupHelper {
         ];
 
 
-        List<CollaborationGroupMember> newManagementChatterGroupMembers = new List<CollaborationGroupMember>();
+        Set<CollaborationGroupMember> newManagementChatterGroupMembers = new Set<CollaborationGroupMember>();
 
-        for(Group__c managementWorkingGroupId : changedSyncManagementWorkingGroups){
+        for(Group__c managementWorkingGroup : changedSyncManagementWorkingGroups){
 
             for(GroupChatterGroupAssotiation__c managementWorkingGroupMember : workingGroupManagementMembers){
 
-                if(contactUserIdsMap.containsKey(managementWorkingGroupMember.Contact__c)){
+                if(managementWorkingGroupMember.Group__c == managementWorkingGroup.Id && contactUserIdsMap.containsKey(managementWorkingGroupMember.Contact__c)){
 
                     Boolean isFoundExistedChatterMember = false;
 
                     for(CollaborationGroupMember existedChatterMember : existedManagementChatterGroupMembers){
 
-                        if(existedChatterMember.MemberId == contactUserIdsMap.get(managementWorkingGroupMember.Contact__c) && existedChatterMember.CollaborationGroupId == managementWorkingGroupId.Management_Chatter_Group_Id__c){
+                        if(existedChatterMember.MemberId == contactUserIdsMap.get(managementWorkingGroupMember.Contact__c) && existedChatterMember.CollaborationGroupId == managementWorkingGroup.Management_Chatter_Group_Id__c){
                             isFoundExistedChatterMember = true;
                         }
 
@@ -211,7 +211,7 @@ public with sharing class CreateChatterGroupHelper {
                     if(!isFoundExistedChatterMember){
                         newManagementChatterGroupMembers.add(
                                 new CollaborationGroupMember(
-                                        CollaborationGroupId = managementWorkingGroupId.Management_Chatter_Group_Id__c,
+                                        CollaborationGroupId = managementWorkingGroup.Management_Chatter_Group_Id__c,
                                         MemberId = contactUserIdsMap.get(managementWorkingGroupMember.Contact__c))
                         );
                     }
@@ -222,7 +222,7 @@ public with sharing class CreateChatterGroupHelper {
 
         }
 
-        insert newManagementChatterGroupMembers;
+        insert new List<CollaborationGroupMember>(newManagementChatterGroupMembers);
     }
 
     public static String getChatterGroupName(String name){

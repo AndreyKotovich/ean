@@ -435,6 +435,11 @@ public class InvoicePDFGenerator {
         }
         if (emailActivities.size() > 0) {
             insert emailActivities;
+            List<String> emailActivityIds = new List<String>();
+            for (Email_Activity__c emailActivity : emailActivities) {
+                emailActivityIds.add(emailActivity.Id);
+            }
+            saveEventInvoicePDF(emailActivityIds);
         }
     }
 
@@ -495,6 +500,11 @@ public class InvoicePDFGenerator {
         }
         if (emailActivities.size() > 0) {
             insert emailActivities;
+            List<String> emailActivityIds = new List<String>();
+            for (Email_Activity__c emailActivity : emailActivities) {
+                emailActivityIds.add(emailActivity.Id);
+            }
+            saveEventInvoicePDF(emailActivityIds);
         }
     }
 
@@ -557,5 +567,117 @@ public class InvoicePDFGenerator {
         return newCertificate;
 //        newCertificates.add(newCertificate);
 //        fileContactMap.put(newCertificate.Title, membershipStatus.Contact__c);
+    }
+
+    @Future(callout=true)
+    public static void saveEventInvoicePDF(List<String> emailActivityIds){
+        List<Email_Activity__c> emailActivities = [
+            SELECT Id, Order__c, Contact__c, Event_Custom__c, Type__c
+            FROM Email_Activity__c
+            WHERE Id IN :emailActivityIds
+        ];
+        Set<String> orderIdsSet = new Set<String>();
+        for (Email_Activity__c emailActivity : emailActivities) {
+            if (String.isNotBlank(emailActivity.Order__c)) {
+                orderIdsSet.add(emailActivity.Order__c);
+            }            
+        }
+        Map<Id, Order__c> orderMap = new  Map<Id, Order__c>([
+            SELECT Id, Invoice_Number__c
+            FROM Order__c
+            WHERE Id IN :orderIdsSet
+        ]);
+        Map<String, ContentVersion> orderIdToConVerMap = new Map<String, ContentVersion>();
+        for (Email_Activity__c emailActivity :emailActivities) {
+            PageReference invoicePage = new PageReference('/apex/EventInvoice');
+            invoicePage.getParameters().put('orderId', emailActivity.Order__c);
+            invoicePage.getParameters().put('contactId', emailActivity.Contact__c);
+            invoicePage.getParameters().put('eventId', emailActivity.Event_Custom__c);
+            if (emailActivity.Type__c == 'Group eventReg order paid BT with the same orderItems') {
+                invoicePage.getParameters().put('isOrderItemsSame', 'true');
+            } else {
+                invoicePage.getParameters().put('isOrderItemsSame', 'false');
+            }
+            ContentVersion conVer = new ContentVersion();
+            if (Test.isRunningTest()) {
+                conVer.NetworkId = null;
+            } else {
+                conVer.NetworkId = ConnectApi.Communities.getCommunities().communities[0].Id;
+            }                        
+            conVer.ContentLocation = 'S';
+            conVer.PathOnClient = 'Invoice - ' + orderMap.get(emailActivity.Order__c).Invoice_Number__c + '.pdf';
+            conVer.Title = 'Invoice - ' + orderMap.get(emailActivity.Order__c).Invoice_Number__c + '.pdf';
+            if (Test.isRunningTest()) {
+                conVer.VersionData = Blob.valueOf('Unit.Test');
+            } else {
+                conVer.VersionData = invoicePage.getContent();
+            }            
+            orderIdToConVerMap.put(emailActivity.Order__c, conVer);
+        }
+        if (orderIdToConVerMap.size() > 0) {
+            insert orderIdToConVerMap.values();
+
+            List<String> conVerIds = new List<String>();
+
+            for (ContentVersion conVer : orderIdToConVerMap.values()) {
+                conVerIds.add(conVer.Id);
+            }
+
+            Map<ID, ContentVersion> conVersMap = new Map<ID, ContentVersion>([
+                SELECT Id, ContentDocumentId, Title FROM ContentVersion WHERE Id IN :conVerIds
+                ]);
+            List<ContentDocumentLink> conDocLinks = new List<ContentDocumentLink>();
+
+            for (String orderId : orderIdToConVerMap.keySet()) {
+                ContentDocumentLink conDocLink = New ContentDocumentLink();
+                conDocLink.LinkedEntityId = orderId;
+                conDocLink.ContentDocumentId = conVersMap.get(orderIdToConVerMap.get(orderId).Id).ContentDocumentId;
+                conDocLink.shareType = 'V';
+                conDocLink.Visibility='AllUsers';
+                conDocLinks.add(conDocLink);
+            }
+            insert conDocLinks;
+        }
+    }
+
+    public static void generateEventInvoiceNumber(List<Order__c> orders) {
+        String invoiceNum = 'EAN' + String.valueOf(Date.today().year()).right(2) + '-F-%';
+        Integer oIEANNumber = 0;
+        List<Order__c> oIEAN = [
+            SELECT Invoice_Number__c
+            FROM Order__c
+            WHERE Invoice_Number__c != NULL AND Invoice_Number__c LIKE :invoiceNum
+            ORDER BY Invoice_Number__c DESC
+            LIMIT 10
+        ];
+
+        if (oIEAN.isEmpty()) { invoiceNum = invoiceNum.substring(0,invoiceNum.length()-1) + '000001'; }
+        if (!oIEAN.isEmpty()) {
+            for (Order__c o : oIEAN) {
+                String invoiceNumb = o.Invoice_Number__c.right(6);
+                if (invoiceNumb.isNumeric()) {
+                    oIEANNumber = Integer.valueOf(invoiceNumb);
+                    break;
+                }
+            }
+
+            oIEANNumber++;
+
+			String oIEANStr = String.valueOf(oIEANNumber);
+			while (oIEANStr.length() < 6) {
+				oIEANStr = '0' + oIEANStr;
+			}
+              
+			invoiceNum = invoiceNum.substring(0,invoiceNum.length()-1) + oIEANStr;
+        }
+        for (Order__c order : orders) {
+            order.Invoice_Number__c = invoiceNum;
+            List<String> invoiceNumParts = invoiceNum.split('-');
+            String serialNumber = String.valueOf(Integer.valueof(invoiceNumParts[invoiceNumParts.size()-1]) + 1);
+            while (serialNumber.length() < 6) {
+				serialNumber = '0' + serialNumber;
+            }
+            invoiceNum = invoiceNum.left(invoiceNum.length() - 6) + serialNumber;
+        }
     }
 }

@@ -19,6 +19,13 @@
         </values>
     </picklistValues>
     <picklistValues>
+        <picklist>MG_Chatter_Group_Accessibility__c</picklist>
+        <values>
+            <fullName>Unlisted</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>Type_of_Group__c</picklist>
         <values>
             <fullName>None</fullName>

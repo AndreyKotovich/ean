@@ -15,8 +15,6 @@ public without sharing class OrderHelper {
         String contactId = (String)genData.get('contactId');
         String eventId = (String)genData.get('eventId');
         String groupId = (String)genData.get('groupId');
-        System.debug('genData.get' + genData.get('vatAmount'));
-        Double vatAmount = Double.valueOf(genData.get('vatAmount'));
         Double vatRate = Double.valueOf(genData.get('vatRate'));
 
         Map<Object,Object> discountInfo = genData.containsKey('discountInfo') ? 
@@ -35,39 +33,6 @@ public without sharing class OrderHelper {
             (List<DiscountHelper.TicketWrapper>)JSON.deserialize(JSON.serialize(discountInfo.get('tickets')), List<DiscountHelper.TicketWrapper>.class) : 
             new List<DiscountHelper.TicketWrapper>();     
 
-        // String invoiceNum = 'EAN' + String.valueOf(Date.today().year()).right(2) + '-OC-%';
-        //  https://jira.towa-digital.com/browse/EANER-19   use EAN21-F-#### (= Invoice Number) 
-        String invoiceNum = 'EAN' + String.valueOf(Date.today().year()).right(2) + '-F-%';
-        Integer oIEANNumber = 0;
-        List<Order__c> oIEAN = [
-            SELECT Invoice_Number__c
-            FROM Order__c
-            WHERE Invoice_Number__c != NULL AND Invoice_Number__c LIKE :invoiceNum
-            ORDER BY Invoice_Number__c DESC
-            LIMIT 10
-        ];
-
-        if (oIEAN.isEmpty()) { invoiceNum = invoiceNum.substring(0,invoiceNum.length()-1) + '000001'; }
-        if (!oIEAN.isEmpty()) {
-            for (Order__c o : oIEAN) {
-                String invoiceNumb = o.Invoice_Number__c.right(6);
-                if (invoiceNumb.isNumeric()) {
-                    oIEANNumber = Integer.valueOf(invoiceNumb);
-                    break;
-                }
-            }
-
-            oIEANNumber++;
-
-			String oIEANStr = String.valueOf(oIEANNumber);
-			while (oIEANStr.length() < 6) {
-			    oIEANNumber++;
-				oIEANStr = '0' + oIEANStr;
-			}
-              
-			invoiceNum = invoiceNum.substring(0,invoiceNum.length()-1) + oIEANStr;
-        }
-
         Order__c o = new Order__c(
             Contact__c = contactId,
             Status__c = 'Opened',
@@ -75,8 +40,6 @@ public without sharing class OrderHelper {
             Purchase_Type__c = 'New',
             Event_Registration_Sub_Group__c = groupId,
             Type__c = 'Event registration',
-            Invoice_Number__c = invoiceNum,
-            VAT_Amount__c = vatAmount,
             VAT_Rate__c = vatRate
         );
         System.debug('createNewOrder o ' + o);
@@ -173,7 +136,7 @@ public without sharing class OrderHelper {
     @AuraEnabled
     public static List<Order__c> getOrderInfo(String Id) {
         return [
-            SELECT Id, Status__c, Paid_Amount__c, Total_amount__c, Total_Amount_Gros__c,
+            SELECT Id, Status__c, Paid_Amount__c, Total_amount__c, Total_Amount_Net__c,
                 (
                     SELECT Id, Name__c, Amount__c, Total_amount__c, Quantity__c, Paid__c, 
                         Discount_Amount__c, Discount__c, Refund_Amount__c,

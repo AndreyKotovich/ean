@@ -1,5 +1,4 @@
 trigger MembershipContactAssotiationTrigger on MembershipContactAssotiation__c (after insert, after update, after undelete, before delete) {
-    system.debug('MembershipContactAssotiationTrigger');
     Set<Id> associationIds = new Set<Id>();
     Set<Id> contactIds = new Set<Id>();
     // Collect all Membership Status records that are Active and has Application Form ===>

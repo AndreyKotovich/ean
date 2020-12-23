@@ -47,9 +47,7 @@ public without sharing class AbstractBookController {
 			queryRew += '  ( Stage__c=\'Assigned\' OR Stage__c=\'Rated\') '; 
 		
 			ars = (List<Abstract_Review__c>)Database.query(queryRew);
-			System.debug('ars ' + ars); 
 			for (Abstract_Review__c ar : ars) {
-				System.debug('ar.Reviewer__r.Contact__c ' + ar.Reviewer__r.Contact__c + ' ' +  currentUser[0].ContactId); 
 				if (ar.Reviewer__r.Contact__c == currentUser[0].ContactId) {
 					abRew.put(ar.Abstract__c, ar);
 				}
@@ -72,11 +70,12 @@ public without sharing class AbstractBookController {
 			
 			lects = (List<Lecture__c>)Database.query(queryLect);
 			ids = new List<String>();
-			System.debug('lects ' + lects);
+			
 			for (Lecture__c l : lects) {
+              	
 				if (l.Session__r.Session_Start__c != null) {
 					ids.add(l.Abstract__c);
-					System.debug('l.Presentation_Number__c ' + l.Presentation_Number__c );
+					 
 					if (lectMap.containsKey(l.Session__c)) {
 						Map<String,Object> absts = (Map<String,Object>)((Map<String,Object>)lectMap.get(l.Session__c)).get('abstract');
 						absts.put(l.Abstract__c, !String.isBlank(l.Presentation_Number__c) ? l.Presentation_Number__c : '');
@@ -97,11 +96,8 @@ public without sharing class AbstractBookController {
 										
 					}
 				}
-			}
-			System.debug('lects ids' + ids);
-			System.debug('lectMap ' + lectMap);
-			if (ids.size() == 0) { 
-				
+			} 
+			if (ids.size() == 0) {				
 				return; 
 			} 
 
@@ -191,6 +187,18 @@ public without sharing class AbstractBookController {
 							'name' => name                    
 						}); 
 					}
+				} else {
+					isPresenter = a.Abstract_Presenter__c ==  aas.Abstract_Author__c;
+					String name = '';
+					if (!String.isBlank(aas.Abstract_Author__r.FirstName)) {
+						name +=aas.Abstract_Author__r.FirstName.substring(0, 1) + '. ';
+					}
+					name +=  aas.Abstract_Author__r.LastName;
+					authors.add(  new Map<String,Object> {
+						'isPresenter' => isPresenter,
+						'count' => '',
+						'name' => name                     
+					});
 				}
 			}
 			abInfo.put(a.Id, new Map<String,Object> {
@@ -198,7 +206,6 @@ public without sharing class AbstractBookController {
 				'departments' => departments
 			});
 
-			System.debug('abInfo ' +  abInfo);
 		}
 
 		List<ContentVersion> CDs = [SELECT Id, ContentDocument.Title, ContentDocumentId FROM ContentVersion WHERE ContentDocumentId IN: imgId];

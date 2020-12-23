@@ -24,7 +24,7 @@ public with sharing class PaymentHttpRequest_Test {
     }
     @IsTest public static void getSeamlessURLBodyWithoutCardIdTest() {
         Contact c = [SELECT Id FROM Contact WHERE LastName = 'test'];
-        Order__c order = [SELECT Id, Total_amount__c, Total_Amount_Gros__c FROM Order__c WHERE Contact__c = :c.Id];
+        Order__c order = [SELECT Id, Total_amount__c FROM Order__c WHERE Contact__c = :c.Id];
         PaymentHttpRequest.showPaymentCheck(order.Id);
         String body = PaymentHttpRequest.getSeamlessURLBody('', order.Id, addressesObject);
         Object payment = ((Map<String, Object>) JSON.deserializeUntyped(body)).get('payment');
@@ -35,7 +35,7 @@ public with sharing class PaymentHttpRequest_Test {
     @IsTest public static void getSeamlessURLBodyWithCardIdTest() {
         Contact c = [SELECT Id FROM Contact WHERE LastName = 'test'];
         Card__c card = [SELECT Id, Token_Id__c FROM Card__c WHERE Contact__c = :c.Id];
-        Order__c order = [SELECT Id,Total_amount__c, Total_Amount_Gros__c FROM Order__c WHERE Contact__c = :c.Id];
+        Order__c order = [SELECT Id,Total_amount__c FROM Order__c WHERE Contact__c = :c.Id];
         PaymentHttpRequest.showPaymentCheck(order.Id);
         String body = PaymentHttpRequest.getSeamlessURLBody(card.Id, order.Id, addressesObject);
         Object payment = ((Map<String, Object>) JSON.deserializeUntyped(body)).get('payment');
@@ -188,7 +188,7 @@ public with sharing class PaymentHttpRequest_Test {
     }
     @IsTest public static void createLogTest(){
         Contact c = [SELECT Id FROM Contact WHERE LastName = 'test'];
-        Order__c order = [SELECT Id, Total_amount__c, Total_Amount_Gros__c FROM Order__c WHERE Contact__c = :c.Id];
+        Order__c order = [SELECT Id, Total_amount__c FROM Order__c WHERE Contact__c = :c.Id];
         Log__c log = new Log__c(Process_Name__c = 'REST: Test', Order__c=order.Id, Type__c='REST');
         PaymentHttpRequest.createLogAuraEnabled(JSON.serialize(log), '', '{"payment":{"card-token":{"token-id":"1234567890"}}}', Datetime.now(), 500);
         log = [SELECT Id, Message__c FROM Log__c WHERE Order__c = :order.Id LIMIT 1];

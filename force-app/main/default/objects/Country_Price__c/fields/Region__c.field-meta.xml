@@ -8,44 +8,6 @@
     <type>Picklist</type>
     <valueSet>
         <restricted>true</restricted>
-        <valueSetDefinition>
-            <sorted>false</sorted>
-            <value>
-                <fullName>A</fullName>
-                <default>false</default>
-                <label>A</label>
-            </value>
-            <value>
-                <fullName>B</fullName>
-                <default>false</default>
-                <label>B</label>
-            </value>
-            <value>
-                <fullName>C</fullName>
-                <default>false</default>
-                <label>C</label>
-            </value>
-            <value>
-                <fullName>D</fullName>
-                <default>false</default>
-                <label>D</label>
-            </value>
-            <value>
-                <fullName>E</fullName>
-                <default>false</default>
-                <label>E</label>
-            </value>
-            <value>
-                <fullName>F</fullName>
-                <default>false</default>
-                <label>F</label>
-            </value>
-            <value>
-                <fullName>R (retired)</fullName>
-                <default>false</default>
-                <isActive>false</isActive>
-                <label>R (retired)</label>
-            </value>
-        </valueSetDefinition>
+        <valueSetName>Country_Region</valueSetName>
     </valueSet>
 </CustomField>

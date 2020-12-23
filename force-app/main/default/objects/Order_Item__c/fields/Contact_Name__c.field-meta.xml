@@ -8,6 +8,7 @@ TEXT(Order_Custom__r.Contact__r.Salutation) + &apos; &apos; + Order_Custom__r.Co
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
     <label>Contact Name</label>
     <required>false</required>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>Text</type>
     <unique>false</unique>

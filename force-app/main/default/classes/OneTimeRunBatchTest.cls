@@ -261,4 +261,76 @@ public with sharing class OneTimeRunBatchTest {
         }
 
     }
+
+    @IsTest
+    public static void UpdateManagementChatterGroupsBatchTest(){
+        NewsletterSubscriptionController.isCreateSubscribersEnabled = false;
+
+        Id MCUP = [SELECT Id FROM Profile WHERE Name = 'Member Community User Profile'].Id;
+
+        Account account = new Account(Name = 'Individuals (Contacts)', RecordTypeId = [SELECT Id FROM RecordType WHERE Name = 'Individuals' AND SobjectType = 'Account' LIMIT 1].Id);
+        insert account;
+
+        List<Contact> contacts = new List<Contact>();
+
+        for(Integer i = 0; i < 10; i++){
+            contacts.add(new Contact(FirstName = 'Test', LastName = 'Contact'+i, AccountId = account.Id));
+        }
+
+        insert contacts;
+
+        List<User> users = new List<User>();
+
+        for(Integer i = 0; i < contacts.size(); i++){
+            users.add(new User(
+                    Alias = 'test'+i, Email = i+'test_un@email.com',
+                    EmailEncodingKey = 'UTF-8', LastName = 'Test_un'+i, LanguageLocaleKey = 'en_US',
+                    LocaleSidKey = 'en_US', ProfileId = MCUP, Country = 'United States', IsActive = true,
+                    ContactId = contacts[i].Id, TimeZoneSidKey = 'America/Los_Angeles', Username = i+'test_un@email.com'));
+        }
+
+        insert users;
+
+        List<Group__c> workingGroups = new List<Group__c>();
+        workingGroups.add(new Group__c(Name = 'Test Group', Enable_management_group__c = true, MG_Chatter_Group_Accessibility__c = 'Unlisted'));
+        workingGroups.add(new Group__c(Name = 'Test Group2', Enable_management_group__c = true, MG_Chatter_Group_Accessibility__c = 'Unlisted'));
+        insert workingGroups;
+
+        List<GroupChatterGroupAssotiation__c> groupMembers = new List<GroupChatterGroupAssotiation__c>();
+
+        for(Integer i = 0; i < contacts.size(); i++){
+            groupMembers.add(new GroupChatterGroupAssotiation__c(Contact__c = contacts[i].Id, Group__c = workingGroups[0].Id, Role__c = 'Chair'));
+
+            if(i < 3){
+                groupMembers.add(new GroupChatterGroupAssotiation__c(Contact__c = contacts[i].Id, Group__c = workingGroups[1].Id, Role__c = 'Chair'));
+            }
+        }
+
+        insert groupMembers;
+
+        List<CollaborationGroup> cg = [SELECT Id FROM CollaborationGroup ORDER BY Name ASC];
+        System.assertEquals(workingGroups.size(), cg.size());
+
+        Test.startTest();
+        UpdateManagementChatterGroupsBatch b = new UpdateManagementChatterGroupsBatch();
+        Database.executeBatch(b, 200);
+        Test.stopTest();
+
+        List<CollaborationGroup> cg_new = [SELECT Id FROM CollaborationGroup];
+        System.assertEquals(workingGroups.size(), cg_new.size());
+
+        for(CollaborationGroup collaborationGroup : cg){
+
+            for(CollaborationGroup collaborationGroup_new : cg_new){
+                System.assertNotEquals(collaborationGroup.Id, collaborationGroup_new.Id);
+            }
+
+        }
+
+        List<CollaborationGroupMember> chatterGroupMembers1 = [SELECT Id FROM CollaborationGroupMember WHERE CollaborationGroupId = :cg_new[0].Id AND CollaborationRole != 'Admin'];
+        System.assertEquals(contacts.size(), chatterGroupMembers1.size());
+
+        List<CollaborationGroupMember> chatterGroupMembers2 = [SELECT Id FROM CollaborationGroupMember WHERE CollaborationGroupId = :cg_new[1].Id AND CollaborationRole != 'Admin'];
+        System.assertEquals(3, chatterGroupMembers2.size());
+    }
 }

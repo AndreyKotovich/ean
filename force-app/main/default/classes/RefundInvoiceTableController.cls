@@ -4,7 +4,16 @@ public with sharing class RefundInvoiceTableController {
     public String orderId { get; set; }
     public String JSONBody { get; set; }
     public String orderNum { get; set; }
-    public Decimal orderTotalAmount { get; set; }
+    public Decimal orderTotalAmount { get{
+        return orderTotalAmount.setScale(2);
+    } set; }
+    public Decimal orderVATs { get{
+        return orderVATs.setScale(2);
+    } set; }
+    public Decimal vatValue { get{
+        return vatValue.setScale(2);
+    } set; }
+
 
     public List<Order_Item__c> getOrderItems(){
         List<Order_Item__c> orderIs = new List<Order_Item__c>();
@@ -24,25 +33,23 @@ public with sharing class RefundInvoiceTableController {
             SELECT 
                 Id, Name, Total_amount__c, Refund_Amount__c, Order_Custom__r.Contact__r.Id, Order_Custom__r.Contact__r.FirstName, 
                 Order_Custom__r.Contact__r.LastName, Session_Participation__r.Role__c, Session_Participation__r.Event_Ticket__r.Ticket__r.Name,
-                Event_Participation__r.Event_Ticket__r.Ticket__r.Name, Session_Participation__r.Session__r.Name 
+                Event_Participation__r.Event_Ticket__r.Ticket__r.Name, Session_Participation__r.Session__r.Name, Order_Custom__r.VATamount__c,
+                    Order_Custom__r.Event_custom__r.VAT_Amount__c
             FROM Order_Item__c 
             WHERE Order_Custom__c = :orderId
 		];
 		
 		for (Integer i = (oIs.size()-1) ; i>= 0 ; i--){
 			if (oIOrig.containsKey(oIs[i].Id)) {
-                oIs[i].Refund_Amount__c = ((Decimal)oIOrig.get(oIs[i].Id)) * (-1);
+                oIs[i].Refund_Amount__c = ((Decimal)oIOrig.get(oIs[i].Id)).setScale(2);
                 orderTotalAmount += oIs[i].Refund_Amount__c;
             } else {
 				oIs.remove(i);
 			}
-		} 
+		}
 
-        for (Order_Item__c oi : oIs) {
-			 
-            
-			
-        }
+        if(!oIs.isEmpty()) orderVATs = !oIs.isEmpty() ? oIs[0].Order_Custom__r.VATamount__c : null;
+        if(!oIs.isEmpty()) vatValue = !oIs.isEmpty() ? oIs[0].Order_Custom__r.Event_custom__r.VAT_Amount__c : null;
 
         return oIs;
     }

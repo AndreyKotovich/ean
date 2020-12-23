@@ -9,6 +9,7 @@
     <aura:attribute name="types" type="String[]" />
     <aura:attribute name="selectedTopic" type="String" />
     <aura:attribute name="selectedType" type="String" />
+    <aura:attribute name="isAutoAssign" type="Boolean" default="false" />
     <aura:attribute name="spinnerVisible" type="Boolean" default="false" />
     <aura:attribute name="abstractListStage" type="Boolean" default="true" />
     <aura:attribute name="abstractAssignStage" type="Boolean" default="false" />

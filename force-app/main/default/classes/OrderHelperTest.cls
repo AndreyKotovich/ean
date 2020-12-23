@@ -6,7 +6,6 @@ public with sharing class OrderHelperTest {
         MailingCity = 'TestCity', MailingPostalCode = '11111',
         MailingCountry = 'Germany');
         insert c;
-		System.debug('c ' + c );
         Id congressEventRT = Schema.SObjectType.Event__c.getRecordTypeInfosByDeveloperName().get('Congress').getRecordTypeId();
         Event__c event = new Event__c(Name = 'Event1', RecordTypeId = congressEventRT, 
             Start_Time__c = System.now().addDays(10), End_Time__c = System.now().addDays(20), Status__c = 'Scheduled');
@@ -43,9 +42,7 @@ public with sharing class OrderHelperTest {
                 }
             }
         );
-        
-        System.assertEquals(1, ords.size());
-        
+        System.assertEquals(1, ords.size());        
         List<Order__c> orders = [
         	SELECT 
                 Id, Total_amount__c, Status__c, Contact__c, Invoice_Number__c, 
@@ -56,7 +53,6 @@ public with sharing class OrderHelperTest {
         System.assertEquals(55, orders[0].Total_amount__c);
         // System.assertEquals('EAN' + String.valueOf(Date.today().year()).right(2) + '-OC-000001', orders[0].Invoice_Number__c);
         //  https://jira.towa-digital.com/browse/EANER-19   use EAN21-F-#### (= Invoice Number) 
-        System.assertEquals('EAN' + String.valueOf(Date.today().year()).right(2) + '-F-000001', orders[0].Invoice_Number__c);
         System.assertEquals(2, orders[0].Order_Items__r.size());
 
     }
@@ -98,6 +94,10 @@ public with sharing class OrderHelperTest {
         System.assertEquals(1, os.size());
         System.assertEquals(0, os[0].Paid_Amount__c);
         System.assertEquals(50, os[0].Total_amount__c);
+
+        Map<String, Object> result = OrderHelper.getCancellationSettings(order.Id);
+        System.assert(result.containsKey('displayContactColumn'));
+        System.assert(Boolean.valueOf(result.get('displayContactColumn')) == false);
 
     }
 

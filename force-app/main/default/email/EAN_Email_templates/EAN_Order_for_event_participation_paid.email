@@ -19,89 +19,110 @@
     </messaging:htmlEmailBody>
         <messaging:attachment renderAs="PDF" filename="invoice.pdf">
         <html>
+            <head>
+                <style type="text/css" media="print">
+                    @page {
+                        @bottom-center {
+                            content: element(footer);
+                        }
+                        margin-bottom: 3cm;
+                    }
+                    div.footer {
+                        position: running(footer);
+                        text-align: center;
+                        font-size: 9pt
+                    }
+                </style>
+            </head>
             <body>
-            <div>
-                <center>
-                    <img src = "{!$Resource.EAN_BANNER_EC21}" width="720px" height="100" align="center"/>
-                </center>
+            <div class="footer">
+                <div>
+                    <center>
+                        <img src = "{!$Resource.EAN_BANNER_EC21}" width="725px" align="center"/>
+                    </center>
+                </div>
             </div>
-            <div>
-                <p style="margin: 0px; font-size: 11pt;">{!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.FirstName} {!relatedTo.Contact__r.LastName}<br />
-                Department: {!relatedTo.Contact__r.Department_Name__c}<br />
-                Street: {!relatedTo.Contact__r.Work_Street__c}<br />
-                ZIP City: {!relatedTo.Contact__r.Work_Zip_Postal_Code__c} {!relatedTo.Contact__r.Work_City__c}<br />
-                Country: {!relatedTo.Contact__r.Work_Country__c}<br />
-                VAT Nr: </p>
+            <div style="width: 725px;">
+                <div style="margin-top: 20px; float: left; width: 475px;">
+                    <div>
+                        <p style="margin: 0px; font-size: 11pt;">{!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.FirstName} {!relatedTo.Contact__r.LastName}<br />
+                        Department: {!relatedTo.Contact__r.Department_Name__c}<br />
+                        Street: {!relatedTo.Contact__r.Work_Street__c}<br />
+                        ZIP City: {!relatedTo.Contact__r.Work_Zip_Postal_Code__c} {!relatedTo.Contact__r.Work_City__c}<br />
+                        Country: {!relatedTo.Contact__r.Work_Country__c}<br />
+                        VAT Nr: </p>
+                    </div>
+                    <div style = "text-align: right">
+                        <p style="margin: 0px; font-size: 9pt;">
+                            <apex:outputText value="{0, date, d MMMM yyyy}">
+                                <apex:param value="{!relatedTo.CreatedDate}" /> 
+                            </apex:outputText>
+                        </p>
+                    </div>
+                    <div>
+                        <p style="margin: 0px; font-size: 11pt;">
+                        {!relatedTo.Event_custom__r.Name} - Congress of the European Academy of Neurology<br/>
+                            <apex:outputText value="{0, date, d MMMM}">
+                                <apex:param value="{!relatedTo.Event_custom__r.Start_Time__c}" /> 
+                            </apex:outputText>
+                            - 
+                            <apex:outputText value="{0, date, d MMMM yyyy}">
+                                <apex:param value="{!relatedTo.Event_custom__r.End_Time__c}" /> 
+                            </apex:outputText>
+                        </p>
+                    </div>
+                    <div style = "text-align: center">
+                        <h2 style="margin: 0px; font-size: 11pt;">ORDER CONFIRMATION – {!relatedTo.Order__r.Invoice_Number__c}</h2>
+                    </div>
+                    <div>
+                        <c:OrderInvoiceTable order="{!relatedTo.Order__c}" />
+                    </div>
+                    <div>
+                        <p style="margin: 0px; font-size: 11pt;">For payment via bank transfer, please include your <b>order confirmation number</b> {!relatedTo.Order__r.Invoice_Number__c}
+                        as payment reference for identification purposes. Please note that bank charges must be covered by you.</p>
+                        <p>Please transfer the outstanding amount of ____ EUR to the following bank account:</p>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tbody>
+                            <tr>
+                                <td style="border: 1px solid #ddd; width: 25%;" >
+                                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">Account holder</div>
+                                </td>
+                                <td style="border: 1px solid #ddd;" >
+                                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">European Academy of Neurology</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #ddd;" >
+                                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">Bank</div>
+                                </td>
+                                <td style="border: 1px solid #ddd;" >
+                                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">Oberoesterreichische Landesbank Aktiengesellschaft</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #ddd;" >
+                                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">IBAN</div>
+                                </td>
+                                <td style="border: 1px solid #ddd;">
+                                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">AT83 5400 0002 1400 7650</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #ddd;" >
+                                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">BIC/SWIFT</div>
+                                </td>
+                                <td style="border: 1px solid #ddd;">
+                                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">OBLAAT2L</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="width: 250px; float: right;">
+                    <apex:image id="theImage" value="{!$Resource.EAN_Details}" width="250"/>
+                </div>
             </div>
-            <div style = "text-align: right">
-                <p style="margin: 0px; font-size: 9pt;">
-                    <apex:outputText value="{0, date, d MMMM yyyy}">
-                        <apex:param value="{!relatedTo.CreatedDate}" /> 
-                    </apex:outputText>
-                </p>
-            </div>
-            <div>
-                <p style="margin: 0px; font-size: 11pt;">
-                {!relatedTo.Event_custom__r.Name} - Congress of the European Academy of Neurology<br/>
-                    <apex:outputText value="{0, date, d MMMM}">
-                        <apex:param value="{!relatedTo.Event_custom__r.Start_Time__c}" /> 
-                    </apex:outputText>
-                     - 
-                    <apex:outputText value="{0, date, d MMMM yyyy}">
-                        <apex:param value="{!relatedTo.Event_custom__r.End_Time__c}" /> 
-                    </apex:outputText>
-                </p>
-            </div>
-            <div style = "text-align: center">
-                <h2 style="margin: 0px; font-size: 11pt;">ORDER CONFIRMATION – {!relatedTo.Order__r.Invoice_Number__c}</h2>
-            </div>
-            <div>
-                <c:OrderInvoiceTable order="{!relatedTo.Order__c}" />
-            </div>
-            <div>
-                <p style="margin: 0px; font-size: 11pt;">For payment via bank transfer, please include your <b>order confirmation number</b> {!relatedTo.Order__r.Invoice_Number__c}
-                 as payment reference for identification purposes. Please note that bank charges must be covered by you.</p>
-                 <p>Please transfer the outstanding amount of ____ EUR to the following bank account:</p>
-            </div>
-            <table style="width: 100%; border-collapse: collapse;">
-                <tbody>
-                    <tr>
-                        <td style="border: 1px solid #ddd; width: 25%;" >
-                            <div style="padding: 5px; margin: 0px; font-size: 11pt;">Account holder</div>
-                        </td>
-                        <td style="border: 1px solid #ddd;" >
-                            <div style="padding: 5px; margin: 0px; font-size: 11pt;">European Academy of Neurology</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #ddd;" >
-                            <div style="padding: 5px; margin: 0px; font-size: 11pt;">Bank</div>
-                        </td>
-                        <td style="border: 1px solid #ddd;" >
-                            <div style="padding: 5px; margin: 0px; font-size: 11pt;">TBA</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #ddd;" >
-                            <div style="padding: 5px; margin: 0px; font-size: 11pt;">IBAN</div>
-                        </td>
-                        <td style="border: 1px solid #ddd;">
-                            <div style="padding: 5px; margin: 0px; font-size: 11pt;">TBA</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #ddd;" >
-                            <div style="padding: 5px; margin: 0px; font-size: 11pt;">BIC/SWIFT</div>
-                        </td>
-                        <td style="border: 1px solid #ddd;">
-                            <div style="padding: 5px; margin: 0px; font-size: 11pt;">TBA</div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <p style="margin: 0px; font-size: 9pt; position: fixed; bottom: 0; width:100%; text-align: center"><b>EAN Registration Management</b><br/>
-                Breite Gasse 4/7, 1070 Vienna, Austria<br/>
-                registration@ean.org, 00431889050325</p>
             </body>
         </html>
     </messaging:attachment>

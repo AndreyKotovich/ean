@@ -6,6 +6,7 @@
     <summarizedField>Order_Item__c.Amount__c</summarizedField>
     <summaryForeignKey>Order_Item__c.Order_Custom__c</summaryForeignKey>
     <summaryOperation>sum</summaryOperation>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>Summary</type>
 </CustomField>

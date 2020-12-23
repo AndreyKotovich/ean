@@ -26,7 +26,7 @@ export default class ErSummarize extends LightningElement {
     @track eventId;
     @track totalAmount = 0;
     @track discountAmount = 0;
-    @track VATamount = 0;
+    // @track VATamount = 0;
     @track VATproc = 0;
     @track GrandTotalAmount = 0;
     @track vatNumber = '';
@@ -159,8 +159,8 @@ export default class ErSummarize extends LightningElement {
                     }
                 }
                 this.totalAmountOrg = this.totalAmount;
-                this.VATamount = (+(this.totalAmountOrg * (1 + +this.VATproc / 100)).toFixed(2) - this.totalAmountOrg).toFixed(2);
-                this.GrandTotalAmount = (+this.totalAmountOrg + +this.VATamount).toFixed(2);
+                // this.VATamount = (+(this.totalAmountOrg * (1 + +this.VATproc / 100)).toFixed(2) - this.totalAmountOrg).toFixed(2);
+                this.GrandTotalAmount = (+this.totalAmountOrg).toFixed(2);
                 console.log('ticketsTable', this.ticketsTable);
                 console.log('sessionsTable', this.sessionsTable);
                 this.isSpinner = false;
@@ -193,7 +193,7 @@ export default class ErSummarize extends LightningElement {
             detail: {
                 discountInfo: this.discountInfo,
                 selectedDates: this.selectedDates,
-                vatAmount: this.VATamount,
+                // vatAmount: this.VATamount,
                 vatNumber: this.vatNumber
             }
         });
@@ -232,15 +232,15 @@ export default class ErSummarize extends LightningElement {
     сancelDiscount() {
         this.discountAmount = 0;
         this.totalAmount = this.totalAmountOrg;
-        this.VATamount = (+(this.totalAmountOrg * (1 + +this.VATproc / 100)).toFixed(2) - this.totalAmountOrg).toFixed(2);
-        this.GrandTotalAmount = (+this.totalAmountOrg + +this.VATamount).toFixed(2);
+        // this.VATamount = (+(this.totalAmountOrg * (1 + +this.VATproc / 100)).toFixed(2) - this.totalAmountOrg).toFixed(2);
+        this.GrandTotalAmount = (+this.totalAmountOrg).toFixed(2);
         this.discountInfo = {};
     }
 
     getDiscount() {
         console.log('getDiscount START');
         this.discountAmount = 0;        
-        this.VATamount = 0;
+        // this.VATamount = 0;
         this.GrandTotalAmount = 0;
         this.totalAmount = this.totalAmountOrg;
         this.discountCode = this.template.querySelector('[data-id=dCode]').value;
@@ -290,14 +290,14 @@ export default class ErSummarize extends LightningElement {
                     }
                 }
                 this.totalAmount = this.totalAmountOrg + this.discountAmount;
-                this.VATamount = (+(this.totalAmount * (1 + +this.VATproc / 100)).toFixed(2) - this.totalAmount).toFixed(2);
-                this.GrandTotalAmount = (+this.totalAmount + +this.VATamount).toFixed(2);
+                // this.VATamount = (+(this.totalAmount * (1 + +this.VATproc / 100)).toFixed(2) - this.totalAmount).toFixed(2);
+                this.GrandTotalAmount = (+this.totalAmount).toFixed(2);
                 this.isSpinner = false;
             })
             .catch(error => {
                 console.log('error ', error);
                 this.discountAmount = 0;
-                this.VATamount = 0;
+                // this.VATamount = 0;
                 this.GrandTotalAmount = 0;
                 this.dispatchToast('Error', error, 'Error');
                 this.isSpinner = false;
@@ -353,6 +353,10 @@ export default class ErSummarize extends LightningElement {
 
     handleVatNumber(event){
         this.vatNumber = event.detail.value;
+    }
+
+    get VAT_Amount(){
+        return (+this.GrandTotalAmount / (100 + +this.eanEvent.VAT_Amount__c) * +this.eanEvent.VAT_Amount__c).toFixed(2);
     }
 
 }

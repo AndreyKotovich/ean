@@ -47,6 +47,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Abstract_Review__c.Reviewer_Membership_Status__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Abstract_Review__c.Stage__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -2287,6 +2292,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Group__c.MG_Chatter_Group_Accessibility__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Group__c.Management_Chatter_Group_Id__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -2987,11 +2997,6 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Order__c.Total_Amount_Gros__c</field>
-        <readable>false</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
         <field>Order__c.Total_Amount_Net__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -3012,12 +3017,12 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Order__c.VAT_Amount__c</field>
+        <field>Order__c.VAT_Rate__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Order__c.VAT_Rate__c</field>
+        <field>Order__c.VATamount__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>

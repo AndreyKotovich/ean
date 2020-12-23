@@ -26,12 +26,6 @@
                 <default>false</default>
                 <label>Rejected</label>
             </value>
-            <value>
-                <fullName>Accpeted</fullName>
-                <default>false</default>
-                <isActive>false</isActive>
-                <label>Accpeted</label>
-            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

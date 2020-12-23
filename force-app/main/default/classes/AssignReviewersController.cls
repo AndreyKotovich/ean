@@ -33,7 +33,7 @@ public with sharing class AssignReviewersController {
         if(abstractTopic.length() == 0
             && abstractType.length() == 0){
             abstracts = [
-                SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Abstract_Presenter__c, Abstract_Presenter__r.Email, Required_number_of_reviewers__c, (SELECT Id FROM Abstract_Reviews__r)
+                SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Abstract_Presenter__c, Abstract_Presenter__r.Email, Required_number_of_reviewers__c, (SELECT Id, Reviewer__c FROM Abstract_Reviews__r)
                 FROM Abstract__c 
                 WHERE 
                     RecordType.Name = :recordType
@@ -43,7 +43,7 @@ public with sharing class AssignReviewersController {
                     Status__c = :status
             ];
         }else{
-            String query = 'SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Abstract_Presenter__c, Abstract_Presenter__r.Email, Required_number_of_reviewers__c,  (SELECT Id FROM Abstract_Reviews__r) FROM Abstract__c WHERE RecordType.Name = :recordType AND Stage__c = :stage AND Status__c = :status';
+            String query = 'SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Abstract_Presenter__c, Abstract_Presenter__r.Email, Required_number_of_reviewers__c,  (SELECT Id, Reviewer__c FROM Abstract_Reviews__r) FROM Abstract__c WHERE RecordType.Name = :recordType AND Stage__c = :stage AND Status__c = :status';
             if (String.isNotBlank(abstractTopic)) {
                 query = query + ' AND Abstract_Topic__c = :abstractTopic';
             }
@@ -57,51 +57,57 @@ public with sharing class AssignReviewersController {
     }
 
     @AuraEnabled
-    public static List<Reviewer__c> getReviewers(Id abstractId){
+    public static List<Reviewer__c> getReviewers(List<Id> abstractIds, Boolean isAuto){
+        System.debug(abstractIds);
         List<Reviewer__c> reviewers = new List<Reviewer__c>();
 
-        Abstract__c abstractItem = [ 
+        List<Abstract__c> abstractItem = [ 
             SELECT Id, Name, Title__c, Abstract_Topic__c, Type__c, Stage__c, Status__c, Event__c, Abstract_Presenter__c,
                     Submitter__c,
             (
                     SELECT Id, Abstract_Author__c FROM Abstract_Authors__r
             )
-            FROM Abstract__c WHERE Id =: abstractId
-        ].get(0);
+            FROM Abstract__c WHERE Id IN: abstractIds
+        ];
 
         Set<Id> excludedReviewerContacts = new Set<Id>();
-
-        //Reviewer.Contact != Abstract.AbstractPresenter
-        excludedReviewerContacts.add(abstractItem.Abstract_Presenter__c);
-        //submitter cannot be a reviewer
-        excludedReviewerContacts.add(abstractItem.Submitter__c);
-        //Reviewer.Contact != Check all Abstract Authors.Contact for Abstract
-        for(Abstract_Author__c author : abstractItem.Abstract_Authors__r){
-            excludedReviewerContacts.add(author.Abstract_Author__c);
+        Set<String> events = new Set<String>();
+        String topics = '';
+        for (Abstract__c a : abstractItem) {
+            //Reviewer.Contact != Abstract.AbstractPresenter
+            excludedReviewerContacts.add(a.Abstract_Presenter__c);
+            //submitter cannot be a reviewer
+            excludedReviewerContacts.add(a.Submitter__c);
+            //Reviewer.Contact != Check all Abstract Authors.Contact for Abstract
+            for(Abstract_Author__c author : a.Abstract_Authors__r){
+                excludedReviewerContacts.add(author.Abstract_Author__c);
+            }
+            events.add(a.Event__c);
+            if(a.Abstract_Topic__c != null){
+                String[] topicsArray = a.Abstract_Topic__c.split(';');
+                for(String item : topicsArray){
+                    topics += '\'' + item + '\',';
+                }
+            }
         }
 
         String queryString = 
             'SELECT Id, Name, Remaining_Capacity__c, Assigned_Abstracts__c, Event__c, Topics__c, Contact__c, Contact__r.Email, Contact__r.Name,  Contact__r.Membership_Status__c ' + 
             'FROM Reviewer__c ' + 
-            'WHERE ' +
-                'Id NOT IN (SELECT Reviewer__c FROM Abstract_Review__c WHERE Abstract__c = :abstractId) ' +
-                'AND Remaining_Capacity__c > 0 ' +
-                'AND Event__c = \'' + abstractItem.Event__c + '\' ' +
-                'AND Contact__c NOT IN :excludedReviewerContacts ' +
-                'AND Status__c = \'Accepted\' ';
-
-        if(abstractItem.Abstract_Topic__c != null){
-            String[] topicsArray = abstractItem.Abstract_Topic__c.split(';');
-            queryString += 'AND Topics__c INCLUDES(';
-
-            for(String item : topicsArray){
-                queryString += '\'' + item + '\',';
+            'WHERE ';
+            if (!isAuto) {
+                queryString += 'Id NOT IN (SELECT Reviewer__c FROM Abstract_Review__c WHERE Abstract__c IN :abstractIds) AND Contact__c NOT IN :excludedReviewerContacts AND ';
             }
-            queryString = queryString.removeEnd(',') +')';
-        }else{
-            return reviewers;
-        }
+            
+        queryString += 'Remaining_Capacity__c > 0  AND Event__c IN: events AND Status__c = \'Accepted\' ';
+
+        if(topics.length() > 0) {
+            topics = topics.removeEnd(',');
+            queryString += 'AND Topics__c INCLUDES(' + topics  +')';
+        } 
+
         reviewers = (List<Reviewer__c>)Database.query(queryString);
+
         return reviewers;
     }
 
@@ -189,6 +195,56 @@ public with sharing class AssignReviewersController {
                 'status' => 'Success',
                 'message' => 'Reviewers appointed',
                 'isAbstractInReview' => isAbstractInReview
+            };
+
+        } catch (Exception e) {
+            return new Map<String,Object> {
+                'status' => 'Error',
+                'message' => e.getMessage()
+            };
+        }
+    }
+
+    @AuraEnabled
+    public static Map<String,Object> setAbstractRevAuto(List<Map<String,String>> generalData){
+        System.debug('setAbstractRev generalData ' + generalData);
+        try {
+            
+            List<Abstract_Review__c> ars = new List<Abstract_Review__c>();
+            Set<Id> abstractIdsSet = new Set<Id>();
+            for (Map<String,String> m : generalData) {
+                abstractIdsSet.add(m.get('abId'));
+                ars.add(
+                    new Abstract_Review__c(
+                        Abstract__c = m.get('abId'),
+                        Reviewer__c = m.get('rewId'),
+                        Stage__c = 'Assigned'
+                    )
+                );
+            }
+            
+            insert ars;
+            List<Abstract__c> upAbs = new List<Abstract__c>();
+            List<Abstract__c> abstracts = [
+                SELECT Id, Required_number_of_reviewers__c, Assigned_Reviewers__c, Stage__c
+                FROM Abstract__c
+                WHERE Id IN :abstractIdsSet
+            ];
+            if (abstracts.size() > 0) {
+                for (Abstract__c a : abstracts) {
+                    if (a.Required_number_of_reviewers__c > 0 && 
+                        (a.Required_number_of_reviewers__c - a.Assigned_Reviewers__c) == 0) {
+                        upAbs.add( new Abstract__c(Id = a.Id, Stage__c = 'In Review'));
+                    }
+                }
+                if (upAbs.size() > 0) {
+                    update upAbs;
+                } 
+            }
+
+            return new Map<String,Object> {
+                'status' => 'Success',
+                'message' => 'Reviewers appointed'
             };
 
         } catch (Exception e) {

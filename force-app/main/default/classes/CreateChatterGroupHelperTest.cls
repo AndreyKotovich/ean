@@ -3,7 +3,7 @@
     @IsTest public static void newWorkingGroupTest() {
         List<Group__c> newCustomGroups = new List<Group__c>();
         newCustomGroups.add(new Group__c(Name='Group_un1', Enable_synchronization__c = true, Enable_management_group__c = false, Chatter_Group_Accessibility__c = 'Public'));
-        newCustomGroups.add(new Group__c(Name='Group_un2', Enable_synchronization__c = false, Enable_management_group__c = true));
+        newCustomGroups.add(new Group__c(Name='Group_un2', Enable_synchronization__c = false, Enable_management_group__c = true, MG_Chatter_Group_Accessibility__c = 'Unlisted'));
 
         insert newCustomGroups;
 
@@ -14,7 +14,7 @@
         for(CollaborationGroup chatterGroup : allChatterGroups){
 
             if(chatterGroup.Name == 'MG Group_un2'){
-                System.assertEquals('Private', chatterGroup.CollaborationType);
+                System.assertEquals(newCustomGroups[1].MG_Chatter_Group_Accessibility__c, chatterGroup.CollaborationType);
             } else {
                 System.assertEquals(newCustomGroups[0].Chatter_Group_Accessibility__c, chatterGroup.CollaborationType);
             }
@@ -24,7 +24,8 @@
     }
 
     @IsTest public static void updateWorkingGroupTest() {
-        Group__c g = new Group__c(Name='Group_un1', Enable_synchronization__c = true, Enable_management_group__c = true, Chatter_Group_Accessibility__c = 'Public');
+        Group__c g = new Group__c(Name='Group_un1', Enable_synchronization__c = true, Enable_management_group__c = true,
+                Chatter_Group_Accessibility__c = 'Public', MG_Chatter_Group_Accessibility__c = 'Unlisted');
         insert g;
         g  = [SELECT Id, Name, Chatter_Group_Id__c, Management_Chatter_Group_Id__c, Enable_synchronization__c, Enable_management_group__c FROM Group__c WHERE Id =:g.Id];
         g.Enable_synchronization__c = true;
@@ -86,7 +87,8 @@
         RecordType groupMemberRecordType = [SELECT Id FROM RecordType WHERE SobjectType = 'GroupChatterGroupAssotiation__c' AND DeveloperName = 'Level_3_Working_Group'];
         List<GroupChatterGroupAssotiation__c> workingGroupMembers = new List<GroupChatterGroupAssotiation__c>();
 
-        workingGroupMembers.add(new GroupChatterGroupAssotiation__c(Group__c = g.Id, Contact__c = contacts[0].Id, Role__c = 'Management Group Member', RecordTypeId = groupMemberRecordType.Id));
+        workingGroupMembers.add(new GroupChatterGroupAssotiation__c(Group__c = g.Id, Contact__c = contacts[0].Id,
+                Role__c = SynchronizationGroupMembersHelper.MANAGEMENT_ROLES[0], RecordTypeId = groupMemberRecordType.Id));
         workingGroupMembers.add(new GroupChatterGroupAssotiation__c(Group__c = g.Id, Contact__c = contacts[1].Id));
         workingGroupMembers.add(new GroupChatterGroupAssotiation__c(Group__c = g.Id, Contact__c = contacts[2].Id));
 

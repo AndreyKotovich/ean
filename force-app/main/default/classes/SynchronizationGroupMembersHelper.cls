@@ -1,4 +1,6 @@
 public with sharing class SynchronizationGroupMembersHelper {
+    public static final List<String> MANAGEMENT_ROLES = new List<String>{'Management Group Member', 'Chair', 'Co-Chair'};
+
     public static void insertUndeleteGroupMembers(List<GroupChatterGroupAssotiation__c> newMembers) {
         List<GroupChatterGroupAssotiation__c> selectedNewMembers = [
                 SELECT Id, Name, Contact__c, Group__r.Enable_synchronization__c, Group__r.Name, Role__c,
@@ -43,7 +45,7 @@ public with sharing class SynchronizationGroupMembersHelper {
                 potentialChatterGroups.add(gcg.Group__r.Chatter_Group_Id__c);
             }
 
-            if(gcg.Group__r.Enable_management_group__c && gcg.Role__c == 'Management Group Member'){
+            if(gcg.Group__r.Enable_management_group__c && MANAGEMENT_ROLES.contains(gcg.Role__c)){
                 potentialChatterGroups.add(gcg.Group__r.Management_Chatter_Group_Id__c);
             }
 
@@ -122,17 +124,20 @@ public with sharing class SynchronizationGroupMembersHelper {
 
         Set<Id> contactIds = new Set<Id>();
         List<Id> chatterGroupsIds = new List<Id>();
+        Set<Id> workingGroupsIds = new Set<Id>();
 
         for (GroupChatterGroupAssotiation__c gcg : membersWithEnabledSync) {
 
             if(gcg.Group__r.Chatter_Group_Id__c != null && gcg.Group__r.Enable_synchronization__c){
                 chatterGroupsIds.add(gcg.Group__r.Chatter_Group_Id__c);
                 contactIds.add(gcg.Contact__c);
+                workingGroupsIds.add(gcg.Group__c);
             }
 
             if(gcg.Group__r.Management_Chatter_Group_Id__c != null && gcg.Group__r.Enable_management_group__c){
                 chatterGroupsIds.add(gcg.Group__r.Management_Chatter_Group_Id__c);
                 contactIds.add(gcg.Contact__c);
+                workingGroupsIds.add(gcg.Group__c);
             }
 
         }
@@ -142,6 +147,7 @@ public with sharing class SynchronizationGroupMembersHelper {
                 SELECT Id, Contact__c, Group__c, Role__c
                 FROM GroupChatterGroupAssotiation__c
                 WHERE Contact__c IN :contactIds
+                AND Group__c IN :workingGroupsIds
         ];
 
         List<GroupChatterGroupAssotiation__c> updatedMembersWithEnabledSync = new List<GroupChatterGroupAssotiation__c>();
@@ -152,8 +158,23 @@ public with sharing class SynchronizationGroupMembersHelper {
 
             if(triggerGroupMember.Group__r.Enable_management_group__c
                     && triggerGroupMember.Group__r.Management_Chatter_Group_Id__c != null
-                    && triggerGroupMember.Role__c == 'Management Group Member'){
-                workingGroupManagementMembersToDel.add(triggerGroupMember);
+                    && MANAGEMENT_ROLES.contains(triggerGroupMember.Role__c)){
+
+                Boolean managementRoleFound = false;
+
+                for (GroupChatterGroupAssotiation__c allGroupMember : allContactsWorkingGroupAssotiations) {
+                    if(allGroupMember.Id != triggerGroupMember.Id){
+                        if (triggerGroupMember.Contact__c == allGroupMember.Contact__c && triggerGroupMember.Group__c == allGroupMember.Group__c
+                                && MANAGEMENT_ROLES.contains(allGroupMember.Role__c)) {
+                            managementRoleFound = true;
+                            break;
+                        }
+                    }
+                }
+
+                if(!managementRoleFound){
+                    workingGroupManagementMembersToDel.add(triggerGroupMember);
+                }
             }
 
             if(triggerGroupMember.Group__r.Enable_synchronization__c
@@ -172,6 +193,7 @@ public with sharing class SynchronizationGroupMembersHelper {
                 if(!duplicateFound){
                     updatedMembersWithEnabledSync.add(triggerGroupMember);
                 }
+
             }
 
         }
@@ -249,11 +271,11 @@ public with sharing class SynchronizationGroupMembersHelper {
         List<GroupChatterGroupAssotiation__c> membersToDelete = new List<GroupChatterGroupAssotiation__c>();
 
         for(Integer i = 0; i < triggerNew.size(); i++){
-            if(triggerNew[i].Role__c == 'Management Group Member' && triggerOld[i].Role__c != 'Management Group Member'){
+            if(MANAGEMENT_ROLES.contains(triggerNew[i].Role__c) && !MANAGEMENT_ROLES.contains(triggerOld[i].Role__c)){
                 membersToInsert.add(triggerNew[i]);
             }
 
-            if(triggerNew[i].Role__c != 'Management Group Member' && triggerOld[i].Role__c == 'Management Group Member'){
+            if(!MANAGEMENT_ROLES.contains(triggerNew[i].Role__c) && MANAGEMENT_ROLES.contains(triggerOld[i].Role__c)){
                 membersToDelete.add(triggerOld[i]);
             }
         }
@@ -279,15 +301,25 @@ public with sharing class SynchronizationGroupMembersHelper {
 
         Set<Id> contactIds = new Set<Id>();
         List<Id> chatterGroupsIds = new List<Id>();
+        List<Id> workingGroupsIds = new List<Id>();
 
         for (GroupChatterGroupAssotiation__c gcg : membersWithEnabledSync) {
 
             if(gcg.Group__r.Management_Chatter_Group_Id__c != null && gcg.Group__r.Enable_management_group__c){
                 chatterGroupsIds.add(gcg.Group__r.Management_Chatter_Group_Id__c);
                 contactIds.add(gcg.Contact__c);
+                workingGroupsIds.add(gcg.Group__c);
             }
 
         }
+
+        //check if groupsMembers have double membership in group
+        List<GroupChatterGroupAssotiation__c> allContactsWorkingGroupAssotiations = [
+                SELECT Id, Contact__c, Group__c, Role__c
+                FROM GroupChatterGroupAssotiation__c
+                WHERE Contact__c IN :contactIds
+                AND Group__c IN :workingGroupsIds
+        ];
 
         List<GroupChatterGroupAssotiation__c> workingGroupManagementMembersToDel = new List<GroupChatterGroupAssotiation__c>();
 
@@ -295,7 +327,23 @@ public with sharing class SynchronizationGroupMembersHelper {
 
             if(triggerGroupMember.Group__r.Enable_management_group__c
                     && triggerGroupMember.Group__r.Management_Chatter_Group_Id__c != null){
-                workingGroupManagementMembersToDel.add(triggerGroupMember);
+
+                Boolean managementRoleFound = false;
+
+                for (GroupChatterGroupAssotiation__c allGroupMember : allContactsWorkingGroupAssotiations) {
+                    if(allGroupMember.Id != triggerGroupMember.Id){
+                        if (triggerGroupMember.Contact__c == allGroupMember.Contact__c && triggerGroupMember.Group__c == allGroupMember.Group__c
+                                && MANAGEMENT_ROLES.contains(allGroupMember.Role__c)) {
+                            managementRoleFound = true;
+                            break;
+                        }
+                    }
+                }
+
+                if(!managementRoleFound){
+                    workingGroupManagementMembersToDel.add(triggerGroupMember);
+                }
+
             }
 
         }

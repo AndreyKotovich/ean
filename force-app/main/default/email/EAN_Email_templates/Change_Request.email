@@ -6,10 +6,10 @@
                 <p>We have received your change request for the {!relatedTo.Event_custom__r.Event_Number__c}{!relatedTo.Event_custom__r.Congress_Postfix__c} {!relatedTo.Event_custom__r.Marketing_Name__c}.
                     Attached you will find your credit note for your congress registration. </p>
                 <p>Please note that EAN charges a €
-                <apex:outputText value="{0, number, 0.00}">
-                    <apex:param value="{!relatedTo.Total_Amount_Gros__c}" />
-                </apex:outputText>
-                processing fee (including {!relatedTo.Event_custom__r.VAT_Amount__c}% VAT) for any change requests made in the registration process.</p>
+                    <apex:outputText value="{0, number, 0.00}">
+                        <apex:param value="{!relatedTo.Total_amount__c}" />
+                    </apex:outputText>
+                    processing fee (including {!relatedTo.Event_custom__r.VAT_Amount__c}% VAT) for any change requests made in the registration process.</p>
                 <p>If you have any questions regarding registration, please contact us at registration@ean.org. </p> 
                 <p>We are looking forward to welcoming you at the {!relatedTo.Event_custom__r.Event_Number__c}{!relatedTo.Event_custom__r.Congress_Postfix__c} EAN Congress in
                     <apex:outputText value="{0, date, yyyy}">
@@ -25,68 +25,74 @@
     </messaging:htmlEmailBody>
     <messaging:attachment renderAs="PDF" filename="Credit Note - {!relatedTo.Invoice_Number__c}.pdf">
         <html>
-        <head>
-            <style type="text/css" media="print">
-                @page {
-                    @bottom-center {
-                        content: element(footer);
+            <head>
+                <style type="text/css" media="print">
+                    @page {
+                        @bottom-center {
+                            content: element(footer);
+                        }
+                        margin-bottom: 3cm;
                     }
-                    margin-bottom: 2cm;
-                }
-                div.footer {
-                    position: running(footer);
-                    text-align: center;
-                    font-size: 9pt
-                }
-            </style>
-        </head>
+                    div.footer {
+                        position: running(footer);
+                        text-align: center;
+                        font-size: 9pt
+                    }
+                </style>
+            </head>
+        
         <body>
 
-        <div class="footer">
-            <p><b>EAN Registration Management</b><br/>
-                Breite Gasse 4/7, 1070 Vienna, Austria<br/>
-                registration@ean.org, 00431889050325</p>
-        </div>
-            <div>
-                <center>
-                    <img src = "{!$Resource.EAN_BANNER_EC21}" width="740px" height="100" align="center"/>
-                </center>
+            <div class="footer">
+                <div>
+                    <center>
+                        <img src = "{!$Resource.EAN_BANNER_EC21}" width="725px" align="center"/>
+                    </center>
+                </div>
             </div>
-            <div>
-                <p style="margin: 0px; font-size: 11pt;">{!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.FirstName} {!relatedTo.Contact__r.LastName}<br />
-                Department: {!relatedTo.Contact__r.Department_Name__c}<br />
-                Street: {!relatedTo.Contact__r.Work_Street__c}<br />
-                ZIP City: {!relatedTo.Contact__r.Work_Zip_Postal_Code__c} {!relatedTo.Contact__r.Work_City__c}<br />
-                Country: {!relatedTo.Contact__r.Work_Country__c}<br />
-                VAT Nr: {!relatedTo.Contact__r.VAT_Number__c}</p>
+            <div style="width: 725px;">
+                <div style="margin-top: 20px; float: left; width: 475px;">
+                    <div>
+                        <p style="margin: 0px; font-size: 11pt;">{!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.FirstName} {!relatedTo.Contact__r.LastName}<br />
+                        Department: {!relatedTo.Contact__r.Department_Name__c}<br />
+                        Street: {!relatedTo.Contact__r.Work_Street__c}<br />
+                        ZIP City: {!relatedTo.Contact__r.Work_Zip_Postal_Code__c} {!relatedTo.Contact__r.Work_City__c}<br />
+                        Country: {!relatedTo.Contact__r.Work_Country__c}<br />
+                        VAT Nr: {!relatedTo.Contact__r.VAT_Number__c}</p>
+                    </div>
+                    <div style="height: 60px"> </div>
+                    <div style = "text-align: right">
+                        <p style="margin: 0px; font-size: 9pt;">
+                            <apex:outputText value="{0, date, d MMMM yyyy}">
+                                <apex:param value="{!relatedTo.CreatedDate}" /> 
+                            </apex:outputText>
+                        </p>
+                    </div>
+                    <div>
+                        <p style="margin: 0px; font-size: 11pt;">
+                        {!relatedTo.Event_custom__r.Name} - {!relatedTo.Event_custom__r.Event_Number__c}th Congress of the European Academy of Neurology<br/>
+                            <apex:outputText value="{0, date, d MMMM}">
+                                <apex:param value="{!relatedTo.Event_custom__r.Start_Time__c}" /> 
+                            </apex:outputText>
+                            - 
+                            <apex:outputText value="{0, date, d MMMM yyyy}">
+                                <apex:param value="{!relatedTo.Event_custom__r.End_Time__c}" /> 
+                            </apex:outputText>
+                        </p>
+                    </div>
+                    <div style="height: 40px"> </div>
+                    <div style = "text-align: center">
+                        <h2 style="margin: 0px; font-size: 11pt; padding: 5px 0;">INVOICE – {!relatedTo.Invoice_Number__c}</h2>
+                    </div>
+                    <div>
+                        <c:OrderInvoiceCRTable order="{!relatedTo.Id}" />
+                    </div>
+                </div>
+                <div style="width: 250px; float: right;">
+                    <apex:image id="theImage" value="{!$Resource.EAN_Details}" width="250"/>
+                </div>
             </div>
-            <div style="height: 60px"> </div>
-            <div style = "text-align: right">
-                <p style="margin: 0px; font-size: 9pt;">
-                    <apex:outputText value="{0, date, d MMMM yyyy}">
-                        <apex:param value="{!relatedTo.CreatedDate}" /> 
-                    </apex:outputText>
-                </p>
-            </div>
-            <div>
-                <p style="margin: 0px; font-size: 11pt;">
-                {!relatedTo.Event_custom__r.Name} - {!relatedTo.Event_custom__r.Event_Number__c}th Congress of the European Academy of Neurology<br/>
-                    <apex:outputText value="{0, date, d MMMM}">
-                        <apex:param value="{!relatedTo.Event_custom__r.Start_Time__c}" /> 
-                    </apex:outputText>
-                     - 
-                    <apex:outputText value="{0, date, d MMMM yyyy}">
-                        <apex:param value="{!relatedTo.Event_custom__r.End_Time__c}" /> 
-                    </apex:outputText>
-                </p>
-            </div>
-            <div style="height: 40px"> </div>
-            <div style = "text-align: center">
-                <h2 style="margin: 0px; font-size: 11pt; padding: 5px 0;">INVOICE – {!relatedTo.Invoice_Number__c}</h2>
-            </div>
-            <div>
-                <c:OrderInvoiceCRTable order="{!relatedTo.Id}" />
-            </div>
+                    
             </body>
         </html>
     </messaging:attachment>

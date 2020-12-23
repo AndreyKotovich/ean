@@ -54,6 +54,12 @@ public with sharing class CustomLookUpControllerTest {
 
         con = [Select Id FROM Contact WHERE FirstName =: firstName];
         System.assertEquals(con.size(), 1);
+        String exceptionFirstName = 'TestFirstName';
+        String exceptionLastName = 'TestLastName';
+        String exceptionEmailString = '5test@test.com';
+        CustomLookUpController.createContact(exceptionFirstName, exceptionLastName, exceptionEmailString, Department, City, Country);
+        List<Contact> exceptionCon = [Select Id FROM Contact WHERE FirstName =: exceptionFirstName AND LastName =: exceptionLastName];
+        System.assertEquals(exceptionCon.size(), 0);
     }
 
     @isTest

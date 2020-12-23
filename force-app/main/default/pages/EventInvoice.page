@@ -1,0 +1,25 @@
+<apex:page renderAs="pdf" showHeader="false" sidebar="false" applyHtmlTag="false" controller="EventInvoiceController">
+    <html>
+        <head>
+            <style type="text/css" media="print">
+                @page {
+                    @bottom-center {
+                        content: element(footer);
+                    }
+                    margin-bottom: 3cm;
+                }
+                div.footer {
+                    position: running(footer);
+                    text-align: center;
+                    font-size: 9pt
+                }
+            </style>
+        </head>
+        <body>
+            <c:EventInvoiceAttachement order="{!orderId}"
+                        contact="{!contactId}"
+                        event="{!eventId}"
+                        isOrderItemsSame="{!isOrderItemsSame}"/>
+        </body>
+    </html>
+</apex:page>

@@ -12,12 +12,12 @@
             <sorted>false</sorted>
             <value>
                 <fullName>Online</fullName>
-                <default>false</default>
+                <default>true</default>
                 <label>Online</label>
             </value>
             <value>
                 <fullName>Onsite</fullName>
-                <default>true</default>
+                <default>false</default>
                 <label>Onsite</label>
             </value>
         </valueSetDefinition>

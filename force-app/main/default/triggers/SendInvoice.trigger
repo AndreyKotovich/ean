@@ -1,4 +1,19 @@
-trigger SendInvoice on Order__c (after update, after insert) {
+trigger SendInvoice on Order__c (before update, after update, after insert) {
+    //Generating invoice number
+    if (Trigger.isBefore && Trigger.isUpdate) {
+        List<Order__c> paidEventOrders = new List<Order__c>();
+        for (Order__c order : Trigger.new) {
+            if (order.Type__c == 'Event registration'
+                && order.Status__c == 'Paid'
+                && Trigger.oldMap.get(order.Id).Status__c != order.Status__c
+                && String.isBlank(order.Invoice_Number__c)) {
+                    paidEventOrders.add(order);
+                }
+        }
+        if (paidEventOrders.size() > 0) {
+            InvoicePDFGenerator.generateEventInvoiceNumber(paidEventOrders);
+        }
+    }
     //Sending PDF Invoices
     if (Trigger.isUpdate && Trigger.isAfter) {
         Set<Id> orderIds = Trigger.newMap.keySet();

@@ -299,4 +299,120 @@ public with sharing class InvoicePDFGeneratorTest {
         System.assertEquals(1, [SELECT Title FROM ContentVersion WHERE Title = :'Certificate_' + membershipStatus.Name + '.pdf'].size());
     }
 
+    @IsTest
+    static void generateEventInvoiceNumberTest(){
+        Contact testContact = new Contact(LastName = 'test', Email = 'testEm@test.com', MailingStreet = 'TestStreet',
+                MailingCity = 'TestCity', MailingPostalCode = '11111',
+                MailingCountry = 'Germany');
+        insert testContact;
+        Event__c testEvent = new Event__c(Name = 'Test Event');
+        insert testEvent;
+        Test.startTest();
+        List<Order__c> orders = new List<Order__c>();
+        for (Integer i = 0; i < 5; i++) {
+            Order__c order = new Order__c(
+                Contact__c = testContact.Id,
+                Status__c = 'Opened',
+                Event_custom__c = testEvent.Id,
+                Purchase_Type__c = 'New',
+                Type__c = 'Event registration'
+            );
+            orders.add(order);
+        }
+        insert orders;
+        List<String> orderIds = new List<String>();
+        for (Order__c order : orders) {
+            orderIds.add(order.Id);
+        }
+        List<Order__c> afterInsertOrders = [
+            SELECT Id, Contact__c, Status__c, Event_custom__c, Purchase_Type__c, Type__c, Invoice_Number__c
+            FROM Order__c
+            WHERE Id IN :orderIds
+        ];
+        for (Order__c afterInsertOrder : afterInsertOrders) {
+            System.assert(String.isBlank(afterInsertOrder.Invoice_Number__c));
+        }
+        
+        for (Order__c order : orders) {
+            order.Status__c = 'Paid';
+            orderIds.add(order.Id);
+        }
+        update orders;
+        Test.stopTest();
+        List<Order__c> afterUpdtOrders = [
+            SELECT Id, Contact__c, Status__c, Event_custom__c, Purchase_Type__c, Type__c, Invoice_Number__c
+            FROM Order__c
+            WHERE Id IN :orderIds
+        ];
+        Boolean isInvoiceNumbersDifferent = true; 
+        for (Integer i = 0; i < afterUpdtOrders.size(); i++) {
+            System.assert(afterUpdtOrders[i].Contact__c == testContact.Id);
+            System.assert(afterUpdtOrders[i].Status__c == 'Paid');
+            System.assert(afterUpdtOrders[i].Event_custom__c == testEvent.Id);
+            System.assert(afterUpdtOrders[i].Purchase_Type__c == 'New');
+            System.assert(afterUpdtOrders[i].Type__c == 'Event registration');
+            System.assert(String.isNotBlank(afterUpdtOrders[i].Invoice_Number__c));
+            System.assert(afterUpdtOrders[i].Invoice_Number__c.contains('EAN' + String.valueOf(Date.today().year()).right(2) + '-F'));
+            if (afterUpdtOrders.size() > 1 && i != 0) {
+                if (afterUpdtOrders[i].Invoice_Number__c == afterUpdtOrders[i-1].Invoice_Number__c) {
+                    isInvoiceNumbersDifferent = false;
+                }
+            }
+        }
+        System.assert(isInvoiceNumbersDifferent);
+    }
+
+    @IsTest
+    static void saveEventInvoicePDFTest(){
+        Event__c event = new Event__c(Name = 'Test Event');
+        insert event;
+
+        Contact contact = new Contact(FirstName = 'FirstName', LastName = 'LastName', Email = 'info@test.com');
+        insert contact;
+
+        Test.startTest();
+        List<String> orderIds = new List<String>();
+        List<Order__c> orders = new List<Order__c>();
+        for (Integer i = 0; i < 5; i++) {
+            Order__c order = new Order__c(
+                Contact__c = contact.Id,
+                Payment_Method__c = 'creditcard',
+                Status__c = 'Opened',
+                Event_custom__c = event.Id,
+                Purchase_Type__c = 'New',
+                Type__c = 'Event registration'
+            );
+            orders.add(order);
+        }
+        insert orders;
+        for (Order__c order : orders) {
+            order.Status__c = 'Paid';
+            orderIds.add(order.Id);
+        }
+        update orders;
+        Test.stopTest();
+        Map<Id, Order__c> afterUpdtOrdersMap = new Map<Id, Order__c>([
+            SELECT Id, Invoice_Number__c
+            FROM Order__c
+            WHERE Id IN :orderIds
+        ]);
+        List<ContentDocumentLink> conDocLinks = [
+            SELECT Id, ContentDocumentId, LinkedEntityId
+            FROM ContentDocumentLink
+            WHERE LinkedEntityId IN :orderIds
+        ];
+        List<String> contentDocumentIds = new List<String>();
+        for (ContentDocumentLink conDocLink : conDocLinks) {
+            contentDocumentIds.add(conDocLink.ContentDocumentId);
+        }
+        Map<Id, ContentDocument> contentDocsMap = new Map<Id, ContentDocument>([
+            SELECT Id, Title
+            FROM ContentDocument
+            WHERE Id IN :contentDocumentIds
+        ]);
+        System.assert(conDocLinks.size() == afterUpdtOrdersMap.size());
+        for (ContentDocumentLink conDocLink : conDocLinks) {
+            System.assert(contentDocsMap.get(conDocLink.ContentDocumentId).Title == ('Invoice - ' + afterUpdtOrdersMap.get(conDocLink.LinkedEntityId).Invoice_Number__c + '.pdf'));
+        }
+    }
 }
