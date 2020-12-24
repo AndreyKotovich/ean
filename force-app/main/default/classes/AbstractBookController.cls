@@ -104,7 +104,7 @@ public without sharing class AbstractBookController {
 		}
 
 		String queryAbs = 
-			'SELECT Id, Name, Stage__c, Session__c, Event__c, Author_Details__c, Status__c, Topics__c, ' +
+			'SELECT Id, Name, Stage__c, Session__c, Event__c, Author_Details__c, Status__c, Abstract_Topic__c, ' +
 			'Title__c, Body__c,RecordTypeId, RecordType.Name,  Introduction__c, ' +
 			'Methods__c, Results__c, Conclusion__c, Type__c,  ' +
 			'Image_1__c, Image_2__c, Image_3__c, Image_1_Caption__c, Image_2_Caption__c, Image_3_Caption__c,' +

@@ -173,8 +173,11 @@ public with sharing class AssignReviewersControllerTest {
         update abstracts[1];
         List<Reviewer__c> reviewersAfterLateBreaking = AssignReviewersController.getReviewers(new List<Id> { abstracts[1].Id }, true);
          Map<String, String> dataAfterLateBreaking = new Map<String, String>();
-        dataAfterLateBreaking.put(reviewersAfterLateBreaking[0].Id, abstracts[1].Id);
+        dataAfterLateBreaking.put('abId', abstracts[1].Id);
+        dataAfterLateBreaking.put('rewId', reviewersAfterLateBreaking[0].Id);
+        
         Map<String,Object> resultAfterLateBreaking = AssignReviewersController.setAbstractRevAuto(new List<Map<String, String>> { dataAfterLateBreaking });
+        System.debug('resultAfterLateBreaking' + resultAfterLateBreaking);
         System.assertEquals(true, !resultAfterLateBreaking.isEmpty());
     }
 }

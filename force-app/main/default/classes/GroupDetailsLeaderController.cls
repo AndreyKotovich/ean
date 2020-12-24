@@ -109,7 +109,7 @@ public without sharing class GroupDetailsLeaderController {
 				Event_Registration_Sub_Group__r.CreatedDate,
 				Event_Registration_Sub_Group__r.Event_Registration_Group__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name,
 				Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c, Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__r.Name,
-				Status__c
+				Status__c, (SELECT Id, Name__c, Amount__c, Order_Custom__c, Order_Custom__r.Status__c FROM Order_Items__r)
 				// Invitation_Status_In_Group__c	//	Draft	Invited		Confirmed
 			FROM Participant__c
 			WHERE Event_Registration_Sub_Group__r.Event_Registration_Group__r.Contact__c =:contactRecordId
@@ -159,6 +159,15 @@ public without sharing class GroupDetailsLeaderController {
 			// subGroupParticipant.invitationStatusInGroup = participant.Invitation_Status_In_Group__c;	//	develop moment
 
 			subGroupParticipant.disabledToEdit = !isDraftStatus;
+
+			//EANER-157
+			if (isDraftStatus && participant.Order_Items__r.size() > 0 &&
+				participant.Order_Items__r[0].Order_Custom__r.Status__c != 'Paid' &&
+				participant.Order_Items__r[0].Amount__c > 0 &&
+				participant.Order_Items__r[0].Name__c != 'Group Registration' &&
+				participant.Contact__r.Name != 'Undefined Participant') {
+					subGroupParticipant.disabledToEdit = true;
+			}
 
 			SubGroupDetailsWrap subGroupDetails = subGroupIdToDetailsWrap.containsKey('' + participant.Event_Registration_Sub_Group__c)
 				? subGroupIdToDetailsWrap.get('' + participant.Event_Registration_Sub_Group__c) : new SubGroupDetailsWrap();
