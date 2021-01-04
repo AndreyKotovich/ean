@@ -45,6 +45,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>AssignRewiewersController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>AssociateMembershipsAssignment</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -262,6 +266,10 @@
     </classAccesses>
     <classAccesses>
         <apexClass>DownloadAbstractBookController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DownloadAbstractBookControllerTest</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -1527,6 +1535,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Card__c.Token_Id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Case.Challenge_Question__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -5208,6 +5221,10 @@
         <enabled>false</enabled>
         <flow>test</flow>
     </flowAccesses>
+    <loginIpRanges>
+        <endAddress>255.255.255.255</endAddress>
+        <startAddress>0.0.0.0</startAddress>
+    </loginIpRanges>
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>true</allowDelete>

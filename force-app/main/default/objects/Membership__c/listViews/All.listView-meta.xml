@@ -2,12 +2,8 @@
 <ListView xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>All</fullName>
     <columns>NAME</columns>
-    <columns>Reviewer__c</columns>
-    <columns>Membership_Benefits__c</columns>
-    <columns>www__c</columns>
-    <columns>Hierarchy__c</columns>
-    <columns>contact_hidden__c</columns>
-    <columns>Required_Documents__c</columns>
+    <columns>API__c</columns>
+    <columns>isForUpdateMembershipApplication__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
 </ListView>

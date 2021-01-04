@@ -9,6 +9,11 @@
             font-family: NexaBold !important;
         }
     </style>
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!--    =================Toasts=================-->
+    <div id="toast-area">
+    </div>
+    <!--    ==================================-->
     <div id="payment-form" hidden="hidden">
         <div class="slds-theme_default slds-box">
             <div class="slds-grid slds-gutters slds-text-heading_medium slds-m-around_x-small">
@@ -35,14 +40,9 @@
     </div>
     <div id="success-message" hidden="hidden">
     </div>
-    <div id="error-message" class="slds-theme_default slds-box slds-text-align_center" hidden="hidden">
+    <div id="error-screen" class="slds-theme_default slds-box slds-text-align_center" hidden="hidden">
         <div class="slds-text-heading_large slds-text-color_error">
             Your payment has failed.
-        </div>
-    </div>
-    <div id="response-null" hidden="hidden" class="slds-theme_default slds-box slds-text-align_center">
-        <div class="slds-text-heading_large " style="color: red">
-            Something went wrong.
         </div>
     </div>
 
@@ -52,7 +52,7 @@
         </div>
     </div>
 
-    <!--    ==========Spiner==========-->
+    <!--    ==========Spinner==========-->
     <div id="spinner" style="height:6rem">
         <div class="slds-spinner_container">
             <div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
@@ -158,7 +158,7 @@
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-3">
                     <fieldset class="slds-form-element">
                         <div class="slds-form-element__control">
-                            <div class="slds-grid slds-gutters"> 
+                            <div class="slds-grid slds-gutters">
                                 <div class="slds-col slds-size_1-of-3">
                                     <span class="slds-radio" name="payMethod">
                                         <input type="radio" id="card-method" value="card-method" name="options"
@@ -240,7 +240,7 @@
         <div id="BankTransferRenewalCredentials" hidden="hidden"><c:BankTransferRenewalCredentials /></div>
         <a onclick="savePdf()">Download as PDF</a>
     </div>
-    
+
     <!--    =================Address Screen=================-->
     <div id="addresses-screen" hidden="hidden">
         <div class="slds-text-heading_medium">Enter your address information</div>
@@ -279,7 +279,7 @@
                                         State/Province</label>
                                     <div class="slds-form-element__control">
                                         <input type="text" id="mailing-state" required="" disabled="disabled"
-                                               class="slds-input" value="None"/>
+                                               class="slds-input" value="None" />
                                     </div>
                                 </div>
                             </div>
@@ -405,13 +405,13 @@
         </div>
     </div>
     <!--    ==================================-->
+    </html>
 
     <script src="{!URLFOR($Resource.paymentPage)}"/>
     <script>
         var orderId;
         var cardId = '';
         var spinner = document.getElementById("spinner");
-        var somethingWrongScreen = document.getElementById("response-null");
         var paymentForm = document.getElementById("payment-form");
         var paymentMethod = '';
         var order;
@@ -428,7 +428,6 @@
                 '{!$RemoteAction.PaymentHttpRequest.showPaymentCheck}',
                 orderId,
                 function (res, event) {
-                    console.log('statusCode '+event.statusCode);
                     let result = JSON.parse(res);
                     if (event.statusCode == 200){
                         document.getElementsByName("payMethod").forEach(e => {
@@ -445,7 +444,7 @@
                             showAndDetermineSuccessScreen();
                         } else {
                             spinner.setAttribute('hidden', 'hidden');
-                            somethingWrongScreen.removeAttribute('hidden');
+                            showErrorMessage();
 
                             let log = {
                                 'Process_Name__c':'Visualforce: paymentHandle page init() function',
@@ -458,7 +457,8 @@
                         }
                     } else {
                         spinner.setAttribute('hidden', 'hidden');
-                        somethingWrongScreen.removeAttribute('hidden');
+                        showErrorMessage();
+
                         let log = {
                             'Process_Name__c':'Visualforce: paymentHandle page init() function',
                             'Type__c':'Other',
@@ -528,9 +528,9 @@
         }
 
         function onChoosePayment() {
-            
+
             closeModal('choose-payment-method-modal');
-            
+
             Visualforce.remoting.Manager.invokeAction(
                 '{!$RemoteAction.PaymentHttpRequest.updatePaymentMethodForOrder}',
                 orderId,
@@ -547,7 +547,7 @@
                         showAddressScreen();
                     }).catch(() => {
                     spinner.setAttribute('hidden', 'hidden');
-                    somethingWrongScreen.removeAttribute('hidden');
+                    showErrorMessage();
                 });
             } else if ('bank-transfer-method') {
                 Visualforce.remoting.Manager.invokeAction(
@@ -556,19 +556,17 @@
                     function (result, event) {
                         if (event.statusCode == 400) {
                             spinner.setAttribute('hidden', 'hidden');
-                            somethingWrongScreen.removeAttribute('hidden');
+                            showErrorMessage();
                         } else {
                             orderInfo = JSON.parse(JSON.stringify(result));
                             order = orderInfo.singleOrderInList;
-                            console.log('CreatedDate1', order[0].CreatedDate);
                             let orderDeadline = formatDate(addDays(order[0].CreatedDate, 7));
                             document.querySelectorAll('.order-name').forEach(item => {
-                                    console.log('orderInvoiceNumber', order[0]['Invoice_Number__c'])
                                     if (order[0].Invoice_Number__c && (order[0]['Invoice_Number__c']).indexOf('-OC-') > -1) {
                                         item.innerHTML = '"' + order[0]['Name'] + '"';
                                         document.getElementById("BankTransferRegistration").removeAttribute('hidden');
 
-                                    //  https://jira.towa-digital.com/browse/EANER-19   use EAN21-F-#### (= Invoice Number) 
+                                    //  https://jira.towa-digital.com/browse/EANER-19   use EAN21-F-#### (= Invoice Number)
                                     } else if (order[0].Invoice_Number__c && (order[0]['Invoice_Number__c']).indexOf('-F-') > -1) {
                                         item.innerHTML = '"' + order[0]['Name'] + '"';
                                         document.getElementById("BankTransferRegistration").removeAttribute('hidden');
@@ -632,10 +630,21 @@
                 '{!$RemoteAction.PaymentHttpRequest.getContactAddress}',
                 orderId,
                 function (result, event) {
-                    if (event.statusCode == 400 || result === 'error') {
+                    if (event.statusCode === 400 || result === 'error') {
                         spinner.setAttribute('hidden', 'hidden');
-                        somethingWrongScreen.removeAttribute('hidden');
+                        showErrorMessage();
                     } else {
+                        let elementMaxLength = {
+                            'mailing-city': 32,
+                            'mailing-state': 32,
+                            'mailing-code': 16,
+                            'mailing-street': 128,
+                            'billing-city': 32,
+                            'billing-state': 32,
+                            'billing-code': 16,
+                            'billing-street': 128
+                        };
+
                         spinner.setAttribute('hidden', 'hidden');
                         document.querySelector('#addresses-screen').removeAttribute('hidden');
                         let parsedResult = JSON.parse(result);
@@ -652,15 +661,6 @@
                             addressesObject['mailing-code'] = parsedResult.hasOwnProperty('OtherPostalCode') ? parsedResult['OtherPostalCode'] : '';
                             addressesObject['mailing-country'] = parsedResult.hasOwnProperty('OtherCountry') ? parsedResult['OtherCountry'] : '';
                         } else if (parsedResult['Mailing_address__c'] === 'Work Address') {
-                            //old implementation
-                            /*if (parsedResult.hasOwnProperty('Primary_Workplace__r')) {
-                                let workPlaceAddress = parsedResult['Primary_Workplace__r'];
-                                addressesObject['mailing-street'] = workPlaceAddress.hasOwnProperty('ShippingStreet') ? workPlaceAddress['ShippingStreet'] : '';
-                                addressesObject['mailing-city'] = workPlaceAddress.hasOwnProperty('ShippingCity') ? workPlaceAddress['ShippingCity'] : '';
-                                addressesObject['mailing-state'] = workPlaceAddress.hasOwnProperty('ShippingState') ? workPlaceAddress['ShippingState'] : '';
-                                addressesObject['mailing-code'] = workPlaceAddress.hasOwnProperty('ShippingPostalCode') ? workPlaceAddress['ShippingPostalCode'] : '';
-                                addressesObject['mailing-country'] = workPlaceAddress.hasOwnProperty('ShippingCountry') ? workPlaceAddress['ShippingCountry'] : '';
-                            }*/
                             addressesObject['mailing-street'] = parsedResult.hasOwnProperty('Work_Street__c') ? parsedResult['Work_Street__c'] : '';
                             addressesObject['mailing-city'] = parsedResult.hasOwnProperty('Work_City__c') ? parsedResult['Work_City__c'] : '';
                             addressesObject['mailing-state'] = parsedResult.hasOwnProperty('Work_State_Province__c') ? parsedResult['Work_State_Province__c'] : '';
@@ -669,8 +669,15 @@
                         }
                         let elementsIds = ['mailing-city', 'mailing-state', 'mailing-code', 'mailing-country', 'mailing-street'];
                         elementsIds.forEach(id => {
+                            if(elementMaxLength[id]){
+                                addressesObject[id] = addressesObject[id].length <= elementMaxLength[id] ? addressesObject[id] : addressesObject[id].slice(0, elementMaxLength[id]);
+                            }
                             document.querySelector(`#${id}`).value = addressesObject[id];
                         });
+
+                        for(let id in elementMaxLength){
+                            document.querySelector(`#${id}`).maxLength = elementMaxLength[id];
+                        }
                     }
                 },
                 {escape: false});
@@ -728,7 +735,7 @@
                     function (result, event) {
                         if (event.statusCode == 400) {
                             spinner.setAttribute('hidden', 'hidden');
-                            somethingWrongScreen.removeAttribute('hidden');
+                            showErrorMessage();
 
                             let log = {
                                 'Process_Name__c':'Visualforce: paymentHandle page moveToPayment() writeOrderBillingAddress',
@@ -741,21 +748,24 @@
                             createCustomLog(log);
                         } else {
                             if (paymentMethod === 'card-method') {
-                                showPaymentForm();
-                                checkCards();
+                                showPaymentForm()
+                                .then(()=>{
+                                    checkCards();
+                                })
                             } else if (paymentMethod === 'paypal-method') {
                                 Visualforce.remoting.Manager.invokeAction(
                                     '{!$RemoteAction.PaymentHttpRequest.getPayPalUrl}',
                                     orderId, JSON.stringify(addressesObject),
                                     function (result, event) {
-                                        if (event.statusCode == 400) {
+                                        let parsedResult = JSON.parse(result);
+                                        if (event.statusCode === 400 || parsedResult.error) {
                                             spinner.setAttribute('hidden', 'hidden');
-                                            somethingWrongScreen.removeAttribute('hidden');
+                                            showErrorMessage('Error', parsedResult.message);
 
                                             let log = {
                                                 'Process_Name__c':'Visualforce: paymentHandle page PayPal moveToPayment() function',
                                                 'Type__c':'Other',
-                                                'Message__c' : JSON.stringify(event),
+                                                'Message__c' : result,
                                                 'Status__c' : 'Error',
                                                 'End_Time__c' : new Date().toUTCString(),
                                                 'Order__c' : orderId
@@ -772,18 +782,22 @@
                                             };
                                             createCustomLog(log)
                                                 .finally(()=>{
-                                                    if (result != 'error') {
-                                                        window.top.location.href = result;
+                                                    if (parsedResult.url) {
+                                                        window.top.location.href = parsedResult.url;
                                                     } else {
                                                         spinner.setAttribute('hidden', 'hidden');
-                                                        somethingWrongScreen.removeAttribute('hidden');
+                                                        showErrorMessage();
                                                     }
                                                 });
                                         }
-                                    });
+                                    },
+                                    {escape: false}
+                                );
                             }
                         }
-                    });
+                    },
+                    {escape: false}
+                );
 
             }
         }
@@ -878,37 +892,50 @@
             });
         }
         function showPaymentForm() {
-            Visualforce.remoting.Manager.invokeAction(
-                '{!$RemoteAction.PaymentHttpRequest.SeamlessURL}',
-                orderId, cardId, JSON.stringify(addressesObject),
-                function (result, event) {
-                    let resultParse = JSON.parse(result);
-                    if (result != null && result != '') {
-                        spinner.setAttribute('hidden', 'hidden');
-                        if (resultParse.url != null) {
-                            paymentForm.removeAttribute('hidden');
-                            document.getElementById("total-price").innerHTML = (resultParse.price).toFixed(2) + ' EUR';
-                            showSeamless(resultParse.url);
+            return new Promise((resolve, reject) => {
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.PaymentHttpRequest.SeamlessURL}',
+                    orderId, cardId, JSON.stringify(addressesObject),
+                    function (result, event) {
+                        let resultParse = JSON.parse(result);
+
+                        if (!!result && !resultParse.error) {
+                            spinner.setAttribute('hidden', 'hidden');
+                            if (!!resultParse.url) {
+                                paymentForm.removeAttribute('hidden');
+                                document.getElementById("total-price").innerHTML = (resultParse.price).toFixed(2) + ' EUR';
+                                showSeamless(resultParse.url);
+                                resolve(resultParse);
+                            }
+                        } else {
+                            spinner.setAttribute('hidden', 'hidden');
+                            showErrorMessage('Error', resultParse.message);
+                            let log = {
+                                'Process_Name__c': 'Visualforce: paymentHandle page showPaymentForm()',
+                                'Type__c': 'Other',
+                                'Message__c': result,
+                                'Status__c': 'Error',
+                                'End_Time__c': new Date().toUTCString(),
+                                'Order__c': orderId
+                            };
+                            createCustomLog(log);
+                            reject(resultParse);
                         }
-                    } else {
-                        spinner.setAttribute('hidden', 'hidden');
-                        somethingWrongScreen.removeAttribute('hidden');
-                    }
-                },
-                {escape: false}
-            );
+                    },
+                    {escape: false}
+                );
+            });
         }
         function showSeamless(paymentredirecturl) {
             WPP.seamlessRender({
                 url: paymentredirecturl, // this is the payment link returned in response to your initial request
                 wrappingDivId: "seamless-form-target",
                 onSuccess: function (response) { // called when seamless form is successfully rendered
-                    console.log('response:: ' + response);
                 },
                 onError: function (errResp) { // called if seamless form failed to render
                     console.log('errRespppps:: ' + JSON.stringify(errResp));
                     paymentForm.setAttribute('hidden', 'hidden');
-                    somethingWrongScreen.removeAttribute('hidden');
+                    showErrorMessage();
                 }
             });
         }
@@ -938,7 +965,6 @@
                 function (result, event) {
                     let parsedResult = JSON.parse(result);
                     let rows = '';
-                    console.log('parsedResult ', parsedResult)
                     parsedResult['order-items'].forEach(item => {
                         rows += `
                         <tr class="slds-hint-parent">
@@ -1007,11 +1033,30 @@
                 onError: function (response) {
                     // called when seamless form data is successfully submitted with non-3D Secure credit card
                     // see section 4 (Parse and Process the Payment Response) on how to deal with this data
-                    console.log('onError:: ' + JSON.stringify(response));
-                    if (!response.hasOwnProperty('error_1')) {
+                    if (!response.hasOwnProperty('error_1') && response['response-base64']){
                         paymentForm.setAttribute('hidden', 'hidden');
-                        document.getElementById("error-message").removeAttribute('hidden');
                         parseAndInsertTransaction(response);
+
+                        let parsedResponse = JSON.parse(atob(response['response-base64']));
+                        let payment = !!parsedResponse ? parsedResponse.payment : '';
+                        let statuses = !!payment ? payment.statuses : '';
+                        let status = !!statuses.status ? statuses.status : '';
+                        let errors = [];
+
+                        for(let s of status){
+                            if(s.severity !== 'error') continue;
+                            errors.push(s.description);
+                        }
+
+                        if(errors.length > 0){
+                            showErrorMessage('Error', errors[0]);
+                        } else {
+                            showErrorMessage('Error', 'Something went wrong, please contact you system administrator.');
+                        }
+                    } else {
+                        if(response.errors[0].error.code === 'FE0001'){
+                            showToast('Form validation failed. Please check your inputs and try again.', 'error');
+                        }
                     }
                     spinner.setAttribute('hidden', 'hidden');
 
@@ -1024,7 +1069,6 @@
                         '{!$RemoteAction.PaymentHttpRequest.createLog}',
                         log, 'no body', response, new Date().toUTCString(), 500,
                         function (result, event) {
-                            console.log('RES:: '+JSON.stringify(result));
                         },
                     );
                 }
@@ -1039,7 +1083,7 @@
                 .catch(result=>{
                     createTransaction(result);
                     paymentForm.setAttribute('hidden', 'hidden');
-                    document.getElementById("error-message").removeAttribute('hidden');
+                    document.getElementById("error-screen").removeAttribute('hidden');
                 });
         }
         function parsePaymentResponse(response){
@@ -1100,9 +1144,8 @@
                 orderId,
                 function (result, event) {
                     let title, message;
-                    console.log('showAndDetermineSuccessScreen: ', result);
                     if(result.type === 'ERROR'){
-                        somethingWrongScreen.removeAttribute('hidden');
+                        showErrorMessage();
                     } else if(result.type === 'ORDER'){
                         title = 'Your payment was received, thank you!';
                         message = '';
@@ -1169,6 +1212,82 @@
             let yyyy = date.getFullYear();
 
             return dd + '.' + mm + '.' + yyyy;
+        }
+
+        function showToast(message, variant){
+            let theme = '';
+            let image_path = '';
+
+            switch(variant) {
+                case 'success':
+                    theme = 'slds-theme_success';
+                    image_path = 'icons/utility-sprite/svg/symbols.svg#success';
+                    break;
+                case 'error':
+                    theme = 'slds-theme_error';
+                    image_path = 'icons/utility-sprite/svg/symbols.svg#error';
+                    break;
+                default:
+                    theme = 'slds-theme_info';
+                    image_path = 'icons/utility-sprite/svg/symbols.svg#info';
+            }
+
+            let uniqueId = new Date().getTime();
+            let toastArea = document.getElementById("toast-area");
+            let xlinkHref = '{!URLFOR($Asset.SLDS, '{value}')}'.replace('{value}', image_path);
+            let toast = `<div id="${uniqueId}" class="slds-notify_container slds-is-relative">
+                            <div class="slds-notify slds-notify_toast ${theme}" role="status">
+                                <span class="slds-assistive-text">success</span>
+                                <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top" title="Description of icon when needed">
+                                    <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                        <use xlink:href="${xlinkHref}"></use>
+                                    </svg>
+                                </span>
+                                <div class="slds-notify__content">
+                                    <h2 class="slds-text-heading_small ">${message}</h2>
+                                </div>
+                                <div class="slds-notify__close">
+                                    <button class="slds-button slds-button_icon slds-button_icon-inverse" title="Close" onclick="removeMarkup(${uniqueId});">
+                                        <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                            <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                                        </svg>
+                                        <span class="slds-assistive-text">Close</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>`;
+
+            toastArea.insertAdjacentHTML('afterbegin', toast);
+            // setTimeout(removeMarkup, 5000, uniqueId);
+        }
+
+        function removeMarkup(uniqueId){
+            let el = document.getElementById(uniqueId);
+            el.remove();
+        }
+
+        function showErrorMessage(title, message){
+            if(!!!title){
+                title = 'Something went wrong, please contact your system administrator.'
+            }
+            let messageBody = `<div class="slds-text-align_center slds-grid slds-grid_vertical">
+                                    <div class="slds-col">
+                                        <div class="slds-text-heading_large slds-text-color_error">${title}</div>
+                                    </div>`;
+            if(!!message){
+                messageBody += `<div class="slds-col">
+                                    <div class="slds-text-heading_small slds-m-top--medium slds-text-color_error">${message}</div>
+                                </div>`;
+            }
+
+            messageBody += `<div class="slds-col">
+                                    <div class="slds-text-heading_x-small slds-m-top--medium">
+                                        <a onclick="window.location.reload()">Reload page to try again</a>
+                                    </div>
+                                </div>`
+            messageBody += `</div>`;
+            document.getElementById("error-screen").innerHTML = messageBody;
+            document.getElementById("error-screen").removeAttribute('hidden');
         }
     </script>
 </apex:page>

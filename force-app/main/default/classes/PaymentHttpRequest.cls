@@ -12,13 +12,26 @@ public without sharing class PaymentHttpRequest {
     }
     @RemoteAction public static String SeamlessURL(String orderId, String cardId, String addressesObject) {
         Map<String, Object> vfdata = new Map<String, Object>();
-        Order__c orderRec = [SELECT Id, Total_amount__c FROM Order__c WHERE Id = :orderId];
-        Map<String,Object> showPaidForm = (Map<String,Object>)JSON.deserializeUntyped(showPaymentCheck(orderId));
-        if (showPaidForm.get('status') == 'SUCCESS') {
-            String s = getSeamlessURLBody(cardId, orderId, addressesObject);
-            String seamlessUrl = getSeamlessURLHttp(s, orderId);
-            vfdata.put('url', seamlessUrl);
-            vfdata.put('price', orderRec.Total_amount__c);
+        try{
+            Order__c orderRec = [SELECT Id, Total_amount__c FROM Order__c WHERE Id = :orderId];
+            Map<String,Object> showPaidForm = (Map<String,Object>)JSON.deserializeUntyped(showPaymentCheck(orderId));
+            if (showPaidForm.get('status') == 'SUCCESS') {
+                String s = getSeamlessURLBody(cardId, orderId, addressesObject);
+                String responseBody = getSeamlessURLHttp(s, orderId);
+                vfdata.put('response', JSON.deserializeUntyped(responseBody));
+                String seamlessUrl = ((Map<String, String>) JSON.deserialize(responseBody, Map<String, String>.class)).get('payment-redirect-url');
+                vfdata.put('url', seamlessUrl);
+                vfdata.put('price', orderRec.Total_amount__c);
+            }
+        } catch (Exception e){
+            String message = 'Something went wrong, please contact your system administrator.';
+            vfdata.put('error', true);
+            System.debug(e);
+            System.debug(e.getTypeName());
+            if(e.getTypeName() == 'System.AuraHandledException'){
+                message = e.getMessage();
+            }
+            vfdata.put('message', message);
         }
         return JSON.serialize(vfdata);
     }
@@ -96,11 +109,12 @@ public without sharing class PaymentHttpRequest {
         request.setHeader('Accept', 'application/json');
         request.setBody(body);
         HttpResponse response = http.send(request);
-        Log__c log = new Log__c(Process_Name__c = 'REST: Payment getSeamlessURLHttp()', Order__c=orderId, Type__c='REST');
-        createLog(log, body, response.getBody(), Datetime.now(), response.getStatusCode());
-        return ((Map<String, String>) JSON.deserialize(response.getBody(), Map<String, String>.class)).get('payment-redirect-url');
+        return response.getBody();
     }
     public static String getSeamlessURLBody(String cardId, String orderId, String addressesObject) {
+        Boolean hasErrors = false;
+        String errorMessage = '';
+
         List<Card__c> card = [SELECT Id, Token_Id__c FROM Card__c WHERE Id = :cardId];
         List<Order__c> order = [SELECT Id, Total_amount__c, Name, Contact__r.FirstName, Contact__r.LastName FROM Order__c WHERE Id = :orderId];
         List<Order_Item__c> orderItem = [
@@ -110,20 +124,56 @@ public without sharing class PaymentHttpRequest {
             WHERE Order_Custom__c = :orderId
         ];
         List<Map<String, Object>> m = new List<Map<String, Object>>();
+
         for (Order_Item__c oi : orderItem) {
+            String name = !String.isBlank(oi.Name__c) ? oi.Name__c : 'undefined name';
             m.add(new Map<String, Object>{
                     'amount' => new Map<String, Object>{
                             'currency' => 'EUR', 'value' => oi.Amount__c
                     },
                     'article-number' => oi.Name,
-                    'name' => !String.isBlank(oi.Name__c) ? oi.Name__c : 'undefined name',
+                    'name' => name,
                     'quantity' => oi.Quantity__c
             });
+
+            //Validation
+            if(name.length() > 256){
+                hasErrors = true;
+                errorMessage = 'A value of the field "name" is too long. Please contact you system administrator.';
+            }
+            if(oi.Name.length() > 256){
+                hasErrors = true;
+                errorMessage = 'A value of the field "article-number" is too long. Please contact you system administrator.';
+            }
         }
 
         List<Map<String, String>> addresses = parseAddresses(addressesObject);
         Map<String, String> shippingAddress = addresses[0];
         Map<String, String> billingAddress = addresses[1];
+
+        if(order[0].Name.length() > 64){
+            hasErrors = true;
+            errorMessage = 'A value of the field "order-number" is too long. Please check your input and try again or contact you system administrator.';
+        }
+        if(order[0].Contact__r.FirstName.length() > 32){
+            hasErrors = true;
+            errorMessage = 'A value of the field "first-name" is too long. Please check your input and try again or contact you system administrator.';
+        }
+        if(order[0].Contact__r.LastName.length() > 32){
+            hasErrors = true;
+            errorMessage = 'A value of the field "last-name" is too long. Please check your input and try again or contact you system administrator.';
+        }
+        if(shippingAddress.get('country').length() > 3 || billingAddress.get('country').length() > 3){
+            hasErrors = true;
+            errorMessage = 'A value of the field "country" is too long. Please check your input and try again or contact you system administrator.';
+        }
+
+        if(hasErrors){
+            AuraHandledException e = new AuraHandledException(errorMessage);
+            e.setMessage(errorMessage);
+            throw e;
+        }
+
         String paymentMethod = 'creditcard';
         String requestId = getUUID();
         String merchantAccountId;
@@ -316,21 +366,34 @@ public without sharing class PaymentHttpRequest {
     }
 
     @RemoteAction public static String getPayPalUrl(String orderId, String addressesObject) {
-        List<Payment_Credentials__mdt> creds = [SELECT Id, Merchant_Account_Id__c, Merchant_PayPal_Account_Id__c, DeveloperName,
-            Named_Credentials__c, Payment_Info_PayPal_Named_Credentials__c, Named_Credentials_PayPal__c FROM Payment_Credentials__mdt WHERE Active__c = true];
-        choosePaymentCredentials(creds);
-        Http http = new Http();
-        HttpRequest request = new HttpRequest();
-        request.setEndpoint('callout:' + paymentCredentials.Named_Credentials_PayPal__c);
-        request.setMethod('POST');
-        request.setHeader('Content-Type', 'application/json');
-        request.setHeader('Accept', 'application/json');
-        String requestBody = getPayPalUrlBody(orderId, addressesObject);
-        request.setBody(requestBody);
-        HttpResponse response = http.send(request);
-        Log__c log = new Log__c(Process_Name__c = 'REST: Payment getPayPalUrl()', Order__c=orderId, Type__c='REST');
-        createLog(log, requestBody, response.getBody(), Datetime.now(), 500);
-        return handlePayPalUrlResponse(response.getBody());
+        Map<String, Object> result = new Map<String, Object>();
+        try{
+            List<Payment_Credentials__mdt> creds = [SELECT Id, Merchant_Account_Id__c, Merchant_PayPal_Account_Id__c, DeveloperName,
+                Named_Credentials__c, Payment_Info_PayPal_Named_Credentials__c, Named_Credentials_PayPal__c FROM Payment_Credentials__mdt WHERE Active__c = true];
+            choosePaymentCredentials(creds);
+            Http http = new Http();
+            HttpRequest request = new HttpRequest();
+            request.setEndpoint('callout:' + paymentCredentials.Named_Credentials_PayPal__c);
+            request.setMethod('POST');
+            request.setHeader('Content-Type', 'application/json');
+            request.setHeader('Accept', 'application/json');
+            String requestBody = getPayPalUrlBody(orderId, addressesObject);
+            request.setBody(requestBody);
+            HttpResponse response = http.send(request);
+            result.put('response', JSON.deserializeUntyped(response.getBody()));
+            result.putAll(handlePayPalUrlResponse(response.getBody()));
+        } catch(Exception e){
+            String message = 'Something went wrong, please contact your system administrator.';
+            result.put('error', true);
+            System.debug(e);
+            System.debug(e.getTypeName());
+            if(e.getTypeName() == 'System.AuraHandledException'){
+                message = e.getMessage();
+            }
+            result.put('message', message);
+        }
+        return JSON.serialize(result);
+
     }
 
     @AuraEnabled public static void createLogAuraEnabled(String log, String request, String response, Datetime endTime, Decimal statusCode){
@@ -387,6 +450,9 @@ public without sharing class PaymentHttpRequest {
     }
 
     public static String getPayPalUrlBody(String orderId, String addressesObject) {
+        Boolean hasErrors = false;
+        String errorMessage = '';
+
         String communityOriginURL = getCommunityOriginUrl('Community');
         String communityURL = getCommunityHomeUrl();
         List<Order__c> order = [
@@ -403,20 +469,56 @@ public without sharing class PaymentHttpRequest {
         ];
 
         List<Map<String, Object>> orderItems = new List<Map<String, Object>>();
+
         for (Order_Item__c oi : orderItem) {
+            String name = !String.isBlank(oi.Name__c) ? oi.Name__c : 'undefined name';
             orderItems.add(new Map<String, Object>{
                     'amount' => new Map<String, Object>{
                             'currency' => 'EUR', 'value' => oi.Amount__c
                     },
                     'article-number' => oi.Name,
-                    'name' => !String.isBlank(oi.Name__c) ? oi.Name__c : 'undefined name',
+                    'name' => name,
                     'quantity' => oi.Quantity__c
             });
+
+
+            //Validation
+            if(name.length() > 256){
+                hasErrors = true;
+                errorMessage = 'A value of the field "name" is too long. Please contact you system administrator.';
+            }
+            if(oi.Name.length() > 256){
+                hasErrors = true;
+                errorMessage = 'A value of the field "article-number" is too long. Please contact you system administrator.';
+            }
         }
 
         List<Map<String, String>> addresses = parseAddresses(addressesObject);
         Map<String, String> shippingAddress = addresses[0];
         Map<String, String> billingAddress = addresses[1];
+
+        if(order[0].Name.length() > 64){
+            hasErrors = true;
+            errorMessage = 'A value of the field "order-number" is too long. Please check your input and try again or contact you system administrator.';
+        }
+        if(order[0].Contact__r.FirstName.length() > 27){
+            hasErrors = true;
+            errorMessage = 'A value of the field "first-name" is too long. Please check your input and try again or contact you system administrator.';
+        }
+        if(order[0].Contact__r.LastName.length() > 27){
+            hasErrors = true;
+            errorMessage = 'A value of the field "last-name" is too long. Please check your input and try again or contact you system administrator.';
+        }
+        if(shippingAddress.get('country').length() > 3 || billingAddress.get('country').length() > 3){
+            hasErrors = true;
+            errorMessage = 'A value of the field "country" is too long. Please check your input and try again or contact you system administrator.';
+        }
+
+        if(hasErrors){
+            AuraHandledException e = new AuraHandledException(errorMessage);
+            e.setMessage(errorMessage);
+            throw e;
+        }
 
         String paymentMethod = 'paypal';
         String requestId = getUUID();
@@ -475,8 +577,8 @@ public without sharing class PaymentHttpRequest {
         String body = gen.getAsString();
         return body;
     }
-    public static String handlePayPalUrlResponse(String body) {
-        String returnStatement = 'error';
+    public static Map<String, Object> handlePayPalUrlResponse(String body) {
+        Map<String, Object> result = new Map<String, Object>();
         Object payment = ((Map<String, Object>) JSON.deserializeUntyped(body)).get('payment');
         Object statuses = ((Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(payment))).get('statuses');
         Object status = ((Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(statuses))).get('status');
@@ -489,11 +591,15 @@ public without sharing class PaymentHttpRequest {
             Object name = ((Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(paymentMethodList[0]))).get('name');
             if (name == 'paypal') {
                 Object url = ((Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(paymentMethodList[0]))).get('url');
-                returnStatement = String.valueOf(url);
+                result.put('url', String.valueOf(url));
             }
-            return returnStatement;
+            return result;
         } else {
-            return returnStatement;
+            Object errorDescription = ((Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(statusList[0]))).get('description');
+            String errorDescriptionString = String.valueOf(errorDescription);
+            AuraHandledException e = new AuraHandledException(errorDescriptionString);
+            e.setMessage(errorDescriptionString);
+            throw e;
         }
     }
     // @RemoteAction public static List<Order__c> getOrderInfo(String orderId) {

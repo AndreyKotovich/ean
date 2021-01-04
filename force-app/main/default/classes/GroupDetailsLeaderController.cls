@@ -157,9 +157,9 @@ public without sharing class GroupDetailsLeaderController {
 			subGroupParticipant.buttonsSettingsInitial = buttonsSettings;
 
 			// subGroupParticipant.invitationStatusInGroup = participant.Invitation_Status_In_Group__c;	//	develop moment
-
+			
 			subGroupParticipant.disabledToEdit = !isDraftStatus;
-
+			
 			//EANER-157
 			if (isDraftStatus && participant.Order_Items__r.size() > 0 &&
 				participant.Order_Items__r[0].Order_Custom__r.Status__c != 'Paid' &&

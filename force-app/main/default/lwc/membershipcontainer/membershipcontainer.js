@@ -95,8 +95,14 @@ export default class Membershipcontainer extends NavigationMixin(LightningElemen
             //upgrade
             parsedResult['memberships'].forEach(item=>{
                 let membershipApi = item['Membership__r']['API__c'];
-                if(membershipApi==='associate_individual_membership' || membershipApi==='full_membership' || membershipApi==='resident_and_research_membership' || membershipApi==='student_membership'){
+                if(membershipApi==='associate_individual_membership'
+                    || membershipApi==='full_membership'
+                    || membershipApi==='resident_and_research_membership'
+                    || membershipApi==='student_membership'
+                    || membershipApi==='associate_corresponding_membership'){
+
                     this.upgradeMembershipButton = true;
+
                 }
             });
         }

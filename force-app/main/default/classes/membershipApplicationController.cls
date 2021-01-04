@@ -2,7 +2,7 @@ public with sharing class membershipApplicationController {
     @AuraEnabled public static membershipApplicationWrapper getMemberships() {
         List<Membership__c> allmembrs = [SELECT Id, Name, API__c, isForUpdateMembershipApplication__c,
                 www__c, (SELECT Id, Membership__c, Region__c, Price_for_Deadline_1__c,
-                Price_for_Deadline_2__c, Price_for_Deadline_3__c FROM Country_Prices1__r) FROM Membership__c];
+                Price_for_Deadline_2__c, Price_for_Deadline_3__c FROM Country_Prices1__r) FROM Membership__c ORDER BY Name ASC];
         List<Country_Price__c> countryPrices = new List<Country_Price__c>();
         for (Membership__c m : allmembrs) {
             for (Country_Price__c cp : m.Country_Prices1__r) {

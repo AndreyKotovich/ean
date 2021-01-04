@@ -12,6 +12,7 @@
                         <div slot="title">
                             Please review/ enter your data
                         </div>
+                        <div class="slds-p-left_xx-large slds-p-right_xx-large slds-text-color_error">All fields marked with an asterisk <span class="slds-text-heading_small">*</span> are required</div>
                         <div class="slds-p-left_xx-large slds-p-right_xx-large">
                             <lightning-record-edit-form object-api-name="Application_form__c"
                                                         onload={membershipStatements}>
@@ -69,22 +70,25 @@
 
                         <div class="slds-p-left_xx-large slds-p-right_xx-large">
                             <div class="slds-grid slds-grid_vertical">
-                                <div class="slds-col slds-m-bottom_small slds-m-top_x-small">
+                                <!-- <div class="slds-col slds-m-bottom_small slds-m-top_x-small">
                                     <span class="community-text-gray">Please upload <u>your updated CV</u> and the following documents, based on your membership selection:</span>
+                                </div> -->
+                                <div class="slds-col slds-m-bottom_small slds-m-top_x-small">
+                                    <b><span >Please <u>upload your updated CV in English</u> no matter which category you are applying for, and in addition the following documents, based on your membership application:</span></b>
                                 </div>
                                 <div class="slds-col">
                                     <div class="slds-grid slds-grid_vertical">
                                         <div class="slds-col slds-m-bottom_xx-small">
-                                            <div>EAN Resident & Research Membership application:</div>
+                                            <div>Fellow of EAN application:</div>
                                             <ul class="slds-list_dotted community-text-gray">
-                                                <li>an official confirmation/certification of your ongoing training in neurology or PhD studies in English
+                                                <li>a cover letter detailing your important achievements and a list of publications
                                                 </li>
                                             </ul>
                                         </div>
                                         <div class="slds-col slds-m-bottom_xx-small">
-                                            <div>Fellow of EAN application:</div>
+                                            <div>EAN Resident & Research Membership application:</div>
                                             <ul class="slds-list_dotted community-text-gray">
-                                                <li>a cover letter detailing your important achievements and a list of publications
+                                                <li>an official confirmation/certification of your ongoing training in neurology or PhD studies in English
                                                 </li>
                                             </ul>
                                         </div>

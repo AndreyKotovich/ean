@@ -815,6 +815,9 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
             case 'associate_individual_membership':
                 this.associateIndividualMembershipExist();
                 break;
+            case 'associate_corresponding_membership':
+                this.associateCorrespondingMembershipExist();
+                break;
             case 'full_membership':
                 this.fullMembershipExist();
                 break;
@@ -844,6 +847,27 @@ export default class UpdateMembershipApplication extends NavigationMixin(Lightni
             })
             .catch(error=>{
                 console.log('associateIndividualMembershipExist_ERROR: '+JSON.stringify(error));
+            })
+    }
+
+    associateCorrespondingMembershipExist(){
+        let currentMembership = this.getMembershipByApi('associate_corresponding_membership');
+        let membershipToEnable=[];
+        membershipToEnable.push(this.getMembershipByApi('resident_and_research_membership'));
+        membershipToEnable.push(this.getMembershipByApi('corresponding_membership'));
+        membershipToEnable.push(this.getMembershipByApi('fellow_membership'));
+        membershipToEnable.push(this.getMembershipByApi('full_membership'));
+        membershipToEnable.push(this.getMembershipByApi('student_membership'));
+        this.disableEnableMemberships(currentMembership, membershipToEnable)
+            .then(()=>{
+                this.residentAndResearchMembershipLOGIC();
+                this.correspondingIndividualMembershipLOGIC();
+                this.fellowMembershipLOGIC();
+                this.fullMembershipLOGIC();
+                this.studentMembershipLOGIC();
+            })
+            .catch(error=>{
+                console.log('associateCorrespondingMembershipExist_ERROR: '+JSON.stringify(error));
             })
     }
 

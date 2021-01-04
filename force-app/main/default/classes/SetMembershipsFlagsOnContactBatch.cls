@@ -18,7 +18,7 @@ global class SetMembershipsFlagsOnContactBatch implements Database.Batchable<sOb
         return Database.getQueryLocator(
                 'SELECT Id, Email, Flag_EAN_Full_Member__c, Flag_EAN_Corresponding_Member__c, Flag_EAN_Fellow_of_the_EAN__c, ' +
                         'Flag_EAN_Resident_Research_Member__c, Flag_EAN_Associate_Member__c, Flag_EAN_Student_Member__c, ' +
-                        'Flag_EAN_New_Member__c ' +
+                        'Flag_EAN_New_Member__c, Flag_EAN_Associate_Corresponding_Member__c ' +
                         'FROM Contact'
         );
     }
@@ -41,6 +41,7 @@ global class SetMembershipsFlagsOnContactBatch implements Database.Batchable<sOb
                 contact.Flag_EAN_Associate_Member__c = false;
                 contact.Flag_EAN_Student_Member__c = false;
                 contact.Flag_EAN_New_Member__c = false;
+                contact.Flag_EAN_Associate_Corresponding_Member__c = false;
                 for (MembershipContactAssotiation__c membershipStatus : contactsMemberships) {
                     if (membershipStatus.Contact__c == contact.Id && membershipStatus.IsActive__c) {
                         if (membershipStatus.Membership__r.API__c == 'full_membership') {
@@ -55,6 +56,8 @@ global class SetMembershipsFlagsOnContactBatch implements Database.Batchable<sOb
                             contact.Flag_EAN_Associate_Member__c = true;
                         } else if (membershipStatus.Membership__r.API__c == 'student_membership') {
                             contact.Flag_EAN_Student_Member__c = true;
+                        } else if (membershipStatus.Membership__r.API__c == 'associate_corresponding_membership') {
+                            contact.Flag_EAN_Associate_Corresponding_Member__c = true;
                         }
                         if(membershipStatus.Assignment_date__c>= deadline1[0] && membershipStatus.Assignment_date__c<=deadline1[1]){
                             contact.Flag_EAN_New_Member__c = true;

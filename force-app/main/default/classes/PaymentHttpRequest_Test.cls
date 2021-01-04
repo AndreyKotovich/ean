@@ -2,7 +2,7 @@
 public with sharing class PaymentHttpRequest_Test {
     public static Decimal amount = 100;
     public static String cardToken = 'test-000000-000000';
-    public static String addressesObject = '{"mailing-street":"test","mailing-city":"test","mailing-state":"test","mailing-code":"test","mailing-country":"test","billing-street":"test","billing-city":"test","billing-state":"test","billing-code":"test","billing-country":"test"}';
+    public static String addressesObject = '{"mailing-street":"test","mailing-city":"test","mailing-state":"test","mailing-code":"test","mailing-country":"US","billing-street":"test","billing-city":"test","billing-state":"test","billing-code":"test","billing-country":"US"}';
     @TestSetup public static void setup() {
         Contact c = new Contact(LastName = 'test', FirstName='test');
         insert c;
@@ -52,10 +52,34 @@ public with sharing class PaymentHttpRequest_Test {
         Test.setMock(HttpCalloutMock.class, new PaymentHttpRequestMock());
         String response = PaymentHttpRequest.SeamlessURL(order.Id, '', addressesObject);
         Test.stopTest();
+        System.debug('response: '+ response);
         Object price = ((Map<String, Object>) JSON.deserializeUntyped(response)).get('price');
         Object url = ((Map<String, Object>) JSON.deserializeUntyped(response)).get('url');
         System.assertEquals(price, amount);
         System.assertEquals(url, 'https://test.com');
+    }
+    @IsTest public static void SeamlessURLShowFormErrorTest() {
+        Order__c order = [SELECT Id FROM Order__c WHERE Contact__r.LastName = 'test'];
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, new PaymentHttpRequestMock());
+
+        addressesObject = addressesObject.replace('US', 'TEST');
+        String response = PaymentHttpRequest.SeamlessURL(order.Id, '', addressesObject);
+        response.contains('A value of the field "country" is too long');
+
+        Contact c = [SELECT Id FROM Contact WHERE LastName = 'test'];
+        c.FirstName = 'Too long firstname Too long firstname';
+        update c;
+        response = PaymentHttpRequest.SeamlessURL(order.Id, '', addressesObject);
+        response.contains('A value of the field "first-name" is too long');
+
+        c.FirstName = 'test';
+        c.LastName = 'Too long lastname Too long lastname';
+        update c;
+        response = PaymentHttpRequest.SeamlessURL(order.Id, '', addressesObject);
+        response.contains('A value of the field "last-name" is too long');
+
+        Test.stopTest();
     }
     @IsTest public static void SeamlessURLHideFormTest() {
         Order__c order = [SELECT Id FROM Order__c WHERE Contact__r.LastName = 'test'];
@@ -133,7 +157,8 @@ public with sharing class PaymentHttpRequest_Test {
         Test.startTest();
         Test.setMock(HttpCalloutMock.class, new PaymentHttpGetPayPalUrlMock());
         String response = PaymentHttpRequest.getPayPalUrl(order.Id, addressesObject);
-        System.assertEquals(response, 'https://www.sandbox.paypal.com/');
+        Map<String, Object> responseJSON = (Map<String, Object>) JSON.deserializeUntyped(response);
+        System.assertEquals((String)responseJSON.get('url'), 'https://www.sandbox.paypal.com/');
         Test.stopTest();
     }
     @IsTest public static void getPayPalUrlErrorTest(){
@@ -141,7 +166,25 @@ public with sharing class PaymentHttpRequest_Test {
         Test.startTest();
         Test.setMock(HttpCalloutMock.class, new PaymentHttpGetPayPalUrlMock());
         String response = PaymentHttpRequest.getPayPalUrl(order.Id, addressesObject);
-        System.assertEquals(response, 'https://www.sandbox.paypal.com/');
+        Map<String, Object> responseJSON = (Map<String, Object>) JSON.deserializeUntyped(response);
+        System.assertEquals((String)responseJSON.get('url'), 'https://www.sandbox.paypal.com/');
+
+        addressesObject = addressesObject.replace('US', 'TEST');
+        response = PaymentHttpRequest.getPayPalUrl(order.Id, addressesObject);
+        response.contains('A value of the field "country" is too long');
+
+        Contact c = [SELECT Id FROM Contact WHERE LastName = 'test'];
+        c.FirstName = 'Too long firstname Too long firstname';
+        update c;
+        response = PaymentHttpRequest.getPayPalUrl(order.Id, addressesObject);
+        response.contains('A value of the field "first-name" is too long');
+
+        c.FirstName = 'test';
+        c.LastName = 'Too long lastname Too long lastname';
+        update c;
+        response = PaymentHttpRequest.getPayPalUrl(order.Id, addressesObject);
+        response.contains('A value of the field "last-name" is too long');
+
         Test.stopTest();
     }
     @IsTest public static void getOrderInfoTest(){

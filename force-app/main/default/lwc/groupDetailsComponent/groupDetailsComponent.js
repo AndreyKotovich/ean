@@ -1,4 +1,4 @@
-_subGroupListimport { LightningElement, api } from 'lwc';
+import { LightningElement, api } from 'lwc';
 import { NavigationMixin } from "lightning/navigation";
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getGroupDetails from '@salesforce/apex/GroupDetailsController.getGroupDetails'

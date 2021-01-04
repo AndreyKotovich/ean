@@ -293,7 +293,7 @@ public class InvoicePDFGenerator {
 
         // Generate Invoice Numbers for EIMF
         if (!newOrdersEIMF.isEmpty()) {
-            lastEIMFNumber = 625;
+            lastEIMFNumber = 0;
 
             // Find the last correct Invoice Number for EIMF
             for (Order__c o : ordersEIMF) {

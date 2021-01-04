@@ -45,6 +45,10 @@
         <enabled>false</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>AssignRewiewersController</apexClass>
+        <enabled>false</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>AssociateMembershipsAssignment</apexClass>
         <enabled>false</enabled>
     </classAccesses>
@@ -262,6 +266,10 @@
     </classAccesses>
     <classAccesses>
         <apexClass>DownloadAbstractBookController</apexClass>
+        <enabled>false</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DownloadAbstractBookControllerTest</apexClass>
         <enabled>false</enabled>
     </classAccesses>
     <classAccesses>
@@ -1528,6 +1536,11 @@
         <editable>false</editable>
         <field>Card__c.Token_Id__c</field>
         <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Case.Challenge_Question__c</field>
+        <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>

@@ -240,6 +240,10 @@ public with sharing class InvoicePDFGeneratorTest {
 
         ord.Payment_Method__c = 'Bank Transfer';
         update ord;
+        ord.Status__c = 'Paid';
+        update ord;
+        ord.Status__c = 'Opened';
+        update ord;
     }
 
     @IsTest(SeeAllData = true)

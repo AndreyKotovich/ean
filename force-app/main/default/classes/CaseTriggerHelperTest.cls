@@ -12,7 +12,7 @@ public with sharing class CaseTriggerHelperTest {
         Case c = new Case(
                 Subject = 'Test', patient_disclaimer__c = true, Clinical_History__c = 'Clinical History',
                 Scans_or_other_images__c = richText, Examination_Investigation_Findings__c = 'Examination_Investigation_Findings__c',
-                Differential_Diagnosis__c = 'Differential_Diagnosis__c');
+                Differential_Diagnosis__c = 'Differential_Diagnosis__c', Challenge_Question__c = 'Challenge_Question__c');
         insert c;
 
         c.Status = 'Accepted';

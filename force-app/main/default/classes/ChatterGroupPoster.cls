@@ -4,7 +4,7 @@ public with sharing class ChatterGroupPoster {
         Map<Case, List<Blob>> caseFilesMap = new Map<Case, List<Blob>>();
         List<Case> cases = [
                 SELECT Id, CaseNumber, Scans_or_other_images__c, Subject, Clinical_History__c,
-                        Examination_Investigation_Findings__c, Differential_Diagnosis__c, OwnerId
+                        Examination_Investigation_Findings__c, Differential_Diagnosis__c, Challenge_Question__c, OwnerId
                 FROM Case
                 WHERE Id IN :casesId];
 
@@ -241,6 +241,27 @@ public with sharing class ChatterGroupPoster {
 
                 textSegment = new ConnectApi.TextSegmentInput();
                 textSegment.text = c.Differential_Diagnosis__c;
+                messageBodyInput.messageSegments.add(textSegment);
+                //new line X2
+                messageBodyInput.messageSegments.add(markupBeginParagraphSegment);
+                textSegment = new ConnectApi.TextSegmentInput();
+                textSegment.text = '&nbsp;';
+                messageBodyInput.messageSegments.add(textSegment);
+                messageBodyInput.messageSegments.add(markupEndParagraphSegment);
+            }
+
+            if(c.Challenge_Question__c!=null) {
+                messageBodyInput.messageSegments.add(markupBeginBoldSegment);
+                textSegment = new ConnectApi.TextSegmentInput();
+                textSegment.text = 'Challenge Question:';
+                messageBodyInput.messageSegments.add(textSegment);
+                messageBodyInput.messageSegments.add(markupEndBoldSegment);
+                //new line
+                messageBodyInput.messageSegments.add(markupBeginParagraphSegment);
+                messageBodyInput.messageSegments.add(markupEndParagraphSegment);
+
+                textSegment = new ConnectApi.TextSegmentInput();
+                textSegment.text = c.Challenge_Question__c;
                 messageBodyInput.messageSegments.add(textSegment);
                 //new line X2
                 messageBodyInput.messageSegments.add(markupBeginParagraphSegment);

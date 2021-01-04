@@ -19,4 +19,13 @@ public with sharing class CreateCustomGroupHelper {
         }
         update groupsToUpdate;
     }
+
+    public static void disableAutoArchiving(List<CollaborationGroup> newChatterGroups){
+
+        for(CollaborationGroup collGroup : newChatterGroups){
+            collGroup.IsAutoArchiveDisabled = true;
+        }
+
+    }
+
 }
