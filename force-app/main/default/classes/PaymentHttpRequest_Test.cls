@@ -243,4 +243,60 @@ public with sharing class PaymentHttpRequest_Test {
         System.assertEquals(1, [SELECT Id FROM Log__c WHERE Process_Name__c = 'Visualforce: paymentHandle page init() function'].size());
     }
 
+    @IsTest public static void refundBankTransferTest(){
+       
+        Contact c = new Contact(LastName = 'test', Email = 'orderCreate@test.com', MailingStreet = 'TestStreet',
+        MailingCity = 'TestCity', MailingPostalCode = '11111',
+        MailingCountry = 'Germany');
+        insert c;
+    
+        Order__c order = new Order__c( Contact__c = c.Id );
+        insert order;
+        Order_Item__c oI = new Order_Item__c( Order_Custom__c = order.Id, Amount__c =  50, Refund_Amount__c = 50, Quantity__c = 1 );
+    	insert oI;
+        
+        insert new Transaction__c(Order_Custom__c = order.Id, Status__c = 'Success', Amount__c = 50, Payment_Method__c='Bank Transfer');
+
+        Map<String, String> res = PaymentHttpRequest.refundTransaction(order.Id, order.Id, 50);
+        
+        System.assertEquals('Success', res.get('status'));
+
+        List<Transaction__c> trs = [SELECT Id, Amount__c, Status__c, Payment_Method__c FROM Transaction__c WHERE Id =: res.get('id')];
+        System.assertEquals(1, trs.size());
+
+        System.assertEquals(-50, trs[0].Amount__c);
+        System.assertEquals('Refund', trs[0].Status__c);
+        System.assertEquals('Bank Transfer', trs[0].Payment_Method__c);
+
+    }
+
+    @IsTest public static void refundCCTest(){
+       
+        Contact c = new Contact(LastName = 'test', Email = 'orderCreate@test.com', MailingStreet = 'TestStreet',
+        MailingCity = 'TestCity', MailingPostalCode = '11111',
+        MailingCountry = 'Germany');
+        insert c;
+    
+        Order__c order = new Order__c( Contact__c = c.Id );
+        insert order;
+        Order_Item__c oI = new Order_Item__c( Order_Custom__c = order.Id, Amount__c =  50, Refund_Amount__c = 20, Quantity__c = 1 );
+    	insert oI;
+        
+        insert new Transaction__c(Order_Custom__c = order.Id, Status__c = 'Success', Amount__c = 50, Payment_Method__c='creditcard');
+
+        Test.startTest();
+        Test.setMock(HttpCalloutMock.class, new PaymentHttpRefundMock());
+        Map<String, String> res = PaymentHttpRequest.refundTransaction(order.Id, order.Id, 20);
+        
+        System.assertEquals('Success', res.get('status'));
+
+        List<Transaction__c> trs = [SELECT Id, Amount__c, Status__c, Payment_Method__c FROM Transaction__c WHERE Id =: res.get('id')];
+        System.assertEquals(1, trs.size());
+
+        System.assertEquals(-20, trs[0].Amount__c);
+        System.assertEquals('Refund', trs[0].Status__c);
+        System.assertEquals('creditcard', trs[0].Payment_Method__c);
+
+    }
+
 }
