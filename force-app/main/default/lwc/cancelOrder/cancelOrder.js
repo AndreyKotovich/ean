@@ -31,7 +31,7 @@ export default class CancelOrder extends LightningElement {
                 if (res.orderList.length > 0) {
                     this.infoOrder = res.orderList[0];
                     if (this.infoOrder.Status__c === 'Paid' && this.infoOrder.Paid_Amount__c === 0) {
-                        this.dispatchToast('Error', 'Order returned in full.', 'Error');
+                        this.dispatchToast('Error', 'The order has been returned in full.', 'Error');
                         this.dispatchEvent(new CustomEvent('closeQuickAction', {}));
                     }
                     this.orderItem = res.orderList[0].Order_Items__r;
@@ -39,6 +39,12 @@ export default class CancelOrder extends LightningElement {
                         e.Refund_Amount__c = e.Refund_Amount__c || 0;
                         e.maxRef = e.Total_amount__c - e.Refund_Amount__c;
                     });
+
+                    this.orderItem.forEach(e => {
+                        e.Refund_Amount__c = e.Refund_Amount__c || 0;
+                        e.maxRef = e.Total_amount__c - e.Refund_Amount__c;
+                    });
+                    this.orderItem = this.orderItem.filter(el => el.maxRef > 0);
                     this.displayContactColumn = res.displayContactColumn;
                 }
             })

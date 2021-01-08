@@ -280,12 +280,13 @@ public without sharing class PaymentHttpRequest {
     @RemoteAction public static String getOrderItems(String orderId) {
         List<Order__c> order = [SELECT Id, Total_amount__c, VATamount__c, Name FROM Order__c WHERE Id = :orderId];
         List<Order_Item__c> orderItems = [
-            SELECT Id, Amount__c, Name__c, Product__c, Membership__c, Membership__r.Name, Product__r.Name, Name, Quantity__c, Total_amount__c,
+            SELECT Id, Amount__c, Name__c, Product__c, Membership__c, Discount_Amount__c, Membership__r.Name, Product__r.Name, Name, Quantity__c, Total_amount__c,
                 Event_Participation__r.Event_Ticket__r.Ticket__c, Event_Participation__r.Event_Ticket__r.Ticket__r.Name, Session_Participation__r.Session__r.Name
             FROM Order_Item__c
             WHERE Order_Custom__c = :order[0].Id
         ];
         System.debug('orderItems:: ' + orderItems);
+        Decimal discountAmount = 0;
         List<Map<String, Object>> orderItemsMap = new List<Map<String, Object>>();
         for (Order_Item__c oi : orderItems) {
             orderItemsMap.add(new Map<String, Object>{
@@ -294,11 +295,13 @@ public without sharing class PaymentHttpRequest {
                     'amount' => oi.Amount__c,
                     'total-amount' => oi.Total_amount__c
             });
+            discountAmount += oi.Discount_Amount__c;
         }
         System.debug('orderItemsMap:: ' + orderItemsMap);
         Map<String, Object> resultMap = new Map<String, Object>();
         resultMap.put('total-amount', order[0].Total_amount__c);
         resultMap.put('VAT-amount-total', order[0].VATamount__c);
+        resultMap.put('discountAmount', discountAmount);
         resultMap.put('name', order[0].Name);
         resultMap.put('order-items', orderItemsMap);
         return JSON.serialize(resultMap);
@@ -750,7 +753,8 @@ public without sharing class PaymentHttpRequest {
         if(!order.isEmpty()){
             // Boolean isTypeOc = order[0].Invoice_Number__c != null && order[0].Invoice_Number__c.contains( 'EAN' + String.valueOf(Date.today().year()).right(2) + '-OC');
             //  https://jira.towa-digital.com/browse/EANER-19   use EAN21-F-#### (= Invoice Number) 
-            Boolean isTypeOc = order[0].Invoice_Number__c != null && order[0].Invoice_Number__c.contains( 'EAN' + String.valueOf(Date.today().year()).right(2) + '-F');
+            
+            Boolean isTypeOc = order[0].Type__c == 'Event registration';
             String template = isTypeOc ? 'BankTransferRegistrationPdf' : 'BankTransferCredentialsPdf';
             if (orderType == 'Renewal') template = 'BankTransferRenewalCredentialsPdf';
             PageReference defaultPage = new PageReference('/apex/' + template);

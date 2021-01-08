@@ -562,12 +562,14 @@
                             order = orderInfo.singleOrderInList;
                             let orderDeadline = formatDate(addDays(order[0].CreatedDate, 7));
                             document.querySelectorAll('.order-name').forEach(item => {
-                                    if (order[0].Invoice_Number__c && (order[0]['Invoice_Number__c']).indexOf('-OC-') > -1) {
-                                        item.innerHTML = '"' + order[0]['Name'] + '"';
-                                        document.getElementById("BankTransferRegistration").removeAttribute('hidden');
+                                //     if (order[0].Invoice_Number__c && (order[0]['Invoice_Number__c']).indexOf('-OC-') > -1) {
+                                //         item.innerHTML = '"' + order[0]['Name'] + '"';
+                                //         document.getElementById("BankTransferRegistration").removeAttribute('hidden');
 
-                                    //  https://jira.towa-digital.com/browse/EANER-19   use EAN21-F-#### (= Invoice Number)
-                                    } else if (order[0].Invoice_Number__c && (order[0]['Invoice_Number__c']).indexOf('-F-') > -1) {
+                                //     //  https://jira.towa-digital.com/browse/EANER-19   use EAN21-F-#### (= Invoice Number)
+                                //    // } else if (order[0].Invoice_Number__c && (order[0]['Invoice_Number__c']).indexOf('-F-') > -1) {
+                                //     } else 
+                                    if (order[0].Type__c === 'Event registration') {
                                         item.innerHTML = '"' + order[0]['Name'] + '"';
                                         document.getElementById("BankTransferRegistration").removeAttribute('hidden');
 
@@ -994,6 +996,17 @@
                             </td>
                             <td data-label="Price Per Item">
                                 <div class="slds-truncate slds-text-align_left" title="Price Per Item">${(parsedResult['VAT-amount-total']).toFixed(2)}€</div>
+                            </td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td data-label="Item Name">
+                                <div class="slds-truncate slds-text-align_right" title="Item Name"><b>Discount Amount:</b></div>
+                            </td>
+                            <td data-label="Quantity">
+                                <div class="slds-truncate" title="Quantity"></div>
+                            </td>
+                            <td data-label="Price Per Item">
+                                <div class="slds-truncate slds-text-align_left" title="Price Per Item">${(parsedResult['discountAmount']).toFixed(2)}€</div>
                             </td>
                         </tr>
                         <tr class="slds-hint-parent">

@@ -1,0 +1,31 @@
+<messaging:emailTemplate subject="EAN {!relatedTo.Event_custom__r.Name} – Congress Registration – bank transfer" recipientType="Contact" relatedToType="Email_Activity__c">
+    <messaging:htmlEmailBody >
+        <html>
+            <body>
+            <div style="width: 800px;">
+            <p style="margin: 0px; font-size: 11pt; padding:5px 0;">Dear {!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.LastName},</p>
+                <p style="margin: 0px; font-size: 11pt; padding:5px 0;">We have received your payment for the 
+                {!relatedTo.Event_custom__r.Event_Number__c}<sup>{!relatedTo.Event_custom__r.Congress_Postfix__c}</sup> at the {!relatedTo.Event_custom__r.Marketing_Name__c}.
+                Attached you will find your invoice for your congress registration.</p>
+                <p style="margin: 0px; font-size: 11pt; padding:5px 0;">If you have not already done so, you can add additional sessions or services to your individual
+                registration via MyEAN (my.ean.org).</p>
+                <p style="margin: 0px; font-size: 11pt; padding:5px 0;">If you have any questions regarding registration, please contact us at registration@ean.org.</p>
+                <p style="margin: 0px; font-size: 11pt; padding:5px 0;">We are looking forward to welcoming you at the 
+                {!relatedTo.Event_custom__r.Event_Number__c}{!relatedTo.Event_custom__r.Congress_Postfix__c} EAN {!relatedTo.Event_custom__r.Name} in
+                    <apex:outputText value="{0, date, yyyy}">
+                        <apex:param value="{!relatedTo.Event_custom__r.Start_Time__c}" /> 
+                    </apex:outputText>!</p>
+                <p style="margin: 0px; font-size: 11pt; padding:5px 0;">Yours sincerely, <br />
+                EAN {!relatedTo.Event_custom__r.Name} Registration Management</p>
+            </div>
+            </body>
+        </html>
+    </messaging:htmlEmailBody>
+    <messaging:attachment renderAs="PDF" filename="Invoice - {!relatedTo.Order__r.Invoice_Number__c}.pdf">
+        <c:EventInvoiceAttachement order="{!relatedTo.Order__c}"
+            contact="{!relatedTo.Contact__c}"
+            event="{!relatedTo.Event_Custom__c}"
+            isOrderItemsSame="false" />
+    </messaging:attachment>
+ 
+</messaging:emailTemplate>

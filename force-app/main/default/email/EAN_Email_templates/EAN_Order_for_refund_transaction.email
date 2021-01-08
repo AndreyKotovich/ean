@@ -50,6 +50,7 @@
                     <div style="margin-top: 20px; float: left; width: 475px;">
                         <div>
                             <p style="margin: 0px; font-size: 11pt;">{!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.FirstName} {!relatedTo.Contact__r.LastName}<br />
+                            Hospital: {!relatedTo.Contact__r.Hospital_Name__c}<br />
                             Department: {!relatedTo.Contact__r.Department_Name__c}<br />
                             Street: {!relatedTo.Contact__r.Work_Street__c}<br />
                             ZIP City: {!relatedTo.Contact__r.Work_Zip_Postal_Code__c} {!relatedTo.Contact__r.Work_City__c}<br />

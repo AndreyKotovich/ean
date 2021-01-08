@@ -4,8 +4,12 @@ public with sharing class RefundInvoiceTableController {
     public String orderId { get; set; }
     public String JSONBody { get; set; }
     public String orderNum { get; set; }
+    
     public Decimal orderTotalAmount { get{
         return orderTotalAmount.setScale(2);
+    } set; }
+    public Decimal orderSubTotal { get{
+        return orderSubTotal.setScale(2);
     } set; }
     public Decimal orderVATs { get{
         return orderVATs.setScale(2);
@@ -16,7 +20,10 @@ public with sharing class RefundInvoiceTableController {
 
 
     public List<Order_Item__c> getOrderItems(){
-        List<Order_Item__c> orderIs = new List<Order_Item__c>();
+        List<Order_Item__c> orderIs = new List<Order_Item__c>();        
+        vatValue = 0;
+        orderVATs = 0;
+        orderSubTotal = 0;
         orderTotalAmount = 0;
         Map<String,Object> oIOrig = (Map<String,Object>)JSON.deserializeUntyped(JSONBody);
 
@@ -38,19 +45,23 @@ public with sharing class RefundInvoiceTableController {
             FROM Order_Item__c 
             WHERE Order_Custom__c = :orderId
 		];
-		
-		for (Integer i = (oIs.size()-1) ; i>= 0 ; i--){
+        
+        vatValue = !oIs.isEmpty() ? oIs[0].Order_Custom__r.Event_custom__r.VAT_Amount__c : 0;
+        
+        for (Integer i = (oIs.size()-1) ; i>= 0 ; i--){
 			if (oIOrig.containsKey(oIs[i].Id)) {
-                oIs[i].Refund_Amount__c = ((Decimal)oIOrig.get(oIs[i].Id)).setScale(2);
-                orderTotalAmount += oIs[i].Refund_Amount__c;
+                Decimal refPrice = ((Decimal)oIOrig.get(oIs[i].Id)).setScale(2);
+                oIs[i].Refund_Amount__c =  (refPrice / (1 + vatValue / 100)).setScale(2);
+                orderTotalAmount += refPrice;
             } else {
 				oIs.remove(i);
 			}
-		}
-
-        if(!oIs.isEmpty()) orderVATs = !oIs.isEmpty() ? oIs[0].Order_Custom__r.VATamount__c : null;
-        if(!oIs.isEmpty()) vatValue = !oIs.isEmpty() ? oIs[0].Order_Custom__r.Event_custom__r.VAT_Amount__c : null;
-
+        }
+        if (!oIs.isEmpty()) {
+            orderVATs = orderTotalAmount - (orderTotalAmount / (1 + vatValue / 100)).setScale(2); 
+            orderSubTotal = orderTotalAmount - orderVATs;        
+        } 
+       
         return oIs;
     }
 }

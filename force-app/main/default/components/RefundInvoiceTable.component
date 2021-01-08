@@ -51,10 +51,10 @@
                     <div style="padding: 5px; margin: 0px; font-size: 11pt;"></div>
                 </td>
                 <td style="border-bottom: 1px solid #ddd;" data-label="Ticket Type">
-                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">VAT {!vatValue}%</div>
+                    <div style="padding: 5px; margin: 0px; font-size: 11pt;"><b>Sub Total</b></div>
                 </td>
                 <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">
-                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!orderVATs} &#8364;</div>
+                    <div style="padding: 5px; margin: 0px; font-size: 11pt;"><b>{!orderSubTotal} &#8364;</b></div>
                 </td>
             </tr>
 
@@ -63,10 +63,22 @@
                     <div style="padding: 5px; margin: 0px; font-size: 11pt;"></div>
                 </td>
                 <td style="border-bottom: 1px solid #ddd;" data-label="Ticket Type">
-                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">Total incl. VAT</div>
+                    <div style="padding: 5px; margin: 0px; font-size: 11pt;"><b>VAT {!vatValue}%</b></div>
                 </td>
                 <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">
-                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">{!orderTotalAmount} &#8364;</div>
+                    <div style="padding: 5px; margin: 0px; font-size: 11pt;"><b>{!orderVATs} &#8364;</b></div>
+                </td>
+            </tr>
+
+            <tr>
+                <td style="" data-label="Delegate name">
+                    <div style="padding: 5px; margin: 0px; font-size: 11pt;"></div>
+                </td>
+                <td style="border-bottom: 1px solid #ddd;" data-label="Ticket Type">
+                    <div style="padding: 5px; margin: 0px; font-size: 11pt;"><b>Total incl. VAT</b></div>
+                </td>
+                <td style="border-bottom: 1px solid #ddd; text-align: center;" data-label="Price">
+                    <div style="padding: 5px; margin: 0px; font-size: 11pt;"><b>{!orderTotalAmount} &#8364;</b></div>
                 </td>
             </tr>
         </tbody>

@@ -32,6 +32,7 @@
                 <div style="margin-top: 20px; float: left; width: 475px;">
                     <div>
                         <p style="margin: 0px; font-size: 11pt;">{!contactRecord.Salutation} {!contactRecord.FirstName} {!contactRecord.LastName}<br />
+                        Hospital: {!contactRecord.Hospital_Name__c}<br />
                         Department: {!contactRecord.Department_Name__c}<br />
                         Street: {!contactRecord.Work_Street__c}<br />
                         ZIP City: {!contactRecord.Work_Zip_Postal_Code__c} {!contactRecord.Work_City__c}<br />

@@ -569,6 +569,10 @@
         <enabled>false</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>PaymentHttpRefundMock</apexClass>
+        <enabled>false</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>PaymentHttpRequest</apexClass>
         <enabled>true</enabled>
     </classAccesses>

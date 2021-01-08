@@ -4,8 +4,8 @@
     <assignments>
         <name>Assign_Abstract_Affirmations</name>
         <label>Assign Abstract Affirmations</label>
-        <locationX>836</locationX>
-        <locationY>2110</locationY>
+        <locationX>792</locationX>
+        <locationY>1569</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Authors_consent__c</assignToReference>
             <operator>Assign</operator>
@@ -28,14 +28,14 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Delete_Files_Screen</targetReference>
+            <targetReference>Assign_Abstract_Affirmations_0_0</targetReference>
         </connector>
     </assignments>
     <assignments>
         <name>Assign_Abstract_Affirmations_0</name>
         <label>Assign Abstract Affirmations</label>
-        <locationX>561</locationX>
-        <locationY>2199</locationY>
+        <locationX>528</locationX>
+        <locationY>1598</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Authors_consent__c</assignToReference>
             <operator>Assign</operator>
@@ -79,14 +79,14 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Delete_Files_Screen</targetReference>
+            <targetReference>Assign_Abstract_Affirmations_0_0</targetReference>
         </connector>
     </assignments>
     <assignments>
         <name>Assign_Abstract_Affirmations_0_0</name>
         <label>Assign Abstract Affirmations</label>
-        <locationX>661</locationX>
-        <locationY>2274</locationY>
+        <locationX>637</locationX>
+        <locationY>1691</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Authors_consent__c</assignToReference>
             <operator>Assign</operator>
@@ -116,7 +116,7 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Delete_Files_Screen</targetReference>
+            <targetReference>Update_Abstract</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -211,6 +211,13 @@
             </value>
         </assignmentItems>
         <assignmentItems>
+            <assignToReference>Get_Abstract.Body__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Body</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
             <assignToReference>Get_Abstract.Type__c</assignToReference>
             <operator>Assign</operator>
             <value>
@@ -239,10 +246,10 @@
             </value>
         </assignmentItems>
         <assignmentItems>
-            <assignToReference>Get_Abstract.Body__c</assignToReference>
+            <assignToReference>Get_Abstract.Author_Details__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Body</elementReference>
+                <stringValue/>
             </value>
         </assignmentItems>
         <connector>
@@ -250,10 +257,58 @@
         </connector>
     </assignments>
     <assignments>
+        <name>Assign_Author_Details</name>
+        <label>Assign Author Details</label>
+        <locationX>756</locationX>
+        <locationY>2248</locationY>
+        <assignmentItems>
+            <assignToReference>ListAuthors</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>PresenterDetails</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Abstract_with_Presenter</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_Author_Var</name>
+        <label>Assign Author Var</label>
+        <locationX>634</locationX>
+        <locationY>3283</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Abstract.Author_Details__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>ListAuthors</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Author_Details</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_List_of_Authors</name>
+        <label>Assign List of Authors</label>
+        <locationX>826</locationX>
+        <locationY>3196</locationY>
+        <assignmentItems>
+            <assignToReference>ListAuthors</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>AuthorDetails</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_Authors</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>AssignNewImageId</name>
         <label>AssignNewImageId</label>
-        <locationX>228</locationX>
-        <locationY>2860</locationY>
+        <locationX>308</locationX>
+        <locationY>4032</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Image_1_ID__c</assignToReference>
             <operator>Assign</operator>
@@ -282,8 +337,8 @@
     <assignments>
         <name>AssignNewPresenter</name>
         <label>AssignNewPresenter</label>
-        <locationX>788</locationX>
-        <locationY>1873</locationY>
+        <locationX>864</locationX>
+        <locationY>2125</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Abstract_Presenter__c</assignToReference>
             <operator>Assign</operator>
@@ -291,8 +346,31 @@
                 <elementReference>selectedRecordId</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>ListAuthors</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue/>
+            </value>
+        </assignmentItems>
         <connector>
-            <targetReference>Check_Affirmations_Screen</targetReference>
+            <targetReference>Get_Presenter_Details</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Count_Authors</name>
+        <label>Count Authors</label>
+        <locationX>536</locationX>
+        <locationY>2953</locationY>
+        <assignmentItems>
+            <assignToReference>AuthorCount</assignToReference>
+            <operator>AssignCount</operator>
+            <value>
+                <elementReference>Get_New_Authors</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_Author</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -331,7 +409,7 @@
         <name>Enable_Files_Error_Message</name>
         <label>Enable Files Error Message</label>
         <locationX>145</locationX>
-        <locationY>2414</locationY>
+        <locationY>3527</locationY>
         <assignmentItems>
             <assignToReference>FilesErrorMessage</assignToReference>
             <operator>Assign</operator>
@@ -346,8 +424,8 @@
     <assignments>
         <name>Enable_Files_Error_Message_0</name>
         <label>Enable Files Error Message</label>
-        <locationX>553</locationX>
-        <locationY>2970</locationY>
+        <locationX>588</locationX>
+        <locationY>3880</locationY>
         <assignmentItems>
             <assignToReference>FilesErrorMessage2</assignToReference>
             <operator>Assign</operator>
@@ -362,8 +440,8 @@
     <assignments>
         <name>Enable_Presenter_Error_Message</name>
         <label>Enable Presenter Error Message</label>
-        <locationX>708</locationX>
-        <locationY>1474</locationY>
+        <locationX>754</locationX>
+        <locationY>1935</locationY>
         <assignmentItems>
             <assignToReference>PresenterErrorFlag</assignToReference>
             <operator>Assign</operator>
@@ -378,8 +456,8 @@
     <assignments>
         <name>Enable_Presenter_Selection_Error</name>
         <label>Enable Presenter Selection Error</label>
-        <locationX>414</locationX>
-        <locationY>1474</locationY>
+        <locationX>494</locationX>
+        <locationY>1941</locationY>
         <assignmentItems>
             <assignToReference>EmptyPresenterError</assignToReference>
             <operator>Assign</operator>
@@ -392,10 +470,26 @@
         </connector>
     </assignments>
     <assignments>
+        <name>Enable_Select_Author_Error</name>
+        <label>Enable Select Author Error</label>
+        <locationX>230</locationX>
+        <locationY>2824</locationY>
+        <assignmentItems>
+            <assignToReference>SelectAuthorError</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Add_Authors_Screen</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Remove_Image_Id_1</name>
         <label>Remove Image Id 1</label>
-        <locationX>708</locationX>
-        <locationY>2524</locationY>
+        <locationX>712</locationX>
+        <locationY>3596</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Image_1_ID__c</assignToReference>
             <operator>Assign</operator>
@@ -410,8 +504,8 @@
     <assignments>
         <name>Remove_Image_Id_2</name>
         <label>Remove Image Id 2</label>
-        <locationX>710</locationX>
-        <locationY>2634</locationY>
+        <locationX>714</locationX>
+        <locationY>3706</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Image_2_ID__c</assignToReference>
             <operator>Assign</operator>
@@ -426,8 +520,8 @@
     <assignments>
         <name>Remove_Image_Id_3</name>
         <label>Remove Image Id 3</label>
-        <locationX>704</locationX>
-        <locationY>2747</locationY>
+        <locationX>708</locationX>
+        <locationY>3819</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Image_3_ID__c</assignToReference>
             <operator>Assign</operator>
@@ -442,8 +536,8 @@
     <assignments>
         <name>Update_Section_and_Caption</name>
         <label>Update Section and Caption</label>
-        <locationX>321</locationX>
-        <locationY>2638</locationY>
+        <locationX>325</locationX>
+        <locationY>3710</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Image_1_Caption__c</assignToReference>
             <operator>Assign</operator>
@@ -493,8 +587,8 @@
     <assignments>
         <name>Update_Section_and_Caption_0</name>
         <label>Update Section and Caption</label>
-        <locationX>225</locationX>
-        <locationY>2994</locationY>
+        <locationX>307</locationX>
+        <locationY>4152</locationY>
         <assignmentItems>
             <assignToReference>Get_Abstract.Image_1_Caption__c</assignToReference>
             <operator>Assign</operator>
@@ -585,21 +679,21 @@
         <name>ImageLocationFieldId1</name>
         <dataType>String</dataType>
         <value>
-            <stringValue>Abstract__c.00N0E000007ua70</stringValue>
+            <stringValue>Abstract__c.00N1X000006eore</stringValue>
         </value>
     </constants>
     <constants>
         <name>ImageLocationFieldId2</name>
         <dataType>String</dataType>
         <value>
-            <stringValue>Abstract__c.00N0E000007ua7A</stringValue>
+            <stringValue>Abstract__c.00N1X000006eorh</stringValue>
         </value>
     </constants>
     <constants>
         <name>ImageLocationFieldId3</name>
         <dataType>String</dataType>
         <value>
-            <stringValue>Abstract__c.00N0E000007ua7F</stringValue>
+            <stringValue>Abstract__c.00N1X000006eork</stringValue>
         </value>
     </constants>
     <constants>
@@ -613,7 +707,7 @@
         <name>PublicRecordTypeId</name>
         <dataType>String</dataType>
         <value>
-            <stringValue>0120E000001fKtQQAU</stringValue>
+            <stringValue>0121X000000Ft2PQAS</stringValue>
         </value>
     </constants>
     <constants>
@@ -731,10 +825,50 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Check_Author</name>
+        <label>Check Author</label>
+        <locationX>399</locationX>
+        <locationY>3094</locationY>
+        <defaultConnector>
+            <targetReference>Delete_Files_Screen</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Author_selected</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>AuthorCount</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Loop_Authors</targetReference>
+            </connector>
+            <label>Author selected</label>
+        </rules>
+        <rules>
+            <name>No_Author_selected</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>AuthorCount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Enable_Select_Author_Error</targetReference>
+            </connector>
+            <label>No Author selected</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Check_if_author_was_removed</name>
         <label>Check if author was removed</label>
-        <locationX>632</locationX>
-        <locationY>3487</locationY>
+        <locationX>648</locationX>
+        <locationY>2604</locationY>
         <defaultConnector>
             <targetReference>Remove_Author</targetReference>
         </defaultConnector>
@@ -758,8 +892,8 @@
     <decisions>
         <name>Check_if_Authors_were_added</name>
         <label>Check if Authors were added</label>
-        <locationX>629</locationX>
-        <locationY>3713</locationY>
+        <locationX>682</locationX>
+        <locationY>2831</locationY>
         <defaultConnector>
             <targetReference>Add_Author</targetReference>
         </defaultConnector>
@@ -859,8 +993,8 @@
     <decisions>
         <name>Checkboxes_Null</name>
         <label>Checkboxes = Null</label>
-        <locationX>648</locationX>
-        <locationY>2095</locationY>
+        <locationX>626</locationX>
+        <locationY>1524</locationY>
         <defaultConnector>
             <targetReference>Assign_Abstract_Affirmations_0</targetReference>
         </defaultConnector>
@@ -905,8 +1039,8 @@
     <decisions>
         <name>Delete_Image</name>
         <label>Delete Image?</label>
-        <locationX>504</locationX>
-        <locationY>2627</locationY>
+        <locationX>508</locationX>
+        <locationY>3699</locationY>
         <defaultConnector>
             <targetReference>Update_Section_and_Caption</targetReference>
         </defaultConnector>
@@ -981,15 +1115,15 @@
     <decisions>
         <name>Image_Locations_Selected</name>
         <label>Image Locations Selected</label>
-        <locationX>391</locationX>
-        <locationY>2495</locationY>
+        <locationX>401</locationX>
+        <locationY>3593</locationY>
         <defaultConnector>
             <targetReference>Delete_Image</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>No_Location_Selected</name>
-            <conditionLogic>(1 AND 2 AND 3) OR (4 AND 5 AND 6) OR (7 AND 8 AND 9)</conditionLogic>
+            <conditionLogic>((1 AND 2 AND 3) OR (4 AND 5 AND 6) OR (7 AND 8 AND 9)) AND 10</conditionLogic>
             <conditions>
                 <leftValueReference>Get_Abstract.Image_1_Location__c</leftValueReference>
                 <operator>EqualTo</operator>
@@ -1044,6 +1178,13 @@
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>Get_Abstract.RecordTypeId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>PublicRecordTypeId</elementReference>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Enable_Files_Error_Message</targetReference>
             </connector>
@@ -1053,15 +1194,15 @@
     <decisions>
         <name>Image_Locations_Selected2</name>
         <label>Image Locations Selected 2</label>
-        <locationX>421</locationX>
-        <locationY>2864</locationY>
+        <locationX>425</locationX>
+        <locationY>3936</locationY>
         <defaultConnector>
             <targetReference>AssignNewImageId</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>No_Location_Selected_2_0</name>
-            <conditionLogic>(1 AND 2 AND 3) OR (4 AND 5 AND 6) OR (7 AND 8 AND 9)</conditionLogic>
+            <conditionLogic>((1 AND 2 AND 3) OR (4 AND 5 AND 6) OR (7 AND 8 AND 9)) AND 10</conditionLogic>
             <conditions>
                 <leftValueReference>Get_Abstract.Image_1_Location__c</leftValueReference>
                 <operator>EqualTo</operator>
@@ -1123,6 +1264,13 @@
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Abstract.RecordTypeId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>PublicRecordTypeId</elementReference>
                 </rightValue>
             </conditions>
             <connector>
@@ -1134,10 +1282,10 @@
     <decisions>
         <name>Max_Body_Words_Reached</name>
         <label>Max Body Words Reached?</label>
-        <locationX>202</locationX>
-        <locationY>1175</locationY>
+        <locationX>188</locationX>
+        <locationY>1220</locationY>
         <defaultConnector>
-            <targetReference>Delete_Files_Screen</targetReference>
+            <targetReference>Update_invited_Abstract</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -1159,10 +1307,10 @@
     <decisions>
         <name>Max_Total_Words_Reached_0</name>
         <label>Max Total Words Reached?</label>
-        <locationX>545</locationX>
-        <locationY>1278</locationY>
+        <locationX>544</locationX>
+        <locationY>1276</locationY>
         <defaultConnector>
-            <targetReference>Add_Presenter_Screen</targetReference>
+            <targetReference>Check_Affirmations_Screen</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -1184,8 +1332,11 @@
     <decisions>
         <name>PresenterChecker</name>
         <label>PresenterChecker</label>
-        <locationX>545</locationX>
-        <locationY>1622</locationY>
+        <locationX>626</locationX>
+        <locationY>2073</locationY>
+        <defaultConnector>
+            <targetReference>Get_Authors</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Presenter_checked</name>
@@ -1212,7 +1363,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Update_Abstract_with_Presenter</targetReference>
+                <targetReference>AssignNewPresenter</targetReference>
             </connector>
             <label>Presenter checked</label>
         </rules>
@@ -1259,7 +1410,7 @@
                 <leftValueReference>selectedRecordId</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
-                    <booleanValue>true</booleanValue>
+                    <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -1271,8 +1422,8 @@
     <decisions>
         <name>Submit_Abstract_Decision</name>
         <label>Submit Abstract Decision</label>
-        <locationX>407</locationX>
-        <locationY>4172</locationY>
+        <locationX>413</locationX>
+        <locationY>4507</locationY>
         <defaultConnector>
             <targetReference>Set_Draft</targetReference>
         </defaultConnector>
@@ -1514,10 +1665,24 @@
     <interviewLabel>Edit Abstract {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Edit Abstract</label>
     <loops>
+        <name>Loop_Authors</name>
+        <label>Loop Authors</label>
+        <locationX>625</locationX>
+        <locationY>3103</locationY>
+        <collectionReference>Get_New_Authors</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Get_Author_Details</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Assign_Author_Var</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
         <name>Loop_existing_authors</name>
         <label>Loop existing authors</label>
-        <locationX>411</locationX>
-        <locationY>3468</locationY>
+        <locationX>407</locationX>
+        <locationY>2596</locationY>
         <collectionReference>Get_Authors</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
@@ -1530,15 +1695,15 @@
     <loops>
         <name>LoopAddedAuthors</name>
         <label>LoopAddedAuthors</label>
-        <locationX>409</locationX>
-        <locationY>3667</locationY>
+        <locationX>411</locationX>
+        <locationY>2798</locationY>
         <collectionReference>AbstractAuthors</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
             <targetReference>Check_if_Authors_were_added</targetReference>
         </nextValueConnector>
         <noMoreValuesConnector>
-            <targetReference>Submit_Screen</targetReference>
+            <targetReference>Get_New_Authors</targetReference>
         </noMoreValuesConnector>
     </loops>
     <processMetadataValues>
@@ -1563,8 +1728,8 @@
     <recordCreates>
         <name>Add_Author</name>
         <label>Add Author</label>
-        <locationX>739</locationX>
-        <locationY>3613</locationY>
+        <locationX>775</locationX>
+        <locationY>2712</locationY>
         <connector>
             <targetReference>LoopAddedAuthors</targetReference>
         </connector>
@@ -1576,8 +1741,8 @@
     <recordDeletes>
         <name>Remove_Author</name>
         <label>Remove Author</label>
-        <locationX>735</locationX>
-        <locationY>3345</locationY>
+        <locationX>761</locationX>
+        <locationY>2502</locationY>
         <connector>
             <targetReference>Loop_existing_authors</targetReference>
         </connector>
@@ -1611,14 +1776,47 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
+        <name>Get_Author_Details</name>
+        <label>Get Author Details</label>
+        <locationX>937</locationX>
+        <locationY>3107</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Assign_List_of_Authors</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Enable_Select_Author_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Loop_Authors.Abstract_Author__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Contact</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>FirstName</queriedFields>
+        <queriedFields>LastName</queriedFields>
+        <queriedFields>Official_Department_Name__c</queriedFields>
+        <queriedFields>MailingCountry</queriedFields>
+        <queriedFields>MailingCity</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
         <name>Get_Authors</name>
         <label>Get Authors</label>
-        <locationX>413</locationX>
-        <locationY>3236</locationY>
+        <locationX>408</locationX>
+        <locationY>2309</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Add_Authors_Screen</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Add_Authors_Screen</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Abstract__c</field>
@@ -1685,11 +1883,67 @@
         <queriedFields>Membership_Status__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordLookups>
+        <name>Get_New_Authors</name>
+        <label>Get New Authors</label>
+        <locationX>412</locationX>
+        <locationY>2953</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Count_Authors</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Enable_Select_Author_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Abstract__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Abstract.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Abstract_Author__c</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Abstract_Author__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Presenter_Details</name>
+        <label>Get Presenter Details</label>
+        <locationX>863</locationX>
+        <locationY>2241</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Assign_Author_Details</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Enable_Presenter_Selection_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Abstract.Abstract_Presenter__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Contact</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>FirstName</queriedFields>
+        <queriedFields>LastName</queriedFields>
+        <queriedFields>Official_Department_Name__c</queriedFields>
+        <queriedFields>MailingCity</queriedFields>
+        <queriedFields>MailingCountry</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <recordUpdates>
         <name>Set_Draft</name>
         <label>Set Draft</label>
-        <locationX>617</locationX>
-        <locationY>4211</locationY>
+        <locationX>623</locationX>
+        <locationY>4546</locationY>
         <connector>
             <targetReference>Success_Screen</targetReference>
         </connector>
@@ -1715,8 +1969,8 @@
     <recordUpdates>
         <name>Submit_Abstract</name>
         <label>Submit Abstract</label>
-        <locationX>237</locationX>
-        <locationY>4209</locationY>
+        <locationX>243</locationX>
+        <locationY>4544</locationY>
         <connector>
             <targetReference>Success_Screen</targetReference>
         </connector>
@@ -1740,13 +1994,26 @@
         <object>Abstract__c</object>
     </recordUpdates>
     <recordUpdates>
+        <name>Update_Abstract</name>
+        <label>Update Abstract</label>
+        <locationX>635</locationX>
+        <locationY>1815</locationY>
+        <connector>
+            <targetReference>Add_Presenter_Screen</targetReference>
+        </connector>
+        <inputReference>Get_Abstract</inputReference>
+    </recordUpdates>
+    <recordUpdates>
         <name>Update_Abstract_with_Presenter</name>
         <label>Update Abstract with Presenter</label>
-        <locationX>788</locationX>
-        <locationY>1736</locationY>
+        <locationX>587</locationX>
+        <locationY>2306</locationY>
         <connector>
-            <targetReference>AssignNewPresenter</targetReference>
+            <targetReference>Get_Authors</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Enable_Presenter_Selection_Error</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -1761,27 +2028,105 @@
                 <elementReference>selectedRecordId</elementReference>
             </value>
         </inputAssignments>
+        <inputAssignments>
+            <field>Author_Details__c</field>
+            <value>
+                <elementReference>ListAuthors</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Abstract__c</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Author_Details</name>
+        <label>Update Author Details</label>
+        <locationX>503</locationX>
+        <locationY>3287</locationY>
+        <connector>
+            <targetReference>Delete_Files_Screen</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Enable_Select_Author_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Abstract.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Author_Details__c</field>
+            <value>
+                <elementReference>ListAuthors</elementReference>
+            </value>
+        </inputAssignments>
         <object>Abstract__c</object>
     </recordUpdates>
     <recordUpdates>
         <name>Update_Image_Info</name>
         <label>Update Image Info</label>
-        <locationX>415</locationX>
-        <locationY>3118</locationY>
+        <locationX>434</locationX>
+        <locationY>4273</locationY>
+        <connector>
+            <targetReference>Submit_Screen</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Enable_Files_Error_Message_0</targetReference>
+        </faultConnector>
+        <inputReference>Get_Abstract</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_invited_Abstract</name>
+        <label>Update invited Abstract</label>
+        <locationX>184</locationX>
+        <locationY>1814</locationY>
         <connector>
             <targetReference>Get_Authors</targetReference>
         </connector>
         <faultConnector>
-            <targetReference>Delete_Files_Screen</targetReference>
+            <targetReference>Enable_Error_Message</targetReference>
         </faultConnector>
-        <inputReference>Get_Abstract</inputReference>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Body__c</field>
+            <value>
+                <elementReference>Body</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Disclosure__c</field>
+            <value>
+                <elementReference>Disclosure_0</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Title__c</field>
+            <value>
+                <elementReference>Title_0</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Type__c</field>
+            <value>
+                <elementReference>TypeInvited</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Abstract__c</object>
     </recordUpdates>
     <runInMode>SystemModeWithoutSharing</runInMode>
     <screens>
         <name>Add_Authors_Screen</name>
         <label>Add Authors Screen</label>
-        <locationX>414</locationX>
-        <locationY>3352</locationY>
+        <locationX>407</locationX>
+        <locationY>2468</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -1792,6 +2137,21 @@
             <name>CreateAbstractSuccessMessage</name>
             <fieldText>&lt;p&gt;&lt;b&gt;&lt;i&gt;Please add at least one author to your abstract.&lt;/i&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Do not add more than 25 authors.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>AuthorNeededText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;It is required to select an author. If you cannot find one, please create a new author.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>SelectAuthorError</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
         </fields>
         <fields>
             <name>CustomLookupAuthorComponent</name>
@@ -1821,8 +2181,8 @@
     <screens>
         <name>Add_Presenter_Screen</name>
         <label>Add_Presenter_Screen</label>
-        <locationX>550</locationX>
-        <locationY>1474</locationY>
+        <locationX>636</locationX>
+        <locationY>1931</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -1846,7 +2206,7 @@
         </fields>
         <fields>
             <name>NoPresentErerrorMessage</name>
-            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(255, 0, 0);&quot;&gt;It is required to select a presenter. If you cannot find one, please create a new presenter.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;color: rgb(255, 0, 0); background-color: rgb(255, 255, 255);&quot;&gt;It is required to select a presenter. If you cannot find one, please create a new presenter.&lt;/span&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <visibilityRule>
                 <conditionLogic>and</conditionLogic>
@@ -1897,8 +2257,8 @@
     <screens>
         <name>Check_Affirmations_Screen</name>
         <label>Check Affirmations Screen</label>
-        <locationX>655</locationX>
-        <locationY>1939</locationY>
+        <locationX>553</locationX>
+        <locationY>1420</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2073,8 +2433,8 @@
     <screens>
         <name>Deadline_passed_screen</name>
         <label>Deadline passed screen</label>
-        <locationX>296</locationX>
-        <locationY>447</locationY>
+        <locationX>247</locationX>
+        <locationY>413</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2089,8 +2449,8 @@
     <screens>
         <name>Delete_Files_Screen</name>
         <label>Delete Files Screen</label>
-        <locationX>407</locationX>
-        <locationY>2364</locationY>
+        <locationX>403</locationX>
+        <locationY>3462</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2800,8 +3160,8 @@
     <screens>
         <name>Review_Files_Screen</name>
         <label>Review Files Screen</label>
-        <locationX>422</locationX>
-        <locationY>2997</locationY>
+        <locationX>433</locationX>
+        <locationY>4152</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -3053,8 +3413,8 @@
     <screens>
         <name>Submit_Screen</name>
         <label>Submit Screen</label>
-        <locationX>414</locationX>
-        <locationY>4057</locationY>
+        <locationX>420</locationX>
+        <locationY>4392</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -3103,8 +3463,8 @@
     <screens>
         <name>Success_Screen</name>
         <label>Success Screen</label>
-        <locationX>413</locationX>
-        <locationY>4325</locationY>
+        <locationX>419</locationX>
+        <locationY>4660</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -3144,8 +3504,8 @@
     <screens>
         <name>Upload_Files_Screen_0</name>
         <label>Upload Files Screen</label>
-        <locationX>431</locationX>
-        <locationY>2742</locationY>
+        <locationX>435</locationX>
+        <locationY>3814</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -3271,7 +3631,7 @@
             <inputParameters>
                 <name>recordId</name>
                 <value>
-                    <elementReference>recordId</elementReference>
+                    <elementReference>Get_Abstract.Id</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -3380,7 +3740,7 @@
             <inputParameters>
                 <name>recordId</name>
                 <value>
-                    <elementReference>recordId</elementReference>
+                    <elementReference>Get_Abstract.Id</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -3488,7 +3848,7 @@
             <inputParameters>
                 <name>recordId</name>
                 <value>
-                    <elementReference>recordId</elementReference>
+                    <elementReference>Get_Abstract.Id</elementReference>
                 </value>
             </inputParameters>
             <inputParameters>
@@ -3527,6 +3887,16 @@
         </connector>
     </start>
     <status>Active</status>
+    <textTemplates>
+        <name>AuthorDetails</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;ul&gt;&lt;li&gt;{!Get_Author_Details.FirstName} {!Get_Author_Details.LastName}, {!Get_Author_Details.Official_Department_Name__c}, {!Get_Author_Details.MailingCity}, {!Get_Author_Details.MailingCountry}&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</text>
+    </textTemplates>
+    <textTemplates>
+        <name>PresenterDetails</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;ul&gt;&lt;li&gt;&lt;u&gt;Presenter&lt;/u&gt;: {!Get_Presenter_Details.FirstName} {!Get_Presenter_Details.LastName}, {!Get_Presenter_Details.Official_Department_Name__c}, {!Get_Presenter_Details.MailingCity}, {!Get_Presenter_Details.MailingCountry}&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</text>
+    </textTemplates>
     <variables>
         <name>AbstractAuthors</name>
         <dataType>SObject</dataType>
@@ -3534,6 +3904,14 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
         <objectType>Abstract_Author__c</objectType>
+    </variables>
+    <variables>
+        <name>AuthorCount</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
     </variables>
     <variables>
         <name>checkedPresenter</name>
@@ -3607,6 +3985,13 @@
         </value>
     </variables>
     <variables>
+        <name>ListAuthors</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
         <name>PresenterErrorFlag</name>
         <dataType>Boolean</dataType>
         <isCollection>false</isCollection>
@@ -3629,6 +4014,16 @@
         <isCollection>false</isCollection>
         <isInput>true</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>SelectAuthorError</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
     </variables>
     <variables>
         <name>selectedRecordId</name>
