@@ -1,0 +1,99 @@
+<template>
+    <div if:true={isSpinner}>
+        <lightning-spinner size="medium" variant="brand"></lightning-spinner>
+    </div>
+    <div class="slds-grid slds-gutters slds-m-bottom_large">
+        <div class="slds-col slds-text-align_center">
+            <div class="slds-text-heading_medium slds-text-align_center">
+                Cancel Order
+            </div>
+        </div>
+    </div>
+
+    <div class="slds-grid slds-wrap slds-border_bottom">
+        <template if:false={displayContactColumn}>
+            <div class="slds-col slds-size_5-of-12 slds-text-title_caps slds-var-p-left_medium">
+                <span>NAME</span>
+            </div>
+        </template>
+        <template if:true={displayContactColumn}>
+            <div class="slds-col slds-size_3-of-12 slds-text-title_caps slds-var-p-left_medium">
+                <span>NAME</span>
+            </div>
+            <div class="slds-col slds-size_2-of-12 slds-text-title_caps slds-var-p-left_medium">
+                <span>Contact</span>
+            </div>
+        </template>
+        <div class="slds-col slds-size_1-of-12 slds-text-title_caps slds-var-p-left_medium">
+            <span>AMOUNT</span>
+        </div>
+        <div class="slds-col slds-size_1-of-12 slds-text-title_caps slds-var-p-left_medium">
+            <span>QUANTITY</span>
+        </div>
+        <div class="slds-col slds-size_1-of-12 slds-text-title_caps slds-var-p-left_medium">
+            <span>DISCOUNT AMOUNT</span>
+        </div>
+        <div class="slds-col slds-size_1-of-12 slds-text-title_caps slds-var-p-left_medium">
+            <span>TOTAL AMOUNT</span>
+        </div>
+        <div class="slds-col slds-size_1-of-12 slds-text-title_caps slds-var-p-left_medium">
+            <span>REFUNDED AMOUNT</span>
+        </div>
+        <div class="slds-col slds-size_2-of-12 slds-text-title_caps slds-var-p-left_medium">
+            <span>REFUND AMOUNT</span>
+        </div>
+    </div>
+
+    <template for:each={orderItem} for:item="item">
+        <div class="slds-grid slds-wrap slds-m-top_small" key={item.Id}>
+            <template if:false={displayContactColumn}>
+                <div class="slds-col slds-size_5-of-12 slds-align-middle slds-text-align_left slds-var-p-left_medium">
+                    <span>{item.Name__c}</span>
+                </div>
+            </template>
+            <template if:true={displayContactColumn}>
+                <div class="slds-col slds-size_3-of-12 slds-align-middle slds-text-align_left slds-var-p-left_medium">
+                    <span>{item.Name__c}</span>
+                </div>
+                <div class="slds-col slds-size_2-of-12 slds-align-middle slds-var-p-left_medium">
+                    <!-- <span>{item.Event_Participation__r.Contact__r.Name}{item.Session_Participation__r.Contact__r.Name}</span> -->
+                    <span>{item.Contact_Name__c}</span>
+                </div>
+            </template>
+            <div class="slds-col slds-size_1-of-12 slds-align-middle slds-var-p-left_medium">
+                <lightning-formatted-number value={item.Amount__c} format-style="currency" currency-code="EUR">
+                </lightning-formatted-number>
+            </div>
+            <div class="slds-col slds-size_1-of-12 slds-align-middle slds-var-p-left_medium">
+                <lightning-formatted-number value={item.Quantity__c}>
+                </lightning-formatted-number>
+            </div>
+            <div class="slds-col slds-size_1-of-12 slds-align-middle slds-var-p-left_medium">
+                <lightning-formatted-number value={item.Discount_Amount__c} format-style="currency" currency-code="EUR">
+                </lightning-formatted-number>
+            </div>
+            <div class="slds-col slds-size_1-of-12 slds-align-middle slds-var-p-left_medium">
+                <lightning-formatted-number value={item.Total_amount__c} format-style="currency" currency-code="EUR">
+                </lightning-formatted-number>
+            </div>
+            <div class="slds-col slds-size_1-of-12 slds-align-middle slds-var-p-left_medium">
+                <lightning-formatted-number value={item.Refund_Amount__c} format-style="currency" currency-code="EUR">
+                </lightning-formatted-number>
+            </div>
+            <div class="slds-col slds-size_2-of-12 slds-align-middle slds-var-p-left_medium">
+                <lightning-input type="number" variant="label-hidden" data-id={item.Id} data-field="maxRef"
+                    value={item.maxRef} formatter="currency" step="0.01" currency-code="EUR"
+                    onchange={handleFieldChange}>
+                </lightning-input>
+            </div>
+        </div>
+    </template>
+
+    <div class="slds-grid slds-wrap slds-m-top_xx-large">
+        <div class="slds-col slds-size_12-of-12 slds-text-align_right">
+            <lightning-button variant="brand" label="Refund" onclick={refund}></lightning-button>
+        </div>
+    </div>
+
+
+</template>

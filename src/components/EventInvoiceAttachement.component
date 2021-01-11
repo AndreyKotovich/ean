@@ -1,0 +1,76 @@
+<apex:component id="EventInvoiceAttachement" access="global" controller="EventInvoiceAttachementController">
+    <apex:attribute name="order" description="Order Id for event participation" type="String" assignTo="{!orderId}" required="false" access="global"/>
+    <apex:attribute name="contact" description="Contact Id of event participant" type="String" assignTo="{!contactId}" required="false" access="global"/>
+    <apex:attribute name="event" description="Event registration Id" type="String" assignTo="{!eventId}" required="false" access="global"/>
+    <apex:attribute name="isOrderItemsSame" description="Same orderItems in order" type="Boolean" default="false" required="false" access="global"/>
+        <html>
+        <head>
+            <style type="text/css" media="print">
+                @page {
+                    @bottom-center {
+                        content: element(footer);
+                    }
+                    margin-bottom: 3cm;
+                }
+                div.footer {
+                    position: running(footer);
+                    text-align: center;
+                    font-size: 9pt
+                }
+            </style>
+        </head>
+        <body>
+
+            <div class="footer">
+                <div>
+                    <center>
+                        <img src = "{!$Resource.EAN_BANNER_EC21}" width="725px" align="center"/>
+                    </center>
+                </div>
+            </div>
+            <div style="width: 725px;">
+                <div style="margin-top: 20px; float: left; width: 475px;">
+                    <div>
+                        <p style="margin: 0px; font-size: 11pt;">{!contactRecord.Salutation} {!contactRecord.FirstName} {!contactRecord.LastName}<br />
+                        Hospital: {!contactRecord.Hospital_Name__c}<br />
+                        Department: {!contactRecord.Department_Name__c}<br />
+                        Street: {!contactRecord.Work_Street__c}<br />
+                        ZIP City: {!contactRecord.Work_Zip_Postal_Code__c} {!contactRecord.Work_City__c}<br />
+                        Country: {!contactRecord.Work_Country__c}<br />
+                        VAT Nr: {!contactRecord.VAT_Number__c}</p>
+                    </div>
+                    <div style="height: 60px"> </div>
+                    <div style = "text-align: right">
+                        <p style="margin: 0px; font-size: 9pt;">
+                            <apex:outputText value="{0, date, d MMMM yyyy}">
+                                <apex:param value="{!Today}" /> 
+                            </apex:outputText>
+                        </p>
+                    </div>
+                    <div>
+                        <p style="margin: 0px; font-size: 11pt;">
+                        {!eventRecord.Name} - Congress of the European Academy of Neurology<br/>
+                            <apex:outputText value="{0, date, d MMMM}">
+                                <apex:param value="{!eventRecord.Start_Time__c}" /> 
+                            </apex:outputText>
+                            - 
+                            <apex:outputText value="{0, date, d MMMM yyyy}">
+                                <apex:param value="{!eventRecord.End_Time__c}" /> 
+                            </apex:outputText>
+                        </p>
+                    </div>
+                    <div style="height: 40px"> </div>
+                    <div style = "text-align: center">
+                        <h2 style="margin: 0px; font-size: 11pt; padding: 5px 0;">INVOICE – {!orderRecord.Invoice_Number__c}</h2>
+                    </div>
+                    <div>
+                        <c:OrderInvoiceTable order="{!orderRecord.Id}" isOrderItemsSame="{!isOrderItemsSame}"/>
+                    </div>
+                </div>
+                <div style="width: 250px; float: right;">
+                    <apex:image id="theImage" value="{!$Resource.EAN_Details}" width="250"/>
+                </div>
+            </div>
+            </body>
+        </html>
+</apex:component>

@@ -1,0 +1,10 @@
+global class PaymentHttpInfoRequestMock implements HttpCalloutMock{
+    global String body = '{"payment":{"statuses":{"status":[{"code":"201.0000","description":"The resource was successfully created.","severity":"information","provider-transaction-id":"4JW0714453309952X"}]},"shipping":{"phone":"788-264-0711","address":{"street1":"Rue de Paris","city":"Paris","country":"FR","postal-code":"69100"},"first-name":"sita","last-name":"toram"},"wallet":{"account-id":"B3XC9H53N9A3S"},"merchant-account-id":{"value":"9abf05c1-c266-46ae-8eac-7f87ca97af28","ref":"https://api-test.wirecard.com:443/engine/rest/config/merchants/9abf05c1-c266-46ae-8eac-7f87ca97af28"},"transaction-id":"0a42d9ae-97fa-470f-bc0c-884520cea240","request-id":"f636f384-b281-a9d5-bd16-df5fc0b3329e","transaction-type":"debit","transaction-state":"success","completion-time-stamp":1574923167000,"requested-amount":{"value":22.500000,"currency":"EUR"},"parent-transaction-id":"3849ac8e-6412-43bb-a50b-ec0bc63077f0","account-holder":{"email":"buyer@wirecard.com","first-name":"Test","last-name":"Buyer"},"order-items":{"order-item":[{"name":"Notebook","description":"A simple notebook","amount":{"value":1.000000,"currency":"EUR"},"quantity":10,"article-number":"123"},{"name":"Colored Pencils","description":"A set of colored pencils","amount":{"value":2.500000,"currency":"EUR"},"quantity":5,"article-number":"456"}]},"payment-methods":{"payment-method":[{"name":"paypal"}]},"api-id":"wpp","cancel-redirect-url":"https://demoshop-test.wirecard.com/demoshop/#/cancel","fail-redirect-url":"https://demoshop-test.wirecard.com/demoshop/#/error","success-redirect-url":"https://demoshop-test.wirecard.com/demoshop/#/success","provider-account-id":"000000316C367873","self":"https://api-test.wirecard.com:443/engine/rest/merchants/9abf05c1-c266-46ae-8eac-7f87ca97af28/payments/0a42d9ae-97fa-470f-bc0c-884520cea240"}}';
+    global HTTPResponse respond(HTTPRequest request) {
+        HttpResponse response = new HttpResponse();
+        response.setHeader('Content-Type', 'application/json');
+        response.setBody(body);
+        response.setStatusCode(201);
+        return response;
+    }
+}

@@ -1,5 +1,5 @@
 @isTest
-public with sharing class AssignReviewersControllerTest {
+public without sharing class AssignReviewersControllerTest {
     public AssignReviewersControllerTest() {
 
     }

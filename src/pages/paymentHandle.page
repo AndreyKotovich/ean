@@ -1,0 +1,1306 @@
+<apex:page id="paymentHandle" controller="PaymentHttpRequest">
+    <apex:slds />
+    <style>
+        @font-face{
+            font-family: 'NexaBold';
+            src: url("{!URLFOR($Resource.NexaFonts, '/Nexa-Bold.woff')}") format('woff');
+        }
+        body {
+            font-family: NexaBold !important;
+        }
+    </style>
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!--    =================Toasts=================-->
+    <div id="toast-area">
+    </div>
+    <!--    ==================================-->
+    <div id="payment-form" hidden="hidden">
+        <div class="slds-theme_default slds-box">
+            <div class="slds-grid slds-gutters slds-text-heading_medium slds-m-around_x-small">
+                <div class="slds-col">
+                    <span>Grand Total:</span>
+                </div>
+                <div class="slds-col slds-text-align_right">
+                    <span id="total-price"></span>
+                </div>
+            </div>
+            <div id="seamless-form-target" style="height: 200px !important;"></div>
+            <div class="slds-checkbox slds-m-left_x-large">
+                <input type="checkbox" name="options" id="save-card-checkbox" onchange="handleCardCheckbox()"/>
+                <label class="slds-checkbox__label" for="save-card-checkbox">
+                    <span class="slds-checkbox_faux"></span>
+                    <span class="slds-form-element__label">Save credit card for future debits</span>
+                </label>
+            </div>
+            <div class="slds-text-align_center">
+                <input id="wirecard_pay_btn" class="slds-button slds-button_brand slds-m-around_x-small" type="button"
+                       onclick="validatePayment()" value="Pay Now"/>
+            </div>
+        </div>
+    </div>
+    <div id="success-message" hidden="hidden">
+    </div>
+    <div id="error-screen" class="slds-theme_default slds-box slds-text-align_center" hidden="hidden">
+        <div class="slds-text-heading_large slds-text-color_error">
+            Your payment has failed.
+        </div>
+    </div>
+
+    <div id="maintenance-screen" hidden="hidden" class="slds-theme_default slds-box slds-text-align_center">
+        <div class="slds-text-heading_large " style="color: red">
+            Unfortunately payment does not work at the moment. <br/> Please try to pay later - thank you for your understanding and patience.
+        </div>
+    </div>
+
+    <!--    ==========Spinner==========-->
+    <div id="spinner" style="height:6rem">
+        <div class="slds-spinner_container">
+            <div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </div>
+
+    <!--    =================MODAL SELECT CARD====================-->
+    <div id="cards-modal" hidden="hidden">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Choose card</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <fieldset class="slds-form-element">
+                        <legend class="slds-form-element__legend slds-form-element__label">Cards:</legend>
+                        <div id="cards-radio-button" class="slds-form-element__control">
+                        </div>
+                    </fieldset>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="closeModal('cards-modal')">Cancel</button>
+                    <button class="slds-button slds-button_brand" onclick="onChooseClick()">Choose</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+    <!--    ===================================-->
+
+    <!--    =================MODAL VALIDATE PAYMENT====================-->
+    <div id="validate-modal" hidden="hidden">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-02" class="slds-modal__title slds-hyphenate"></h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                    <table id="validate-table"
+                           class="slds-table slds-table_cell-buffer slds-table_header-hidden slds-table_bordered">
+                        <thead class="slds-assistive-text">
+                        <tr class="slds-line-height_reset">
+                            <th class="" scope="col" style="width: 60%">
+                                <div class="slds-truncate" title="Item Name">Item Name</div>
+                            </th>
+                            <th class="" scope="col" style="width: 20%">
+                                <div class="slds-truncate" title="Quantity">Quantity</div>
+                            </th>
+                            <th class="" scope="col" style="width: 20%">
+                                <div class="slds-truncate" title="Price Per Item">Price Per Item</div>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody id="validate-table-tbody">
+                        </tbody>
+                    </table>
+                    <!-- <div class="slds-grid slds-gutters slds-text-align_center slds-m-right_xxx-small">
+                        <div class="slds-col slds-size_3-of-5">
+                            <span style="font-weight:bold;">VAT amount:</span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-5">
+                        </div>
+                        <div class="slds-col slds-text-body_regular slds-size_1-of-5">
+                            <span id="VAT-amount-total" style="font-weight:bold;"></span>
+                        </div>
+                    </div>
+                    <div class="slds-grid slds-gutters slds-text-align_center slds-m-right_xxx-small">
+                        <div class="slds-col slds-size_3-of-5">
+                            <span style="font-weight:bold;">Total:</span>
+                        </div>
+                        <div class="slds-col slds-size_1-of-5">
+                        </div>
+                        <div class="slds-col slds-text-body_regular slds-size_1-of-5">
+                            <span id="order-total" style="font-weight:bold;"></span>
+                        </div>
+                    </div> -->
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="closeModal('validate-modal')">Cancel
+                    </button>
+                    <button class="slds-button slds-button_brand" onclick="pay()">Confirm &amp; Submit</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+    <!--    ===================================-->
+
+    <!--    =================MODAL CHOOSE PAYMENT METHOD====================-->
+    <div id="choose-payment-method-modal" hidden="hidden">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-03" aria-modal="true"
+                 aria-describedby="modal-content-id-3" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-03" class="slds-modal__title slds-hyphenate">Select your payment method</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-3">
+                    <fieldset class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-3">
+                                    <span class="slds-radio" name="payMethod">
+                                        <input type="radio" id="card-method" value="card-method" name="options"
+                                               onchange="onSelectPayment('card-method')"/>
+                                          <label class="slds-radio__label" for="card-method">
+                                            <div class="slds-grid slds-grid_vertical">
+                                              <div class="slds-col slds-text-align_center">
+                                                <span class="slds-radio_faux"></span>
+                                              </div>
+                                              <div class="slds-col slds-text-align_center">
+                                                  <apex:image alt="card" title="Credit card"
+                                                              url="{!URLFOR($Resource.Payment_Icons, '/payment_icons/CreditCard.svg.png')}"/>
+                                              </div>
+                                                <div class="slds-col slds-text-align_center">
+                                                    <span class="slds-form-element__label">Credit card</span>
+                                                </div>
+                                            </div>
+                                          </label>
+                                    </span>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <span class="slds-radio">
+                                      <input type="radio" id="bank-transfer-method" value="bank-transfer-method"
+                                             name="options"
+                                             onchange="onSelectPayment('bank-transfer-method')"/>
+                                      <label class="slds-radio__label" for="bank-transfer-method">
+                                          <div class="slds-grid slds-grid_vertical slds-text-align_center">
+                                              <div class="slds-col slds-text-align_center">
+                                                <span class="slds-radio_faux"></span>
+                                              </div>
+                                              <div class="slds-col slds-text-align_center">
+                                                  <apex:image alt="paypal" title="Bank transfer"
+                                                              url="{!URLFOR($Resource.Payment_Icons, '/payment_icons/Bank.svg.png')}"/>
+                                              </div>
+                                              <div class="slds-col slds-text-align_center">
+                                                  <span class="slds-form-element__label">Bank transfer</span>
+                                              </div>
+                                          </div>
+                                      </label>
+                                    </span>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <span class="slds-radio" name="payMethod">
+                                      <input type="radio" id="paypal-method" value="paypal-method" name="options"
+                                             onchange="onSelectPayment('paypal-method')"/>
+                                      <label class="slds-radio__label" for="paypal-method">
+                                          <div class="slds-grid slds-grid_vertical">
+                                              <div class="slds-col slds-text-align_center">
+                                                <span class="slds-radio_faux"></span>
+                                              </div>
+                                              <div class="slds-col slds-text-align_center">
+                                                  <apex:image alt="paypal" title="Paypal"
+                                                              url="{!URLFOR($Resource.Payment_Icons, '/payment_icons/paypal.png')}"/>
+                                              </div>
+                                              <div class="slds-col slds-text-align_center">
+                                                  <span class="slds-form-element__label">Paypal</span>
+                                              </div>
+                                          </div>
+                                      </label>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="onCancelPaymentChoose()">Cancel</button>
+                    <button class="slds-button slds-button_brand" onclick="onChoosePayment()">Choose</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+
+    <!--    =================SCREEN BANK TRANSFER PAYMENT METHOD====================-->
+    <div id="bank-transfer-screen" hidden="hidden" class="slds-text-heading_small">
+        <div id="BankTransferCredentials" hidden="hidden"><c:BankTransferCredentials /></div>
+        <div id="BankTransferRegistration" hidden="hidden"><c:BankTransferRegistration /></div>
+        <div id="BankTransferRenewalCredentials" hidden="hidden"><c:BankTransferRenewalCredentials /></div>
+        <a onclick="savePdf()">Download as PDF</a>
+    </div>
+
+    <!--    =================Address Screen=================-->
+    <div id="addresses-screen" hidden="hidden">
+        <div class="slds-text-heading_medium">Enter your address information</div>
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col">
+                <fieldset class="slds-form-element slds-form-element_compound slds-form-element_address">
+                    <legend class="slds-form-element__legend slds-form-element__label">Mailing Address</legend>
+                    <div class="slds-form-element__control">
+                        <div class="slds-form-element__row">
+                            <div class="slds-size_1-of-1">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="form-element-mailing-street">Mailing
+                                        Street</label>
+                                    <div class="slds-form-element__control">
+                                <textarea id="mailing-street" required="" disabled="disabled" class="slds-textarea"
+                                          placeholder="Placeholder Text">None</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form-element__row">
+                            <div class="slds-size_4-of-6">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="form-element-mailing-city">Mailing
+                                        City</label>
+                                    <div class="slds-form-element__control">
+                                        <input type="text" id="mailing-city" required="" disabled="disabled"
+                                               class="slds-input"
+                                               value="None"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-size_2-of-6">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="form-element-mailing-state">Mailing
+                                        State/Province</label>
+                                    <div class="slds-form-element__control">
+                                        <input type="text" id="mailing-state" required="" disabled="disabled"
+                                               class="slds-input" value="None" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form-element__row">
+                            <div class="slds-size_4-of-6">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="form-element-mailing-code">Mailing
+                                        Zip/Postal
+                                        Code</label>
+                                    <div class="slds-form-element__control">
+                                        <input type="text" id="mailing-code" required="" disabled="disabled"
+                                               class="slds-input"
+                                               value="None"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-size_2-of-6">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="form-element-mailing-country">Mailing
+                                        Country</label>
+                                    <div class="slds-form-element__control">
+                                        <input type="text" id="mailing-country" required="" disabled="disabled"
+                                               class="slds-input" value="None"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <div class="slds-checkbox">
+                            <input type="checkbox" name="options" id="mailing-as-billing-checkbox"
+                                   value="checkbox-unique-id-71" checked=""
+                                   onchange="setMailingAsBillingAddress(this)"/>
+                            <label class="slds-checkbox__label" for="mailing-as-billing-checkbox">
+                                <span class="slds-checkbox_faux"></span>
+                                <span class="slds-form-element__label">Use as billing address</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-col">
+                <fieldset class="slds-form-element slds-form-element_compound slds-form-element_address">
+                    <legend class="slds-form-element__legend slds-form-element__label">Billing Address</legend>
+                    <div class="slds-form-element__control">
+                        <div class="slds-form-element__row">
+                            <div class="slds-size_1-of-1">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="form-element-billing-street"><abbr
+                                                class="slds-required" title="required">* </abbr>Billing
+                                        Street</label>
+                                    <div class="slds-form-element__control">
+                                        <textarea id="billing-street" required="required" class="slds-textarea"
+                                                  onchange="handleChangeBilling(this)"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form-element__row">
+                            <div class="slds-size_4-of-6">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="form-element-billing-city"><abbr
+                                                class="slds-required" title="required">* </abbr>Billing
+                                        City</label>
+                                    <div class="slds-form-element__control">
+                                        <input type="text" id="billing-city" required="required"
+                                               onchange="handleChangeBilling(this)"
+                                               class="slds-input"
+                                               value=""/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-size_2-of-6">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="form-element-billing-state">Billing
+                                        State/Province</label>
+                                    <div class="slds-form-element__control">
+                                        <input type="text" id="billing-state" required=""
+                                               onchange="handleChangeBilling(this)"
+                                               class="slds-input" value=""/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form-element__row">
+                            <div class="slds-size_4-of-6">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="form-element-billing-code"><abbr
+                                                class="slds-required" title="required">* </abbr>Billing Zip/Postal
+                                        Code</label>
+                                    <div class="slds-form-element__control">
+                                        <input type="text" id="billing-code" required="required"
+                                               onchange="handleChangeBilling(this)"
+                                               class="slds-input"
+                                               value=""/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-size_2-of-6">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="billing-country"><abbr
+                                                class="slds-required" title="required">* </abbr>Billing Country</label>
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-select_container">
+                                            <select class="slds-select" id="billing-country" required="required" onchange="handleChangeBilling(this)">
+                                                <option value=""></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <div class="slds-align_absolute-center slds-m-around_medium">
+            <button class="slds-button slds-button_neutral" onclick="backToPaymentSelection()">Back</button>
+            <button class="slds-button slds-button_brand" onclick="moveToPayment()">Next</button>
+        </div>
+    </div>
+    <!--    ==================================-->
+    </html>
+
+    <script src="{!URLFOR($Resource.paymentPage)}"/>
+    <script>
+        var orderId;
+        var cardId = '';
+        var spinner = document.getElementById("spinner");
+        var paymentForm = document.getElementById("payment-form");
+        var paymentMethod = '';
+        var order;
+        let addressesObject = {};
+        let allCountries;
+        let successPaymentScreen = document.getElementById("success-message");
+        document.body.setAttribute("style", "background-color:white !important;");
+        window.onload = function () {
+            init();
+        };
+        function init() {
+            orderId = getParameterByName('orderId', window.top.location.href);
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.PaymentHttpRequest.showPaymentCheck}',
+                orderId,
+                function (res, event) {
+                    let result = JSON.parse(res);
+                    if (event.statusCode == 200){
+                        document.getElementsByName("payMethod").forEach(e => {
+                            e.style.display = result.isGroup ? "none" : "block";
+                        });
+                        if (result.status === 'SUCCESS') {
+                            choosePaymentMethod();
+                        } else if(result.status === 'ZERO_PAYMENT'){
+                            //ZERO_PAYMENT
+                            zeroPayment();
+                        } else if(result.status === 'PAID'){
+                            //PAID_SCREEN
+                            spinner.setAttribute('hidden', 'hidden');
+                            showAndDetermineSuccessScreen();
+                        } else {
+                            spinner.setAttribute('hidden', 'hidden');
+                            showErrorMessage();
+
+                            let log = {
+                                'Process_Name__c':'Visualforce: paymentHandle page init() function',
+                                'Type__c':'Other',
+                                'Message__c' : 'PaymentHttpRequest.showPaymentCheck return: '+result.status + '\nurl: '+window.top.location.href + '\nOS: '+getOS(),
+                                'Status__c' : 'Error',
+                                'End_Time__c' : new Date().toUTCString()
+                            };
+                            createCustomLog(log);
+                        }
+                    } else {
+                        spinner.setAttribute('hidden', 'hidden');
+                        showErrorMessage();
+
+                        let log = {
+                            'Process_Name__c':'Visualforce: paymentHandle page init() function',
+                            'Type__c':'Other',
+                            'Message__c' : JSON.stringify(event),
+                            'Status__c' : 'Error',
+                            'End_Time__c' : new Date().toUTCString()
+                        };
+                        createCustomLog(log);
+                    }
+                },
+                {escape:false}
+                );
+        }
+
+        function getOS() {
+            let name = "Unknown OS";
+            if (navigator.userAgent.indexOf("Win") != -1) name =
+                "Windows OS";
+            if (navigator.userAgent.indexOf("Mac") != -1) name =
+                "Macintosh";
+            if (navigator.userAgent.indexOf("Linux") != -1) name =
+                "Linux OS";
+            if (navigator.userAgent.indexOf("Android") != -1) name =
+                "Android OS";
+            if (navigator.userAgent.indexOf("like Mac") != -1) name =
+                "iOS";
+            return name
+        }
+
+        function createCustomLog(log) {
+            return new Promise((resolve, reject) => {
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.PaymentHttpRequest.insertLogRemote}',
+                    JSON.stringify(log),
+                    function (result, event) {
+                        if(event.statusCode == 200){
+                            resolve();
+                        } else {
+                            reject();
+                        }
+                    },
+                );
+            });
+        }
+
+        function zeroPayment() {
+            let transaction = {
+                "Order_Custom__c":orderId,
+                "JSONResponse__c": "None",
+                "Status__c": "Success",
+                "Completion_Time_Stamp__c": Date.now(),
+                "Amount__c": 0
+            };
+            createTransaction(transaction);
+            spinner.setAttribute('hidden', 'hidden');
+            showAndDetermineSuccessScreen();
+        }
+
+        function choosePaymentMethod() {
+            spinner.setAttribute('hidden', 'hidden');
+            document.getElementById("choose-payment-method-modal").removeAttribute('hidden');
+
+        }
+
+        function onSelectPayment(method) {
+            paymentMethod = method;
+        }
+
+        function onChoosePayment() {
+
+            closeModal('choose-payment-method-modal');
+
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.PaymentHttpRequest.updatePaymentMethodForOrder}',
+                orderId,
+                paymentMethod,
+                function (result, event) {
+                    console.log('RES:: ' + JSON.stringify(result));
+                },
+            );
+
+            spinner.removeAttribute('hidden');
+            if (paymentMethod === 'card-method' || paymentMethod === 'paypal-method') {
+                getCountries()
+                    .then(() => {
+                        showAddressScreen();
+                    }).catch(() => {
+                    spinner.setAttribute('hidden', 'hidden');
+                    showErrorMessage();
+                });
+            } else if ('bank-transfer-method') {
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.PaymentHttpRequest.getOrderInfo}',
+                    orderId,
+                    function (result, event) {
+                        if (event.statusCode == 400) {
+                            spinner.setAttribute('hidden', 'hidden');
+                            showErrorMessage();
+                        } else {
+                            orderInfo = JSON.parse(JSON.stringify(result));
+                            order = orderInfo.singleOrderInList;
+                            let orderDeadline = formatDate(addDays(order[0].CreatedDate, 7));
+                            document.querySelectorAll('.order-name').forEach(item => {
+                                //     if (order[0].Invoice_Number__c && (order[0]['Invoice_Number__c']).indexOf('-OC-') > -1) {
+                                //         item.innerHTML = '"' + order[0]['Name'] + '"';
+                                //         document.getElementById("BankTransferRegistration").removeAttribute('hidden');
+
+                                //     //  https://jira.towa-digital.com/browse/EANER-19   use EAN21-F-#### (= Invoice Number)
+                                //    // } else if (order[0].Invoice_Number__c && (order[0]['Invoice_Number__c']).indexOf('-F-') > -1) {
+                                //     } else 
+                                    if (order[0].Type__c === 'Event registration') {
+                                        item.innerHTML = '"' + order[0]['Name'] + '"';
+                                        document.getElementById("BankTransferRegistration").removeAttribute('hidden');
+
+                                    //  'Membership Renewal' updates
+                                    } else if (orderInfo.orderType === 'Renewal') {
+                                        item.innerHTML = '"' + order[0]['Name'] + '"';
+                                        document.getElementById("BankTransferRenewalCredentials").removeAttribute('hidden');
+                                    } else {
+                                        item.innerHTML = '"' + order[0]['Name'] + '"';
+                                        document.getElementById("BankTransferCredentials").removeAttribute('hidden');
+                                    }
+                            });
+                            document.querySelectorAll('.order-name1').forEach(item => {
+                                item.innerHTML = '"' + order[0]['Name'] + '"';
+                            });
+                            document.querySelectorAll('.order-amount').forEach(item => {
+                                item.innerHTML = (order[0]['Total_amount__c']).toFixed(2);
+                            });
+                            document.querySelectorAll('.customer-first-name').forEach(item => {
+                                item.innerHTML = order[0]['Contact__r']['FirstName'];
+                            });
+                            document.querySelectorAll('.customer-last-name').forEach(item => {
+                                item.innerHTML = order[0]['Contact__r']['LastName'];
+                            });
+                            document.querySelectorAll('.order-deadline').forEach(item => {
+                                item.innerHTML = orderDeadline;
+                            });
+                            document.querySelectorAll('.next-year-string').forEach(item => {
+                                item.innerHTML = orderInfo.nextYearString;
+                            });
+                            spinner.setAttribute('hidden', 'hidden');
+                            document.getElementById("bank-transfer-screen").removeAttribute('hidden');
+                        }
+                    });
+            }
+        }
+        function getCountries() {
+            return new Promise((resolve, reject) => {
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.PaymentHttpRequest.getCountries}',
+                    function (result, event) {
+                        if (event.statusCode == 400) {
+                            reject();
+                        } else {
+                            allCountries = JSON.parse(result);
+                            let options = '';
+                            allCountries.forEach(item=>{
+                                options+=`<option>${item['Country__c']}</option>`
+                            });
+                            document.querySelector('#billing-country').insertAdjacentHTML('beforeend', options);
+                            resolve();
+                        }
+                    },
+                    {escape: false});
+            });
+        }
+
+        function showAddressScreen() {
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.PaymentHttpRequest.getContactAddress}',
+                orderId,
+                function (result, event) {
+                    if (event.statusCode === 400 || result === 'error') {
+                        spinner.setAttribute('hidden', 'hidden');
+                        showErrorMessage();
+                    } else {
+                        let elementMaxLength = {
+                            'mailing-city': 32,
+                            'mailing-state': 32,
+                            'mailing-code': 16,
+                            'mailing-street': 128,
+                            'billing-city': 32,
+                            'billing-state': 32,
+                            'billing-code': 16,
+                            'billing-street': 128
+                        };
+
+                        spinner.setAttribute('hidden', 'hidden');
+                        document.querySelector('#addresses-screen').removeAttribute('hidden');
+                        let parsedResult = JSON.parse(result);
+                        if (!parsedResult.hasOwnProperty('Mailing_address__c') || parsedResult['Mailing_address__c'] === 'Official Address') {
+                            addressesObject['mailing-street'] = parsedResult.hasOwnProperty('MailingStreet') ? parsedResult['MailingStreet'] : '';
+                            addressesObject['mailing-city'] = parsedResult.hasOwnProperty('MailingCity') ? parsedResult['MailingCity'] : '';
+                            addressesObject['mailing-state'] = parsedResult.hasOwnProperty('MailingState') ? parsedResult['MailingState'] : '';
+                            addressesObject['mailing-code'] = parsedResult.hasOwnProperty('MailingPostalCode') ? parsedResult['MailingPostalCode'] : '';
+                            addressesObject['mailing-country'] = parsedResult.hasOwnProperty('MailingCountry') ? parsedResult['MailingCountry'] : parsedResult.hasOwnProperty('Residency__c')?parsedResult['Residency__c']:'';
+                        } else if (parsedResult['Mailing_address__c'] === 'Private Address') {
+                            addressesObject['mailing-street'] = parsedResult.hasOwnProperty('OtherStreet') ? parsedResult['OtherStreet'] : '';
+                            addressesObject['mailing-city'] = parsedResult.hasOwnProperty('OtherCity') ? parsedResult['OtherCity'] : '';
+                            addressesObject['mailing-state'] = parsedResult.hasOwnProperty('OtherState') ? parsedResult['OtherState'] : '';
+                            addressesObject['mailing-code'] = parsedResult.hasOwnProperty('OtherPostalCode') ? parsedResult['OtherPostalCode'] : '';
+                            addressesObject['mailing-country'] = parsedResult.hasOwnProperty('OtherCountry') ? parsedResult['OtherCountry'] : '';
+                        } else if (parsedResult['Mailing_address__c'] === 'Work Address') {
+                            addressesObject['mailing-street'] = parsedResult.hasOwnProperty('Work_Street__c') ? parsedResult['Work_Street__c'] : '';
+                            addressesObject['mailing-city'] = parsedResult.hasOwnProperty('Work_City__c') ? parsedResult['Work_City__c'] : '';
+                            addressesObject['mailing-state'] = parsedResult.hasOwnProperty('Work_State_Province__c') ? parsedResult['Work_State_Province__c'] : '';
+                            addressesObject['mailing-code'] = parsedResult.hasOwnProperty('Work_Zip_Postal_Code__c') ? parsedResult['Work_Zip_Postal_Code__c'] : '';
+                            addressesObject['mailing-country'] = parsedResult.hasOwnProperty('Work_Country__c') ? parsedResult['Work_Country__c'] : '';
+                        }
+                        let elementsIds = ['mailing-city', 'mailing-state', 'mailing-code', 'mailing-country', 'mailing-street'];
+                        elementsIds.forEach(id => {
+                            if(elementMaxLength[id]){
+                                addressesObject[id] = addressesObject[id].length <= elementMaxLength[id] ? addressesObject[id] : addressesObject[id].slice(0, elementMaxLength[id]);
+                            }
+                            document.querySelector(`#${id}`).value = addressesObject[id];
+                        });
+
+                        for(let id in elementMaxLength){
+                            document.querySelector(`#${id}`).maxLength = elementMaxLength[id];
+                        }
+                    }
+                },
+                {escape: false});
+        }
+
+        function setMailingAsBillingAddress(checkbox) {
+            let elementsIds = ['billing-city', 'billing-state', 'billing-code', 'billing-country', 'billing-street'];
+            if (checkbox.checked) {
+                for (let key in addressesObject) {
+                    if (addressesObject.hasOwnProperty(key)) {
+                        addressesObject[key.replace("mailing", "billing")] = addressesObject[key];
+                    }
+                }
+                elementsIds.forEach(id => {
+                    let element = document.querySelector(`#${id}`);
+                    element.value = addressesObject[id];
+                    element.setAttribute('disabled', 'disabled');
+                });
+
+            } else {
+                for (let key in addressesObject) {
+                    if (addressesObject.hasOwnProperty(key)) {
+                        if (key.includes('billing')) {
+                            addressesObject[key] = '';
+                        }
+                    }
+                }
+                elementsIds.forEach(id => {
+                    let element = document.querySelector(`#${id}`);
+                    element.value = addressesObject[id];
+                    element.removeAttribute('disabled');
+                });
+
+            }
+        }
+
+        function moveToPayment() {
+            let validationResult = validationRequiredFields('#addresses-screen');
+            if (validationResult) {
+                spinner.removeAttribute('hidden');
+                document.querySelector('#addresses-screen').setAttribute('hidden', 'hidden');
+                //Change country to country code
+                allCountries.forEach(country=>{
+                    if(addressesObject['mailing-country'] === country['Country__c']){
+                        addressesObject['mailing-country'] = country['Country_code__c'];
+                    }
+                    if(addressesObject['billing-country'] === country['Country__c']){
+                        addressesObject['billing-country'] = country['Country_code__c'];
+                    }
+                });
+
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.PaymentHttpRequest.writeOrderBillingAddress}',
+                    orderId, JSON.stringify(addressesObject),
+                    function (result, event) {
+                        if (event.statusCode == 400) {
+                            spinner.setAttribute('hidden', 'hidden');
+                            showErrorMessage();
+
+                            let log = {
+                                'Process_Name__c':'Visualforce: paymentHandle page moveToPayment() writeOrderBillingAddress',
+                                'Type__c':'Other',
+                                'Message__c' : JSON.stringify(event),
+                                'Status__c' : 'Error',
+                                'End_Time__c' : new Date().toUTCString(),
+                                'Order__c' : orderId
+                            };
+                            createCustomLog(log);
+                        } else {
+                            if (paymentMethod === 'card-method') {
+                                showPaymentForm()
+                                .then(()=>{
+                                    checkCards();
+                                })
+                            } else if (paymentMethod === 'paypal-method') {
+                                Visualforce.remoting.Manager.invokeAction(
+                                    '{!$RemoteAction.PaymentHttpRequest.getPayPalUrl}',
+                                    orderId, JSON.stringify(addressesObject),
+                                    function (result, event) {
+                                        let parsedResult = JSON.parse(result);
+                                        if (event.statusCode === 400 || parsedResult.error) {
+                                            spinner.setAttribute('hidden', 'hidden');
+                                            showErrorMessage('Error', parsedResult.message);
+
+                                            let log = {
+                                                'Process_Name__c':'Visualforce: paymentHandle page PayPal moveToPayment() function',
+                                                'Type__c':'Other',
+                                                'Message__c' : result,
+                                                'Status__c' : 'Error',
+                                                'End_Time__c' : new Date().toUTCString(),
+                                                'Order__c' : orderId
+                                            };
+                                            createCustomLog(log);
+                                        } else {
+                                            let log = {
+                                                'Process_Name__c':'Visualforce: paymentHandle page PayPal moveToPayment() function',
+                                                'Type__c':'Other',
+                                                'Message__c' : result,
+                                                'Status__c' : 'Success',
+                                                'End_Time__c' : new Date().toUTCString(),
+                                                'Order__c' : orderId
+                                            };
+                                            createCustomLog(log)
+                                                .finally(()=>{
+                                                    if (parsedResult.url) {
+                                                        window.top.location.href = parsedResult.url;
+                                                    } else {
+                                                        spinner.setAttribute('hidden', 'hidden');
+                                                        showErrorMessage();
+                                                    }
+                                                });
+                                        }
+                                    },
+                                    {escape: false}
+                                );
+                            }
+                        }
+                    },
+                    {escape: false}
+                );
+
+            }
+        }
+        function validationRequiredFields(container) {
+            let requiredFields = document.querySelectorAll(`${container} [required="required"]`);
+            let flag = true;
+            requiredFields.forEach(element => {
+                if (!validateElement(element)) {
+                    flag = false;
+                }
+            });
+            return flag;
+        }
+        function validateElement(element) {
+            if (element.value === '') {
+                element.classList.add("slds-has-error");
+                return false;
+            } else {
+                if (element.classList.contains('slds-has-error')) {
+                    element.classList.remove('slds-has-error');
+                }
+                return true;
+            }
+        }
+        function handleChangeBilling(element) {
+            addressesObject[element.id] = element.value;
+        }
+        function backToPaymentSelection() {
+            document.querySelector('#addresses-screen').setAttribute('hidden', 'hidden');
+            init();
+        }
+        function onCancelPaymentChoose() {
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.PaymentHttpRequest.getCommunityHomeUrl}',
+                function (result, event) {
+                    window.top.location.href = result;
+                });
+        }
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+        function onSelectCard(Id) {
+            cardId = Id;
+        }
+        function openModal(elementId) {
+            document.getElementById(elementId).removeAttribute("hidden");
+        }
+        function closeModal(elementId) {
+            document.getElementById(elementId).setAttribute("hidden", "hidden");
+        }
+        function onChooseClick() {
+            closeModal('cards-modal');
+            spinner.removeAttribute('hidden');
+            showPaymentForm();
+        }
+        function checkCards() {
+            return new Promise((resolve, reject) => {
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.PaymentHttpRequest.cardsCheck}',
+                    orderId,
+                    function (result, event) {
+                        if (result != 'none' && result != null) {
+                            let cards = JSON.parse(result);
+                            let numCallbackRuns = 0;
+                            let buttonGroup = '';
+                            cards.forEach(item => {
+                                buttonGroup += `<span class="slds-radio">
+                                  <input type="radio" id="radio-card-${numCallbackRuns}" value="${item["Id"]}" name="options" onchange="onSelectCard('${item["Id"]}')" ${numCallbackRuns == 0 ? ' checked=""' : ''}/>
+                                  <label class="slds-radio__label" for="radio-card-${numCallbackRuns}">
+                                    <span class="slds-radio_faux"></span>
+                                    <span class="slds-form-element__label">${item["Masked_Account_Number__c"]}</span>
+                                  </label>
+                                </span>`;
+                                numCallbackRuns++;
+                            });
+                            cardId = cards[0]["Id"];
+                            let div = document.getElementById("cards-radio-button");
+                            div.insertAdjacentHTML('beforeend', buttonGroup);
+                            openModal('cards-modal');
+                            spinner.setAttribute('hidden', 'hidden');
+                        }
+                    },
+                    {escape: false}
+                );
+                resolve();
+            });
+        }
+        function showPaymentForm() {
+            return new Promise((resolve, reject) => {
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.PaymentHttpRequest.SeamlessURL}',
+                    orderId, cardId, JSON.stringify(addressesObject),
+                    function (result, event) {
+                        let resultParse = JSON.parse(result);
+
+                        if (!!result && !resultParse.error) {
+                            spinner.setAttribute('hidden', 'hidden');
+                            if (!!resultParse.url) {
+                                paymentForm.removeAttribute('hidden');
+                                document.getElementById("total-price").innerHTML = (resultParse.price).toFixed(2) + ' EUR';
+                                showSeamless(resultParse.url);
+                                resolve(resultParse);
+                            }
+                        } else {
+                            spinner.setAttribute('hidden', 'hidden');
+                            showErrorMessage('Error', resultParse.message);
+                            let log = {
+                                'Process_Name__c': 'Visualforce: paymentHandle page showPaymentForm()',
+                                'Type__c': 'Other',
+                                'Message__c': result,
+                                'Status__c': 'Error',
+                                'End_Time__c': new Date().toUTCString(),
+                                'Order__c': orderId
+                            };
+                            createCustomLog(log);
+                            reject(resultParse);
+                        }
+                    },
+                    {escape: false}
+                );
+            });
+        }
+        function showSeamless(paymentredirecturl) {
+            WPP.seamlessRender({
+                url: paymentredirecturl, // this is the payment link returned in response to your initial request
+                wrappingDivId: "seamless-form-target",
+                onSuccess: function (response) { // called when seamless form is successfully rendered
+                },
+                onError: function (errResp) { // called if seamless form failed to render
+                    console.log('errRespppps:: ' + JSON.stringify(errResp));
+                    paymentForm.setAttribute('hidden', 'hidden');
+                    showErrorMessage();
+                }
+            });
+        }
+        function saveCardData(response) {
+            let decodedResponse = window.atob(response['response-base64']);
+            let parsedResponse = JSON.parse(decodedResponse);
+            if (document.getElementById('save-card-checkbox').checked) {
+                if (parsedResponse['payment'].hasOwnProperty('card-token') && parsedResponse['payment']['card-token']['token-id'] != null) {
+                    let dataToInsert = {
+                        "OrderId": orderId,
+                        "Token_Id__c": parsedResponse['payment']['card-token']['token-id'],
+                        "Masked_Account_Number__c": parsedResponse['payment']['card-token']['masked-account-number']
+                    };
+                    Visualforce.remoting.Manager.invokeAction(
+                        '{!$RemoteAction.PaymentHttpRequest.saveCard}',
+                        JSON.stringify(dataToInsert),
+                        function (result, event) {
+                        },
+                    );
+                }
+            }
+        }
+        function validatePayment() {
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.PaymentHttpRequest.getOrderItems}',
+                orderId,
+                function (result, event) {
+                    let parsedResult = JSON.parse(result);
+                    let rows = '';
+                    parsedResult['order-items'].forEach(item => {
+                        rows += `
+                        <tr class="slds-hint-parent">
+                            <td data-label="Item Name">
+                                <div class="slds-truncate" title="Item Name">${item.product}</div>
+                            </td>
+                            <td data-label="Quantity">
+                                <div class="slds-truncate slds-text-align_center" title="Quantity">x${item.quantity}</div>
+                            </td>
+                            <td data-label="Price Per Item">
+                                <div class="slds-truncate slds-text-align_left" title="Price Per Item">${item.amount}€</div>
+                            </td>
+                        </tr>
+                    `;
+                    });
+                    document.getElementById('modal-heading-02').innerHTML = 'Order ' + parsedResult['name'];
+                    let tableTbody = document.getElementById('validate-table-tbody');
+                    tableTbody.innerHTML = '';
+
+                    rows += `
+                        <tr class="slds-hint-parent">
+                            <td data-label="Item Name">
+                                <div class="slds-truncate slds-text-align_right" title="Item Name"><b>VAT amount:</b></div>
+                            </td>
+                            <td data-label="Quantity">
+                                <div class="slds-truncate" title="Quantity"></div>
+                            </td>
+                            <td data-label="Price Per Item">
+                                <div class="slds-truncate slds-text-align_left" title="Price Per Item">${(parsedResult['VAT-amount-total']).toFixed(2)}€</div>
+                            </td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td data-label="Item Name">
+                                <div class="slds-truncate slds-text-align_right" title="Item Name"><b>Discount Amount:</b></div>
+                            </td>
+                            <td data-label="Quantity">
+                                <div class="slds-truncate" title="Quantity"></div>
+                            </td>
+                            <td data-label="Price Per Item">
+                                <div class="slds-truncate slds-text-align_left" title="Price Per Item">${(parsedResult['discountAmount']).toFixed(2)}€</div>
+                            </td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td data-label="Item Name">
+                                <div class="slds-truncate slds-text-align_right" title="Item Name"><b>Total:</b></div>
+                            </td>
+                            <td data-label="Quantity">
+                                <div class="slds-truncate " title="Total"></div>
+                            </td>
+                            <td data-label="Price Per Item">
+                                <div class="slds-truncate slds-text-align_left" title="Price Per Item">${(parsedResult['total-amount']).toFixed(2)}€</div>
+                            </td>
+                        </tr>
+                    `;
+
+                    tableTbody.insertAdjacentHTML('afterbegin', rows);
+                    // document.getElementById('VAT-amount-total').innerHTML = parsedResult['VAT-amount-total'] + '€';
+                    // document.getElementById('order-total').innerHTML = parsedResult['total-amount'] + '€';
+                    openModal('validate-modal');
+                },
+                {escape: false}
+            );
+        }
+        function pay() {
+            closeModal('validate-modal');
+            spinner.removeAttribute('hidden');
+            WPP.seamlessSubmit({
+                onSuccess: function (response) {
+                    // called when seamless form data is successfully submitted with non-3D Secure credit card
+                    // see section 4 (Parse and Process the Payment Response) on how to deal with this data
+                    spinner.setAttribute('hidden', 'hidden');
+                    paymentForm.setAttribute('hidden', 'hidden');
+                    showAndDetermineSuccessScreen();
+                    parseAndInsertTransaction(response);
+                    saveCardData(response);
+                },
+                onError: function (response) {
+                    // called when seamless form data is successfully submitted with non-3D Secure credit card
+                    // see section 4 (Parse and Process the Payment Response) on how to deal with this data
+                    if (!response.hasOwnProperty('error_1') && response['response-base64']){
+                        paymentForm.setAttribute('hidden', 'hidden');
+                        parseAndInsertTransaction(response);
+
+                        let parsedResponse = JSON.parse(atob(response['response-base64']));
+                        let payment = !!parsedResponse ? parsedResponse.payment : '';
+                        let statuses = !!payment ? payment.statuses : '';
+                        let status = !!statuses.status ? statuses.status : '';
+                        let errors = [];
+
+                        for(let s of status){
+                            if(s.severity !== 'error') continue;
+                            errors.push(s.description);
+                        }
+
+                        if(errors.length > 0){
+                            showErrorMessage('Error', errors[0]);
+                        } else {
+                            showErrorMessage('Error', 'Something went wrong, please contact you system administrator.');
+                        }
+                    } else {
+                        if(response.errors[0].error.code === 'FE0001'){
+                            showToast('Form validation failed. Please check your inputs and try again.', 'error');
+                        }
+                    }
+                    spinner.setAttribute('hidden', 'hidden');
+
+                    let log = {
+                        'Process_Name__c':'REST: paymentHandle page pay() function',
+                        'Order__c':orderId,
+                        'Type__c':'REST'
+                    };
+                    Visualforce.remoting.Manager.invokeAction(
+                        '{!$RemoteAction.PaymentHttpRequest.createLog}',
+                        log, 'no body', response, new Date().toUTCString(), 500,
+                        function (result, event) {
+                        },
+                    );
+                }
+            });
+
+        }
+        function parseAndInsertTransaction(response){
+            parsePaymentResponse(response)
+                .then(result=>{
+                    createTransaction(result);
+                })
+                .catch(result=>{
+                    createTransaction(result);
+                    paymentForm.setAttribute('hidden', 'hidden');
+                    document.getElementById("error-screen").removeAttribute('hidden');
+                });
+        }
+        function parsePaymentResponse(response){
+            //PARSE PAYMENT RESPONSE AND GENERATE TRANSACTION RECORD
+            return new Promise((resolve, reject) => {
+                let decodedResponse = window.atob(response['response-base64']);
+                let parsedResponse = JSON.parse(decodedResponse);
+                try {
+                    let transaction = {};
+                    transaction['Order_Custom__c'] = orderId;
+                    transaction['JSONResponse__c'] = decodedResponse;
+                    transaction['Status__c'] = parsedResponse["payment"]["statuses"]["status"][0]["code"] == 201 ? 'Success' : 'Error';
+                    transaction['Request_Id__c'] = parsedResponse["payment"]["request-id"];
+
+                    transaction['Reference_Id__c'] = parsedResponse["payment"]["transaction-id"];
+
+                    transaction['Completion_Time_Stamp__c'] = Date.parse((parsedResponse["payment"]["completion-time-stamp"]));
+                    transaction['Amount__c'] = parsedResponse["payment"]["requested-amount"]['value'];
+                    transaction['Payment_Method__c'] = parsedResponse["payment"]["payment-methods"]['payment-method'][0]['name'];
+                    resolve(transaction);
+                }catch (e) {
+                    console.log(e);
+                    let transaction = {};
+                    transaction['Order_Custom__c'] = orderId;
+                    transaction['JSONResponse__c'] = decodedResponse;
+                    reject(transaction);
+                }
+            });
+        }
+        function createTransaction(transaction) {
+            //CREATE TRANSACTION
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.PaymentHttpRequest.createTransaction}',
+                transaction,
+                function (result, event) {
+                },
+            );
+        }
+        function handleCardCheckbox(event) {
+            saveCard = document.getElementById('save-card-checkbox').checked;
+        }
+        function showSuccessScreen(title, message){
+            let body =
+                `<div class="slds-text-align_center slds-grid slds-grid_vertical">
+                <div class="slds-col">
+                    <div class="slds-text-heading_large slds-text-color_success">${title}</div>
+                </div>
+                <div class="slds-col">
+                    <div class="slds-text-heading_small slds-m-top--medium">${message}</div>
+                </div>
+            </div>`;
+            successPaymentScreen.insertAdjacentHTML('afterbegin', body);
+            successPaymentScreen.removeAttribute('hidden');
+        }
+        function showAndDetermineSuccessScreen(){
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.PaymentHttpRequest.determineSuccessScreen}',
+                orderId,
+                function (result, event) {
+                    let title, message;
+                    if(result.type === 'ERROR'){
+                        showErrorMessage();
+                    } else if(result.type === 'ORDER'){
+                        title = 'Your payment was received, thank you!';
+                        message = '';
+                        showSuccessScreen(title, message);
+                    } else if(result.type === 'ORDER_WITH_APP_FORM'){
+                        title = 'Thank you for your payment. Your application has been submitted for review.';
+                        message = 'If you do not hear back from us within 10 working days, please contact us at <a href="mailto:membership@ean.org">membership@ean.org</a>.';
+                        showSuccessScreen(title, message);
+                    } else if(result.type === 'EVENT_REGISTRATION') {
+                        let invoiceNumber = !!result.order && result.order.length > 0 ? result.order[0].Name : 'NULL';
+                        let congressLink = !!result.order && result.order.length > 0 && result.order[0].Event_custom__r && !!result.order[0].Event_custom__r.www__c ? result.order[0].Event_custom__r.www__c : 'javascript:void(0)';
+                        let body =
+                            `<div class="slds-align_absolute-center">
+                                <div class="slds-grid slds-grid_vertical">
+                                    <div class="slds-text-align_left slds-col">
+                                        <div class="slds-text-heading_large slds-text-color_success">Thank you for your EAN congress registration.</div>
+                                    </div>
+                                    <div class="slds-text-align_left slds-col">
+                                        <div class="slds-text-heading_small slds-m-top--medium">Your registration was received, and your order confirmation number is: ${invoiceNumber}.</div>
+                                    </div>
+                                    <div class="slds-text-align_left slds-col">
+                                        <div class="slds-text-heading_small">If you do have any queries, do not hesitate to contact us via <a href="mailto:registration@ean.org">registration@ean.org</a>.</div>
+                                    </div>
+                                    <div class="slds-text-align_left slds-col">
+                                        <div class="slds-m-top--medium">Browse the EAN Congress Website <a href="${congressLink}" target="_blank">here</a>.</div>
+                                    </div>
+                                </div>
+                            </div>`
+                        successPaymentScreen.insertAdjacentHTML('afterbegin', body);
+                        successPaymentScreen.removeAttribute('hidden');
+                    }
+                },
+            );
+        }
+        function savePdf(){
+            spinner.removeAttribute('hidden');
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.PaymentHttpRequest.generateBankCredsPdfDownloadLink}',
+                orderId,
+                function (result, event) {
+                    if (event.statusCode == 400) {
+                        alert('Sorry, an error occurred while downloading. Please contact your system administrator.');
+                    } else {
+                        spinner.setAttribute('hidden', 'hidden');
+                        window.open(result, '_blank');
+                    }
+                },
+                {escape: false});
+        }
+
+        function addDays(date, days) {
+            let result = new Date(date);
+            result.setDate(result.getDate() + days);
+            return result;
+        }
+
+        function formatDate(date) {
+            let dd = date.getDate();
+            if (dd < 10) dd = '0' + dd;
+
+            let mm = date.getMonth() + 1;
+            if (mm < 10) mm = '0' + mm;
+
+            let yyyy = date.getFullYear();
+
+            return dd + '.' + mm + '.' + yyyy;
+        }
+
+        function showToast(message, variant){
+            let theme = '';
+            let image_path = '';
+
+            switch(variant) {
+                case 'success':
+                    theme = 'slds-theme_success';
+                    image_path = 'icons/utility-sprite/svg/symbols.svg#success';
+                    break;
+                case 'error':
+                    theme = 'slds-theme_error';
+                    image_path = 'icons/utility-sprite/svg/symbols.svg#error';
+                    break;
+                default:
+                    theme = 'slds-theme_info';
+                    image_path = 'icons/utility-sprite/svg/symbols.svg#info';
+            }
+
+            let uniqueId = new Date().getTime();
+            let toastArea = document.getElementById("toast-area");
+            let xlinkHref = '{!URLFOR($Asset.SLDS, '{value}')}'.replace('{value}', image_path);
+            let toast = `<div id="${uniqueId}" class="slds-notify_container slds-is-relative">
+                            <div class="slds-notify slds-notify_toast ${theme}" role="status">
+                                <span class="slds-assistive-text">success</span>
+                                <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top" title="Description of icon when needed">
+                                    <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                        <use xlink:href="${xlinkHref}"></use>
+                                    </svg>
+                                </span>
+                                <div class="slds-notify__content">
+                                    <h2 class="slds-text-heading_small ">${message}</h2>
+                                </div>
+                                <div class="slds-notify__close">
+                                    <button class="slds-button slds-button_icon slds-button_icon-inverse" title="Close" onclick="removeMarkup(${uniqueId});">
+                                        <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                            <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                                        </svg>
+                                        <span class="slds-assistive-text">Close</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>`;
+
+            toastArea.insertAdjacentHTML('afterbegin', toast);
+            // setTimeout(removeMarkup, 5000, uniqueId);
+        }
+
+        function removeMarkup(uniqueId){
+            let el = document.getElementById(uniqueId);
+            el.remove();
+        }
+
+        function showErrorMessage(title, message){
+            if(!!!title){
+                title = 'Something went wrong, please contact your system administrator.'
+            }
+            let messageBody = `<div class="slds-text-align_center slds-grid slds-grid_vertical">
+                                    <div class="slds-col">
+                                        <div class="slds-text-heading_large slds-text-color_error">${title}</div>
+                                    </div>`;
+            if(!!message){
+                messageBody += `<div class="slds-col">
+                                    <div class="slds-text-heading_small slds-m-top--medium slds-text-color_error">${message}</div>
+                                </div>`;
+            }
+
+            messageBody += `<div class="slds-col">
+                                    <div class="slds-text-heading_x-small slds-m-top--medium">
+                                        <a onclick="window.location.reload()">Reload page to try again</a>
+                                    </div>
+                                </div>`
+            messageBody += `</div>`;
+            document.getElementById("error-screen").innerHTML = messageBody;
+            document.getElementById("error-screen").removeAttribute('hidden');
+        }
+    </script>
+</apex:page>

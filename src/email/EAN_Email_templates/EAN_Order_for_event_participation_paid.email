@@ -1,0 +1,131 @@
+<messaging:emailTemplate subject="Event" recipientType="Contact" relatedToType="Email_Activity__c">
+    <messaging:htmlEmailBody >
+        <html>
+            <body>
+            <div style="width: 800px;">
+            <p style="margin: 0px; font-size: 11pt; padding:5px 0;">Dear {!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.LastName},</p>
+                <p style="margin: 0px; font-size: 11pt; padding:5px 0;">Thank you for registering<span style="{!IF(relatedTo.Order__r.Event_Registration_Sub_Group__c!='', '', 'display: none;')}"> your group 
+                {!relatedTo.Order__r.Event_Registration_Sub_Group__r.Event_Registration_Group__r.Name}</span> to the {!relatedTo.Event_custom__r.Name} of the European Academy of Neurology.
+                Please find attached the confirmation for your order. Kindly transfer the outstanding amount to the account indicated in the attachment.</p>
+                <p style="margin: 0px; font-size: 11pt; padding:5px 0;">You can check the registration status<span style="{!IF(relatedTo.Order__r.Event_Registration_Sub_Group__c!='', '', 'display: none;')}"> of your group</span>,
+                edit or add additional registrations or download relevant documents by accessing the registration system again via MyEAN (www.ean.org).</p>
+                <p style="margin: 0px; font-size: 11pt; padding:5px 0;">If you have any questions regarding registration, please contact us at registration@ean.org.<br />
+                We are looking forward to welcoming you at the {!relatedTo.Event_custom__r.Name}!</p>
+                <p style="margin: 0px; font-size: 11pt; padding:5px 0;">Yours sincerely, <br />
+                {!relatedTo.Event_custom__r.Name} Registration Management</p>
+            </div>
+            </body>
+        </html>
+    </messaging:htmlEmailBody>
+        <messaging:attachment renderAs="PDF" filename="invoice.pdf">
+        <html>
+            <head>
+                <style type="text/css" media="print">
+                    @page {
+                        @bottom-center {
+                            content: element(footer);
+                        }
+                        margin-bottom: 3cm;
+                    }
+                    div.footer {
+                        position: running(footer);
+                        text-align: center;
+                        font-size: 9pt
+                    }
+                </style>
+            </head>
+            <body>
+            <div class="footer">
+                <div>
+                    <center>
+                        <img src = "{!$Resource.EAN_BANNER_EC21}" width="725px" align="center"/>
+                    </center>
+                </div>
+            </div>
+            <div style="width: 725px;">
+                <div style="margin-top: 20px; float: left; width: 475px;">
+                    <div>
+                        <p style="margin: 0px; font-size: 11pt;">{!relatedTo.Contact__r.Salutation} {!relatedTo.Contact__r.FirstName} {!relatedTo.Contact__r.LastName}<br />
+                        Hospital: {!relatedTo.Contact__r.Hospital_Name__c}<br />
+                        Department: {!relatedTo.Contact__r.Department_Name__c}<br />
+                        Street: {!relatedTo.Contact__r.Work_Street__c}<br />
+                        ZIP City: {!relatedTo.Contact__r.Work_Zip_Postal_Code__c} {!relatedTo.Contact__r.Work_City__c}<br />
+                        Country: {!relatedTo.Contact__r.Work_Country__c}<br />
+                        VAT Nr: </p>
+                    </div>
+                    <div style = "text-align: right">
+                        <p style="margin: 0px; font-size: 9pt;">
+                            <apex:outputText value="{0, date, d MMMM yyyy}">
+                                <apex:param value="{!relatedTo.CreatedDate}" /> 
+                            </apex:outputText>
+                        </p>
+                    </div>
+                    <div>
+                        <p style="margin: 0px; font-size: 11pt;">
+                        {!relatedTo.Event_custom__r.Name} - Congress of the European Academy of Neurology<br/>
+                            <apex:outputText value="{0, date, d MMMM}">
+                                <apex:param value="{!relatedTo.Event_custom__r.Start_Time__c}" /> 
+                            </apex:outputText>
+                            - 
+                            <apex:outputText value="{0, date, d MMMM yyyy}">
+                                <apex:param value="{!relatedTo.Event_custom__r.End_Time__c}" /> 
+                            </apex:outputText>
+                        </p>
+                    </div>
+                    <div style = "text-align: center">
+                        <h2 style="margin: 0px; font-size: 11pt;">ORDER CONFIRMATION – {!relatedTo.Order__r.Invoice_Number__c}</h2>
+                    </div>
+                    <div>
+                        <c:OrderInvoiceTable order="{!relatedTo.Order__c}" />
+                    </div>
+                    <div>
+                        <p style="margin: 0px; font-size: 11pt;">For payment via bank transfer, please include your <b>order confirmation number</b> {!relatedTo.Order__r.Invoice_Number__c}
+                        as payment reference for identification purposes. Please note that bank charges must be covered by you.</p>
+                        <p>Please transfer the outstanding amount of ____ EUR to the following bank account:</p>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tbody>
+                            <tr>
+                                <td style="border: 1px solid #ddd; width: 25%;" >
+                                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">Account holder</div>
+                                </td>
+                                <td style="border: 1px solid #ddd;" >
+                                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">European Academy of Neurology</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #ddd;" >
+                                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">Bank</div>
+                                </td>
+                                <td style="border: 1px solid #ddd;" >
+                                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">Oberoesterreichische Landesbank Aktiengesellschaft</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #ddd;" >
+                                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">IBAN</div>
+                                </td>
+                                <td style="border: 1px solid #ddd;">
+                                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">AT83 5400 0002 1400 7650</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #ddd;" >
+                                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">BIC/SWIFT</div>
+                                </td>
+                                <td style="border: 1px solid #ddd;">
+                                    <div style="padding: 5px; margin: 0px; font-size: 11pt;">OBLAAT2L</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="width: 250px; float: right;">
+                    <apex:image id="theImage" value="{!$Resource.EAN_Details}" width="250"/>
+                </div>
+            </div>
+            </body>
+        </html>
+    </messaging:attachment>
+ 
+</messaging:emailTemplate>
