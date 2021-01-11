@@ -34,9 +34,12 @@
     </types>
     <types>
         <members>*</members>
-          <members>EAN_Email_templates/EAN_Order_for_event_participation_paid</members>
-          <members>EAN_Email_templates/EAN_Order_for_refund_transaction</members>
-          <members>EAN_Email_templates/Change_Request</members>
+        <members>EAN_Email_templates/Change_Request</members>
+        <members>EAN_Email_templates/EAN_OrderForEventParticipPaidCardPP</members>
+        <members>EAN_Email_templates/EAN_Order_for_event_participation_paid</members>
+        <members>EAN_Email_templates/EAN_Order_for_refund_transaction</members>
+        <members>EAN_Email_templates/EAN_SoloEventRegistrationOrderPaidBT</members>
+        <members>EAN_Email_templates/EAN_Solo_event_registration_BT</members>
         <name>EmailTemplate</name>
     </types>
     <types>
